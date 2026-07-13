@@ -1,0 +1,748 @@
+// Prisma Schema — Project Nexus
+// Multi-project from day one. Every operational model references projectId.
+
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider   = "postgresql"
+}
+
+// ============================================================
+// Core Models
+// ============================================================
+
+model Organization {
+  id        String    @id @default(cuid())
+  name      String
+  projects  Project[]
+  createdAt DateTime  @default(now())
+}
+
+model Project {
+  id              String          @id @default(cuid())
+  organizationId  String
+  organization    Organization    @relation(fields: [organizationId], references: [id])
+  name            String // "Tumauini Hydroelectric Power Plant"
+  slug            String          @unique // "tumauini-hepp"
+  location        String? // "Barangay Antagan Uno, Tumauini, Isabela"
+  capacityMw      Float? // 11.3
+  plantType       String? // "Run-of-river"
+  percentComplete Float? // 79
+  status          String          @default("ACTIVE")
+  users           ProjectMember[]
+  tickets         Ticket[]
+  assets          Asset[]
+  knowledgeArticles KnowledgeArticle[]
+  documentFolders DocumentFolder[]
+  documents       Document[]
+  accomplishmentReports AccomplishmentReport[]
+  milestones      Milestone[]
+  progressSnapshots ProgressSnapshot[]
+  maintenanceSchedules MaintenanceSchedule[]
+  inventoryItems  InventoryItem[]
+  inventoryTransactions InventoryTransaction[]
+  visitors        Visitor[]
+  networkDevices  NetworkDevice[]
+  networkRacks    NetworkRack[]
+  networkSubnets  NetworkSubnet[]
+  siteLocations   SiteLocation[]
+  equipments      PlantEquipment[]
+  targetCodDate   DateTime?
+  codMilestones   CodMilestone[]
+  createdAt       DateTime        @default(now())
+}
+
+model User {
+  id              String          @id @default(cuid())
+  clerkId         String          @unique
+  name            String
+  email           String          @unique
+  memberships     ProjectMember[]
+  createdTickets  Ticket[]        @relation("TicketCreator")
+  assignedTickets Ticket[]        @relation("TicketAssignee")
+  ticketComments  TicketComment[]
+  assignedAssets  Asset[]
+  knowledgeArticles KnowledgeArticle[]
+  documents       Document[]
+  documentVersions DocumentVersion[]
+  submittedReports AccomplishmentReport[] @relation("ReportSubmitter")
+  reviewedReports  AccomplishmentReport[] @relation("ReportReviewer")
+  progressSnapshots ProgressSnapshot[]
+  createdMaintenanceSchedules MaintenanceSchedule[] @relation("MaintenanceCreator")
+  completedMaintenanceTasks MaintenanceTask[]
+  requestedTransactions InventoryTransaction[] @relation("TxRequester")
+  approvedTransactions InventoryTransaction[] @relation("TxApprover")
+  hostedVisitors  Visitor[]       @relation("VisitorHost")
+  loggedVisitors  Visitor[]       @relation("VisitorLogger")
+  siteLocations   SiteLocationEngineer[]
+  siteLocationPhotos SiteLocationPhoto[]
+  createdEquipment   PlantEquipment[]       @relation("EquipmentCreator")
+  uploadedEquipmentDocs EquipmentDocument[] @relation("EquipmentDocUploader")
+  loggedEquipmentMaintenance EquipmentMaintenanceLog[] @relation("EquipmentMaintenanceLogger")
+  assistantConversations AssistantConversation[]
+  createdAt       DateTime        @default(now())
+}
+
+model ProjectMember {
+  id        String  @id @default(cuid())
+  userId    String
+  projectId String
+  user      User    @relation(fields: [userId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
+  role      Role    @default(EMPLOYEE)
+
+  @@unique([userId, projectId])
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum Role {
+  ADMINISTRATOR
+  IT_SUPPORT
+  PROJECT_MANAGER
+  ENGINEER
+  SUPERVISOR
+  WAREHOUSE
+  SAFETY
+  HR
+  EMPLOYEE
+  GUARD
+  GUEST
+}
+
+model Ticket {
+  id           String          @id @default(cuid())
+  projectId    String
+  project      Project         @relation(fields: [projectId], references: [id])
+  title        String
+  description  String
+  status       TicketStatus    @default(OPEN)
+  priority     TicketPriority  @default(MEDIUM)
+  createdById  String
+  createdBy    User            @relation("TicketCreator", fields: [createdById], references: [id])
+  assignedToId String?
+  assignedTo   User?           @relation("TicketAssignee", fields: [assignedToId], references: [id])
+  comments     TicketComment[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model TicketComment {
+  id        String   @id @default(cuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Asset {
+  id            String      @id @default(cuid())
+  projectId     String
+  project       Project     @relation(fields: [projectId], references: [id])
+  name          String
+  category      String      // e.g. "Network Equipment", "Heavy Equipment", "IT Hardware"
+  serialNumber  String?
+  assetTag      String?
+  department    String?
+  status        AssetStatus @default(ACTIVE)
+  location      String?
+  vendor        String?
+  purchaseDate  DateTime?
+  hasWarranty   Boolean     @default(false)
+  assignedToId  String?
+  assignedTo    User?       @relation(fields: [assignedToId], references: [id])
+  assignedToName String?    // Free-form name if assigned to unregistered user
+  qrCodeToken   String      @unique @default(cuid()) // encoded into the QR, NOT the DB id
+  maintenanceSchedules MaintenanceSchedule[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum AssetStatus {
+  ACTIVE
+  IN_MAINTENANCE
+  RETIRED
+}
+
+model KnowledgeArticle {
+  id          String     @id @default(cuid())
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id])
+  title       String
+  slug        String
+  category    KbCategory
+  body        String     // Markdown content
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id])
+  published   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  @@unique([projectId, slug])
+}
+
+enum KbCategory {
+  FAQ
+  TROUBLESHOOTING
+  MANUAL
+  POLICY
+  PROCEDURE
+}
+
+model DocumentFolder {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  name      String
+  parentId  String?
+  parent    DocumentFolder? @relation("FolderTree", fields: [parentId], references: [id])
+  children  DocumentFolder[] @relation("FolderTree")
+  documents Document[]
+  createdAt DateTime @default(now())
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  folderId    String?
+  folder      DocumentFolder? @relation(fields: [folderId], references: [id])
+  name        String
+  currentVersionId String?  @unique
+  versions    DocumentVersion[]
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model DocumentVersion {
+  id          String   @id @default(cuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id])
+  versionNum  Int
+  storagePath String   // Supabase Storage path
+  fileName    String
+  fileSizeKb  Int
+  mimeType    String
+  uploadedById String
+  uploadedBy  User     @relation(fields: [uploadedById], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model AccomplishmentReport {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id])
+  reportDate      DateTime
+  submittedById   String
+  submittedBy     User     @relation("ReportSubmitter", fields: [submittedById], references: [id])
+  workArea        String   // e.g. "Powerhouse", "Tunnel", "Dam"
+  weatherCondition WeatherCondition
+  accomplishments String   // what was done
+  equipmentUsed   String?
+  materialsUsed   String?
+  delays          String?  // null/empty if no delays
+  remarks         String?
+  status          ReportStatus @default(SUBMITTED)
+  reviewedById    String?
+  reviewedBy      User?    @relation("ReportReviewer", fields: [reviewedById], references: [id])
+  reviewedAt      DateTime?
+  rejectionReason String?
+  photos          ReportPhoto[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ReportPhoto {
+  id          String   @id @default(cuid())
+  reportId    String
+  report      AccomplishmentReport @relation(fields: [reportId], references: [id])
+  storagePath String   // Storage path in "report-photos" bucket
+  caption     String?
+  createdAt   DateTime @default(now())
+}
+
+enum WeatherCondition {
+  SUNNY
+  CLOUDY
+  RAINY
+  STORM
+}
+
+enum ReportStatus {
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model Milestone {
+  id            String          @id @default(cuid())
+  projectId     String
+  project       Project         @relation(fields: [projectId], references: [id])
+  name          String
+  targetDate    DateTime
+  completedDate DateTime?
+  status        MilestoneStatus @default(PENDING)
+  createdAt     DateTime        @default(now())
+}
+
+enum MilestoneStatus {
+  PENDING
+  COMPLETED
+  DELAYED
+}
+
+model ProgressSnapshot {
+  id             String   @id @default(cuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id])
+  snapshotDate   DateTime
+  percentComplete Float
+  note           String?
+  loggedById     String
+  loggedBy       User     @relation(fields: [loggedById], references: [id])
+  createdAt      DateTime @default(now())
+}
+
+model MaintenanceSchedule {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id])
+  assetId       String
+  asset         Asset    @relation(fields: [assetId], references: [id])
+  title         String
+  description   String?
+  frequencyDays Int      // e.g. 30 = monthly, 90 = quarterly, 365 = annual
+  nextDueDate   DateTime
+  lastDoneDate  DateTime?
+  status        MaintenanceStatus @default(UPCOMING)
+  createdById   String
+  createdBy     User     @relation("MaintenanceCreator", fields: [createdById], references: [id])
+  tasks         MaintenanceTask[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model MaintenanceTask {
+  id            String   @id @default(cuid())
+  scheduleId    String
+  schedule      MaintenanceSchedule @relation(fields: [scheduleId], references: [id])
+  completedById String?
+  completedBy   User?    @relation(fields: [completedById], references: [id])
+  title         String
+  notes         String?
+  condition     String?  // e.g. Good, Repair, Replace
+  issueFound    String?
+  actionTaken   String?
+  withWarranty  Boolean?
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+}
+
+enum MaintenanceStatus {
+  UPCOMING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+model InventoryItem {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id])
+  name            String
+  category        String   // e.g. "Consumables", "Tools", "Safety Equipment"
+  unit            String   // e.g. "pcs", "kg", "meters", "liters"
+  quantityOnHand  Float    @default(0)
+  lowStockThreshold Float  @default(0) // 0 = no threshold set
+  qrCodeToken     String   @unique @default(cuid())
+  location        String?  // where it's physically stored
+  vendor          String?
+  transactions    InventoryTransaction[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model InventoryTransaction {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  itemId      String
+  item        InventoryItem @relation(fields: [itemId], references: [id])
+  type        TransactionType
+  quantity    Float
+  requestedById String
+  requestedBy   User   @relation("TxRequester", fields: [requestedById], references: [id])
+  approvedById  String?
+  approvedBy    User?  @relation("TxApprover", fields: [approvedById], references: [id])
+  status      TransactionStatus @default(PENDING)
+  purpose     String?  // why they need it
+  returnedAt  DateTime?
+  dueDate     DateTime? // for BORROW transactions
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum TransactionType {
+  RESTOCK     // adding stock (admin/warehouse only)
+  ISSUE       // permanent consumption (used up)
+  BORROW      // temporary, expects return
+  RETURN      // marks a BORROW as returned
+}
+
+enum TransactionStatus {
+  PENDING     // awaiting approval
+  APPROVED    // approved, stock adjusted
+  REJECTED    // rejected, stock unchanged
+  RETURNED    // for BORROW transactions that have been returned
+}
+
+// ============================================================
+// Module 5: Visitor Management
+// ============================================================
+
+model Visitor {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id])
+  fullName      String
+  organization  String?  // company or agency they're from
+  purpose       String   // reason for visit
+  hostId        String
+  host          User     @relation("VisitorHost", fields: [hostId], references: [id])
+  vehicle       String?  // plate number if arriving by vehicle
+  idType        String?  // e.g. "Driver's License", "Company ID", "Passport"
+  idNumber      String?
+  loggedById    String
+  loggedBy      User     @relation("VisitorLogger", fields: [loggedById], references: [id])
+  timeIn        DateTime @default(now())
+  timeOut       DateTime?
+  status        VisitorStatus @default(CHECKED_IN)
+  remarks       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum VisitorStatus {
+  CHECKED_IN
+  CHECKED_OUT
+}
+
+// ============================================================
+// Module 6: Network Documentation
+// ============================================================
+
+model NetworkDevice {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id])
+  hostname      String   // e.g. "SW-OFFICE-01", "AP-POWERHOUSE-01"
+  deviceType    NetworkDeviceType
+  ipAddress     String?
+  macAddress    String?
+  brand         String?  // e.g. "MikroTik", "Ubiquiti", "Cisco"
+  model         String?  // e.g. "hEX S", "UAP-AC-Pro"
+  firmwareVersion String?
+  location      String?  // physical location e.g. "Server Room Rack A"
+  rackId        String?
+  rack          NetworkRack? @relation(fields: [rackId], references: [id])
+  rackUnit      Int?     // which U position in the rack
+  vlan          String?  // e.g. "VLAN10-Management"
+  uplink        String?  // what it's connected to e.g. "SW-CORE-01 Port 1"
+  status        NetworkDeviceStatus @default(ONLINE)
+  notes         String?
+  ports         NetworkPort[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model NetworkPort {
+  id          String   @id @default(cuid())
+  deviceId    String
+  device      NetworkDevice @relation(fields: [deviceId], references: [id])
+  portNumber  String   // e.g. "1", "2", "eth1", "ether1"
+  connectedTo String?  // free text: what's plugged in
+  vlan        String?
+  speed       String?  // e.g. "1Gbps", "100Mbps"
+  status      PortStatus @default(ACTIVE)
+  notes       String?
+}
+
+model NetworkRack {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  name        String   // e.g. "Server Room Rack A"
+  location    String   // physical room/area
+  totalUnits  Int      @default(42)
+  devices     NetworkDevice[]
+  createdAt   DateTime @default(now())
+}
+
+model NetworkSubnet {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  name        String   // e.g. "Management", "Operations", "CCTV"
+  cidr        String   // e.g. "192.168.10.0/24"
+  gateway     String?
+  vlanId      Int?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+enum NetworkDeviceType {
+  ROUTER
+  SWITCH
+  FIREWALL
+  ACCESS_POINT
+  STARLINK
+  PATCH_PANEL
+  SERVER
+  NVR
+  UPS
+  OTHER
+}
+
+enum NetworkDeviceStatus {
+  ONLINE
+  OFFLINE
+  MAINTENANCE
+  DECOMMISSIONED
+}
+
+enum PortStatus {
+  ACTIVE
+  INACTIVE
+  UPLINK
+}
+
+enum LocationStatus {
+  ACTIVE
+  COMPLETED
+  SUSPENDED
+}
+
+model SiteLocation {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  slug            String   // e.g. "powerhouse", "dam-intake", "warehouse"
+  name            String   // e.g. "Powerhouse", "Dam / Intake Structure"
+  description     String?
+  percentComplete Float?   // optional completion % for this location
+  status          LocationStatus @default(ACTIVE)
+  assignedEngineers SiteLocationEngineer[]
+  photos          SiteLocationPhoto[]
+  equipments      PlantEquipment[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([projectId, slug])
+}
+
+model SiteLocationEngineer {
+  id          String   @id @default(cuid())
+  locationId  String
+  location    SiteLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        String?  // e.g. "Civil Lead", "MEP Engineer"
+  
+  @@unique([locationId, userId])
+}
+
+model SiteLocationPhoto {
+  id          String   @id @default(cuid())
+  locationId  String
+  location    SiteLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  storagePath String
+  caption     String?
+  takenAt     DateTime?
+  uploadedById String
+  uploadedBy  User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  createdAt   DateTime @default(now())
+}
+
+model PlantEquipment {
+  id                String   @id @default(cuid())
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  equipmentTag      String   // e.g. "TU-01", "GEN-01", "TR-GSU-01"
+  name              String   // e.g. "Francis Turbine Unit 1"
+  category          EquipmentCategory
+  manufacturer      String?
+  model             String?
+  serialNumber      String?
+  installationDate  DateTime?
+  commissionDate    DateTime?
+  location          String?  // physical location e.g. "Powerhouse Bay 1"
+  siteLocationId    String?  // optional link to SiteLocation from sitemap
+  siteLocation      SiteLocation? @relation(fields: [siteLocationId], references: [id], onDelete: SetNull)
+  status            EquipmentStatus @default(INSTALLED)
+  condition         EquipmentCondition @default(GOOD)
+  specifications    Json?    // flexible key-value specs (rated power, voltage, etc.)
+  documents         EquipmentDocument[]
+  maintenanceLogs   EquipmentMaintenanceLog[]
+  createdById       String
+  createdBy         User     @relation(fields: [createdById], references: [id], onDelete: Restrict, name: "EquipmentCreator")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model EquipmentDocument {
+  id            String   @id @default(cuid())
+  equipmentId   String
+  equipment     PlantEquipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  name          String   // e.g. "Operation Manual", "Wiring Diagram"
+  storagePath   String   // Supabase storage
+  fileType      String   // e.g. "PDF", "DWG", "Image"
+  uploadedById  String
+  uploadedBy    User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict, name: "EquipmentDocUploader")
+  createdAt     DateTime @default(now())
+}
+
+model EquipmentMaintenanceLog {
+  id            String   @id @default(cuid())
+  equipmentId   String
+  equipment     PlantEquipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  loggedById    String
+  loggedBy      User     @relation(fields: [loggedById], references: [id], onDelete: Restrict, name: "EquipmentMaintenanceLogger")
+  type          String   // e.g. "Inspection", "Repair", "Overhaul"
+  description   String
+  findings      String?
+  actionTaken   String?
+  nextServiceDue DateTime?
+  createdAt     DateTime @default(now())
+}
+
+enum EquipmentCategory {
+  TURBINE
+  GENERATOR
+  TRANSFORMER
+  GOVERNOR
+  EXCITATION_SYSTEM
+  CIRCUIT_BREAKER
+  PROTECTION_RELAY
+  GATE_VALVE
+  CRANE_HOIST
+  SCADA_PLC
+  METERING_PANEL
+  DC_SYSTEM
+  FIRE_SUPPRESSION
+  DIESEL_GENERATOR
+  PUMP
+  OTHER
+}
+
+enum EquipmentStatus {
+  INSTALLED        // physically installed, not yet commissioned
+  COMMISSIONED     // fully operational
+  UNDER_MAINTENANCE
+  DECOMMISSIONED
+  PENDING_DELIVERY // ordered but not yet on site
+}
+
+enum EquipmentCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  CRITICAL
+}
+
+model DocumentChunk {
+  id          String   @id @default(cuid())
+  projectId   String
+  sourceType  ChunkSourceType
+  sourceId    String   // ID of the Document, KnowledgeArticle, or PlantEquipment
+  sourceName  String   // human-readable: file name, article title, equipment tag
+  chunkIndex  Int      // position of this chunk within the source
+  content     String   // the actual text content of this chunk
+  embedding   Unsupported("vector(768)")?  // pgvector column, 768 dims for Gemini
+  createdAt   DateTime @default(now())
+  @@index([projectId, sourceType])
+}
+
+enum ChunkSourceType {
+  DOCUMENT
+  KNOWLEDGE_ARTICLE
+  EQUIPMENT_SPEC
+}
+
+model AssistantConversation {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  messages  AssistantMessage[]
+  createdAt DateTime @default(now())
+}
+
+model AssistantMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  conversation   AssistantConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  content        String
+  citations      Json?    // array of {sourceId, sourceName, sourceType, excerpt}
+  createdAt      DateTime @default(now())
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+model CodMilestone {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  category    MilestoneCategory
+  targetDate  DateTime?
+  completedAt DateTime?
+  status      MilestoneStatus2 @default(LOCKED)
+  order       Int
+  isCritical  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum MilestoneCategory {
+  CIVIL
+  MECHANICAL
+  ELECTRICAL
+  TESTING
+  DOCUMENTATION
+  REGULATORY
+}
+
+enum MilestoneStatus2 {
+  LOCKED
+  UPCOMING
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+

@@ -1,0 +1,2 @@
+# This directory holds shadcn/ui primitives, restyled to match Project Nexus design tokens.
+# Components will be added here via `npx shadcn@latest add <component>`
