@@ -1,5 +1,5 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
 const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
@@ -24,7 +24,7 @@ const authMiddleware = clerkMiddleware(async (auth, request) => {
   }
 });
 
-export function proxy(request: Request, event: any) {
+export function proxy(request: NextRequest, event: any) {
   return authMiddleware(request, event);
 }
 
