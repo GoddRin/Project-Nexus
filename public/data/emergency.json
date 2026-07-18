@@ -1,0 +1,5319 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-07-14T01:31:41Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 693170191,
+      "lat": 18.1950292,
+      "lon": 120.5921203,
+      "tags": {
+        "amenity": "police",
+        "name": "Laoag Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1231083211,
+      "lat": 18.152463,
+      "lon": 120.5291228,
+      "tags": {
+        "amenity": "police",
+        "name": "Laoag City Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1232598373,
+      "lat": 18.0555645,
+      "lon": 120.5574463,
+      "tags": {
+        "addr:city": "Batac",
+        "addr:street": "Marcos Avenue",
+        "amenity": "police",
+        "name": "Police Assistance Center 1",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1234471851,
+      "lat": 18.1954943,
+      "lon": 120.5937454,
+      "tags": {
+        "addr:city": "Laoag",
+        "addr:street": "J. P. Rizal Avenue",
+        "amenity": "police",
+        "description": "Tourist assistance center",
+        "name": "Laoag City Tourist Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1234641221,
+      "lat": 18.205291,
+      "lon": 120.5834082,
+      "tags": {
+        "addr:city": "Laoag",
+        "addr:street": "E. F. Siazon Road",
+        "amenity": "police",
+        "name": "police station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1651726813,
+      "lat": 17.6084831,
+      "lon": 121.7250283,
+      "tags": {
+        "amenity": "police",
+        "name": "Cagayan Valley Provincial Police Office",
+        "osm_id": "1651726813",
+        "timestamp": "2012-02-28T17:38:33Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2168906307,
+      "lat": 16.5403966,
+      "lon": 121.5640155,
+      "tags": {
+        "amenity": "police",
+        "name": "Saguday Police Station",
+        "osm_id": "2168906307",
+        "timestamp": "2013-02-23T14:54:21Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2192227946,
+      "lat": 16.4123246,
+      "lon": 120.5912868,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Baguio Fire Volunteers"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2192642675,
+      "lat": 16.4423211,
+      "lon": 120.5658134,
+      "tags": {
+        "amenity": "police",
+        "is_in:city": "La Trinidad",
+        "name": "Longlong Compact",
+        "note": "La Trinidad Municipal Police Station",
+        "osm_id": "2192642675",
+        "timestamp": "2013-03-09T14:54:09Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2283005899,
+      "lat": 16.8585528,
+      "lon": 120.7935669,
+      "tags": {
+        "amenity": "police",
+        "osm_id": "2283005899",
+        "timestamp": "2013-04-27T10:44:48Z"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2296666086,
+      "lat": 17.6244743,
+      "lon": 121.7327671,
+      "tags": {
+        "amenity": "police",
+        "name": "Don Domingo Police Station",
+        "osm_id": "2296666086",
+        "timestamp": "2013-05-09T06:07:22Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2342911010,
+      "lat": 17.0050776,
+      "lon": 120.9231879,
+      "tags": {
+        "alt_name": "Police Station",
+        "amenity": "police",
+        "name": "Community Police Assistance Center",
+        "osm_id": "2342911010",
+        "timestamp": "2013-06-13T03:40:06Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2419959914,
+      "lat": 16.9275105,
+      "lon": 121.753605,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Cauayan Airport Fire & Rescue"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2423915632,
+      "lat": 16.9411947,
+      "lon": 121.7671965,
+      "tags": {
+        "amenity": "police",
+        "osm_id": "2423915632",
+        "timestamp": "2013-08-19T09:58:34Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2428722922,
+      "lat": 16.8806631,
+      "lon": 121.5869208,
+      "tags": {
+        "amenity": "police",
+        "name": "San Mateo Police Station",
+        "osm_id": "2428722922",
+        "timestamp": "2013-08-23T00:45:32Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2496208300,
+      "lat": 16.2947454,
+      "lon": 121.0339882,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP",
+        "osm_id": "2496208300",
+        "timestamp": "2013-10-14T14:07:35Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2496208399,
+      "lat": 16.2945574,
+      "lon": 121.0340365,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP",
+        "osm_id": "2496208399",
+        "timestamp": "2013-10-14T14:08:05Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2514079733,
+      "lat": 16.6510239,
+      "lon": 121.2185523,
+      "tags": {
+        "amenity": "fire_station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2514080200,
+      "lat": 16.6515198,
+      "lon": 121.2184664,
+      "tags": {
+        "amenity": "police",
+        "osm_id": "2514080200",
+        "timestamp": "2013-10-30T15:59:13Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2545464382,
+      "lat": 17.5617395,
+      "lon": 121.7010208,
+      "tags": {
+        "amenity": "police",
+        "name": "Enrile Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2550608057,
+      "lat": 17.6385725,
+      "lon": 121.7550695,
+      "tags": {
+        "amenity": "police",
+        "name": "Valley Cops",
+        "osm_id": "2550608057",
+        "timestamp": "2013-11-25T13:26:49Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2550719626,
+      "lat": 17.6090033,
+      "lon": 121.7244332,
+      "tags": {
+        "amenity": "police",
+        "name": "Cagayan Provincial Police Office",
+        "osm_id": "2550719626",
+        "timestamp": "2013-11-25T14:27:49Z",
+        "type": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2798723396,
+      "lat": 17.0879244,
+      "lon": 120.9781149,
+      "tags": {
+        "addr:city": "Bontoc",
+        "amenity": "fire_station",
+        "name": "Bontoc Central Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3096783182,
+      "lat": 16.0041526,
+      "lon": 120.669894,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Asingan Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3858114320,
+      "lat": 17.0054056,
+      "lon": 120.9222158,
+      "tags": {
+        "amenity": "police",
+        "name": "Sabangan Municipal Police Office"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3884194456,
+      "lat": 16.935691,
+      "lon": 121.0555619,
+      "tags": {
+        "amenity": "police",
+        "name": "TOPCOP Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3959677405,
+      "lat": 16.0024934,
+      "lon": 120.6690916,
+      "tags": {
+        "addr:street": "P. Ramos Street",
+        "amenity": "police",
+        "operator": "Asingan Police Outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4191680389,
+      "lat": 16.6232181,
+      "lon": 120.8379528,
+      "tags": {
+        "amenity": "police",
+        "name": "Kabayan Municipal Police Station",
+        "operator": "Public"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4213716316,
+      "lat": 17.0895737,
+      "lon": 120.9769364,
+      "tags": {
+        "addr:city": "Bontoc",
+        "amenity": "fire_station",
+        "name": "Office of the Provincial Fire Marshal"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4244301475,
+      "lat": 16.4821759,
+      "lon": 121.1515827,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Bayombong Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4246783626,
+      "lat": 17.0900582,
+      "lon": 120.977146,
+      "tags": {
+        "addr:city": "Bontoc",
+        "addr:postcode": "2616",
+        "addr:street": "Bontoc - Tabuk Road",
+        "amenity": "police",
+        "name": "Bontoc PNP Outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4368868290,
+      "lat": 17.4117366,
+      "lon": 121.4433021,
+      "tags": {
+        "amenity": "police",
+        "name": "Bulanao Sub-station COMPAC"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4395401026,
+      "lat": 16.4725174,
+      "lon": 120.8115556,
+      "tags": {
+        "amenity": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412660393,
+      "lat": 16.3397422,
+      "lon": 121.6839823,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Maddela Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412832697,
+      "lat": 16.9515945,
+      "lon": 121.7678227,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP JAIL",
+        "name:en": "BJMP JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412832698,
+      "lat": 17.0690935,
+      "lon": 121.8579373,
+      "tags": {
+        "amenity": "police",
+        "name": "CAMP GAMU AFP",
+        "name:en": "CAMP GAMU AFP"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412853890,
+      "lat": 17.068752,
+      "lon": 121.85811,
+      "tags": {
+        "amenity": "police",
+        "name": "PHILIPPINE ARMY CAMP GAMU",
+        "name:en": "PHILIPPINE ARMY CAMP GAMU"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412906389,
+      "lat": 16.951718,
+      "lon": 121.7674513,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP STATION",
+        "name:en": "PNP STATION"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412906889,
+      "lat": 16.9515599,
+      "lon": 121.7677473,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP CAUAYAN CITY JAIL",
+        "name:en": "BJMP CAUAYAN CITY JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412908089,
+      "lat": 17.0690729,
+      "lon": 121.8573635,
+      "tags": {
+        "amenity": "police",
+        "name": "AFP CAMP MELCHOR GAMU",
+        "name:en": "AFP CAMP MELCHOR GAMU"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4412908289,
+      "lat": 17.0179654,
+      "lon": 121.851743,
+      "tags": {
+        "amenity": "police",
+        "name": "NAGUILIAN POLICE ASTATION",
+        "name:en": "NAGUILIAN POLICE ASTATION"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4459759293,
+      "lat": 17.6530124,
+      "lon": 121.7520691,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "BFR RO2 OFFICE",
+        "name:en": "BFR RO2 OFFICE"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4462623289,
+      "lat": 18.4638333,
+      "lon": 121.3407649,
+      "tags": {
+        "amenity": "police",
+        "name": "Pamplona Municipal Police Office"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4465172790,
+      "lat": 18.0613558,
+      "lon": 121.6462332,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Gattaran Fire Station",
+        "name:en": "Gattaran Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4488193796,
+      "lat": 16.0221071,
+      "lon": 120.7455305,
+      "tags": {
+        "amenity": "police",
+        "check_date": "2025-10-12",
+        "name": "Tayug Police Office"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4488206290,
+      "lat": 16.0253558,
+      "lon": 120.7384663,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP Tayug"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4513632093,
+      "lat": 16.4971536,
+      "lon": 121.1678779,
+      "tags": {
+        "amenity": "police",
+        "name": "Bonfal West Barangay Outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4518727190,
+      "lat": 18.4100601,
+      "lon": 121.515396,
+      "tags": {
+        "addr:street": "Zamora Street",
+        "amenity": "fire_station",
+        "name": "Ballesteros Fire Station",
+        "operator": "Bureau of Fire Protection"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4550935792,
+      "lat": 17.5430351,
+      "lon": 120.5181901,
+      "tags": {
+        "amenity": "police",
+        "name": "San Quintin PNP"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4550935793,
+      "lat": 17.6012217,
+      "lon": 120.6164083,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Bangued Fire Station",
+        "name:en": "Bangued Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4550940900,
+      "lat": 17.5418149,
+      "lon": 120.5200385,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "San Quintin Fire Station",
+        "name:en": "San Quintin Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4569987589,
+      "lat": 17.5208602,
+      "lon": 121.691299,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP COMPACT",
+        "name:en": "PNP COMPACT"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4569987689,
+      "lat": 16.9410705,
+      "lon": 121.7667224,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP CAUAYAN CITI JAIL",
+        "name:en": "BJMP CAUAYAN CITI JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4605036593,
+      "lat": 17.4035388,
+      "lon": 121.4402612,
+      "tags": {
+        "amenity": "fire_station",
+        "name:en": "bulanao fire station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4613745689,
+      "lat": 17.1422151,
+      "lon": 121.887597,
+      "tags": {
+        "amenity": "police",
+        "name": "Ilagan City Police Office"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4624538660,
+      "lat": 16.8389973,
+      "lon": 121.005729,
+      "tags": {
+        "amenity": "police",
+        "name": "Hungduan Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4646590189,
+      "lat": 17.4706049,
+      "lon": 121.465676,
+      "tags": {
+        "addr:postcode": "3800",
+        "addr:street": "Kalinga Provincial Road",
+        "amenity": "fire_station",
+        "name": "Tabuk City Fire Department",
+        "opening_hours": "24/7"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4698938092,
+      "lat": 16.3399077,
+      "lon": 121.6845716,
+      "tags": {
+        "amenity": "police",
+        "name": "Madella Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4878114426,
+      "lat": 17.3889139,
+      "lon": 121.444444,
+      "tags": {
+        "amenity": "police",
+        "name": "Maneuver Unit",
+        "name:en": "Maneuver Unit"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4878114428,
+      "lat": 17.3524852,
+      "lon": 121.5631013,
+      "tags": {
+        "amenity": "police",
+        "name": "3rd MC (Civets), RPSB Cor",
+        "name:en": "3rd MC (Civets), RPSB Cor"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4921677321,
+      "lat": 16.1333101,
+      "lon": 120.9316187,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP Balete Pass COMPAC",
+        "name:en": "PNP Balete Pass COMPAC"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4934855421,
+      "lat": 16.7832125,
+      "lon": 121.1206689,
+      "tags": {
+        "amenity": "police",
+        "name": "Compac"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4934892024,
+      "lat": 16.78129,
+      "lon": 121.1165215,
+      "tags": {
+        "amenity": "police",
+        "name": "Bureau of Jail Management and Penology",
+        "name:en": "BJMP"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5267700021,
+      "lat": 16.0773353,
+      "lon": 121.7687572,
+      "tags": {
+        "amenity": "police",
+        "name": "2nd Maneuver Platoon"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5806828253,
+      "lat": 16.591497,
+      "lon": 121.5029248,
+      "tags": {
+        "amenity": "police",
+        "name": "Diffun Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5913461568,
+      "lat": 16.4584772,
+      "lon": 120.5225362,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP Substation",
+        "operator": "PNP Sablan"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5928408473,
+      "lat": 16.4253054,
+      "lon": 120.529181,
+      "tags": {
+        "amenity": "police",
+        "name": "Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5931489050,
+      "lat": 18.2601193,
+      "lon": 121.9969195,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Bureau of Fire Protection",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5992041093,
+      "lat": 16.4750555,
+      "lon": 120.6330203,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Tublay Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5992041094,
+      "lat": 16.4746598,
+      "lon": 120.6325422,
+      "tags": {
+        "amenity": "police",
+        "name": "Tublay Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6053538287,
+      "lat": 18.065827,
+      "lon": 120.5637836,
+      "tags": {
+        "addr:postcode": "2906",
+        "addr:street": "Washington Street",
+        "amenity": "police",
+        "name": "Batac City Police Station",
+        "opening_hours": "24/7",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6305399842,
+      "lat": 18.0677662,
+      "lon": 120.5337588,
+      "tags": {
+        "addr:town": "Paoay",
+        "addr:village": "Salbang",
+        "amenity": "police",
+        "name": "Tanod Outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6407943227,
+      "lat": 16.3948763,
+      "lon": 120.6572146,
+      "tags": {
+        "amenity": "police",
+        "name": "Ucab COMPAC"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6408062046,
+      "lat": 16.5761066,
+      "lon": 120.6058609,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Kapangan Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7797982136,
+      "lat": 16.4168119,
+      "lon": 120.5962576,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Kagitingan",
+        "addr:street": "A. Bonifacio Road",
+        "addr:street:corner": "Magsaysay Avenue",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Baguio City Police Office Centermall; PS 7 Magsaysay Avenue",
+        "amenity": "police",
+        "branch": "Police Precinct 2",
+        "check_date": "2023-08-28",
+        "contact:phone": "+63 74 620 4091",
+        "description": "Right under the stairs.",
+        "name": "PS 7 Centermall",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8045845500,
+      "lat": 17.3046972,
+      "lon": 121.7785228,
+      "tags": {
+        "amenity": "police",
+        "name": "Delfin Albano Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8086595515,
+      "lat": 17.0860526,
+      "lon": 120.9766262,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP Highway Patrol Group"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8091476456,
+      "lat": 17.8088623,
+      "lon": 121.2888101,
+      "tags": {
+        "amenity": "police",
+        "name": "Conner police outpost, malama conner apayao"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8129259320,
+      "lat": 17.6242551,
+      "lon": 121.7845475,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP Peña Blanca, Cagayan"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8326186645,
+      "lat": 16.3816072,
+      "lon": 120.6450755,
+      "tags": {
+        "amenity": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8902605757,
+      "lat": 17.9808137,
+      "lon": 120.6545128,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Banna Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8905272094,
+      "lat": 17.9145563,
+      "lon": 120.6643618,
+      "tags": {
+        "amenity": "police",
+        "name": "Nueva Era Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "operator:wikipedia": "tl:Pambansang Pulisya ng Pilipinas"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9693545817,
+      "lat": 18.3538956,
+      "lon": 121.6350897,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP APARRI DISTRICT JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9693545917,
+      "lat": 18.0617295,
+      "lon": 121.6458515,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP GATTARAN CAGAYAN"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9830665119,
+      "lat": 16.4822748,
+      "lon": 121.1514233,
+      "tags": {
+        "addr:street": "Sergeant Leonardo B. Perez Street",
+        "amenity": "fire_station",
+        "name": "Bayombong Fire Station",
+        "opening_hours": "24/7"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9918226055,
+      "lat": 16.9115613,
+      "lon": 121.0624382,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "BFP Banaue Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9918267587,
+      "lat": 16.8028705,
+      "lon": 121.1199786,
+      "tags": {
+        "amenity": "police",
+        "name": "Lagawe Municipal Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9918267588,
+      "lat": 16.8026857,
+      "lon": 121.1201685,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Lagawe BFP"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10061987493,
+      "lat": 16.0637136,
+      "lon": 120.6702876,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "San Manuel Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10250992314,
+      "lat": 16.9807792,
+      "lon": 120.8523885,
+      "tags": {
+        "amenity": "police",
+        "name": "COMPAC 1"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10705570207,
+      "lat": 16.9118507,
+      "lon": 121.0613687,
+      "tags": {
+        "amenity": "police",
+        "name": "Ifugao Police Provincial Office"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10758328337,
+      "lat": 16.306932,
+      "lon": 121.1016721,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP Dupax del Norte",
+        "opening_hours": "24/7",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10772179205,
+      "lat": 17.5999804,
+      "lon": 121.7058749,
+      "tags": {
+        "addr:postcode": "3500",
+        "amenity": "police",
+        "name": "STAR BJMP SPECIAL UNIT Tuguegarao Cluster QUARTERS"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10862689144,
+      "lat": 17.0953069,
+      "lon": 120.8560098,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Besao Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10878113991,
+      "lat": 16.3975862,
+      "lon": 120.5671419,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:neighbourhood": "Purok 2",
+        "addr:postcode": "2600",
+        "addr:quarter": "Asin Road",
+        "addr:street": "Vicente Puyat Avenue",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "amenity": "police",
+        "branch": "4th Maneuver Platoon",
+        "check_date": "2023-05-07",
+        "contact:facebook": "100085648382555;cpsc.kasanggamo",
+        "contact:phone": "+63 74 661 1479",
+        "name": "City Mobile Force Company",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "CMFC",
+        "source": "survey;maxar"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10962360344,
+      "lat": 16.1138302,
+      "lon": 120.5463427,
+      "tags": {
+        "addr:country": "PH",
+        "addr:street": "Sison Street",
+        "addr:town": "Pozorrubio",
+        "amenity": "fire_station",
+        "branch": "Pozorrubio",
+        "check_date": "2023-05-01",
+        "name": "Pozorrubio Fire Station",
+        "operator": "Bureau of Fire Protection Pangasinan",
+        "source": "survey;maxar",
+        "start_date": "2023-05-26"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11009089292,
+      "lat": 18.4619191,
+      "lon": 122.1433407,
+      "tags": {
+        "amenity": "police"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11076351006,
+      "lat": 18.2495248,
+      "lon": 121.909518,
+      "tags": {
+        "addr:street": "Enrile Street",
+        "amenity": "fire_station",
+        "name": "Santa Teresita Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11076479605,
+      "lat": 18.1314464,
+      "lon": 121.6834671,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP Lallo Municipal Jail"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274017,
+      "lat": 16.3889474,
+      "lon": 120.5754192,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Dontogan",
+        "addr:street": "Marcos Highway",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 10;Station 10",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:facebook": "bcpo.stationten;100069264007445",
+        "contact:mobile": "+63 998 598 7762;+63 998 598 7763",
+        "contact:phone": "+63 74 620 4146",
+        "name": "Marcos Highway Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 10",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274021,
+      "lat": 16.3753404,
+      "lon": 120.6070626,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Camp 7",
+        "addr:street": "Kennon Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station Viewdeck",
+        "amenity": "police",
+        "check_date": "2023-09-11",
+        "description": "CMFC - 3rd Maneuver Platoon",
+        "name": "Kennon Viewdeck Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 8 Compac 1",
+        "source": "baguio city tactical operations center abanao;survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274030,
+      "lat": 16.4140875,
+      "lon": 120.5923359,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Abanao - Zandueta - Chugum - Kayong - Otek",
+        "addr:street": "Abanao Street",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 7;Station 7;Central Business District Police Station; CBD Police Station",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:facebook": "BCPOAbanao",
+        "contact:mobile": "+63 998 598 7754;+63 998 598 7756",
+        "contact:phone": "+63 74 620 0584",
+        "name": "Abanao Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 7",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274037,
+      "lat": 16.4025831,
+      "lon": 120.5937521,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Campo Sioco",
+        "addr:street": "Legarda Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 5;Station 5",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:email": "bcpo.station5@yahoo.com",
+        "contact:facebook": "baguiopolicelegarda",
+        "contact:mobile": "+63 998 598 7750;+63 998 598 7751",
+        "contact:phone": "+63 74 620 4190",
+        "name": "Legarda Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 5",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274038,
+      "lat": 16.3796411,
+      "lon": 120.619339,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Loakan Proper",
+        "addr:street": "Major Mane Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 4;Station 4",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:email": "bcpostation4@yahoo.com",
+        "contact:facebook": "100067002882573",
+        "contact:mobile": "+63 998 598 7748;+63 998 598 7749",
+        "contact:phone": "+63 74 620 0581",
+        "name": "Loakan Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 4",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274047,
+      "lat": 16.4166977,
+      "lon": 120.6155048,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Gibraltar",
+        "addr:street": "Park Circle",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 3;Station 3",
+        "amenity": "police",
+        "contact:email": "bcpo.pacdalpolicestation3@gmail.com",
+        "contact:facebook": "BAGUIOPOLICEPACDAL",
+        "contact:mobile": "+63 998 598 7745;+63 998 598 7746",
+        "contact:phone": "+63 74 620 0560",
+        "name": "Pacdal Police Station",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 7"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274048,
+      "lat": 16.4256723,
+      "lon": 120.5936703,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Camdas",
+        "addr:street": "Magsaysay Avenue",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 2;Station 2",
+        "amenity": "police",
+        "contact:facebook": "BaguioPoliceCamdas",
+        "contact:mobile": "+63 998 598 7742;+63 998 598 7743",
+        "contact:phone": "+63 74 619 1738",
+        "name": "Camdas Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 2",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274049,
+      "lat": 16.4124743,
+      "lon": 120.5793185,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "San Luis Village",
+        "addr:street": "Elpidio Quirino Highway",
+        "addr:street:corner": "Asin Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 1;Station 1",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:email": "bcpostation1@yahoo.com",
+        "contact:facebook": "baguiocitypoliceoffice.station1",
+        "contact:mobile": "+63 998 598 7740;+63 998 598 7741",
+        "contact:phone": "+63 74 619 9256",
+        "name": "Naguilian Road Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 1",
+        "source": "survey;phototag"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11150274050,
+      "lat": 16.4301012,
+      "lon": 120.5486454,
+      "tags": {
+        "addr:country": "PH",
+        "addr:neighbourhood": "Purok 3",
+        "addr:postcode": "2600",
+        "addr:quarter": "Irisan",
+        "addr:street": "Elpidio Quirino Highway",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 9;Station 9",
+        "amenity": "police",
+        "check_date": "2023-07-02",
+        "contact:mobile": "+63 998 598 7760;+63 998 598 7761",
+        "contact:phone": "+63 74 620 4178",
+        "name": "Irisan Police Station",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 9",
+        "source": "survey"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11152170105,
+      "lat": 17.7347131,
+      "lon": 121.452538,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP TUAO DISTRICT JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11154658685,
+      "lat": 16.4108238,
+      "lon": 120.5991668,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Session Road",
+        "addr:street": "Upper Session Road",
+        "addr:street:corner": "Governor Pack Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Baguio City Police Office Session Road",
+        "amenity": "police",
+        "branch": "Police Precinct 3",
+        "check_date": "2023-08-28",
+        "contact:phone": "+63 74 619 9980",
+        "name": "PS 7 Session Road",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11154658686,
+      "lat": 16.4144998,
+      "lon": 120.595055,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Abanao-Zandueta-Kayong-Chugum-Otek",
+        "addr:street": "Kayang Street",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Baguio City Police Office Public Market",
+        "amenity": "police",
+        "branch": "Police Precinct 1",
+        "check_date": "2023-08-28",
+        "contact:phone": "+63 74 620 4098",
+        "name": "PS 7 City Public Market",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11154658691,
+      "lat": 16.4108933,
+      "lon": 120.5970465,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Burnham Legarda",
+        "addr:street": "Jose Abad Santos Drive",
+        "addr:street:corner": "Harrison Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:mobile": "+63 939 906 0981;+63 917 581 2021",
+        "contact:phone": "+63 74 300 9401;+63 74 422 8600",
+        "name": "Women and Children Protection Desk",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "WCPD",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11154658692,
+      "lat": 16.4112638,
+      "lon": 120.5927195,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Burnham Legarda",
+        "addr:street": "Shanum Street",
+        "addr:street:corner": "Lake Drive",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "amenity": "police",
+        "check_date": "2023-08-28",
+        "contact:email": "topcopbaguio@yahoo.com",
+        "contact:facebook": "BaguioTouristPoliceUnit",
+        "contact:mobile": "+63 920 728 7408",
+        "contact:phone": "+63 74 309 9303",
+        "name": "Tourist Police Unit",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "TPU",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11154658694,
+      "lat": 16.4216716,
+      "lon": 120.5775757,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Pinsao Proper",
+        "addr:street": "Tacay Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "amenity": "police",
+        "check_date": "2023-04-08",
+        "contact:phone": "+63 74 620 4188;+63 74 442 8600",
+        "name": "Baguio City Police Office Mobile Patrol Unit",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "MPU",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11154658701,
+      "lat": 16.4110434,
+      "lon": 120.5906575,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "City Camp Proper",
+        "addr:street": "Legarda Road",
+        "addr:street:corner": "City Camp Alley",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "amenity": "police",
+        "branch": "2nd Maneuver Platoon",
+        "check_date": "2023-08-28",
+        "contact:mobile": "+63 912 744 8689",
+        "contact:phone": "+63 74 620 0564",
+        "name": "City Mobile Force Company",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "source": "survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11171554462,
+      "lat": 18.2054506,
+      "lon": 120.5835203,
+      "tags": {
+        "addr:city": "Laoag",
+        "addr:postcode": "2900",
+        "addr:province": "Ilocos Norte",
+        "addr:street": "E. F. Siazon Road",
+        "amenity": "fire_station",
+        "name": "fire station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11180760478,
+      "lat": 16.4143704,
+      "lon": 120.5921384,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Abanao - Zandueta - Chugum - Kayong - Otek",
+        "addr:street": "Abanao Street",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "amenity": "police",
+        "check_date": "2023-09-09",
+        "contact:facebook": "PNPBCPO",
+        "contact:mobile": "+63 998 598 7739;+63 917 575 8993",
+        "contact:phone": "+63 74 442 7944;+63 74 661 1471",
+        "name": "Tactical Operations Center",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "TOC",
+        "source": "Baguio City tactical operations center"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11184498376,
+      "lat": 16.4314332,
+      "lon": 120.5976051,
+      "tags": {
+        "addr:city": "La Trinidad",
+        "addr:postcode": "2600",
+        "addr:street": "Magsaysay Avenue",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "La Trinidad MPS Bell Church",
+        "amenity": "police",
+        "contact:mobile": "+63 998 985 7565;+63 917 809 9639",
+        "contact:phone": "+63 74 422 4344",
+        "name": "La Trinidad Municipal Police Station KM 3 Compac",
+        "operator": "La Trinidad Police",
+        "short_name": "La Trinidad MPS KM3",
+        "source": "phototag"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11184498389,
+      "lat": 16.3919298,
+      "lon": 120.5998394,
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:country": "PH",
+        "addr:postcode": "2600",
+        "addr:quarter": "Camp 7",
+        "addr:street": "Kennon Road",
+        "affiliation": "Philippine National Police; Police Regional Office Cordillera",
+        "alt_name": "Police Station 8;Station 8;Kennon Police Station;Police Precinct No 8",
+        "amenity": "police",
+        "check_date": "2023-09-11",
+        "contact:facebook": "bcpo.pulisyaotso",
+        "contact:mobile": "+63 998 598 7758;+63 998 598 7759",
+        "contact:phone": "+63 74 620 8753",
+        "name": "Kennon Road Police Station",
+        "opening_hours": "24/7",
+        "operator": "Baguio City Police Office",
+        "operator:abbr": "BCPO",
+        "short_name": "PS 8",
+        "source": "baguio city tactical operations center abanao;survey;bing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11298976569,
+      "lat": 17.4258596,
+      "lon": 121.7653646,
+      "tags": {
+        "amenity": "police",
+        "name": "CABAGAN DISTRICT JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11298976769,
+      "lat": 17.4258522,
+      "lon": 121.7652488,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11337011070,
+      "lat": 17.651056,
+      "lon": 121.7517996,
+      "tags": {
+        "addr:street": "Enrile Boulevard",
+        "amenity": "police",
+        "name": "Tuguegarao City Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11341252269,
+      "lat": 17.7427434,
+      "lon": 121.7374981,
+      "tags": {
+        "addr:street": "Maharlika Highway",
+        "amenity": "police",
+        "name": "Iguig Municipal Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11342769330,
+      "lat": 18.2290611,
+      "lon": 120.6483718,
+      "tags": {
+        "amenity": "police",
+        "name": "Vintar Municipal Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11365498569,
+      "lat": 16.5217792,
+      "lon": 122.2636092,
+      "tags": {
+        "amenity": "police",
+        "name": "Dinapigue Airstrip"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11392880938,
+      "lat": 16.4205132,
+      "lon": 120.5935315,
+      "tags": {
+        "amenity": "police",
+        "check_date": "2024-04-08",
+        "name": "Santo Niño - Slaughter Police Outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11648335642,
+      "lat": 16.3601012,
+      "lon": 120.6775978,
+      "tags": {
+        "addr:barangay": "Poblacion",
+        "addr:city": "Itogon",
+        "addr:place": "Purok 1",
+        "addr:postcode": "2604",
+        "addr:province": "Benguet",
+        "amenity": "fire_station",
+        "name": "Itogon Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:type": "government",
+        "operator:wikidata": "Q17027200"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11762608269,
+      "lat": 17.1312704,
+      "lon": 121.87069,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP ILAGAN DISTRICT JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11763369569,
+      "lat": 16.9516234,
+      "lon": 121.7677601,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP CAUAYAN CITY DISTRICT JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11763530045,
+      "lat": 17.6498062,
+      "lon": 121.6909888,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Solana Fire Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11932598169,
+      "lat": 16.9038664,
+      "lon": 121.6160458,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP SAN MATEO MUNICIPAL JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11944065034,
+      "lat": 16.9354858,
+      "lon": 121.7668295,
+      "tags": {
+        "amenity": "police",
+        "description": "Policy_Temporary_Outpost"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11949869501,
+      "lat": 17.6155175,
+      "lon": 121.6787486,
+      "tags": {
+        "amenity": "police",
+        "name": "Police Community Precinct Maddarulug",
+        "operator": "Solana Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12188453339,
+      "lat": 16.5619788,
+      "lon": 121.7016239,
+      "tags": {
+        "amenity": "police",
+        "name": "MANUEVERS"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12441585109,
+      "lat": 16.4341295,
+      "lon": 120.6061749,
+      "tags": {
+        "addr:city": "La Trinidad",
+        "addr:place": "Central Ambiong",
+        "addr:postcode": "2601",
+        "addr:province": "Benguet",
+        "amenity": "police",
+        "name": "Police Assistance Center",
+        "website": "https://www.facebook.com/profile.php?id=61568437185595"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12540792218,
+      "lat": 16.2879943,
+      "lon": 121.0848467,
+      "tags": {
+        "addr:city": "Dupax del Sur",
+        "addr:district": "Sta. Maria",
+        "addr:province": "Nueva Vizcaya",
+        "amenity": "police",
+        "name": "Dupax del Sur Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12549072626,
+      "lat": 18.0946641,
+      "lon": 120.7704654,
+      "tags": {
+        "amenity": "police",
+        "name": "Solsona Police Substation"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12645477714,
+      "lat": 16.9119413,
+      "lon": 121.0612752,
+      "tags": {
+        "amenity": "police",
+        "name": "Banaue Municipal Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12699252845,
+      "lat": 17.268522,
+      "lon": 120.5222149,
+      "tags": {
+        "amenity": "police",
+        "name": "Lidlidda Municipal Police Station"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13105115228,
+      "lat": 16.669574,
+      "lon": 121.4659046,
+      "tags": {
+        "amenity": "police",
+        "name": "PNP Cordon",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13105115229,
+      "lat": 16.669534,
+      "lon": 121.465806,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "BFP Cordon",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13137775901,
+      "lat": 16.403897,
+      "lon": 120.6004083,
+      "tags": {
+        "amenity": "police",
+        "name": "Regional Highway Patrol Unit Cordillera"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13366562401,
+      "lat": 16.5206964,
+      "lon": 121.2092379,
+      "tags": {
+        "amenity": "police",
+        "name": "BJMP SOLANO DISTRICT JAIL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13934850301,
+      "lat": 16.4671649,
+      "lon": 120.5952497,
+      "tags": {
+        "addr:housenumber": "001",
+        "amenity": "police",
+        "name": "Community Police Outpost"
+      }
+    },
+    {
+      "type": "way",
+      "id": 107183536,
+      "center": {
+        "lat": 18.0534062,
+        "lon": 120.5182818
+      },
+      "nodes": [
+        1232318351,
+        1232318690,
+        1232318497,
+        1232318288,
+        1232318351
+      ],
+      "tags": {
+        "addr:city": "Paoay",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Paoay Police Station"
+      },
+      "lat": 18.0534062,
+      "lon": 120.5182818
+    },
+    {
+      "type": "way",
+      "id": 152341858,
+      "center": {
+        "lat": 17.6136562,
+        "lon": 121.7254216
+      },
+      "nodes": [
+        2392837119,
+        1651648329,
+        1651648347,
+        1651648333,
+        2392837119
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Tuguegarao City Police Station"
+      },
+      "lat": 17.6136562,
+      "lon": 121.7254216
+    },
+    {
+      "type": "way",
+      "id": 152624560,
+      "center": {
+        "lat": 17.6399514,
+        "lon": 121.7539035
+      },
+      "nodes": [
+        1654299621,
+        1654299622,
+        1654299620,
+        1654299619,
+        1654299621
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "PNP Region 2 Office"
+      },
+      "lat": 17.6399514,
+      "lon": 121.7539035
+    },
+    {
+      "type": "way",
+      "id": 152825784,
+      "center": {
+        "lat": 17.1313267,
+        "lon": 121.8711536
+      },
+      "nodes": [
+        1656027346,
+        1656027344,
+        6117610574,
+        6117610575,
+        6117610576,
+        6117610577,
+        1656027343,
+        4455918714,
+        4455918718,
+        6153276937,
+        4455918726,
+        1656027346
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes"
+      },
+      "lat": 17.1313267,
+      "lon": 121.8711536
+    },
+    {
+      "type": "way",
+      "id": 152928160,
+      "center": {
+        "lat": 17.1275862,
+        "lon": 121.8681714
+      },
+      "nodes": [
+        1656939584,
+        1656939657,
+        1656939603,
+        1656939640,
+        1656939659,
+        1656939655,
+        1656939661,
+        1656939651,
+        1656939653,
+        1656939596,
+        1656939637,
+        1656939634,
+        1656939600,
+        1656939632,
+        1656939598,
+        1656939624,
+        1656939627,
+        1656939577,
+        1656939639,
+        1656939606,
+        1656939579,
+        1656939610,
+        1656939628,
+        1656939582,
+        1656939630,
+        1656939611,
+        1656939608,
+        1656939604,
+        1656939635,
+        1656939593,
+        1656939576,
+        1656939580,
+        1656939584
+      ],
+      "tags": {
+        "addr:city": "Ilagan City",
+        "addr:postcode": "3300",
+        "addr:street": "Maharlika Highway",
+        "amenity": "police",
+        "name": "Isabela Provincial Police Office",
+        "operator": "Philippine National Police"
+      },
+      "lat": 17.1275862,
+      "lon": 121.8681714
+    },
+    {
+      "type": "way",
+      "id": 167991227,
+      "center": {
+        "lat": 16.4147967,
+        "lon": 120.5916424
+      },
+      "nodes": [
+        1793099972,
+        1793099971,
+        1793099969,
+        1793099967,
+        2192228002,
+        1793099968,
+        9171146147,
+        9171146146,
+        1793099974,
+        2192228006,
+        1793099972
+      ],
+      "tags": {
+        "addr:city": "Baguio",
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Baguio Central Fire Station"
+      },
+      "lat": 16.4147967,
+      "lon": 120.5916424
+    },
+    {
+      "type": "way",
+      "id": 168179314,
+      "center": {
+        "lat": 16.6896637,
+        "lon": 121.5478607
+      },
+      "nodes": [
+        1794714390,
+        1794714392,
+        1794714388,
+        1794714386,
+        1794714390
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "source:outline": "Bing"
+      },
+      "lat": 16.6896637,
+      "lon": 121.5478607
+    },
+    {
+      "type": "way",
+      "id": 191071160,
+      "center": {
+        "lat": 16.3845719,
+        "lon": 120.5290007
+      },
+      "nodes": [
+        2016536801,
+        2016536798,
+        2016536799,
+        2016536803,
+        2016536801
+      ],
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:postcode": "2600",
+        "addr:street": "Marcos Highway",
+        "amenity": "police",
+        "building": "yes",
+        "check_date": "2025-10-10",
+        "name": "Police Community Precinct 2"
+      },
+      "lat": 16.3845719,
+      "lon": 120.5290007
+    },
+    {
+      "type": "way",
+      "id": 199768089,
+      "center": {
+        "lat": 16.0436951,
+        "lon": 120.7969287
+      },
+      "nodes": [
+        2097615175,
+        2097615177,
+        2097615178,
+        2097615176,
+        2097615175
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Natividad Police Station"
+      },
+      "lat": 16.0436951,
+      "lon": 120.7969287
+    },
+    {
+      "type": "way",
+      "id": 207896916,
+      "center": {
+        "lat": 17.7164523,
+        "lon": 120.7039742
+      },
+      "nodes": [
+        2181403059,
+        2181403054,
+        2181403056,
+        2181403057,
+        2181403059
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Lagayan Police Station"
+      },
+      "lat": 17.7164523,
+      "lon": 120.7039742
+    },
+    {
+      "type": "way",
+      "id": 208932784,
+      "center": {
+        "lat": 16.4500764,
+        "lon": 120.589721
+      },
+      "nodes": [
+        2191914581,
+        2191914575,
+        2191914578,
+        6956961660,
+        6956961661,
+        6956961662,
+        2191914581
+      ],
+      "tags": {
+        "addr:city": "La Trinidad",
+        "addr:postcode": "2601",
+        "addr:street": "La Trinidad Road",
+        "amenity": "police",
+        "building": "yes",
+        "name": "La Trinidad Police Station"
+      },
+      "lat": 16.4500764,
+      "lon": 120.589721
+    },
+    {
+      "type": "way",
+      "id": 229484266,
+      "center": {
+        "lat": 16.6870892,
+        "lon": 121.5503967
+      },
+      "nodes": [
+        2380776228,
+        2380776227,
+        2380776231,
+        2380776226,
+        11331149829,
+        2380776230,
+        2380776232,
+        2380776229,
+        2380776228
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Santiago City Police Station"
+      },
+      "lat": 16.6870892,
+      "lon": 121.5503967
+    },
+    {
+      "type": "way",
+      "id": 234715325,
+      "center": {
+        "lat": 17.1087754,
+        "lon": 121.2797137
+      },
+      "nodes": [
+        2428614261,
+        2428614263,
+        2428614265,
+        1706867112,
+        2428614261
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Natonin Municipal Police Station",
+        "office": "government",
+        "osm_id": "1706867112",
+        "timestamp": "2012-04-08T10:20:34Z",
+        "type": "police"
+      },
+      "lat": 17.1087754,
+      "lon": 121.2797137
+    },
+    {
+      "type": "way",
+      "id": 234856682,
+      "center": {
+        "lat": 17.1216625,
+        "lon": 121.6200795
+      },
+      "nodes": [
+        2429808166,
+        2429808164,
+        2429808167,
+        2429808165,
+        2429808166
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Roxas Police Station"
+      },
+      "lat": 17.1216625,
+      "lon": 121.6200795
+    },
+    {
+      "type": "way",
+      "id": 235467855,
+      "center": {
+        "lat": 17.0842523,
+        "lon": 120.9008065
+      },
+      "nodes": [
+        2435214540,
+        2435214541,
+        2435214542,
+        2435214543,
+        2435214540
+      ],
+      "tags": {
+        "addr:postcode": "2915",
+        "addr:street": "Sagada South Road",
+        "addr:town": "Sagada",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Sagada Municipal Police Station"
+      },
+      "lat": 17.0842523,
+      "lon": 120.9008065
+    },
+    {
+      "type": "way",
+      "id": 237022001,
+      "center": {
+        "lat": 17.0950603,
+        "lon": 120.8561562
+      },
+      "nodes": [
+        2449706536,
+        2449706537,
+        2449706538,
+        2449706539,
+        2449706536
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Besao Municipal Police Station"
+      },
+      "lat": 17.0950603,
+      "lon": 120.8561562
+    },
+    {
+      "type": "way",
+      "id": 243943575,
+      "center": {
+        "lat": 16.5180262,
+        "lon": 121.1794618
+      },
+      "nodes": [
+        2512982001,
+        2512982512,
+        2512982003,
+        2512982004,
+        2512982001
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Solano Municipal Police",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "osm_id": "2512982512",
+        "timestamp": "2013-10-29T16:51:54Z",
+        "type": "police"
+      },
+      "lat": 16.5180262,
+      "lon": 121.1794618
+    },
+    {
+      "type": "way",
+      "id": 244776055,
+      "center": {
+        "lat": 16.7765893,
+        "lon": 121.0866702
+      },
+      "nodes": [
+        2520485881,
+        2520485878,
+        2520485877,
+        2520485880,
+        2520485881
+      ],
+      "tags": {
+        "addr:place": "Poblacion",
+        "amenity": "police",
+        "name": "Kiangan Police Station"
+      },
+      "lat": 16.7765893,
+      "lon": 121.0866702
+    },
+    {
+      "type": "way",
+      "id": 244832537,
+      "center": {
+        "lat": 16.8049607,
+        "lon": 121.1173845
+      },
+      "nodes": [
+        2521013887,
+        2521013885,
+        2521013875,
+        2521013877,
+        2521013888,
+        2521013890,
+        2521013894,
+        2521013881,
+        2521013879,
+        2521013883,
+        2521013892,
+        2521013896,
+        2521013887
+      ],
+      "tags": {
+        "addr:city": "Lagawe",
+        "addr:postcode": "3600",
+        "amenity": "police",
+        "name": "Camp Colonel Joaquin P. Dunuan",
+        "operator": "Ifugao Provincial Police Office"
+      },
+      "lat": 16.8049607,
+      "lon": 121.1173845
+    },
+    {
+      "type": "way",
+      "id": 245198202,
+      "center": {
+        "lat": 17.7851108,
+        "lon": 121.4866038
+      },
+      "nodes": [
+        2524357042,
+        2524357037,
+        2524357039,
+        2524357044,
+        2524357042
+      ],
+      "tags": {
+        "addr:street": "Cagayan-Apayao Road",
+        "amenity": "police",
+        "bubbleid": "357471836",
+        "name": "Piat Police Station"
+      },
+      "lat": 17.7851108,
+      "lon": 121.4866038
+    },
+    {
+      "type": "way",
+      "id": 247194901,
+      "center": {
+        "lat": 17.2108552,
+        "lon": 121.6114671
+      },
+      "nodes": [
+        2541267135,
+        2541267139,
+        2541267133,
+        2541267137,
+        2541267135
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Mallig PS",
+        "operator": "National Government"
+      },
+      "lat": 17.2108552,
+      "lon": 121.6114671
+    },
+    {
+      "type": "way",
+      "id": 259323551,
+      "center": {
+        "lat": 16.4480693,
+        "lon": 120.5895636
+      },
+      "nodes": [
+        2647213477,
+        2647213475,
+        2647213474,
+        2647213476,
+        2647213477
+      ],
+      "tags": {
+        "amenity": "rescue_station",
+        "building": "commercial",
+        "government": "public_safety",
+        "name": "Municipal Disaster Risk Reduction and Management Office",
+        "office": "government"
+      },
+      "lat": 16.4480693,
+      "lon": 120.5895636
+    },
+    {
+      "type": "way",
+      "id": 259331547,
+      "center": {
+        "lat": 16.4607781,
+        "lon": 120.5887656
+      },
+      "nodes": [
+        2647284129,
+        2647284130,
+        2647284128,
+        2647284127,
+        2647284129
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "civic",
+        "fire_station:type": "local_station",
+        "name": "La Trinidad Fire Station"
+      },
+      "lat": 16.4607781,
+      "lon": 120.5887656
+    },
+    {
+      "type": "way",
+      "id": 305098653,
+      "center": {
+        "lat": 16.0034554,
+        "lon": 120.6698918
+      },
+      "nodes": [
+        3096783164,
+        3096783165,
+        3096783166,
+        3096783167,
+        3096783168,
+        3096783169,
+        3096783164
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Asingan Police Station"
+      },
+      "lat": 16.0034554,
+      "lon": 120.6698918
+    },
+    {
+      "type": "way",
+      "id": 305103076,
+      "center": {
+        "lat": 16.0268799,
+        "lon": 120.7450285
+      },
+      "nodes": [
+        3096848134,
+        3096848135,
+        3096848136,
+        8116573998,
+        3096848137,
+        3096848134
+      ],
+      "tags": {
+        "addr:city": "Tayug",
+        "addr:postcode": "2445",
+        "addr:street": "Zaragoza Street",
+        "amenity": "police",
+        "building": "public",
+        "name": "Tayug Police Station",
+        "operator": "Pangasinan Police Provincial Office"
+      },
+      "lat": 16.0268799,
+      "lon": 120.7450285
+    },
+    {
+      "type": "way",
+      "id": 305103077,
+      "center": {
+        "lat": 16.0268372,
+        "lon": 120.7448875
+      },
+      "nodes": [
+        3096848138,
+        3096848139,
+        3096848140,
+        2110545812,
+        3096848141,
+        3096848138
+      ],
+      "tags": {
+        "addr:city": "Tayug",
+        "addr:postcode": "2445",
+        "addr:street": "Zaragoza Street",
+        "amenity": "fire_station",
+        "building": "public",
+        "name": "Tayug Fire Station",
+        "network": "Pangasinan Fire District",
+        "operator:type": "public"
+      },
+      "lat": 16.0268372,
+      "lon": 120.7448875
+    },
+    {
+      "type": "way",
+      "id": 330889374,
+      "center": {
+        "lat": 18.2496617,
+        "lon": 121.9095071
+      },
+      "nodes": [
+        3379270547,
+        3379270535,
+        3379270534,
+        3379270546,
+        3379270547
+      ],
+      "tags": {
+        "addr:street": "Enrile Street",
+        "amenity": "police",
+        "building": "civic",
+        "name": "Santa Teresita Police Station"
+      },
+      "lat": 18.2496617,
+      "lon": 121.9095071
+    },
+    {
+      "type": "way",
+      "id": 331949120,
+      "center": {
+        "lat": 18.0436394,
+        "lon": 120.6780277
+      },
+      "nodes": [
+        3390527801,
+        3390527791,
+        3390527764,
+        4497732626,
+        4497732608,
+        4497732618,
+        4497732639,
+        3390527774,
+        3390527801
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "email": "marcosmps_r01@yahoo.com",
+        "mobile": "+63 921 5594 224",
+        "name": "Marcos Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "operator:wikipedia": "tl:Pambansang Pulisya ng Pilipinas"
+      },
+      "lat": 18.0436394,
+      "lon": 120.6780277
+    },
+    {
+      "type": "way",
+      "id": 351027275,
+      "center": {
+        "lat": 17.6204256,
+        "lon": 121.7222286
+      },
+      "nodes": [
+        3567434905,
+        3567434906,
+        3567434907,
+        3567434908,
+        3567434905
+      ],
+      "tags": {
+        "addr:city": "Tuguegarao City",
+        "addr:postcode": "3500",
+        "addr:street": "Lakandula Street",
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Bureau of Fire Protection"
+      },
+      "lat": 17.6204256,
+      "lon": 121.7222286
+    },
+    {
+      "type": "way",
+      "id": 368280657,
+      "center": {
+        "lat": 16.3069214,
+        "lon": 121.1016408
+      },
+      "nodes": [
+        3721267314,
+        3721267315,
+        3721267316,
+        3721267317,
+        3721267314
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "PNP"
+      },
+      "lat": 16.3069214,
+      "lon": 121.1016408
+    },
+    {
+      "type": "way",
+      "id": 368389918,
+      "center": {
+        "lat": 18.1745337,
+        "lon": 120.5953953
+      },
+      "nodes": [
+        3722309775,
+        3722309770,
+        3722309766,
+        3722309768,
+        3722309775
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes"
+      },
+      "lat": 18.1745337,
+      "lon": 120.5953953
+    },
+    {
+      "type": "way",
+      "id": 377233924,
+      "center": {
+        "lat": 17.594089,
+        "lon": 120.6201859
+      },
+      "nodes": [
+        3806119303,
+        3806119304,
+        3806119305,
+        3806119306,
+        3806119303
+      ],
+      "tags": {
+        "addr:city": "Bangued",
+        "addr:postcode": "2800",
+        "addr:province": "Abra",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Bangued Police Station"
+      },
+      "lat": 17.594089,
+      "lon": 120.6201859
+    },
+    {
+      "type": "way",
+      "id": 379377527,
+      "center": {
+        "lat": 16.6909406,
+        "lon": 121.5560958
+      },
+      "nodes": [
+        3826805781,
+        3826805782,
+        3826805783,
+        3826805784,
+        11563366375,
+        3826805785,
+        11563366377,
+        11563366376,
+        3826805781
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Santiago City Fire Station"
+      },
+      "lat": 16.6909406,
+      "lon": 121.5560958
+    },
+    {
+      "type": "way",
+      "id": 379557956,
+      "center": {
+        "lat": 16.5767483,
+        "lon": 120.6064008
+      },
+      "nodes": [
+        3828715533,
+        3828715517,
+        3828715518,
+        3828715534,
+        3828715533
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Municipal Police Staion"
+      },
+      "lat": 16.5767483,
+      "lon": 120.6064008
+    },
+    {
+      "type": "way",
+      "id": 397990020,
+      "center": {
+        "lat": 16.0637237,
+        "lon": 120.6704596
+      },
+      "nodes": [
+        4007631007,
+        4007631008,
+        4007631009,
+        8333556037,
+        8333556036,
+        4007631010,
+        4007631007
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "San Manuel Police Station"
+      },
+      "lat": 16.0637237,
+      "lon": 120.6704596
+    },
+    {
+      "type": "way",
+      "id": 401310692,
+      "center": {
+        "lat": 16.4355801,
+        "lon": 120.6317821
+      },
+      "nodes": [
+        4037520151,
+        4037520163,
+        4037520159,
+        4037520146,
+        4037520151
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Police Station"
+      },
+      "lat": 16.4355801,
+      "lon": 120.6317821
+    },
+    {
+      "type": "way",
+      "id": 403265035,
+      "center": {
+        "lat": 16.4479507,
+        "lon": 120.5762975
+      },
+      "nodes": [
+        6601565158,
+        4056291963,
+        4056291964,
+        6601565159,
+        6601565158
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 16.4479507,
+      "lon": 120.5762975
+    },
+    {
+      "type": "way",
+      "id": 440503412,
+      "center": {
+        "lat": 17.459129,
+        "lon": 120.9264629
+      },
+      "nodes": [
+        4382423241,
+        4382423264,
+        4382423277,
+        4382423259,
+        4382423241
+      ],
+      "tags": {
+        "addr:city": "Daguioman",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Daguioman Municipal Police Station"
+      },
+      "lat": 17.459129,
+      "lon": 120.9264629
+    },
+    {
+      "type": "way",
+      "id": 441548387,
+      "center": {
+        "lat": 17.6122644,
+        "lon": 120.6201975
+      },
+      "nodes": [
+        4392947078,
+        4392947083,
+        4392947035,
+        4392947030,
+        4392947078
+      ],
+      "tags": {
+        "addr:city": "Bangued",
+        "addr:postcode": "2800",
+        "addr:province": "Abra",
+        "amenity": "police",
+        "building": "yes",
+        "building:levels": "3",
+        "name": "Abra Provincial Police Office",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "police": "offices"
+      },
+      "lat": 17.6122644,
+      "lon": 120.6201975
+    },
+    {
+      "type": "way",
+      "id": 443927801,
+      "center": {
+        "lat": 17.3171168,
+        "lon": 120.6946978
+      },
+      "nodes": [
+        4414395535,
+        4414395528,
+        4414395521,
+        4414395512,
+        4414395468,
+        4414395495,
+        4414395539,
+        4414395531,
+        4414395535
+      ],
+      "tags": {
+        "addr:city": "Luba",
+        "addr:postcode": "2813",
+        "addr:province": "Abra",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Luba Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 17.3171168,
+      "lon": 120.6946978
+    },
+    {
+      "type": "way",
+      "id": 448610492,
+      "center": {
+        "lat": 18.250828,
+        "lon": 120.6103159
+      },
+      "nodes": [
+        4456094243,
+        4456094237,
+        4456094225,
+        4456094230,
+        4456094243
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "building:levels": "2",
+        "name": "Bacarra Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "operator:wikipedia": "tl:Pambansang Pulisya ng Pilipinas"
+      },
+      "lat": 18.250828,
+      "lon": 120.6103159
+    },
+    {
+      "type": "way",
+      "id": 448610517,
+      "center": {
+        "lat": 18.2509336,
+        "lon": 120.6103823
+      },
+      "nodes": [
+        4456094269,
+        4456094266,
+        4456094256,
+        4456094259,
+        4456094269
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Bacarra Fire Station"
+      },
+      "lat": 18.2509336,
+      "lon": 120.6103823
+    },
+    {
+      "type": "way",
+      "id": 452601888,
+      "center": {
+        "lat": 18.1762928,
+        "lon": 120.5955593
+      },
+      "nodes": [
+        4493721897,
+        4493721894,
+        12535854039,
+        4493721895,
+        4493721896,
+        4493721897
+      ],
+      "tags": {
+        "amenity": "police"
+      },
+      "lat": 18.1762928,
+      "lon": 120.5955593
+    },
+    {
+      "type": "way",
+      "id": 452602741,
+      "center": {
+        "lat": 18.1393259,
+        "lon": 120.8198533
+      },
+      "nodes": [
+        4493728506,
+        4493728505,
+        4493728504,
+        4493728503,
+        4493728506
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Carasi Municipal Police Station"
+      },
+      "lat": 18.1393259,
+      "lon": 120.8198533
+    },
+    {
+      "type": "way",
+      "id": 452604133,
+      "center": {
+        "lat": 18.04323,
+        "lon": 120.6774087
+      },
+      "nodes": [
+        4493736493,
+        4493722033,
+        4493722032,
+        4497732530,
+        4493736491,
+        4497732521,
+        4493736493
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Municipality Fire Station",
+        "operator": "Bureau of Fire Protection"
+      },
+      "lat": 18.04323,
+      "lon": 120.6774087
+    },
+    {
+      "type": "way",
+      "id": 452605926,
+      "center": {
+        "lat": 18.0524974,
+        "lon": 120.5179394
+      },
+      "nodes": [
+        4493753088,
+        4493753085,
+        4493753086,
+        4493753087,
+        4493753088
+      ],
+      "tags": {
+        "amenity": "fire_station"
+      },
+      "lat": 18.0524974,
+      "lon": 120.5179394
+    },
+    {
+      "type": "way",
+      "id": 456496737,
+      "center": {
+        "lat": 16.1403054,
+        "lon": 121.9566427
+      },
+      "nodes": [
+        4527549770,
+        4527549769,
+        13290673456,
+        4527549768,
+        4527549767,
+        4527549770
+      ],
+      "tags": {
+        "addr:postcode": "3206",
+        "addr:street": "Quezon Street",
+        "addr:town": "Dinalungan",
+        "addr:village": "Zone Ⅱ",
+        "amenity": "police",
+        "building": "yes",
+        "building:levels": "3",
+        "contact:facebook": "dinalungan.mps.appo",
+        "mobile": "+63 998 598 5343",
+        "name": "Dinalungan Police Station"
+      },
+      "lat": 16.1403054,
+      "lon": 121.9566427
+    },
+    {
+      "type": "way",
+      "id": 459502024,
+      "center": {
+        "lat": 18.0426925,
+        "lon": 120.6771658
+      },
+      "nodes": [
+        4553369390,
+        4553369389,
+        4553369388,
+        4553369387,
+        4553369390
+      ],
+      "tags": {
+        "addr:province": "Ilocos Norte",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Police outpost"
+      },
+      "lat": 18.0426925,
+      "lon": 120.6771658
+    },
+    {
+      "type": "way",
+      "id": 459843632,
+      "center": {
+        "lat": 18.1565218,
+        "lon": 120.6447171
+      },
+      "nodes": [
+        4555768540,
+        4555768537,
+        4555768538,
+        4555768539,
+        4555768540
+      ],
+      "tags": {
+        "addr:city": "Sarrat",
+        "addr:postcode": "2914",
+        "addr:province": "Ilocos Norte",
+        "addr:street": "Laoag-Sarrat-Piddig-Solsona Road",
+        "amenity": "police",
+        "building": "public",
+        "name": "Sarrat Police Station",
+        "operator": "Ilocos Norte Police Provincial Office"
+      },
+      "lat": 18.1565218,
+      "lon": 120.6447171
+    },
+    {
+      "type": "way",
+      "id": 460756984,
+      "center": {
+        "lat": 18.1862431,
+        "lon": 120.5888355
+      },
+      "nodes": [
+        4563597999,
+        4563597998,
+        4563597997,
+        4563597996,
+        4563597999
+      ],
+      "tags": {
+        "addr:state": "Ilocos Norte",
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 18.1862431,
+      "lon": 120.5888355
+    },
+    {
+      "type": "way",
+      "id": 461805398,
+      "center": {
+        "lat": 16.4553148,
+        "lon": 120.5894847
+      },
+      "nodes": [
+        4572597585,
+        4572597586,
+        4572597587,
+        4572597588,
+        4572597585
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Police Community Precinct 2 (Outpost)"
+      },
+      "lat": 16.4553148,
+      "lon": 120.5894847
+    },
+    {
+      "type": "way",
+      "id": 462447272,
+      "center": {
+        "lat": 17.9806208,
+        "lon": 120.6545658
+      },
+      "nodes": [
+        4578472298,
+        4578472297,
+        4578472296,
+        4578472295,
+        4578472298
+      ],
+      "tags": {
+        "addr:province": "Ilocos Norte",
+        "amenity": "police",
+        "building": "yes",
+        "building:levels": "2",
+        "name": "Banna Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 17.9806208,
+      "lon": 120.6545658
+    },
+    {
+      "type": "way",
+      "id": 471065710,
+      "center": {
+        "lat": 16.3585425,
+        "lon": 120.604771
+      },
+      "nodes": [
+        4652300350,
+        4652300349,
+        4652300348,
+        4652300347,
+        4652300350
+      ],
+      "tags": {
+        "addr:city": "Tuba",
+        "addr:postcode": "2600",
+        "addr:street": "Kennon Road",
+        "alt_name": "Tuba Municipal Police Station Compac Camp 6",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Camp 6 Police Station",
+        "type": "police"
+      },
+      "lat": 16.3585425,
+      "lon": 120.604771
+    },
+    {
+      "type": "way",
+      "id": 472150768,
+      "center": {
+        "lat": 16.6275184,
+        "lon": 120.7669828
+      },
+      "nodes": [
+        4663718831,
+        4663718832,
+        4663718833,
+        4663718834,
+        4663718831
+      ],
+      "tags": {
+        "addr:place": "Sayangan",
+        "amenity": "fire_station",
+        "building": "civic",
+        "name": "Atok Fire Station"
+      },
+      "lat": 16.6275184,
+      "lon": 120.7669828
+    },
+    {
+      "type": "way",
+      "id": 474316229,
+      "center": {
+        "lat": 16.4191512,
+        "lon": 120.557282
+      },
+      "nodes": [
+        4683014110,
+        4683014111,
+        4683014112,
+        4683014113,
+        4683014110
+      ],
+      "tags": {
+        "addr:neighbourhood": "Purok 11",
+        "addr:street": "Elpidio Quirino Highway",
+        "amenity": "fire_station",
+        "building": "yes",
+        "contact:facebook": "bfpirisan.substation.1",
+        "contact:phone": "+63 74 442 4357",
+        "description": "Hotlines Baguio: +63 74 442 2222; +63 74 443 7089; +63 936 125 4371",
+        "name": "Irisan Fire Substation"
+      },
+      "lat": 16.4191512,
+      "lon": 120.557282
+    },
+    {
+      "type": "way",
+      "id": 483027485,
+      "center": {
+        "lat": 16.3743453,
+        "lon": 120.6128094
+      },
+      "nodes": [
+        4757833201,
+        4757833200,
+        8531832193,
+        8531832192,
+        4757833199,
+        4757833198,
+        4757833197,
+        4757833196,
+        4757833201
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Loakan Airport Crash & Fire Rescue Unit",
+        "operator": "Civil Aviation Authority of the Philippines"
+      },
+      "lat": 16.3743453,
+      "lon": 120.6128094
+    },
+    {
+      "type": "way",
+      "id": 512864513,
+      "center": {
+        "lat": 16.4477643,
+        "lon": 120.5902169
+      },
+      "nodes": [
+        5014351701,
+        5014351702,
+        5014351703,
+        5014351704,
+        5014351701
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "La Trinidad Municipal Police Station"
+      },
+      "lat": 16.4477643,
+      "lon": 120.5902169
+    },
+    {
+      "type": "way",
+      "id": 518697743,
+      "center": {
+        "lat": 16.4092341,
+        "lon": 120.5540427
+      },
+      "nodes": [
+        5059345417,
+        5059345416,
+        5059345415,
+        5059345414,
+        5059345417
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Tadiangan COMPAC Police Station"
+      },
+      "lat": 16.4092341,
+      "lon": 120.5540427
+    },
+    {
+      "type": "way",
+      "id": 538437902,
+      "center": {
+        "lat": 17.4256439,
+        "lon": 121.7651739
+      },
+      "nodes": [
+        5211706537,
+        5211706534,
+        5211706535,
+        4504690792,
+        5211706536,
+        5211706537
+      ],
+      "tags": {
+        "addr:city": "Cabagan",
+        "addr:postcode": "3328",
+        "amenity": "fire_station",
+        "building": "public",
+        "name": "Cabagan Fire Station",
+        "network": "Isabela Fire District",
+        "opening_hours": "24/7",
+        "operator:type": "public",
+        "previously": "node:4504690792"
+      },
+      "lat": 17.4256439,
+      "lon": 121.7651739
+    },
+    {
+      "type": "way",
+      "id": 538437903,
+      "center": {
+        "lat": 17.4257665,
+        "lon": 121.7653444
+      },
+      "nodes": [
+        5211706541,
+        5211706540,
+        663136077,
+        5211706539,
+        5211706538,
+        5211706541
+      ],
+      "tags": {
+        "addr:city": "Cabagan",
+        "addr:postcode": "3328",
+        "amenity": "police",
+        "building": "public",
+        "name": "Cabagan Police Station",
+        "opening_hours": "24/7"
+      },
+      "lat": 17.4257665,
+      "lon": 121.7653444
+    },
+    {
+      "type": "way",
+      "id": 553842263,
+      "center": {
+        "lat": 16.6939563,
+        "lon": 120.6537367
+      },
+      "nodes": [
+        5345647269,
+        5345647268,
+        5345647267,
+        5345647266,
+        5345647269
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "BFP",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      },
+      "lat": 16.6939563,
+      "lon": 120.6537367
+    },
+    {
+      "type": "way",
+      "id": 564005873,
+      "center": {
+        "lat": 16.8004032,
+        "lon": 120.8219136
+      },
+      "nodes": [
+        5434729932,
+        5434729933,
+        5434729934,
+        5434729935,
+        5434729932
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Buguias Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      },
+      "lat": 16.8004032,
+      "lon": 120.8219136
+    },
+    {
+      "type": "way",
+      "id": 564147719,
+      "center": {
+        "lat": 16.8027239,
+        "lon": 120.8209428
+      },
+      "nodes": [
+        5436247164,
+        5436247165,
+        5436247166,
+        5436247167,
+        5436247164
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Buguias Municipal Police Station"
+      },
+      "lat": 16.8027239,
+      "lon": 120.8209428
+    },
+    {
+      "type": "way",
+      "id": 564380601,
+      "center": {
+        "lat": 16.7884433,
+        "lon": 120.8322134
+      },
+      "nodes": [
+        5437776365,
+        5437776366,
+        5437776367,
+        5437776368,
+        5437776365
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 16.7884433,
+      "lon": 120.8322134
+    },
+    {
+      "type": "way",
+      "id": 564380603,
+      "center": {
+        "lat": 16.7884873,
+        "lon": 120.8323051
+      },
+      "nodes": [
+        5437776369,
+        5437776370,
+        5437776371,
+        5437776372,
+        5437776369
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 16.7884873,
+      "lon": 120.8323051
+    },
+    {
+      "type": "way",
+      "id": 575682565,
+      "center": {
+        "lat": 16.7762618,
+        "lon": 121.0864732
+      },
+      "nodes": [
+        5523522624,
+        5523522625,
+        5523522626,
+        5523522627,
+        5523522624
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Municipal Fire Station"
+      },
+      "lat": 16.7762618,
+      "lon": 121.0864732
+    },
+    {
+      "type": "way",
+      "id": 600580805,
+      "center": {
+        "lat": 16.5099054,
+        "lon": 121.5296412
+      },
+      "nodes": [
+        5710468159,
+        5710468156,
+        5710468157,
+        5710468158,
+        5710468159
+      ],
+      "tags": {
+        "addr:city": "Cabarroguis",
+        "addr:postcode": "3400",
+        "amenity": "police",
+        "building": "yes",
+        "building:levels": "1",
+        "name": "Police Crime Laboratory"
+      },
+      "lat": 16.5099054,
+      "lon": 121.5296412
+    },
+    {
+      "type": "way",
+      "id": 600580812,
+      "center": {
+        "lat": 16.510536,
+        "lon": 121.527569
+      },
+      "nodes": [
+        5710468187,
+        5710468184,
+        5710468185,
+        5710468186,
+        5710468187
+      ],
+      "tags": {
+        "addr:city": "Cabarroguis",
+        "addr:postcode": "3400",
+        "amenity": "fire_station",
+        "building": "yes",
+        "building:levels": "1",
+        "name": "Bureau of Fire & Protection"
+      },
+      "lat": 16.510536,
+      "lon": 121.527569
+    },
+    {
+      "type": "way",
+      "id": 600580818,
+      "center": {
+        "lat": 16.510515,
+        "lon": 121.5294196
+      },
+      "nodes": [
+        5710468211,
+        5710468208,
+        5710468209,
+        5710468210,
+        5710468211
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Cabarroguis Police Station",
+        "operator": "Philippine National Police"
+      },
+      "lat": 16.510515,
+      "lon": 121.5294196
+    },
+    {
+      "type": "way",
+      "id": 628172815,
+      "center": {
+        "lat": 17.5802595,
+        "lon": 121.7655771
+      },
+      "nodes": [
+        5930442890,
+        5930442891,
+        5930442892,
+        5930442893,
+        5930442890
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 17.5802595,
+      "lon": 121.7655771
+    },
+    {
+      "type": "way",
+      "id": 628384689,
+      "center": {
+        "lat": 16.9836757,
+        "lon": 121.9997443
+      },
+      "nodes": [
+        5932423479,
+        5932423476,
+        5932423477,
+        5932423478,
+        5932423479
+      ],
+      "tags": {
+        "addr:street": "Naguilian-San Mariano-Palanan Road",
+        "amenity": "police",
+        "building": "yes",
+        "name": "San Mariano Municipal Police Office"
+      },
+      "lat": 16.9836757,
+      "lon": 121.9997443
+    },
+    {
+      "type": "way",
+      "id": 630739772,
+      "center": {
+        "lat": 17.6533875,
+        "lon": 121.7516723
+      },
+      "nodes": [
+        5955146698,
+        5955146695,
+        5955146693,
+        5955146694,
+        5955146696,
+        5955146697,
+        5955146698
+      ],
+      "tags": {
+        "addr:street": "Dalan na Paccorofun",
+        "amenity": "fire_station",
+        "building": "civic"
+      },
+      "lat": 17.6533875,
+      "lon": 121.7516723
+    },
+    {
+      "type": "way",
+      "id": 632035279,
+      "center": {
+        "lat": 18.4094025,
+        "lon": 121.514353
+      },
+      "nodes": [
+        5967932119,
+        1910931718,
+        5967932121,
+        5967932122,
+        5967932119
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Ballesteros Police Station"
+      },
+      "lat": 18.4094025,
+      "lon": 121.514353
+    },
+    {
+      "type": "way",
+      "id": 644525603,
+      "center": {
+        "lat": 17.1812446,
+        "lon": 121.4039585
+      },
+      "nodes": [
+        6061441942,
+        6061441943,
+        6061441944,
+        6061441945,
+        6061441942
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Paracelis Municipal Police Station"
+      },
+      "lat": 17.1812446,
+      "lon": 121.4039585
+    },
+    {
+      "type": "way",
+      "id": 678098170,
+      "center": {
+        "lat": 16.4454165,
+        "lon": 120.6015333
+      },
+      "nodes": [
+        6349180983,
+        6349180980,
+        6349180981,
+        6349180982,
+        6349180983
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "government",
+        "government": "emergency"
+      },
+      "lat": 16.4454165,
+      "lon": 120.6015333
+    },
+    {
+      "type": "way",
+      "id": 678352612,
+      "center": {
+        "lat": 16.4440177,
+        "lon": 120.5925538
+      },
+      "nodes": [
+        6351782729,
+        6351782728,
+        6351782727,
+        6351782726,
+        6351782729
+      ],
+      "tags": {
+        "addr:country": "PH",
+        "addr:hamlet": "Pinespark",
+        "addr:postcode": "2601",
+        "addr:province": "Benguet",
+        "addr:quarter": "Balili",
+        "addr:town": "La Trinidad",
+        "amenity": "police",
+        "building": "government",
+        "contact:phone": "+63 74 422 0218",
+        "government": "emergency",
+        "name": "Police Community Precinct 1"
+      },
+      "lat": 16.4440177,
+      "lon": 120.5925538
+    },
+    {
+      "type": "way",
+      "id": 683871911,
+      "center": {
+        "lat": 16.6274071,
+        "lon": 120.7674486
+      },
+      "nodes": [
+        6406044951,
+        6406044952,
+        7298880253,
+        5413932216,
+        6406044951
+      ],
+      "tags": {
+        "addr:place": "Sayangan",
+        "amenity": "police",
+        "building": "public",
+        "name": "Atok Municipal Police Station"
+      },
+      "lat": 16.6274071,
+      "lon": 120.7674486
+    },
+    {
+      "type": "way",
+      "id": 684036144,
+      "center": {
+        "lat": 16.6232079,
+        "lon": 120.8379544
+      },
+      "nodes": [
+        6407883718,
+        6407883719,
+        6407883720,
+        6407883721,
+        6407883718
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Kabayan Municipal Police Station"
+      },
+      "lat": 16.6232079,
+      "lon": 120.8379544
+    },
+    {
+      "type": "way",
+      "id": 684036210,
+      "center": {
+        "lat": 16.6938017,
+        "lon": 120.6537713
+      },
+      "nodes": [
+        6407885545,
+        6407885546,
+        6407885547,
+        6407885548,
+        6407885545
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "PNP",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 16.6938017,
+      "lon": 120.6537713
+    },
+    {
+      "type": "way",
+      "id": 684042584,
+      "center": {
+        "lat": 16.4913079,
+        "lon": 120.8303228
+      },
+      "nodes": [
+        6407985229,
+        6407985230,
+        6407985231,
+        6407985232,
+        6407985229
+      ],
+      "tags": {
+        "addr:city": "Bokod",
+        "addr:postcode": "2605",
+        "amenity": "police",
+        "building": "yes",
+        "building:levels": "1",
+        "name": "Bokod Municipal Police Station"
+      },
+      "lat": 16.4913079,
+      "lon": 120.8303228
+    },
+    {
+      "type": "way",
+      "id": 690764034,
+      "center": {
+        "lat": 17.6399013,
+        "lon": 121.7543594
+      },
+      "nodes": [
+        1332519739,
+        6481245467,
+        6481245466,
+        6481245465,
+        1654297673,
+        1654297685,
+        1654297680,
+        1654297678,
+        6481245464,
+        6481245463,
+        6481245462,
+        6481245461,
+        6481245460,
+        6481245457,
+        6481245459,
+        6481245458,
+        1332519739
+      ],
+      "tags": {
+        "addr:city": "Tuguegarao",
+        "addr:postcode": "3500",
+        "addr:street": "Maharlika Highway",
+        "amenity": "police",
+        "barrier": "fence",
+        "name": "Camp Marcelo A. Adduru",
+        "operator": "Cagayan Valley Regional Police Office, Philippine National Police",
+        "police": "offices"
+      },
+      "lat": 17.6399013,
+      "lon": 121.7543594
+    },
+    {
+      "type": "way",
+      "id": 701493650,
+      "center": {
+        "lat": 16.8600226,
+        "lon": 120.7925894
+      },
+      "nodes": [
+        6588084919,
+        6588084920,
+        6588084921,
+        6588084922,
+        6588084919
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Bureau of Fire Protection - Mankayan"
+      },
+      "lat": 16.8600226,
+      "lon": 120.7925894
+    },
+    {
+      "type": "way",
+      "id": 732166967,
+      "center": {
+        "lat": 16.3923135,
+        "lon": 120.5604046
+      },
+      "nodes": [
+        6855834615,
+        6855834614,
+        6855834613,
+        6855834612,
+        6855834615
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Tuba Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      },
+      "lat": 16.3923135,
+      "lon": 120.5604046
+    },
+    {
+      "type": "way",
+      "id": 770099101,
+      "center": {
+        "lat": 16.6602226,
+        "lon": 121.3695484
+      },
+      "nodes": [
+        7189211726,
+        7189211727,
+        7189211728,
+        7189211729,
+        7189211726
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Police Station"
+      },
+      "lat": 16.6602226,
+      "lon": 121.3695484
+    },
+    {
+      "type": "way",
+      "id": 777635604,
+      "center": {
+        "lat": 17.2108966,
+        "lon": 121.6118559
+      },
+      "nodes": [
+        7257149932,
+        7257149933,
+        7257149934,
+        7257149935,
+        7257149932
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Mallig BFP"
+      },
+      "lat": 17.2108966,
+      "lon": 121.6118559
+    },
+    {
+      "type": "way",
+      "id": 793008264,
+      "center": {
+        "lat": 16.1725064,
+        "lon": 120.5098235
+      },
+      "nodes": [
+        7415385077,
+        7415385078,
+        7415385079,
+        7415385080,
+        7415385077
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Sison Police Station",
+        "opening_hours": "24/7",
+        "phone": "+63 917 917 1386",
+        "website": "https://www.facebook.com/PCRSISON"
+      },
+      "lat": 16.1725064,
+      "lon": 120.5098235
+    },
+    {
+      "type": "way",
+      "id": 808996103,
+      "center": {
+        "lat": 18.2621457,
+        "lon": 121.9980981
+      },
+      "nodes": [
+        5931489034,
+        7564547175,
+        7564547174,
+        7564547173,
+        5931489034
+      ],
+      "tags": {
+        "addr:street": "Camalaniugan-Santa Ana Road",
+        "addr:town": "Gonzaga",
+        "amenity": "police",
+        "name": "Gonzaga Police Station"
+      },
+      "lat": 18.2621457,
+      "lon": 121.9980981
+    },
+    {
+      "type": "way",
+      "id": 809123557,
+      "center": {
+        "lat": 17.4705603,
+        "lon": 121.4667418
+      },
+      "nodes": [
+        4640840290,
+        7565756623,
+        7565756622,
+        7565756621,
+        4640840290
+      ],
+      "tags": {
+        "addr:city": "Tabuk",
+        "addr:postcode": "3800",
+        "addr:street": "Quezon Street",
+        "amenity": "police",
+        "name": "Tabuk City Police Station",
+        "name:en": "Tabuk City Police Station",
+        "phone": "+63 926 765 7575"
+      },
+      "lat": 17.4705603,
+      "lon": 121.4667418
+    },
+    {
+      "type": "way",
+      "id": 820344925,
+      "center": {
+        "lat": 16.5180163,
+        "lon": 121.1869996
+      },
+      "nodes": [
+        4124820989,
+        7660053002,
+        7660053001,
+        7660053000,
+        4124820989
+      ],
+      "tags": {
+        "addr:city": "Solano",
+        "addr:province": "Nueva Vizcaya",
+        "amenity": "police",
+        "building": "public",
+        "name": "Solano Municipal Police Station"
+      },
+      "lat": 16.5180163,
+      "lon": 121.1869996
+    },
+    {
+      "type": "way",
+      "id": 820851006,
+      "center": {
+        "lat": 16.0477851,
+        "lon": 120.5466505
+      },
+      "nodes": [
+        7663030300,
+        7663030299,
+        7663030298,
+        7663030297,
+        7663030300
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Laoac Police Station"
+      },
+      "lat": 16.0477851,
+      "lon": 120.5466505
+    },
+    {
+      "type": "way",
+      "id": 832532365,
+      "center": {
+        "lat": 16.2387984,
+        "lon": 120.5201764
+      },
+      "nodes": [
+        7772696574,
+        7772696575,
+        7772696576,
+        7772696577,
+        7772696574
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Tuba Municipal Police Station - Police Community Precinct 1"
+      },
+      "lat": 16.2387984,
+      "lon": 120.5201764
+    },
+    {
+      "type": "way",
+      "id": 835835052,
+      "center": {
+        "lat": 16.4826028,
+        "lon": 121.1509027
+      },
+      "nodes": [
+        7801606163,
+        7801606161,
+        4244301473,
+        7801606162,
+        7801606163
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Bayombong Police Station"
+      },
+      "lat": 16.4826028,
+      "lon": 121.1509027
+    },
+    {
+      "type": "way",
+      "id": 838286040,
+      "center": {
+        "lat": 16.2887882,
+        "lon": 120.591208
+      },
+      "nodes": [
+        7823694958,
+        7823694957,
+        7823694956,
+        7823694955,
+        7823694958
+      ],
+      "tags": {
+        "addr:city": "Tuba",
+        "addr:street": "Kennon Road",
+        "amenity": "police",
+        "name": "Police Station Compac",
+        "osm_id": "2208316109",
+        "timestamp": "2013-03-18T14:25:30Z",
+        "type": "police"
+      },
+      "lat": 16.2887882,
+      "lon": 120.591208
+    },
+    {
+      "type": "way",
+      "id": 860789450,
+      "center": {
+        "lat": 16.5178146,
+        "lon": 121.1811242
+      },
+      "nodes": [
+        4159262491,
+        8022914224,
+        8022914223,
+        8022914222,
+        4159262491
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "email": "solanomps@yahoo.com",
+        "mobile": "+63 927 691 3022",
+        "name": "Solano Pulis",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "operator:wikipedia": "tl:Pambansang Pulisya ng Pilipinas",
+        "phone": "+63 78 326 7489"
+      },
+      "lat": 16.5178146,
+      "lon": 121.1811242
+    },
+    {
+      "type": "way",
+      "id": 867563816,
+      "center": {
+        "lat": 17.0865196,
+        "lon": 120.9765594
+      },
+      "nodes": [
+        8086475122,
+        8086475123,
+        8086475124,
+        8086475125,
+        8086475122
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Bontoc Municipal Police Station"
+      },
+      "lat": 17.0865196,
+      "lon": 120.9765594
+    },
+    {
+      "type": "way",
+      "id": 942626034,
+      "center": {
+        "lat": 16.2240464,
+        "lon": 120.5037174
+      },
+      "nodes": [
+        8728687109,
+        8728687108,
+        8728687107,
+        8728687106,
+        8728687109
+      ],
+      "tags": {
+        "addr:city": "Rosario",
+        "addr:state": "La Union",
+        "amenity": "police",
+        "building": "yes",
+        "name": "La Union PPO"
+      },
+      "lat": 16.2240464,
+      "lon": 120.5037174
+    },
+    {
+      "type": "way",
+      "id": 944322842,
+      "center": {
+        "lat": 16.4346429,
+        "lon": 120.544606
+      },
+      "nodes": [
+        8743000531,
+        8743000530,
+        8743000529,
+        8743000528,
+        8743000531
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "La Trinidad Municipal Police Station"
+      },
+      "lat": 16.4346429,
+      "lon": 120.544606
+    },
+    {
+      "type": "way",
+      "id": 951504859,
+      "center": {
+        "lat": 16.4586125,
+        "lon": 120.7465099
+      },
+      "nodes": [
+        8807206412,
+        8807206411,
+        8807206410,
+        8807206409,
+        8807206412
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 16.4586125,
+      "lon": 120.7465099
+    },
+    {
+      "type": "way",
+      "id": 960018381,
+      "center": {
+        "lat": 18.3343619,
+        "lon": 120.6180107
+      },
+      "nodes": [
+        8882296172,
+        8882296131,
+        8882296177,
+        1236230185,
+        8882296172
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Pasuquin Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "operator:wikipedia": "tl:Pambansang Pulisya ng Pilipinas"
+      },
+      "lat": 18.3343619,
+      "lon": 120.6180107
+    },
+    {
+      "type": "way",
+      "id": 962643157,
+      "center": {
+        "lat": 16.3591142,
+        "lon": 120.6763108
+      },
+      "nodes": [
+        8904689494,
+        8904689493,
+        8904689492,
+        8904689491,
+        8904689494
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Police Outpost Itogon Poblacian"
+      },
+      "lat": 16.3591142,
+      "lon": 120.6763108
+    },
+    {
+      "type": "way",
+      "id": 962708447,
+      "center": {
+        "lat": 17.9158529,
+        "lon": 120.6655485
+      },
+      "nodes": [
+        8905272074,
+        8905272116,
+        8905272075,
+        8905272098,
+        8905272074
+      ],
+      "tags": {
+        "addr:city": "Nueva Era",
+        "addr:neighbourhood": "Poblacion",
+        "amenity": "fire_station",
+        "building": "yes",
+        "mobile": "+63 905 514 1564;+63 930 559 1972",
+        "name": "Nueva Era Fire Station",
+        "operator": "Bureau of Fire Protection"
+      },
+      "lat": 17.9158529,
+      "lon": 120.6655485
+    },
+    {
+      "type": "way",
+      "id": 967610385,
+      "center": {
+        "lat": 16.1315702,
+        "lon": 120.5293226
+      },
+      "nodes": [
+        8951783851,
+        8951783850,
+        8951783849,
+        8951783848,
+        8951783851
+      ],
+      "tags": {
+        "alt_name": "HI-PAD",
+        "amenity": "police",
+        "name": "Highway Patrol Assistance Desk"
+      },
+      "lat": 16.1315702,
+      "lon": 120.5293226
+    },
+    {
+      "type": "way",
+      "id": 967925358,
+      "center": {
+        "lat": 16.1566807,
+        "lon": 120.5221505
+      },
+      "nodes": [
+        8954756095,
+        8954756094,
+        8954756093,
+        8954756092,
+        8954756095
+      ],
+      "tags": {
+        "alt_name": "HI-PAD",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Highway Public Assistance Desk"
+      },
+      "lat": 16.1566807,
+      "lon": 120.5221505
+    },
+    {
+      "type": "way",
+      "id": 988921760,
+      "center": {
+        "lat": 16.0042506,
+        "lon": 120.6684604
+      },
+      "nodes": [
+        9140298105,
+        9140298104,
+        9140298103,
+        9140298102,
+        9140298105
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "HI-PAD"
+      },
+      "lat": 16.0042506,
+      "lon": 120.6684604
+    },
+    {
+      "type": "way",
+      "id": 1017785402,
+      "center": {
+        "lat": 16.1722658,
+        "lon": 120.5099079
+      },
+      "nodes": [
+        9387791819,
+        9387753816,
+        9387791817,
+        9387791818,
+        9387791819
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Sison Fire Station"
+      },
+      "lat": 16.1722658,
+      "lon": 120.5099079
+    },
+    {
+      "type": "way",
+      "id": 1030628128,
+      "center": {
+        "lat": 16.3359787,
+        "lon": 120.7296008
+      },
+      "nodes": [
+        9500232249,
+        9500232248,
+        9500232247,
+        9500232246,
+        9500232245,
+        9500232244,
+        9500232249
+      ],
+      "tags": {
+        "amenity": "police",
+        "contact:facebook": "100008651739186",
+        "contact:phone": "+63 998 598 7785",
+        "name": "Itogon Municipal Police Station - Kawayan Junction"
+      },
+      "lat": 16.3359787,
+      "lon": 120.7296008
+    },
+    {
+      "type": "way",
+      "id": 1040816737,
+      "center": {
+        "lat": 17.6118323,
+        "lon": 120.6198192
+      },
+      "nodes": [
+        9582920816,
+        8243243600,
+        8243243601,
+        8243243602,
+        8243243603,
+        9582964635,
+        9582964634,
+        9582964633,
+        9582964632,
+        9582964630,
+        9582964629,
+        9582964628,
+        9582920815,
+        9582920814,
+        9582920813,
+        9582920812,
+        9582920816
+      ],
+      "tags": {
+        "amenity": "police",
+        "name": "Camp Colonel Juan G. Villamor",
+        "operator": "Abra Provincial Police Office"
+      },
+      "lat": 17.6118323,
+      "lon": 120.6198192
+    },
+    {
+      "type": "way",
+      "id": 1071004889,
+      "center": {
+        "lat": 18.4664975,
+        "lon": 121.343052
+      },
+      "nodes": [
+        9828250917,
+        9828250916,
+        9828250915,
+        9828250914,
+        9828250917
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Pamplona Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 18.4664975,
+      "lon": 121.343052
+    },
+    {
+      "type": "way",
+      "id": 1080236726,
+      "center": {
+        "lat": 16.0489498,
+        "lon": 120.5454788
+      },
+      "nodes": [
+        9901553025,
+        9901553026,
+        9901553027,
+        9901553028,
+        9901553025
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Laoac Fire Station"
+      },
+      "lat": 16.0489498,
+      "lon": 120.5454788
+    },
+    {
+      "type": "way",
+      "id": 1099355189,
+      "center": {
+        "lat": 16.0449551,
+        "lon": 120.5917854
+      },
+      "nodes": [
+        10064387131,
+        10064387130,
+        10064387129,
+        10064387128,
+        10064387131
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "check_date": "2025-11-26",
+        "name": "Binalonan Fire Station"
+      },
+      "lat": 16.0449551,
+      "lon": 120.5917854
+    },
+    {
+      "type": "way",
+      "id": 1099355190,
+      "center": {
+        "lat": 16.0449537,
+        "lon": 120.5915534
+      },
+      "nodes": [
+        10064387135,
+        10064387134,
+        10064387133,
+        10064387132,
+        10064387135
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "check_date": "2025-11-26",
+        "name": "Binalonan Police Station"
+      },
+      "lat": 16.0449537,
+      "lon": 120.5915534
+    },
+    {
+      "type": "way",
+      "id": 1107165050,
+      "center": {
+        "lat": 16.1097539,
+        "lon": 120.5451489
+      },
+      "nodes": [
+        10130898753,
+        10130898752,
+        10130898751,
+        10130898750,
+        10130898753
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Pozorrubio Police Station"
+      },
+      "lat": 16.1097539,
+      "lon": 120.5451489
+    },
+    {
+      "type": "way",
+      "id": 1115461340,
+      "center": {
+        "lat": 16.4633932,
+        "lon": 120.6220891
+      },
+      "nodes": [
+        10201637646,
+        10201637645,
+        10201637644,
+        10201637643,
+        10201637646
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Shilan COMPAC"
+      },
+      "lat": 16.4633932,
+      "lon": 120.6220891
+    },
+    {
+      "type": "way",
+      "id": 1115509832,
+      "center": {
+        "lat": 16.533655,
+        "lon": 120.704809
+      },
+      "nodes": [
+        10201939168,
+        10201939167,
+        10201939166,
+        10201939165,
+        10201939168
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 16.533655,
+      "lon": 120.704809
+    },
+    {
+      "type": "way",
+      "id": 1115655161,
+      "center": {
+        "lat": 16.6974563,
+        "lon": 120.7772705
+      },
+      "nodes": [
+        10203408607,
+        10203408606,
+        10203408605,
+        10203408604,
+        10203408607
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "public"
+      },
+      "lat": 16.6974563,
+      "lon": 120.7772705
+    },
+    {
+      "type": "way",
+      "id": 1117162442,
+      "center": {
+        "lat": 16.489159,
+        "lon": 121.1598036
+      },
+      "nodes": [
+        10217268908,
+        10217268909,
+        10217268910,
+        10217268911,
+        10217268908
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "PNP Outpost",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 16.489159,
+      "lon": 121.1598036
+    },
+    {
+      "type": "way",
+      "id": 1118420991,
+      "center": {
+        "lat": 16.8396087,
+        "lon": 120.8079082
+      },
+      "nodes": [
+        10228966677,
+        10228966676,
+        10228966675,
+        10228966674,
+        10228966677
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Bulalacao Tanod Outpost"
+      },
+      "lat": 16.8396087,
+      "lon": 120.8079082
+    },
+    {
+      "type": "way",
+      "id": 1118428443,
+      "center": {
+        "lat": 16.8568209,
+        "lon": 120.7929868
+      },
+      "nodes": [
+        10229046209,
+        10229046208,
+        10229046207,
+        10229046206,
+        10229046209
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Mankayan Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 16.8568209,
+      "lon": 120.7929868
+    },
+    {
+      "type": "way",
+      "id": 1120804788,
+      "center": {
+        "lat": 17.0102717,
+        "lon": 120.9240246
+      },
+      "nodes": [
+        10251108294,
+        10251108293,
+        10251108292,
+        10251108291,
+        10251108294
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Sabangan Fire Station"
+      },
+      "lat": 17.0102717,
+      "lon": 120.9240246
+    },
+    {
+      "type": "way",
+      "id": 1123402520,
+      "center": {
+        "lat": 17.0864792,
+        "lon": 120.904297
+      },
+      "nodes": [
+        10273880337,
+        10273880336,
+        10273880335,
+        10273880334,
+        10273880337
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "Sagada Fire Station"
+      },
+      "lat": 17.0864792,
+      "lon": 120.904297
+    },
+    {
+      "type": "way",
+      "id": 1155194090,
+      "center": {
+        "lat": 16.1589819,
+        "lon": 120.9378772
+      },
+      "nodes": [
+        10743068496,
+        10743068495,
+        10743068494,
+        10743068493,
+        10743068496
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Santa Fe Police Station"
+      },
+      "lat": 16.1589819,
+      "lon": 120.9378772
+    },
+    {
+      "type": "way",
+      "id": 1172315254,
+      "center": {
+        "lat": 16.0695172,
+        "lon": 120.7614953
+      },
+      "nodes": [
+        10892429242,
+        10892429243,
+        10892429244,
+        10892429245,
+        10892429242
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "San Nicolas Police Station"
+      },
+      "lat": 16.0695172,
+      "lon": 120.7614953
+    },
+    {
+      "type": "way",
+      "id": 1177770197,
+      "center": {
+        "lat": 18.0644949,
+        "lon": 120.5586902
+      },
+      "nodes": [
+        10941357186,
+        10941358016,
+        10941357201,
+        10941358008,
+        10941357186
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Batac City Fires Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      },
+      "lat": 18.0644949,
+      "lon": 120.5586902
+    },
+    {
+      "type": "way",
+      "id": 1177782502,
+      "center": {
+        "lat": 18.1177279,
+        "lon": 120.6897048
+      },
+      "nodes": [
+        10941385645,
+        10941385643,
+        10941385644,
+        10941385646,
+        10941385645
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Dingras Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 18.1177279,
+      "lon": 120.6897048
+    },
+    {
+      "type": "way",
+      "id": 1214230320,
+      "center": {
+        "lat": 16.4193227,
+        "lon": 121.5103447
+      },
+      "nodes": [
+        11250168478,
+        11250168479,
+        11250168480,
+        11250168481,
+        11250168482,
+        11250168483,
+        11250168484,
+        2155582280,
+        11250168486,
+        11250168478
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes"
+      },
+      "lat": 16.4193227,
+      "lon": 121.5103447
+    },
+    {
+      "type": "way",
+      "id": 1257335948,
+      "center": {
+        "lat": 16.4140606,
+        "lon": 120.6335779
+      },
+      "nodes": [
+        11690023530,
+        11690023531,
+        11690023532,
+        11690023533,
+        11690023530
+      ],
+      "tags": {
+        "addr:city": "Baguio",
+        "addr:postcode": "2604",
+        "addr:province": "Benguet",
+        "addr:street": "Baguio-Itogon Road",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Tuding Police Station"
+      },
+      "lat": 16.4140606,
+      "lon": 120.6335779
+    },
+    {
+      "type": "way",
+      "id": 1308302105,
+      "center": {
+        "lat": 18.4578416,
+        "lon": 122.1430252
+      },
+      "nodes": [
+        4329307357,
+        13277245443,
+        5910455390,
+        5910455389,
+        4329307359,
+        4329307357
+      ],
+      "tags": {
+        "addr:city": "Santa Ana",
+        "addr:postcode": "3514",
+        "amenity": "police",
+        "contact:facebook": "https://www.facebook.com/mcadstaana",
+        "mobile": "+63 927 435 2980",
+        "name": "Santa Ana Police Station",
+        "operator": "Cagayan Police Provincial Office"
+      },
+      "lat": 18.4578416,
+      "lon": 122.1430252
+    },
+    {
+      "type": "way",
+      "id": 1316689892,
+      "center": {
+        "lat": 16.5619754,
+        "lon": 121.7025553
+      },
+      "nodes": [
+        12186290827,
+        12186290828,
+        12186290829,
+        12186290830,
+        12186290827
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "JONES POLICE STATION",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 16.5619754,
+      "lon": 121.7025553
+    },
+    {
+      "type": "way",
+      "id": 1316689893,
+      "center": {
+        "lat": 16.5624119,
+        "lon": 121.7021113
+      },
+      "nodes": [
+        12186290831,
+        12186290832,
+        12186290833,
+        12186290834,
+        12186290835,
+        12186290836,
+        12186290831
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "JONES FIRE STATION"
+      },
+      "lat": 16.5624119,
+      "lon": 121.7021113
+    },
+    {
+      "type": "way",
+      "id": 1332820435,
+      "center": {
+        "lat": 17.4476151,
+        "lon": 121.7952904
+      },
+      "nodes": [
+        12330542938,
+        12330542939,
+        12330542940,
+        12330542941,
+        12330542938
+      ],
+      "tags": {
+        "addr:city": "San Pablo",
+        "addr:province": "Isabela",
+        "amenity": "police",
+        "building": "yes",
+        "name": "San Pablo Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772",
+        "source": "Bagong Pilipinas"
+      },
+      "lat": 17.4476151,
+      "lon": 121.7952904
+    },
+    {
+      "type": "way",
+      "id": 1332820436,
+      "center": {
+        "lat": 17.4478633,
+        "lon": 121.7947339
+      },
+      "nodes": [
+        12330542942,
+        12330542943,
+        12330542944,
+        12330542945,
+        12330542942
+      ],
+      "tags": {
+        "addr:city": "San Pablo",
+        "addr:province": "Isabela",
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "San Pablo Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200",
+        "source": "Bagong Pilipinas"
+      },
+      "lat": 17.4478633,
+      "lon": 121.7947339
+    },
+    {
+      "type": "way",
+      "id": 1369408552,
+      "center": {
+        "lat": 16.0047057,
+        "lon": 120.5763244
+      },
+      "nodes": [
+        12682513379,
+        12682513380,
+        12682513381,
+        12682513382,
+        12682513383,
+        12682513384,
+        12682513379
+      ],
+      "tags": {
+        "amenity": "fire_station",
+        "name": "Urdaneta City Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      },
+      "lat": 16.0047057,
+      "lon": 120.5763244
+    },
+    {
+      "type": "way",
+      "id": 1369408553,
+      "center": {
+        "lat": 16.004714,
+        "lon": 120.5759766
+      },
+      "nodes": [
+        12682513385,
+        12682513386,
+        12682513387,
+        12682513388,
+        12682513385
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 16.004714,
+      "lon": 120.5759766
+    },
+    {
+      "type": "way",
+      "id": 1370379503,
+      "center": {
+        "lat": 16.3779469,
+        "lon": 120.5081866
+      },
+      "nodes": [
+        12691457777,
+        12691457776,
+        12691457775,
+        12691457774,
+        12691457777
+      ],
+      "tags": {
+        "amenity": "police",
+        "building": "yes",
+        "name": "Police Community Precinct Taloy Sur",
+        "operator": "Tuba Municipal Police Station"
+      },
+      "lat": 16.3779469,
+      "lon": 120.5081866
+    },
+    {
+      "type": "way",
+      "id": 1373017775,
+      "center": {
+        "lat": 16.4903106,
+        "lon": 121.5878378
+      },
+      "nodes": [
+        12713024840,
+        12713024839,
+        12713024838,
+        5541856222,
+        12713024840
+      ],
+      "tags": {
+        "amenity": "police",
+        "government": "public_safety",
+        "name": "Quirino Provincial Police Office",
+        "office": "government"
+      },
+      "lat": 16.4903106,
+      "lon": 121.5878378
+    },
+    {
+      "type": "way",
+      "id": 1448608188,
+      "center": {
+        "lat": 16.1437443,
+        "lon": 121.9497412
+      },
+      "nodes": [
+        11335059642,
+        13290673493,
+        13290673492,
+        13290673491,
+        11335059642
+      ],
+      "tags": {
+        "addr:postcode": "3206",
+        "addr:street": "Baler-Casiguran Road",
+        "addr:town": "Dinalungan",
+        "amenity": "fire_station",
+        "contact:facebook": "dinalunganfirestation",
+        "name": "Dinalungan Fire Station",
+        "network": "Aurora Fire District",
+        "operator": "Bureau of Fire Protection",
+        "operator:type": "government",
+        "source": "survey"
+      },
+      "lat": 16.1437443,
+      "lon": 121.9497412
+    },
+    {
+      "type": "way",
+      "id": 1453511422,
+      "center": {
+        "lat": 16.0699584,
+        "lon": 120.7603153
+      },
+      "nodes": [
+        13329860387,
+        13329860386,
+        13329860385,
+        13329860384,
+        13329860387
+      ],
+      "tags": {
+        "addr:street": "General Luna Street",
+        "amenity": "fire_station",
+        "building": "yes",
+        "name": "San Nicolas Fire Station"
+      },
+      "lat": 16.0699584,
+      "lon": 120.7603153
+    },
+    {
+      "type": "way",
+      "id": 1495488827,
+      "center": {
+        "lat": 17.6865584,
+        "lon": 120.6658866
+      },
+      "nodes": [
+        13701304374,
+        13701304375,
+        13701304376,
+        13701304377,
+        13701304374
+      ],
+      "tags": {
+        "addr:city": "Danglas",
+        "addr:province": "Abra",
+        "amenity": "fire_station",
+        "name": "Danglas Fire Station",
+        "operator": "Bureau of Fire Protection",
+        "operator:wikidata": "Q17027200"
+      },
+      "lat": 17.6865584,
+      "lon": 120.6658866
+    },
+    {
+      "type": "way",
+      "id": 1517013325,
+      "center": {
+        "lat": 16.9786523,
+        "lon": 121.3266653
+      },
+      "nodes": [
+        13849208915,
+        13849208916,
+        13849208917,
+        13849208918,
+        13849208915
+      ],
+      "tags": {
+        "addr:municipality": "Aguinaldo",
+        "addr:province": "Ifugao",
+        "amenity": "police",
+        "building": "yes",
+        "name": "Aguinaldo Municipal Police Station",
+        "operator": "Philippine National Police",
+        "operator:short": "PNP",
+        "operator:wikidata": "Q963772"
+      },
+      "lat": 16.9786523,
+      "lon": 121.3266653
+    },
+    {
+      "type": "relation",
+      "id": 18814795,
+      "center": {
+        "lat": 16.4871536,
+        "lon": 121.1573159
+      },
+      "members": [
+        {
+          "type": "way",
+          "ref": 240226242,
+          "role": "outer"
+        },
+        {
+          "type": "way",
+          "ref": 240226602,
+          "role": "outer"
+        }
+      ],
+      "tags": {
+        "addr:street": "National Road",
+        "amenity": "police",
+        "name": "Nueva Vizcaya Provincial Police Office",
+        "type": "multipolygon"
+      },
+      "lat": 16.4871536,
+      "lon": 121.1573159
+    }
+  ]
+}

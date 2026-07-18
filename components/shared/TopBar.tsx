@@ -69,7 +69,7 @@ export function TopBar({ className }: TopBarProps) {
  return (
   <header
   className={cn(
-  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-white/[0.03] dark:to-white/[0.01] from-black/[0.03] to-black/[0.01] shell-blur px-6",
+  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-white/[0.03] dark:to-white/[0.01] from-black/[0.03] to-black/[0.01] shell-blur px-6 print:hidden",
   className
   )}
   >

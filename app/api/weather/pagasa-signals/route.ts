@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const signalData = await fetchPagasaSignals();
-
     return NextResponse.json(signalData, {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",

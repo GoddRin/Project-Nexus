@@ -1,22 +1,9 @@
-"use client";
+import { prisma } from "@/lib/db/prisma";
+import { RegionalMapWrapper } from "./RegionalMapWrapper";
 
-import dynamic from "next/dynamic";
+export default async function RegionalMapPage() {
+  const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" } });
+  if (!project) throw new Error("Project not found");
 
-const RegionalMapClient = dynamic(
-  () => import("./RegionalMapClient"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-[700px] w-full items-center justify-center rounded-2xl border border-border-hairline bg-bg-panel/50 backdrop-blur-md">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-flow-teal border-t-transparent" />
-          <span className="text-sm font-medium text-text-muted">Loading regional map...</span>
-        </div>
-      </div>
-    ),
-  }
-);
-
-export default function RegionalMapPage() {
-  return <RegionalMapClient />;
+  return <RegionalMapWrapper projectId={project.id} />;
 }

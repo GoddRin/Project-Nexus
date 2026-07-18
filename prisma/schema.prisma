@@ -38,6 +38,7 @@ model Project {
   documentFolders DocumentFolder[]
   documents       Document[]
   accomplishmentReports AccomplishmentReport[]
+  dailyLogs       DailyLog[]
   milestones      Milestone[]
   progressSnapshots ProgressSnapshot[]
   maintenanceSchedules MaintenanceSchedule[]
@@ -51,6 +52,7 @@ model Project {
   equipments      PlantEquipment[]
   targetCodDate   DateTime?
   codMilestones   CodMilestone[]
+  siteIncidents   SiteIncident[]
   createdAt       DateTime        @default(now())
 }
 
@@ -82,6 +84,8 @@ model User {
   uploadedEquipmentDocs EquipmentDocument[] @relation("EquipmentDocUploader")
   loggedEquipmentMaintenance EquipmentMaintenanceLog[] @relation("EquipmentMaintenanceLogger")
   assistantConversations AssistantConversation[]
+  loggedIncidents SiteIncident[]  @relation("IncidentLogger")
+  loggedDailyLogs DailyLog[]      @relation("DailyLogLogger")
   createdAt       DateTime        @default(now())
 }
 
@@ -744,5 +748,91 @@ enum MilestoneStatus2 {
   IN_PROGRESS
   COMPLETED
   BLOCKED
+}
+
+// ============================================================
+// Module 7: Emergency & Incident Tracking
+// ============================================================
+
+model SiteIncident {
+  id                    String   @id @default(cuid())
+  projectId             String
+  project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type                  IncidentType
+  severity              IncidentSeverity
+  description           String
+  personnelInvolved     String?
+  timeOfDeparture       DateTime?
+  dispatchFacilityName  String?
+  dispatchFacilityLat   Float?
+  dispatchFacilityLng   Float?
+  dispatchFacilityOsmId String?
+  status                IncidentStatus @default(ACTIVE)
+  loggedById            String
+  loggedBy              User     @relation("IncidentLogger", fields: [loggedById], references: [id], onDelete: Restrict)
+  resolvedAt            DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+enum IncidentType {
+  MEDICAL
+  SECURITY
+  FIRE
+  OTHER
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  ACTIVE
+  RESOLVED
+}
+
+// ============================================================
+// Module 8: End of Day Snapshot (Daily Logs)
+// ============================================================
+
+model DailyLog {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  logDate         DateTime @default(now()) // Timestamp of the sign-off
+  
+  // Headcount snapshot
+  totalHeadcount  Int
+  zoneTunnels     Int      @default(0)
+  zoneWeir        Int      @default(0)
+  zoneTemfacil    Int      @default(0)
+  zonePowerhouse  Int      @default(0)
+  zoneSwitchyard  Int      @default(0)
+  
+  // Who signed off
+  loggedById      String
+  loggedBy        User     @relation("DailyLogLogger", fields: [loggedById], references: [id], onDelete: Restrict)
+  
+  // PTWs snapshot
+  ptws            DailyLogPtw[]
+
+  createdAt       DateTime @default(now())
+}
+
+model DailyLogPtw {
+  id              String   @id @default(cuid())
+  dailyLogId      String
+  dailyLog        DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+  
+  type            String   // e.g. "Hot Work", "Confined Space"
+  location        String   // e.g. "Powerhouse Unit 2"
+  team            String   // e.g. "Welding Team Alpha"
+  expiry          String
+  status          String
+  
+  createdAt       DateTime @default(now())
 }
 

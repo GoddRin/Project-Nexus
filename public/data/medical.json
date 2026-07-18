@@ -1,0 +1,67 @@
+{
+  "elements": [
+    {
+      "type": "node",
+      "id": 2429804777,
+      "lat": 17.119645,
+      "lon": 121.6219755,
+      "tags": {
+        "amenity": "hospital",
+        "name": "Soler Hospital"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2429848624,
+      "lat": 17.1198526,
+      "lon": 121.6155276,
+      "tags": {
+        "amenity": "hospital",
+        "name": "Yumena Hospital"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8042414636,
+      "lat": 17.3076503,
+      "lon": 121.7772497,
+      "tags": {
+        "amenity": "hospital",
+        "healthcare": "hospital",
+        "name": "St. Joseph Hospital"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8043556720,
+      "lat": 17.3312703,
+      "lon": 121.7626026,
+      "tags": {
+        "amenity": "clinic",
+        "healthcare": "clinic",
+        "name": "San Jose Health Center"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9291590817,
+      "lat": 17.0051519,
+      "lon": 121.8061709,
+      "tags": {
+        "addr:street": "Maharlika Highway",
+        "amenity": "hospital",
+        "name": "renmar specialist"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9999999999,
+      "lat": 17.6566,
+      "lon": 121.7466,
+      "tags": {
+        "amenity": "hospital",
+        "name": "Cagayan Valley Medical Center"
+      }
+    }
+  ]
+}

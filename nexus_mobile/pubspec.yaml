@@ -1,0 +1,41 @@
+name: nexus_mobile
+description: A new Flutter project for Project Nexus (Safety Officer)
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Styling
+  cupertino_icons: ^1.0.2
+  google_fonts: ^6.1.0
+  flutter_lucide: ^1.11.0
+  glassmorphism: ^3.0.0
+
+  # State Management & Network
+  provider: ^6.1.1
+  http: ^1.1.0
+  connectivity_plus: ^6.1.0
+  webview_flutter: ^4.8.0
+  multicast_dns: ^0.3.2+1
+  
+  # Offline Storage
+  sqflite: ^2.4.3
+  path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
+
+  # Notifications
+  flutter_local_notifications: ^19.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true

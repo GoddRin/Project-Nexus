@@ -134,7 +134,12 @@ function parsePagasaBulletinHtml(html: string): PagasaSignalData {
     source: "pagasa",
   };
 
-  // 1. Extract bulletin archive PDFs to detect active TC
+  // 1. Check if the page explicitly states there is no active TC
+  if (html.toLowerCase().includes("no active tropical cyclone")) {
+    return result; // No active TC
+  }
+
+  // 2. Extract bulletin archive PDFs to detect active TC
   const bulletinRegex = /href="(https:\/\/pubfiles\.pagasa\.dost\.gov\.ph\/tamss\/weather\/bulletin\/[^"]+\.pdf)"/gi;
   let bulletinMatch;
   while ((bulletinMatch = bulletinRegex.exec(html)) !== null) {

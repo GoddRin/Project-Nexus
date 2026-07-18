@@ -1,19 +1,15 @@
 import { NextResponse } from "next/server";
+import fs from "fs/promises";
+import path from "path";
 
 export async function GET() {
   try {
-    const res = await fetch("https://raw.githubusercontent.com/faeldon/philippines-json-maps/master/2023/geojson/provinces/hires/province-028100000.0.1.json", {
-      next: { revalidate: 604800 }, // Cache 7 days
-    });
-
-    if (!res.ok) {
-      return NextResponse.json({ type: "FeatureCollection", features: [], error: `HTTP ${res.status}` });
-    }
-
-    const data = await res.json();
+    const filePath = path.join(process.cwd(), "public", "data", "boundary.json");
+    const content = await fs.readFile(filePath, "utf-8");
+    const data = JSON.parse(content);
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching boundary:", error);
+    console.error("Error reading static boundary:", error);
     return NextResponse.json({ type: "FeatureCollection", features: [], error: "Boundary unavailable" });
   }
 }

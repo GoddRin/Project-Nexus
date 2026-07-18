@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * FlowLine — animated SVG sine wave representing river flow / generation curve.
@@ -10,6 +10,14 @@ import { useEffect, useRef } from "react";
 export function FlowLine({ className = "" }: { className?: string }) {
  const shouldReduceMotion = useReducedMotion();
  const pathRef = useRef<SVGPathElement>(null);
+ const [mounted, setMounted] = useState(false);
+
+ useEffect(() => {
+   // eslint-disable-next-line react-hooks/set-state-in-effect
+   setMounted(true);
+ }, []);
+
+ const isReduced = mounted ? shouldReduceMotion : false;
 
  // Generate a loose sine-wave path across the full width
  const points: string[] = [];
@@ -30,7 +38,7 @@ export function FlowLine({ className = "" }: { className?: string }) {
  const pathLength = 2400;
 
  useEffect(() => {
- if (!pathRef.current || shouldReduceMotion) return;
+ if (!pathRef.current || isReduced) return;
  const el = pathRef.current;
  // Draw-in via JS then hand off to CSS animation
  el.style.strokeDasharray = String(pathLength);
@@ -49,9 +57,9 @@ export function FlowLine({ className = "" }: { className?: string }) {
  }
 
  requestAnimationFrame(step);
- }, [shouldReduceMotion, pathLength]);
+ }, [isReduced, pathLength]);
 
- if (shouldReduceMotion) {
+ if (isReduced) {
  return (
  <div
  className={`pointer-events-none absolute inset-x-0 top-0 overflow-hidden ${className}`}

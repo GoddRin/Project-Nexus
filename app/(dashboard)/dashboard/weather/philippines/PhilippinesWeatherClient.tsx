@@ -124,6 +124,13 @@ export default function PhilippinesWeatherClient({
   const [forceMock, setForceMock] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(() => new Date());
 
+  // Live site conditions — initialized from SSR props, refreshed client-side
+  const [windSpeed, setWindSpeed] = useState<number>(localWindSpeed);
+  const [pressure, setPressure] = useState<number>(localPressure);
+  const [conditionsSource, setConditionsSource] = useState<string>("open-meteo");
+  const [conditionsUpdatedAt, setConditionsUpdatedAt] = useState<Date>(() => new Date());
+  const [isConditionsRefreshing, setIsConditionsRefreshing] = useState(false);
+
   console.log("Client Render: storms =", storms.length, "| PAGASA signal =", pagasaSignals.siteSignalNumber, "| TC =", pagasaSignals.tcName);
 
   // Set first storm expanded by default if available
@@ -134,10 +141,36 @@ export default function PhilippinesWeatherClient({
     }
   }, [storms]);
 
+  // Fetch live site conditions (wind speed + pressure) from the API
+  const refreshConditions = async () => {
+    setIsConditionsRefreshing(true);
+    try {
+      const res = await fetch(`/api/weather/conditions?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.wind_speed_10m !== null && data.wind_speed_10m !== undefined) {
+          setWindSpeed(data.wind_speed_10m);
+        }
+        if (data.pressure_msl !== null && data.pressure_msl !== undefined) {
+          setPressure(data.pressure_msl);
+        }
+        setConditionsSource(data.source ?? "open-meteo");
+        setConditionsUpdatedAt(new Date());
+      }
+    } catch (err) {
+      console.error("Error refreshing site conditions:", err);
+    } finally {
+      setIsConditionsRefreshing(false);
+    }
+  };
+
   const handleRefresh = async (useMock = false) => {
     setIsRefreshing(true);
     try {
-      // Refresh both JTWC storms and PAGASA signals in parallel
+      // Refresh storms, PAGASA signals, and live site conditions in parallel
       const [stormRes, pagasaRes] = await Promise.all([
         fetch(`/api/weather/typhoons?t=${Date.now()}${useMock ? "&mock=true" : ""}`, { cache: "no-store" }),
         fetch(`/api/weather/pagasa-signals?t=${Date.now()}`, { cache: "no-store" }),
@@ -152,6 +185,8 @@ export default function PhilippinesWeatherClient({
         const pData = await pagasaRes.json();
         setPagasaSignals(pData);
       }
+      // Also refresh conditions on every manual refresh
+      await refreshConditions();
     } catch (err) {
       console.error("Error refreshing weather data:", err);
     } finally {
@@ -159,7 +194,23 @@ export default function PhilippinesWeatherClient({
     }
   };
 
-  // Auto-refresh JTWC data every 5 minutes + PAGASA signals every 15 minutes
+  // On mount: immediately fetch fresh conditions client-side
+  // (the SSR value may be stale by the time the page hydrates)
+  useEffect(() => {
+    refreshConditions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-refresh site conditions every 10 minutes
+  useEffect(() => {
+    const conditionsInterval = setInterval(() => {
+      refreshConditions();
+    }, 600000); // 10 minutes
+    return () => clearInterval(conditionsInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-refresh JTWC storm data every 5 minutes
   useEffect(() => {
     const stormInterval = setInterval(() => {
       handleRefresh(forceMock);
@@ -345,32 +396,38 @@ export default function PhilippinesWeatherClient({
 
       {/* 2. KPI CARDS ROW (4 cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1: Wind speed at Tumauini */}
+        {/* KPI 1: Wind speed at Tumauini — live, client-refreshed */}
         <div className="p-5 rounded-2xl bg-bg-panel border border-border-hairline shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
           <div className="flex justify-between items-start">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Site Wind Speed</span>
-            <Wind className="h-4 w-4 text-flow-teal" />
+            <Wind className={cn("h-4 w-4 text-flow-teal", isConditionsRefreshing && "animate-spin")} />
           </div>
-          <div className="mt-3">
+          <div className="mt-2">
             <span className="font-display text-2xl font-bold tracking-tight text-text-primary">
-              {localWindSpeed.toFixed(1)}
+              {windSpeed.toFixed(1)}
             </span>
             <span className="text-xs text-text-muted ml-1">km/h</span>
           </div>
+          <span className="text-[9px] text-text-muted mt-1 font-mono">
+            {conditionsUpdatedAt.toLocaleTimeString("en-US", { timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit" })} PHT
+          </span>
         </div>
 
-        {/* KPI 2: Atmos pressure at Tumauini */}
+        {/* KPI 2: Atmos pressure at Tumauini — live, client-refreshed */}
         <div className="p-5 rounded-2xl bg-bg-panel border border-border-hairline shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Site Pressure</span>
-            <Compass className="h-4 w-4 text-flow-teal" />
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Site Pressure (MSLP)</span>
+            <Compass className={cn("h-4 w-4 text-flow-teal", isConditionsRefreshing && "animate-pulse")} />
           </div>
-          <div className="mt-3">
+          <div className="mt-2">
             <span className="font-display text-2xl font-bold tracking-tight text-text-primary font-mono">
-              {localPressure.toFixed(0)}
+              {pressure.toFixed(0)}
             </span>
             <span className="text-xs text-text-muted ml-1">hPa</span>
           </div>
+          <span className="text-[9px] text-text-muted mt-1 font-mono">
+            {conditionsSource === "wttr" ? "wttr.in" : "Open-Meteo"} • live
+          </span>
         </div>
 
         {/* KPI 3: Active Cyclones */}
@@ -463,12 +520,15 @@ export default function PhilippinesWeatherClient({
               className="absolute w-full border-none"
               style={{
                 top: "-40px",
-                height: "calc(100% + 58px)",
+                height: "calc(100% + 40px)", /* Crops 40px from top to hide watermark but keeps bottom timeline visible */
                 left: 0,
               }}
               title="Interactive Weather Map Embed"
               allowFullScreen
             ></iframe>
+            
+            {/* Watermark Obfuscator: Hides the Windy text watermark above the color scale on the right, without blocking the timeline on the left */}
+            <div className="absolute bottom-[16px] right-0 w-[400px] h-[24px] bg-gradient-to-r from-transparent via-[#0B1418]/80 to-[#0B1418] backdrop-blur-[2px] pointer-events-none z-10" />
           </div>
         </div>
 

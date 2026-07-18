@@ -9,17 +9,26 @@ export async function GET(request: NextRequest) {
   const isMock = mockParam === "true";
 
   try {
-    const { storms, source } = await getMergedStorms(isMock);
-    
-    console.log(`Typhoon API: Returning ${storms.length} storms, source: ${source}`);
+    const result = await getMergedStorms(isMock);
+
+    console.log(
+      `[Typhoon API] ${result.storms.length} storm(s) | source: ${result.source} | PAR clear: ${result.parClear} | checked: [${result.sourcesChecked.join(", ")}] | data from: [${result.sourcesWithData.join(", ")}]`
+    );
 
     return NextResponse.json(
-      { storms, source },
+      {
+        storms: result.storms,
+        source: result.source,
+        parClear: result.parClear,
+        sourcesChecked: result.sourcesChecked,
+        sourcesWithData: result.sourcesWithData,
+        fetchedAt: new Date().toISOString(),
+      },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          "Pragma": "no-cache",
-          "Expires": "0",
+          Pragma: "no-cache",
+          Expires: "0",
         },
       }
     );
@@ -27,12 +36,20 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching/parsing storm data:", error);
     const errMsg = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { storms: [], source: "unavailable", error: errMsg },
+      {
+        storms: [],
+        source: "error",
+        parClear: true,
+        sourcesChecked: [],
+        sourcesWithData: [],
+        error: errMsg,
+        fetchedAt: new Date().toISOString(),
+      },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          "Pragma": "no-cache",
-          "Expires": "0",
+          Pragma: "no-cache",
+          Expires: "0",
         },
       }
     );

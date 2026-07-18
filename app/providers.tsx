@@ -7,6 +7,16 @@ import { useTheme } from "next-themes";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
+// Silence the React 19 script warning caused by next-themes inline script injection
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  const orig = console.error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  console.error = (...args: any[]) => {
+    if (typeof args[0] === "string" && args[0].includes("Encountered a script tag")) return;
+    orig.apply(console, args);
+  };
+}
+
 function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,10 +15,12 @@ import {
  ChevronDown,
  User,
  ClipboardList,
+ ClipboardCheck,
  TrendingUp,
  Wrench,
  LogOut,
  Shield,
+ ShieldAlert,
  CloudLightning,
  Server,
  BarChart3,
@@ -48,11 +50,13 @@ const ACCORDION_GROUPS = [
     title: "Operations",
     items: [
       { label: "Daily Reports", href: "/dashboard/reports", icon: ClipboardList },
+      { label: "Daily Safety Logs", href: "/dashboard/daily-logs", icon: ClipboardCheck },
       { label: "Tickets", href: "/dashboard/tickets", icon: Ticket },
       { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
       { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
       { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: Globe },
       { label: "Regional Map", href: "/dashboard/regional-map", icon: Map },
+      { label: "Incidents", href: "/dashboard/incidents", icon: ShieldAlert },
     ],
   },
   {
@@ -87,7 +91,6 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  const [projectOpen, setProjectOpen] = useState(false);
  const [signingOut, setSigningOut] = useState(false);
  const pathname = usePathname();
- const router = useRouter();
  const { signOut } = useClerk();
 
  const navItems = [
@@ -99,7 +102,6 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
 
  // pendingHref: the href we navigated to optimistically (before pathname updates)
  const [pendingHref, setPendingHref] = useState<string | null>(null);
- const [, startTransition] = useTransition();
 
  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -127,13 +129,10 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
    setExpandedGroups(prev => ({ ...prev, [id]: !prev[id] }));
  };
 
- function handleNavClick(href: string) {
- // Snap the active highlight immediately, before the server responds
- setPendingHref(href);
- startTransition(() => {
- router.push(href);
- });
- }
+  function handleNavClick(href: string) {
+    // Snap the active highlight immediately, before the server responds
+    setPendingHref(href);
+  }
 
  // Resolve which item is "active" — prefer the optimistic pending href
  function isItemActive(href: string): boolean {
@@ -147,7 +146,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  return (
   <aside
     className={cn(
-      "flex h-screen flex-col border-r border-black/[0.06] dark:border-white/[0.06] bg-gradient-to-b from-black/[0.02] to-transparent dark:from-white/[0.04] dark:to-white/[0.01] shell-blur transition-[width] duration-200 ease-in-out",
+      "flex h-screen flex-col border-r border-black/[0.06] dark:border-white/[0.06] bg-gradient-to-b from-black/[0.02] to-transparent dark:from-white/[0.04] dark:to-white/[0.01] shell-blur transition-[width] duration-200 ease-in-out print:hidden",
       collapsed ? "w-16" : "max-md:w-16 md:w-60"
     )}
   >
@@ -222,8 +221,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
             <Link
               href={item.href}
               prefetch={true}
-              onClick={(e) => {
-                e.preventDefault();
+              onClick={() => {
                 handleNavClick(item.href);
               }}
               className={cn(
@@ -299,8 +297,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
                         <Link
                           href={item.href}
                           prefetch={true}
-                          onClick={(e) => {
-                            e.preventDefault();
+                          onClick={() => {
                             handleNavClick(item.href);
                           }}
                           className={cn(

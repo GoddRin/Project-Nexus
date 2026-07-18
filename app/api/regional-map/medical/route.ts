@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server";
-import { fetchOverpass } from "@/lib/overpass";
+import fs from "fs/promises";
+import path from "path";
 
 export async function GET() {
-  const query = `[out:json][timeout:25];
-node["amenity"~"^(hospital|clinic)$"](16.0,120.5,18.5,122.5);
-out body;`;
-
   try {
-    const elements = await fetchOverpass(query, { next: { revalidate: 86400 } });
-    return NextResponse.json({ elements });
+    const filePath = path.join(process.cwd(), "public", "data", "medical.json");
+    const content = await fs.readFile(filePath, "utf-8");
+    const data = JSON.parse(content);
+    return NextResponse.json(data);
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
-    console.error("Error fetching medical features from Overpass:", err);
-    return NextResponse.json({ elements: [], error: err.message || "Overpass API unavailable" });
+    console.error("Error reading static medical features:", error);
+    return NextResponse.json({ elements: [], error: "Medical features unavailable" });
   }
 }
