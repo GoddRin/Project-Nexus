@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { createMilestone, updateMilestoneStatus, logProgressSnapshot } from "./actions";
 import { ProgressChart } from "./ProgressChart";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Role, MilestoneStatus } from "@prisma/client";
+import type {  Role, MilestoneStatus  } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -80,7 +80,7 @@ export function ProgressDashboardClient({
  const router = useRouter();
  const [isPending, startTransition] = useTransition();
 
- const isElevated = userRole === Role.PROJECT_MANAGER || userRole === Role.ADMINISTRATOR;
+ const isElevated = userRole === "PROJECT_MANAGER" || userRole === "ADMINISTRATOR";
 
  // Modals / forms toggle states
  const [showLogSnapshot, setShowLogSnapshot] = useState(false);
@@ -459,7 +459,7 @@ export function ProgressDashboardClient({
  <div className="flex items-center gap-2 pt-4 mt-3 border-t border-white/5">
  {m.status !== "COMPLETED" && (
  <button
- onClick={() => handleStatusUpdate(m.id, MilestoneStatus.COMPLETED)}
+ onClick={() => handleStatusUpdate(m.id, "COMPLETED")}
  disabled={isPending}
  className="text-[10px] font-semibold text-flow-teal hover:underline"
  >
@@ -468,7 +468,7 @@ export function ProgressDashboardClient({
  )}
  {m.status !== "DELAYED" && m.status !== "COMPLETED" && (
  <button
- onClick={() => handleStatusUpdate(m.id, MilestoneStatus.DELAYED)}
+ onClick={() => handleStatusUpdate(m.id, "DELAYED")}
  disabled={isPending}
  className="text-[10px] font-semibold text-signal-red hover:underline ml-auto"
  >

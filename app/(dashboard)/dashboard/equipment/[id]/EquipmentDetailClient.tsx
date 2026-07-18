@@ -7,10 +7,10 @@ import {
   ArrowLeft, FileText, Wrench, Calendar, MapPin, ShieldCheck, 
   Trash2, Edit, Plus, Upload, Download, Trash, Loader2, Sparkles, Server
 } from "lucide-react";
-import { 
+import type {  
   EquipmentCategory, EquipmentStatus, EquipmentCondition, 
   EquipmentDocument, EquipmentMaintenanceLog
-} from "@prisma/client";
+ } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";

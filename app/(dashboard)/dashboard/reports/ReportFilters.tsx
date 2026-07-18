@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ReportStatus } from "@prisma/client";
+import type {  ReportStatus  } from "@prisma/client";
 import { cn } from "@/lib/utils";
 
 interface ReportFiltersProps {
@@ -91,7 +91,7 @@ export function ReportFilters({ showViewAllToggle }: ReportFiltersProps) {
  >
  All Status
  </button>
- {Object.values(ReportStatus).map((s) => (
+ {["SUBMITTED", "APPROVED", "REJECTED"].map((s) => (
  <button
  key={s}
  onClick={() => {

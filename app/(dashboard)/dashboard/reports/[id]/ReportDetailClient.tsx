@@ -31,7 +31,7 @@ import {
  DialogTitle,
  DialogDescription,
 } from "@/components/ui/dialog";
-import { ReportStatus, WeatherCondition } from "@prisma/client";
+import type {  ReportStatus, WeatherCondition  } from "@prisma/client";
 import { cn } from "@/lib/utils";
 
 interface Photo {
@@ -84,7 +84,7 @@ export function ReportDetailClient({ report, userRole }: ReportDetailClientProps
  const [error, setError] = useState("");
 
  const isElevated = userRole === "ADMINISTRATOR" || userRole === "PROJECT_MANAGER";
- const isSubmitted = report.status === ReportStatus.SUBMITTED;
+ const isSubmitted = report.status === "SUBMITTED";
 
  const handleApprove = async () => {
  setError("");
@@ -195,9 +195,9 @@ export function ReportDetailClient({ report, userRole }: ReportDetailClientProps
  {statusInfo.title}
  </h2>
  <p className="mt-0.5 text-xs text-text-muted">
- {report.status === ReportStatus.SUBMITTED && "Submitted for review to administrators."}
- {report.status === ReportStatus.APPROVED && `Approved by ${report.reviewedBy?.name || "Reviewer"} on ${new Date(report.reviewedAt!).toLocaleDateString()}.`}
- {report.status === ReportStatus.REJECTED && `Rejected by ${report.reviewedBy?.name || "Reviewer"} on ${new Date(report.reviewedAt!).toLocaleDateString()}.`}
+ {report.status === "SUBMITTED" && "Submitted for review to administrators."}
+ {report.status === "APPROVED" && `Approved by ${report.reviewedBy?.name || "Reviewer"} on ${new Date(report.reviewedAt!).toLocaleDateString()}.`}
+ {report.status === "REJECTED" && `Rejected by ${report.reviewedBy?.name || "Reviewer"} on ${new Date(report.reviewedAt!).toLocaleDateString()}.`}
  </p>
  </div>
  </div>
@@ -279,7 +279,7 @@ export function ReportDetailClient({ report, userRole }: ReportDetailClientProps
  )}
 
  {/* Rejection Reason display */}
- {report.status === ReportStatus.REJECTED && report.rejectionReason && (
+ {report.status === "REJECTED" && report.rejectionReason && (
  <div className="rounded-2xl border border-signal-red/20 bg-signal-red/5 p-6 shadow-md space-y-2">
  <h3 className="text-sm font-semibold text-signal-red">Reason for Rejection:</h3>
  <p className="text-sm text-text-primary leading-relaxed font-light font-mono bg-white/[0.02] border border-white/5 rounded-xl p-4">

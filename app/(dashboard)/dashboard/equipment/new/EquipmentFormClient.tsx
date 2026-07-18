@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Trash2, ArrowLeft, Loader2 } from "lucide-react";
-import { EquipmentCategory, EquipmentStatus, EquipmentCondition, SiteLocation } from "@prisma/client";
+import type { EquipmentCategory, EquipmentStatus, EquipmentCondition, SiteLocation } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { createEquipment, updateEquipment } from "../actions";
@@ -36,7 +36,7 @@ export function EquipmentFormClient({ projectId, locations, initialData }: Equip
 
   const [tag, setTag] = useState(initialData?.equipmentTag || "");
   const [name, setName] = useState(initialData?.name || "");
-  const [category, setCategory] = useState<EquipmentCategory>(initialData?.category || EquipmentCategory.TURBINE);
+  const [category, setCategory] = useState<EquipmentCategory>(initialData?.category || "TURBINE");
   const [manufacturer, setManufacturer] = useState(initialData?.manufacturer || "");
   const [model, setModel] = useState(initialData?.model || "");
   const [serialNumber, setSerialNumber] = useState(initialData?.serialNumber || "");
@@ -51,8 +51,8 @@ export function EquipmentFormClient({ projectId, locations, initialData }: Equip
   const [commissionDate, setCommissionDate] = useState(formatDateForInput(initialData?.commissionDate));
   const [locationStr, setLocationStr] = useState(initialData?.location || "");
   const [siteLocationId, setSiteLocationId] = useState(initialData?.siteLocationId || "");
-  const [status, setStatus] = useState<EquipmentStatus>(initialData?.status || EquipmentStatus.INSTALLED);
-  const [condition, setCondition] = useState<EquipmentCondition>(initialData?.condition || EquipmentCondition.GOOD);
+  const [status, setStatus] = useState<EquipmentStatus>(initialData?.status || "INSTALLED");
+  const [condition, setCondition] = useState<EquipmentCondition>(initialData?.condition || "GOOD");
 
   // Specifications
   const initialSpecs = initialData?.specifications
@@ -184,7 +184,7 @@ export function EquipmentFormClient({ projectId, locations, initialData }: Equip
                   onChange={(e) => setCategory(e.target.value as EquipmentCategory)}
                   className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 text-sm text-text-primary focus:border-flow-teal outline-none transition-colors [&_option]:bg-bg-panel [&_option]:text-text-primary"
                 >
-                  {Object.keys(EquipmentCategory).map((cat) => (
+                  {["TURBINE", "GENERATOR", "TRANSFORMER", "GOVERNOR", "EXCITATION_SYSTEM", "CIRCUIT_BREAKER", "PROTECTION_RELAY", "GATE_VALVE", "CRANE_HOIST", "SCADA_PLC", "METERING_PANEL", "DC_SYSTEM", "FIRE_SUPPRESSION", "DIESEL_GENERATOR", "PUMP", "OTHER"].map((cat) => (
                     <option key={cat} value={cat}>
                       {cat.replace("_", " ")}
                     </option>
@@ -296,7 +296,7 @@ export function EquipmentFormClient({ projectId, locations, initialData }: Equip
                 onChange={(e) => setStatus(e.target.value as EquipmentStatus)}
                 className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 text-sm text-text-primary focus:border-flow-teal outline-none transition-colors [&_option]:bg-bg-panel [&_option]:text-text-primary"
               >
-                {Object.keys(EquipmentStatus).map((st) => (
+                {["INSTALLED", "COMMISSIONED", "UNDER_MAINTENANCE", "DECOMMISSIONED", "PENDING_DELIVERY"].map((st) => (
                   <option key={st} value={st}>
                     {st.replace("_", " ")}
                   </option>
@@ -312,7 +312,7 @@ export function EquipmentFormClient({ projectId, locations, initialData }: Equip
                 onChange={(e) => setCondition(e.target.value as EquipmentCondition)}
                 className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] p-3 text-sm text-text-primary focus:border-flow-teal outline-none transition-colors [&_option]:bg-bg-panel [&_option]:text-text-primary"
               >
-                {Object.keys(EquipmentCondition).map((cond) => (
+                {["EXCELLENT", "GOOD", "FAIR", "POOR", "CRITICAL"].map((cond) => (
                   <option key={cond} value={cond}>
                     {cond}
                   </option>

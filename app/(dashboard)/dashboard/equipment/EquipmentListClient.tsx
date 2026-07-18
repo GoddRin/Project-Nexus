@@ -6,7 +6,7 @@ import {
   Zap, Cpu, Shield, ArrowUp, Battery, Flame, Droplet, Settings,
   Search, Plus, Grid, List, Activity
 } from "lucide-react";
-import { EquipmentCategory, EquipmentStatus, EquipmentCondition } from "@prisma/client";
+import type {  EquipmentCategory, EquipmentStatus, EquipmentCondition  } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -205,7 +205,7 @@ export function EquipmentListClient({ initialEquipment, isEditor }: EquipmentLis
             className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-text-primary outline-none focus:border-flow-teal transition-colors [&_option]:bg-bg-panel [&_option]:text-text-primary"
           >
             <option value="all">All Statuses</option>
-            {Object.keys(EquipmentStatus).map((st) => (
+            {["INSTALLED", "COMMISSIONED", "UNDER_MAINTENANCE", "DECOMMISSIONED", "PENDING_DELIVERY"].map((st) => (
               <option key={st} value={st}>
                 {st.replace("_", " ")}
               </option>

@@ -98,7 +98,7 @@ export default async function TicketsPage({
  >
  All
  </Link>
- {Object.values(TicketStatus).map((status) => (
+ {["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"].map((status) => (
  <Link
  key={status}
  href={`/dashboard/tickets?status=${status}`}

@@ -161,7 +161,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
  <SelectValue />
  </SelectTrigger>
  <SelectContent>
- {Object.values(TicketStatus).map((status) => (
+ {["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"].map((status) => (
  <SelectItem key={status} value={status}>{status.replace("_", " ")}</SelectItem>
  ))}
  </SelectContent>

@@ -7,7 +7,7 @@ import { CheckCircle2, AlertTriangle, Play, HelpCircle, Lock, RefreshCw } from "
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MilestoneCategory, MilestoneStatus2, LocationStatus } from "@prisma/client";
+import type {  MilestoneCategory, MilestoneStatus2, LocationStatus  } from "@prisma/client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

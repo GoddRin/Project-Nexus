@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { SiteLocation } from "@prisma/client";
+import type {  SiteLocation  } from "@prisma/client";
 import { Maximize, Minimize } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";

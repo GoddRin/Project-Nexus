@@ -5,7 +5,7 @@ import { updateProjectCod, updateMilestoneStatus, reorderMilestones, addMileston
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown, Calendar, Plus, ShieldAlert, CheckCircle2, AlertTriangle, Play, HelpCircle, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { MilestoneCategory, MilestoneStatus2 } from "@prisma/client";
+import type {  MilestoneCategory, MilestoneStatus2  } from "@prisma/client";
 
 interface Milestone {
   id: string;

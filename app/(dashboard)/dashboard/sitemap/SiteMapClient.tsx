@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { SiteMapSVG } from "./SiteMapSVG";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { SiteLocation, SiteLocationPhoto, SiteLocationEngineer, User, PlantEquipment, Ticket } from "@prisma/client";
+import type {  SiteLocation, SiteLocationPhoto, SiteLocationEngineer, User, PlantEquipment, Ticket  } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { 

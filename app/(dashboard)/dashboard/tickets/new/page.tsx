@@ -16,7 +16,7 @@ import {
  SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { TicketPriority } from "@prisma/client";
+import type {  TicketPriority  } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 
 function SubmitButton() {
@@ -110,7 +110,7 @@ export default function NewTicketPage() {
  <SelectValue placeholder="Select priority" />
  </SelectTrigger>
  <SelectContent>
- {Object.values(TicketPriority).map((priority) => (
+ {["LOW", "MEDIUM", "HIGH", "URGENT"].map((priority) => (
  <SelectItem key={priority} value={priority}>
  {priority}
  </SelectItem>
