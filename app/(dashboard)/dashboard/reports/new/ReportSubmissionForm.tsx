@@ -15,7 +15,7 @@ import {
  SelectTrigger,
  SelectValue,
 } from "@/components/ui/select";
-import { WeatherCondition } from "@prisma/client";
+import type { WeatherCondition } from "@prisma/client";
 import {
  Upload,
  X,
@@ -51,7 +51,7 @@ export function ReportSubmissionForm({ projectId }: ReportSubmissionFormProps) {
  // Form Fields
  const [reportDate, setReportDate] = useState(new Date().toISOString().split("T")[0]);
  const [workArea, setWorkArea] = useState("");
- const [weatherCondition, setWeatherCondition] = useState<WeatherCondition>(WeatherCondition.SUNNY);
+ const [weatherCondition, setWeatherCondition] = useState<WeatherCondition>("SUNNY");
  const [accomplishments, setAccomplishments] = useState("");
  const [equipmentUsed, setEquipmentUsed] = useState("");
  const [materialsUsed, setMaterialsUsed] = useState("");
