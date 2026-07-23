@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -52,15 +52,20 @@ function MapRecenter({ storms }: { storms: Storm[] }) {
   const map = useMap();
 
   useEffect(() => {
-    if (storms.length > 0) {
-      const storm = storms[0];
-      // Center between the site and the storm for best view
-      const midLat = (SITE_LAT + storm.lat) / 2;
-      const midLng = (SITE_LNG + storm.lng) / 2;
-      // Fixed zoom level 5 to show full archipelago + typhoon track without over-zooming
-      map.setView([midLat, midLng], 5);
-    } else {
-      map.setView([12.8, 121.8], 5);
+    try {
+      if (!map || !map.getContainer()) return;
+      if (storms.length > 0) {
+        const storm = storms[0];
+        // Center between the site and the storm for best view
+        const midLat = (SITE_LAT + storm.lat) / 2;
+        const midLng = (SITE_LNG + storm.lng) / 2;
+        // Fixed zoom level 5 to show full archipelago + typhoon track without over-zooming
+        map.setView([midLat, midLng], 5);
+      } else {
+        map.setView([12.8, 121.8], 5);
+      }
+    } catch {
+      // Ignore transient setView errors during unmount/Fast Refresh
     }
   }, [storms, map]);
 
@@ -69,27 +74,61 @@ function MapRecenter({ storms }: { storms: Storm[] }) {
 
 export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
+    const container = mapContainerRef.current;
+    return () => {
+      if (container) {
+        // Clear internal Leaflet container ID to prevent "Map container is being reused by another instance" on Fast Refresh
+        delete (container as any)._leaflet_id;
+      }
+    };
+  }, []);
+
+  // Custom DivIcon for Tumauini HEPP Site Pin (Memoized to prevent appendChild crashes)
+  const siteIcon = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    return L.divIcon({
+      className: "custom-site-pin",
+      html: `
+        <div class="relative flex items-center justify-center">
+          <div class="absolute w-8 h-8 rounded-full bg-teal-500/20 animate-ping"></div>
+          <div class="absolute w-5 h-5 rounded-full bg-teal-500/40 animate-pulse"></div>
+          <div class="w-3.5 h-3.5 rounded-full bg-[#1FB6A6] border-2 border-white shadow-md"></div>
+        </div>
+      `,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+    });
+  }, []);
+
+  // Memoized storm icon factory to keep icon references stable across re-renders
+  const getStormIcon = useMemo(() => {
+    const iconCache: Record<string, L.DivIcon> = {};
+    return (stormColor: string) => {
+      if (!iconCache[stormColor]) {
+        iconCache[stormColor] = L.divIcon({
+          className: "custom-storm-pin",
+          html: `
+            <div class="relative flex items-center justify-center">
+              <div class="absolute w-12 h-12 rounded-full animate-ping" style="background-color: ${stormColor}; opacity: 0.18;"></div>
+              <div class="absolute w-7 h-7 rounded-full animate-pulse" style="background-color: ${stormColor}; opacity: 0.35;"></div>
+              <div class="w-5 h-5 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-white text-[9px] font-bold" style="background-color: ${stormColor};">
+                🌀
+              </div>
+            </div>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20],
+        });
+      }
+      return iconCache[stormColor];
+    };
   }, []);
 
   if (!isMounted) return null;
-
-  // Custom DivIcon for Tumauini HEPP Site Pin
-  const siteIcon = L.divIcon({
-    className: "custom-site-pin",
-    html: `
-      <div class="relative flex items-center justify-center">
-        <div class="absolute w-8 h-8 rounded-full bg-teal-500/20 animate-ping"></div>
-        <div class="absolute w-5 h-5 rounded-full bg-teal-500/40 animate-pulse"></div>
-        <div class="w-3.5 h-3.5 rounded-full bg-[#1FB6A6] border-2 border-white shadow-md"></div>
-      </div>
-    `,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-  });
 
   // Helper to get category-based colors
   const getCategoryColor = (category: string, windKnots: number) => {
@@ -123,7 +162,7 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
   const lastUpdate = getLastUpdateLabel();
 
   return (
-    <div className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner">
+    <div ref={mapContainerRef} className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner">
       <MapContainer
         center={[12.8, 121.8]}
         zoom={5}
@@ -146,15 +185,17 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
         />
 
         {/* Site Pin */}
-        <Marker position={[SITE_LAT, SITE_LNG]} icon={siteIcon}>
-          <Popup>
-            <div className="p-2 text-slate-900 font-sans">
-              <h4 className="font-bold text-sm text-[#0D9488]">Tumauini HEPP</h4>
-              <p className="text-xs text-slate-600">Project Operations Center</p>
-              <p className="text-xs font-mono mt-1">16.9833&deg; N, 122.0833&deg; E</p>
-            </div>
-          </Popup>
-        </Marker>
+        {siteIcon && (
+          <Marker position={[SITE_LAT, SITE_LNG]} icon={siteIcon}>
+            <Popup>
+              <div className="p-2 text-slate-900 font-sans">
+                <h4 className="font-bold text-sm text-[#0D9488]">Tumauini HEPP</h4>
+                <p className="text-xs text-slate-600">Project Operations Center</p>
+                <p className="text-xs font-mono mt-1">16.9833&deg; N, 122.0833&deg; E</p>
+              </div>
+            </Popup>
+          </Marker>
+        )}
 
         {/* Distance Rings around site (only if storms are active) */}
         {storms.length > 0 && (
@@ -180,6 +221,7 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
         {/* Active Storms Visuals */}
         {storms.map((storm) => {
           const stormColor = getCategoryColor(storm.category, storm.windSpeedKnots);
+          const stormIcon = getStormIcon(stormColor);
 
           // Forecast track — skip index 0 ("Current") to avoid duplicating storm marker position
           const futureForecast = storm.forecast.filter(
@@ -195,22 +237,6 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
           );
           // Connect past track to current position
           const fullPastLine = [...pastTrackPoints, [storm.lat, storm.lng] as [number, number]];
-
-          // Custom DivIcon for Storm Center
-          const stormIcon = L.divIcon({
-            className: "custom-storm-pin",
-            html: `
-              <div class="relative flex items-center justify-center">
-                <div class="absolute w-12 h-12 rounded-full animate-ping" style="background-color: ${stormColor}; opacity: 0.18;"></div>
-                <div class="absolute w-7 h-7 rounded-full animate-pulse" style="background-color: ${stormColor}; opacity: 0.35;"></div>
-                <div class="w-5 h-5 rounded-full border-2 border-white shadow-xl flex items-center justify-center text-white text-[9px] font-bold" style="background-color: ${stormColor};">
-                  🌀
-                </div>
-              </div>
-            `,
-            iconSize: [40, 40],
-            iconAnchor: [20, 20],
-          });
 
           return (
             <div key={storm.id}>
@@ -252,6 +278,22 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
                   </Popup>
                 </Circle>
               ))}
+
+              {/* ═══ UNCERTAINTY CONE (forecast probability area) ═══ */}
+              {storm.uncertaintyCone && storm.uncertaintyCone.length > 2 && (
+                <Polygon
+                  positions={storm.uncertaintyCone.map((p) => [p.lat, p.lng])}
+                  pathOptions={{
+                    fillColor: stormColor,
+                    fillOpacity: 0.08,
+                    color: stormColor,
+                    weight: 1,
+                    dashArray: "4, 6",
+                    opacity: 0.3,
+                    className: "uncertainty-cone-poly",
+                  }}
+                />
+              )}
 
               {/* ═══ FORECAST TRACK (single dashed line — where the storm IS GOING) ═══ */}
               <Polyline

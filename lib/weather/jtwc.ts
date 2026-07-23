@@ -151,14 +151,21 @@ function parseWarningText(text: string, stormId: string, stormName: string, pubD
     });
   }
   
-  // Build uncertainty cone polygon based on forecast tracks
-  const uncertaintyCone = forecast.map(f => ({ lat: f.lat, lng: f.lng }));
-  if (uncertaintyCone.length > 1) {
-    const numPoints = uncertaintyCone.length;
-    for (let i = numPoints - 1; i >= 0; i--) {
-      const p = uncertaintyCone[i];
-      uncertaintyCone.push({ lat: p.lat + 0.4, lng: p.lng - 0.4 });
-    }
+  // Build uncertainty cone polygon starting from current position
+  const coneBase = [{ lat, lng }, ...forecast];
+  const uncertaintyCone: { lat: number; lng: number }[] = [];
+  const offsetScale = 0.25; // degrees widening per forecast step
+  // Right side of track
+  for (let i = 0; i < coneBase.length; i++) {
+    const f = coneBase[i];
+    const offset = offsetScale * i;
+    uncertaintyCone.push({ lat: f.lat + offset * 0.5, lng: f.lng + offset * 0.3 });
+  }
+  // Left side of track (reversed)
+  for (let i = coneBase.length - 1; i >= 0; i--) {
+    const f = coneBase[i];
+    const offset = offsetScale * i;
+    uncertaintyCone.push({ lat: f.lat - offset * 0.5, lng: f.lng - offset * 0.3 });
   }
 
   // Parse wind radii in NM, convert to KM
