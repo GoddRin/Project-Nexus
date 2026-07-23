@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -57,14 +57,8 @@ function MapRecenter({ storms }: { storms: Storm[] }) {
       // Center between the site and the storm for best view
       const midLat = (SITE_LAT + storm.lat) / 2;
       const midLng = (SITE_LNG + storm.lng) / 2;
-      // Adjust zoom based on distance
-      const dist = storm.distanceKm;
-      let zoom = 5;
-      if (dist > 2000) zoom = 4;
-      else if (dist > 1000) zoom = 5;
-      else if (dist > 500) zoom = 6;
-      else zoom = 7;
-      map.setView([midLat, midLng], zoom);
+      // Fixed zoom level 5 to show full archipelago + typhoon track without over-zooming
+      map.setView([midLat, midLng], 5);
     } else {
       map.setView([12.8, 121.8], 5);
     }
@@ -186,7 +180,13 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
         {/* Active Storms Visuals */}
         {storms.map((storm) => {
           const stormColor = getCategoryColor(storm.category, storm.windSpeedKnots);
-          const forecastPoints = storm.forecast.map((f) => [f.lat, f.lng] as [number, number]);
+
+          // Forecast track — skip index 0 ("Current") to avoid duplicating storm marker position
+          const futureForecast = storm.forecast.filter(
+            (f) => f.time.toLowerCase() !== "current"
+          );
+          const forecastPoints = futureForecast.map((f) => [f.lat, f.lng] as [number, number]);
+          // Track line: from current storm position → through future forecast points
           const trackPoints = [[storm.lat, storm.lng], ...forecastPoints] as [number, number][];
 
           // Build past track points array
@@ -253,23 +253,7 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
                 </Circle>
               ))}
 
-              {/* ═══ UNCERTAINTY CONE (forecast area) ═══ */}
-              {storm.uncertaintyCone && storm.uncertaintyCone.length > 0 && (
-                <Polygon
-                  positions={storm.uncertaintyCone.map((p) => [p.lat, p.lng])}
-                  pathOptions={{
-                    fillColor: stormColor,
-                    fillOpacity: 0.1,
-                    color: stormColor,
-                    weight: 1,
-                    dashArray: "3, 5",
-                    opacity: 0.3,
-                    className: "uncertainty-cone-poly",
-                  }}
-                />
-              )}
-
-              {/* ═══ FORECAST TRACK (dashed line — where the storm IS GOING) ═══ */}
+              {/* ═══ FORECAST TRACK (single dashed line — where the storm IS GOING) ═══ */}
               <Polyline
                 positions={trackPoints}
                 pathOptions={{
@@ -280,6 +264,7 @@ export default function TyphoonMap({ storms, lastUpdated }: TyphoonMapProps) {
                   className: "typhoon-track-line",
                 }}
               />
+
 
               {/* Forecast Point Markers with time labels */}
               {storm.forecast.map((fc, idx) => {

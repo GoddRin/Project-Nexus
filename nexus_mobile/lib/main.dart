@@ -24,7 +24,7 @@ class NexusMobileApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WeatherProvider()),
       ],
       child: MaterialApp(
-        title: 'Project Nexus - Safety Officer',
+        title: 'SCIC Safety',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,

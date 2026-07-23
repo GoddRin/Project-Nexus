@@ -51,13 +51,38 @@ class StormData {
   });
 
   factory StormData.fromJson(Map<String, dynamic> json) {
+    final rawLat = json['latitude'] ?? json['lat'] ?? 0.0;
+    final rawLng = json['longitude'] ?? json['lng'] ?? 0.0;
+    final rawWinds = json['maxWinds'] ?? json['windSpeedKph'] ?? json['maxWindsKph'] ?? 0;
+
+    double parsedLat = 0.0;
+    if (rawLat is num) {
+      parsedLat = rawLat.toDouble();
+    } else if (rawLat != null) {
+      parsedLat = double.tryParse(rawLat.toString()) ?? 0.0;
+    }
+
+    double parsedLng = 0.0;
+    if (rawLng is num) {
+      parsedLng = rawLng.toDouble();
+    } else if (rawLng != null) {
+      parsedLng = double.tryParse(rawLng.toString()) ?? 0.0;
+    }
+
+    int parsedWinds = 0;
+    if (rawWinds is num) {
+      parsedWinds = rawWinds.toInt();
+    } else if (rawWinds != null) {
+      parsedWinds = int.tryParse(rawWinds.toString()) ?? 0;
+    }
+
     return StormData(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       category: json['category'] ?? '',
-      latitude: (json['latitude'] ?? 0.0).toDouble(),
-      longitude: (json['longitude'] ?? 0.0).toDouble(),
-      maxWinds: json['maxWinds'] ?? 0,
+      latitude: parsedLat,
+      longitude: parsedLng,
+      maxWinds: parsedWinds,
     );
   }
 }

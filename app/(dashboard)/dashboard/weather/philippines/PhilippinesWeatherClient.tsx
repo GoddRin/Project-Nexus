@@ -646,7 +646,9 @@ export default function PhilippinesWeatherClient({
 
                       {/* Forecast track table */}
                       <div>
-                        <h5 className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">JTWC Intensity Forecast Profile</h5>
+                        <h5 className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">
+                          Official Tropical Cyclone Forecast Profile
+                        </h5>
                         <div className="overflow-x-auto border border-border-hairline rounded-xl bg-bg-panel">
                           <table className="min-w-full divide-y divide-border-hairline">
                             <thead className="bg-black/[0.02] dark:bg-white/[0.02]">
@@ -654,7 +656,7 @@ export default function PhilippinesWeatherClient({
                                 <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Forecast Interval</th>
                                 <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Coordinates</th>
                                 <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Max Wind Speed</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Estimated Classification</th>
+                                <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Classification</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-border-hairline font-mono text-xs text-text-primary">

@@ -315,38 +315,43 @@ class _WeatherScreenState extends State<WeatherScreen> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         const Spacer(),
-        // Show LIVE badge when online, CACHED when offline
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: _isOnline
-                ? const Color(0xFF2DD4BF).withValues(alpha: 0.1)
-                : Colors.orange.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: _isOnline
-                  ? const Color(0xFF2DD4BF).withValues(alpha: 0.3)
-                  : Colors.orangeAccent.withValues(alpha: 0.4),
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                _isOnline ? Icons.radar : Icons.cloud_off,
-                color: _isOnline ? const Color(0xFF2DD4BF) : Colors.orangeAccent,
-                size: 14,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                _isOnline ? 'LIVE' : 'CACHED',
-                style: TextStyle(
-                  color: _isOnline ? const Color(0xFF2DD4BF) : Colors.orangeAccent,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+        // Show LIVE badge when online and not using offline cache
+        Builder(
+          builder: (context) {
+            final isLive = _isOnline && !weather.isOfflineCached;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: isLive
+                    ? const Color(0xFF2DD4BF).withValues(alpha: 0.1)
+                    : Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isLive
+                      ? const Color(0xFF2DD4BF).withValues(alpha: 0.3)
+                      : Colors.orangeAccent.withValues(alpha: 0.4),
                 ),
               ),
-            ],
-          ),
+              child: Row(
+                children: [
+                  Icon(
+                    isLive ? Icons.radar : Icons.cloud_off,
+                    color: isLive ? const Color(0xFF2DD4BF) : Colors.orangeAccent,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    isLive ? 'LIVE' : 'CACHED',
+                    style: TextStyle(
+                      color: isLive ? const Color(0xFF2DD4BF) : Colors.orangeAccent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
         ),
       ],
     );

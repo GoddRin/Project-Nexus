@@ -86,7 +86,7 @@ class WeatherProvider extends ChangeNotifier {
       _signalData = cachedSignal ?? _signalData;
       _typhoonData = cachedTyphoons ?? _typhoonData;
       _isOfflineCached = true;
-      _errorMessage = '';
+      _errorMessage = 'Server: $debugUrl\nError: ${debugError.length > 120 ? debugError.substring(0, 120) : debugError}';
     } else {
       // No cache at all — show the exact URL and error so we can diagnose
       _errorMessage = 'Server: $debugUrl\nError: ${debugError.length > 120 ? debugError.substring(0, 120) : debugError}';

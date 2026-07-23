@@ -6,8 +6,8 @@ import { fetchPagasaSignals } from "@/lib/weather/pagasa";
 export const dynamic = "force-dynamic";
 
 export default async function PhilippinesWeatherPage() {
-  // Fetch all data in parallel for speed
-  const [weatherResult, { storms: initialStorms }, initialPagasaSignals] = await Promise.all([
+  // Fetch all data in parallel with safe error boundaries
+  const [weatherResult, stormsResult, initialPagasaSignals] = await Promise.all([
     fetch(
       "https://api.open-meteo.com/v1/forecast?latitude=16.9833&longitude=122.0833&current=wind_speed_10m,pressure_msl&timezone=Asia%2FManila&forecast_days=1",
       { cache: "no-store" }
@@ -23,20 +23,61 @@ export default async function PhilippinesWeatherPage() {
       }),
 
     // 2. Centralized merged storm data
-    getMergedStorms(),
+    getMergedStorms().catch((err) => {
+      console.error("Error getting merged storms:", err);
+      return { storms: [], source: "fallback", parClear: true, sourcesChecked: [], sourcesWithData: [] };
+    }),
 
     // 3. PAGASA signal data (real-time bulletin scraping)
-    fetchPagasaSignals(),
+    fetchPagasaSignals().catch((err) => {
+      console.error("Error fetching PAGASA signals:", err);
+      return {
+        hasActiveBulletin: false,
+        tcName: "",
+        tcCategory: "",
+        siteSignalNumber: 0,
+        signals: [],
+        position: null,
+        movement: "",
+        maxWindsKph: 0,
+        gustsKph: 0,
+        forecastPositions: [],
+        movementDirection: "",
+        movementSpeedKph: 0,
+        bulletinUrls: [],
+        fetchedAt: new Date().toISOString(),
+        source: "unavailable" as const,
+      };
+    }),
   ]);
+
+  const initialStorms = stormsResult?.storms ?? [];
+  const safePagasaSignals = initialPagasaSignals ?? {
+    hasActiveBulletin: false,
+    tcName: "",
+    tcCategory: "",
+    siteSignalNumber: 0,
+    signals: [],
+    position: null,
+    movement: "",
+    maxWindsKph: 0,
+    gustsKph: 0,
+    forecastPositions: [],
+    movementDirection: "",
+    movementSpeedKph: 0,
+    bulletinUrls: [],
+    fetchedAt: new Date().toISOString(),
+    source: "unavailable" as const,
+  };
 
   const localWindSpeed = weatherResult?.wind_speed_10m ?? 12.5;
   const localPressure = weatherResult?.pressure_msl ?? 1011.0;
 
   console.log(
     "Server Page: storms:", initialStorms.length,
-    "| PAGASA signal:", initialPagasaSignals.siteSignalNumber,
-    "| TC:", initialPagasaSignals.tcName || "none",
-    "| Source:", initialPagasaSignals.source
+    "| PAGASA signal:", safePagasaSignals.siteSignalNumber,
+    "| TC:", safePagasaSignals.tcName || "none",
+    "| Source:", safePagasaSignals.source
   );
 
   // Extract Windy API key from environment
@@ -52,7 +93,7 @@ export default async function PhilippinesWeatherPage() {
         localWindSpeed={localWindSpeed}
         localPressure={localPressure}
         initialStorms={initialStorms}
-        initialPagasaSignals={initialPagasaSignals}
+        initialPagasaSignals={safePagasaSignals}
         apiKey={windyApiKey}
       />
     </div>

@@ -143,9 +143,9 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
         const clampedRatio = Math.max(0.5, Math.min(1.5, windScaleRatio));
 
         const mergedForecast = (
-          jtwcStorm.forecast.length > 1
-            ? jtwcStorm.forecast
-            : pagasaStorm.forecast
+          pagasaStorm.forecast && pagasaStorm.forecast.length > 1
+            ? pagasaStorm.forecast
+            : jtwcStorm.forecast
         ).map((f, idx) => {
           if (idx === 0 || f.time.toLowerCase() === "current") {
             return {
@@ -244,5 +244,14 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
 
   const parClear = storms.length === 0;
 
-  return { storms, source, parClear, sourcesChecked, sourcesWithData };
+  // Add alias fields (latitude, longitude, maxWinds, maxWindsKph) to guarantee compatibility across all client apps
+  const enrichedStorms = storms.map((s) => ({
+    ...s,
+    latitude: s.lat,
+    longitude: s.lng,
+    maxWinds: s.windSpeedKph,
+    maxWindsKph: s.windSpeedKph,
+  }));
+
+  return { storms: enrichedStorms as any, source, parClear, sourcesChecked, sourcesWithData };
 }

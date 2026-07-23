@@ -139,7 +139,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _loadChecklistState() async {
     final prefs = await SharedPreferences.getInstance();
     final today = DateTime.now().toIso8601String().substring(0, 10); // "YYYY-MM-DD"
-    final savedDate = prefs.getString('checklist_date');
+    final savedDate = prefs.getString('checklist_date_v2');
 
     // Load headcount (it persists regardless of the date)
     final savedHeadcount = prefs.getString('zoneBreakdown');
@@ -154,27 +154,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (savedDate == today) {
       setState(() {
-        _toolboxTalkCompleted = prefs.getBool('toolboxTalk') ?? false;
-        _heavyEqInspected = prefs.getBool('heavyEq') ?? false;
-        _ppeChecked = prefs.getBool('ppeChecked') ?? false;
-        _signedOff = prefs.getBool('signedOff') ?? false;
+        _toolboxTalkCompleted = prefs.getBool('toolboxTalk_v2') ?? false;
+        _heavyEqInspected = prefs.getBool('heavyEq_v2') ?? false;
+        _ppeChecked = prefs.getBool('ppeChecked_v2') ?? false;
+        _signedOff = prefs.getBool('signedOff_v2') ?? false;
       });
     } else {
       // It's a new day, clear ONLY the checklist state
-      await prefs.remove('toolboxTalk');
-      await prefs.remove('heavyEq');
-      await prefs.remove('ppeChecked');
-      await prefs.remove('signedOff');
-      await prefs.setString('checklist_date', today);
+      await prefs.remove('toolboxTalk_v2');
+      await prefs.remove('heavyEq_v2');
+      await prefs.remove('ppeChecked_v2');
+      await prefs.remove('signedOff_v2');
+      await prefs.setString('checklist_date_v2', today);
+      
+      setState(() {
+        _toolboxTalkCompleted = false;
+        _heavyEqInspected = false;
+        _ppeChecked = false;
+        _signedOff = false;
+      });
     }
   }
 
   Future<void> _saveChecklistState() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('toolboxTalk', _toolboxTalkCompleted);
-    await prefs.setBool('heavyEq', _heavyEqInspected);
-    await prefs.setBool('ppeChecked', _ppeChecked);
-    await prefs.setBool('signedOff', _signedOff);
+    await prefs.setBool('toolboxTalk_v2', _toolboxTalkCompleted);
+    await prefs.setBool('heavyEq_v2', _heavyEqInspected);
+    await prefs.setBool('ppeChecked_v2', _ppeChecked);
+    await prefs.setBool('signedOff_v2', _signedOff);
   }
 
   @override
@@ -465,7 +472,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Container(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(context).padding.bottom),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0F172A),
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -994,7 +1001,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Uri.parse('$apiBase/daily-logs'),
                           headers: {'Content-Type': 'application/json'},
                           body: jsonEncode(signOffPayload),
-                        );
+                        ).timeout(const Duration(seconds: 10));
 
                         if (response.statusCode == 201) {
                           setState(() {
@@ -1036,37 +1043,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             );
                           }
                         } else {
-                          // Server returned error — queue offline as fallback
-                          await OfflineSyncService.enqueue(signOffPayload);
-                          await _refreshPendingSyncCount();
+                          // Server returned error
                           setState(() {
-                            _signedOff = true;
                             _isSigningOff = false;
                           });
-                          _saveChecklistState();
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Server error — saved locally, will retry when online.'),
-                                backgroundColor: Colors.orangeAccent,
+                              SnackBar(
+                                content: Text('Server Error: ${response.statusCode}. Cannot submit sign-off.'),
+                                backgroundColor: Colors.redAccent,
                               ),
                             );
                           }
                         }
                       } catch (e) {
-                        // Network exception — queue and complete sign-off locally
-                        await OfflineSyncService.enqueue(signOffPayload);
-                        await _refreshPendingSyncCount();
+                        // Network exception
                         setState(() {
-                          _signedOff = true;
                           _isSigningOff = false;
                         });
-                        _saveChecklistState();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Saved locally — will sync to server automatically.'),
-                              backgroundColor: Colors.orangeAccent,
+                            SnackBar(
+                              content: Text('Connection Failed: Ensure server is running and accessible.'),
+                              backgroundColor: Colors.redAccent,
                             ),
                           );
                         }

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, Bell, Check, Clock, Ticket, Shield, Wrench, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { getRecentNotifications, NotificationItem } from "@/lib/actions/notifications";
+import type { NotificationItem } from "@/lib/actions/notifications";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -29,9 +29,14 @@ export function TopBar({ className }: TopBarProps) {
       setLastReadAt(parseInt(storedLastRead, 10));
     }
 
-    getRecentNotifications().then(data => {
-      setNotifications(data);
-    });
+    fetch("/api/notifications", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data)) setNotifications(data);
+      })
+      .catch((err) => {
+        console.error("Error loading notifications:", err);
+      });
   }, []);
 
   // Handle clicking outside to close

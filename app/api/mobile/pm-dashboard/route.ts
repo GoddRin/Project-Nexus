@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db/prisma';
 import { getOrCreateUser } from '@/lib/auth/getOrCreateUser';
 import { currentUser } from '@clerk/nextjs/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     // 1. Verify Authentication & Role
