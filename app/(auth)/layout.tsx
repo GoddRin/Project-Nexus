@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FlowLine } from "@/components/shared/FlowLine";
 
 export default function AuthLayout({
@@ -13,24 +14,29 @@ export default function AuthLayout({
  {/* Brand lockup */}
  <div className="relative z-10 flex w-full max-w-md flex-col items-center px-4">
  {/* SCIC Logo area */}
- <div className="mb-8 flex flex-col items-center gap-3">
- <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-green">
- <svg
- viewBox="0 0 24 24"
- fill="none"
- className="h-7 w-7 text-white"
- aria-hidden="true"
- >
- <path
- d="M13 3L4 14h7l-2 7 9-11h-7l2-7z"
- fill="currentColor"
- />
- </svg>
- </div>
+ <div className="mb-6 flex flex-col items-center gap-3">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white dark:bg-[#121C21] p-1.5 border border-slate-200/80 dark:border-white/10 shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="SCIC THEPP Logo"
+              width={64}
+              height={64}
+              className="h-full w-full object-contain rounded-xl dark:hidden"
+              priority
+            />
+            <Image
+              src="/logo-dark.png"
+              alt="SCIC THEPP Dark Logo"
+              width={64}
+              height={64}
+              className="hidden h-full w-full object-contain rounded-xl dark:block"
+              priority
+            />
+          </div>
  <div className="text-center">
- <h1 className="font-display text-xl font-semibold text-text-primary">
- Project Nexus
- </h1>
+            <h1 className="font-display text-xl font-semibold text-text-primary">
+              SCIC THEPP
+            </h1>
  <p className="mt-0.5 text-xs text-text-muted">
  Site Operations Portal
  </p>

@@ -56,6 +56,56 @@ const MUNICIPALITIES = [
   { name: "San Mariano", lat: 16.9806, lng: 122.0125 },
 ];
 
+const OPEN_SATELLITE_3D_STYLE: any = {
+  version: 8,
+  sources: {
+    "esri-imagery": {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      ],
+      tileSize: 256,
+      attribution: "Esri, Maxar, Earthstar Geographics"
+    },
+    "carto-labels": {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+      ],
+      tileSize: 256
+    },
+    "terrarium-dem": {
+      type: "raster-dem",
+      tiles: [
+        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
+      ],
+      tileSize: 256,
+      encoding: "terrarium",
+      maxzoom: 15
+    }
+  },
+  layers: [
+    {
+      id: "esri-imagery-layer",
+      type: "raster",
+      source: "esri-imagery",
+      minzoom: 0,
+      maxzoom: 20
+    },
+    {
+      id: "carto-labels-layer",
+      type: "raster",
+      source: "carto-labels",
+      minzoom: 0,
+      maxzoom: 20
+    }
+  ],
+  terrain: {
+    source: "terrarium-dem",
+    exaggeration: 1.5
+  }
+};
+
 const NGCP_SUBSTATIONS = [
   { name: "Tuguegarao Substation", lat: 17.6133, lng: 121.7269, voltage: "230kV" },
   { name: "Ilagan Substation", lat: 17.1500, lng: 121.8750, voltage: "69kV" },
@@ -171,6 +221,16 @@ export function MapboxRegionalMap({
 }) {
   const mapRef = useRef<MapRef>(null);
   const [loading, setLoading] = useState(true);
+
+  const [userToken] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN") || "";
+    }
+    return "";
+  });
+
+  const activeToken = (process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || userToken || "").trim();
+  const hasMapboxToken = Boolean(activeToken.length > 0 && activeToken.startsWith("pk."));
   const [boundaryData, setBoundaryData] = useState<Record<string, unknown> | null>(null);
   const [rivers, setRivers] = useState<OSMElement[]>([]);
   const [roads, setRoads] = useState<OSMElement[]>([]);
@@ -687,7 +747,7 @@ export function MapboxRegionalMap({
         
         <Map
           ref={mapRef}
-          mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""}
+          mapboxAccessToken={hasMapboxToken ? activeToken : undefined}
           initialViewState={{
             longitude: 121.9749251,
             latitude: 17.318823,
@@ -695,9 +755,12 @@ export function MapboxRegionalMap({
             pitch: 60,
             bearing: 30
           }}
-          mapStyle="mapbox://styles/mapbox/satellite-v9"
-          terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
+          mapStyle={hasMapboxToken ? "mapbox://styles/mapbox/satellite-v9" : OPEN_SATELLITE_3D_STYLE}
+          terrain={hasMapboxToken ? { source: 'mapbox-dem', exaggeration: 1.5 } : undefined}
           style={{ width: "100%", height: "100%" }}
+          onError={(e: any) => {
+            console.warn("Mapbox GL load notice:", e);
+          }}
           onMouseMove={(e: any) => {
             if (latRef.current && lngRef.current) {
               latRef.current.innerText = e.lngLat.lat.toFixed(5);
@@ -746,23 +809,27 @@ export function MapboxRegionalMap({
             <LabelPin text="TUMAUINI HEPP SITE" />
           </Marker>
 
-          {/* 3D Terrain & Sky */}
-          <Source
-            id="mapbox-dem"
-            type="raster-dem"
-            url="mapbox://mapbox.mapbox-terrain-dem-v1"
-            tileSize={512}
-            maxzoom={14}
-          />
-          <Layer
-            id="sky"
-            type="sky"
-            paint={{
-              "sky-type": "atmosphere",
-              "sky-atmosphere-sun": [0.0, 0.0],
-              "sky-atmosphere-sun-intensity": 15
-            }}
-          />
+          {/* 3D Terrain & Sky (Requires Mapbox Token) */}
+          {hasMapboxToken && (
+            <>
+              <Source
+                id="mapbox-dem"
+                type="raster-dem"
+                url="mapbox://mapbox.mapbox-terrain-dem-v1"
+                tileSize={512}
+                maxzoom={14}
+              />
+              <Layer
+                id="sky"
+                type="sky"
+                paint={{
+                  "sky-type": "atmosphere",
+                  "sky-atmosphere-sun": [0.0, 0.0],
+                  "sky-atmosphere-sun-intensity": 15
+                }}
+              />
+            </>
+          )}
 
           {/* Premium High-Resolution Google Satellite Layer */}
           <Source

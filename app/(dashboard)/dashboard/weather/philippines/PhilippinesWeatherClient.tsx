@@ -748,7 +748,7 @@ export default function PhilippinesWeatherClient({
               <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider">PAGASA Site Station</h4>
             </div>
             <p className="text-xs text-text-muted leading-relaxed">
-              The nearest PAGASA meteorological monitoring station is located at <strong>Cabarroguis, Quirino</strong>, and the regional forecasting radar is at <strong>Basco, Batanes</strong>. In-situ wind sensors at Tumauini HEPP feed live alerts directly into the Project Nexus dashboard.
+              The nearest PAGASA meteorological monitoring station is located at <strong>Cabarroguis, Quirino</strong>, and the regional forecasting radar is at <strong>Basco, Batanes</strong>. In-situ wind sensors at Tumauini HEPP feed live alerts directly into the SCIC THEPP dashboard.
             </p>
           </div>
 

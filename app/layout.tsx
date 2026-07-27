@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
- title: "Project Nexus — Site Operations Portal",
+ title: "SCIC THEPP — Site Operations Portal",
  description:
  "Site Operations Portal for Tumauini Hydroelectric Power Plant. Internal operations management by Sta. Clara International Corporation.",
 };

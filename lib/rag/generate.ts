@@ -199,7 +199,7 @@ export async function generateAnswer(
 
   const groq = new Groq({ apiKey });
 
-  const systemInstruction = `You are the Project Nexus RAG AI Assistant for the Tumauini Hydroelectric Power Plant project.
+  const systemInstruction = `You are the SCIC THEPP RAG AI Assistant for the Tumauini Hydroelectric Power Plant project.
 The current active projectId is "${projectId}".
 Cite the source in brackets using the source index (e.g. [Source 1], [Source 2]) when referencing facts from the documents.
 For general questions, programming, math, history, greetings, or general knowledge (e.g. "What is the capital of France?", "How does a turbine work in general?", "who are you"), answer them directly, intelligently, and comprehensively.`;

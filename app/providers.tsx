@@ -17,6 +17,21 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   };
 }
 
+const customLocalization = {
+  signIn: {
+    start: {
+      title: "Sign in to SCIC Operations Portal",
+      subtitle: "Welcome back! Please enter your details.",
+    },
+  },
+  signUp: {
+    start: {
+      title: "Create your SCIC THEPP account",
+      subtitle: "Enter your credentials to register.",
+    },
+  },
+};
+
 function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -29,6 +44,7 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
   if (!mounted) {
     return (
       <ClerkProvider
+        localization={customLocalization}
         appearance={{
           theme: dark,
           variables: {
@@ -46,6 +62,7 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
 
   return (
     <ClerkProvider
+      localization={customLocalization}
       appearance={{
         theme: resolvedTheme === "dark" ? dark : undefined,
         variables: {
@@ -69,7 +86,7 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
+    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
       <ThemeAwareComponents>
         {children}
       </ThemeAwareComponents>

@@ -159,9 +159,10 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
         collapsed ? "justify-center" : "max-md:justify-center"
       )}
  >
- <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-green/15 shadow-[0_0_12px_rgba(1,119,11,0.2),inset_0_1px_0_rgba(255,255,255,0.05)] border border-brand-green/25">
- <StaClaraLogo className="h-5 w-5 text-brand-green drop-shadow-[0_0_8px_var(--color-brand-green)]" />
- </div>
+        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#121C21] border border-slate-200 dark:border-white/10 overflow-hidden shadow-md p-0.5">
+          <img src="/logo.png" alt="SCIC THEPP Logo" className="h-full w-full object-contain rounded-lg dark:hidden" />
+          <img src="/logo-dark.png" alt="SCIC THEPP Dark Logo" className="hidden h-full w-full object-contain rounded-lg dark:block" />
+        </div>
  {!collapsed && (
  <>
  <div className="min-w-0 flex-1 max-md:hidden">

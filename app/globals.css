@@ -446,3 +446,27 @@ code, pre, kbd, samp,
     display: none !important;
   }
 }
+
+/* ============================================================
+   Clerk Authentication Header Title Overrides
+   ============================================================ */
+.cl-headerTitle {
+  font-size: 0 !important;
+}
+
+.cl-signIn-root .cl-headerTitle::after,
+.cl-headerTitle::after {
+  content: "Sign in to SCIC Operations Portal" !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  display: block !important;
+  line-height: 1.35 !important;
+}
+
+.cl-signUp-root .cl-headerTitle::after {
+  content: "Create your SCIC THEPP account" !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  display: block !important;
+  line-height: 1.35 !important;
+}

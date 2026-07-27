@@ -265,7 +265,7 @@ export function ReportPdfTemplate({ report }: ReportPdfTemplateProps) {
       <Page size="A4" style={styles.page}>
         {/* Header Block */}
         <View style={styles.headerContainer}>
-          <Text style={styles.logoText}>PROJECT NEXUS</Text>
+          <Text style={styles.logoText}>SCIC THEPP</Text>
           <View>
             <Text style={styles.headerTitle}>DAILY ACCOMPLISHMENT REPORT</Text>
             <Text style={{ fontSize: 8, color: "#64748b", textAlign: "right", marginTop: 2 }}>

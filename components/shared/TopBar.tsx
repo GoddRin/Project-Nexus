@@ -86,7 +86,7 @@ export function TopBar({ className }: TopBarProps) {
   }}
   >
   <Search className="h-4 w-4 flex-shrink-0 text-text-muted transition-all duration-300 group-hover:scale-110 group-hover:text-flow-teal" />
-  <span className="hidden truncate sm:inline">Search across Project Nexus...</span>
+  <span className="hidden truncate sm:inline">Search across SCIC THEPP...</span>
   <div className="absolute right-2 flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[10px] font-medium text-text-muted border border-border-hairline transition-colors group-hover:text-text-primary">
   <span>Ctrl</span>
   <span className="ml-0.5">K</span>
