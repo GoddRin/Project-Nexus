@@ -19,6 +19,7 @@
 
 # production
 /build
+nexus_mobile/
 
 # misc
 .DS_Store
