@@ -159,28 +159,46 @@ function parsePagasaBulletinHtml(html: string): PagasaSignalData {
     result.tcName = nameMatch[1].toUpperCase();
   }
 
-  // 3. Extract TC category from the HTML H3 title or main headline
-  // (Avoid matching body text like "if it intensifies into a severe tropical storm")
-  const h3Match = html.match(/<h3>\s*(Super\s+Typhoon|Typhoon|Severe\s+Tropical\s+Storm|Tropical\s+Storm|Tropical\s+Depression)/i);
-  if (h3Match) {
-    result.tcCategory = h3Match[1].trim();
-  } else {
-    // Fallback: match "Category "Name"" specifically
-    const catNameRegex = new RegExp(`(Super\\s+Typhoon|Typhoon|Severe\\s+Tropical\\s+Storm|Tropical\\s+Storm|Tropical\\s+Depression)\\s+(?:&quot;|")?${result.tcName || "\\w+"}`, "i");
-    const catNameMatch = html.match(catNameRegex);
-    if (catNameMatch) {
-      result.tcCategory = catNameMatch[1].trim();
-    }
-  }
+  // 2b. Check if system has weakened into a Low Pressure Area (LPA) or if this is a final deactivation bulletin
+  const isLpaHeader = /<h3>\s*LPA\b/i.test(html) || /<h3>\s*Low\s+Pressure\s+Area/i.test(html);
+  const isWeakenedToLpa = /weakened\s+into\s+a\s+low\s+pressure\s+area/i.test(html) ||
+                          /weakened\s+into\s+an?\s+lpa/i.test(html) ||
+                          /degraded\s+into\s+a\s+low\s+pressure\s+area/i.test(html);
+  const isFinalBulletin = /final\s+(?:tropical\s+cyclone\s+)?bulletin/i.test(html) ||
+                          /tcb#?\d+f_/i.test(result.bulletinUrls[0] || "");
 
-  // Ensure category aligns with official wind scale if not explicitly set
-  if (!result.tcCategory) {
-    const w = result.maxWindsKph;
-    if (w >= 185) result.tcCategory = "Super Typhoon";
-    else if (w >= 118) result.tcCategory = "Typhoon";
-    else if (w >= 89) result.tcCategory = "Severe Tropical Storm";
-    else if (w >= 62) result.tcCategory = "Tropical Storm";
-    else result.tcCategory = "Tropical Depression";
+  if (isLpaHeader || isWeakenedToLpa || (isFinalBulletin && html.toLowerCase().includes("low pressure area"))) {
+    // System is no longer an active Tropical Cyclone — it has downgraded to an LPA.
+    // PAGASA discontinues TC Warning Signals when downgraded to LPA.
+    result.hasActiveBulletin = false;
+    result.tcCategory = "Low Pressure Area";
+    result.siteSignalNumber = 0;
+    result.signals = [];
+  } else {
+    // 3. Extract TC category from the HTML H3 title or main headline
+    // (Avoid matching body text like "if it intensifies into a severe tropical storm")
+    const h3Match = html.match(/<h3>\s*(Super\s+Typhoon|Typhoon|Severe\s+Tropical\s+Storm|Tropical\s+Storm|Tropical\s+Depression)/i);
+    if (h3Match) {
+      result.tcCategory = h3Match[1].trim();
+    } else {
+      // Fallback: match "Category "Name"" specifically
+      const catNameRegex = new RegExp(`(Super\\s+Typhoon|Typhoon|Severe\\s+Tropical\\s+Storm|Tropical\\s+Storm|Tropical\\s+Depression)\\s+(?:&quot;|")?${result.tcName || "\\w+"}`, "i");
+      const catNameMatch = html.match(catNameRegex);
+      if (catNameMatch) {
+        result.tcCategory = catNameMatch[1].trim();
+      }
+    }
+
+    // Ensure category aligns with official wind scale if not explicitly set
+    if (!result.tcCategory) {
+      const w = result.maxWindsKph;
+      if (w >= 185) result.tcCategory = "Super Typhoon";
+      else if (w >= 118) result.tcCategory = "Typhoon";
+      else if (w >= 89) result.tcCategory = "Severe Tropical Storm";
+      else if (w >= 62) result.tcCategory = "Tropical Storm";
+      else if (w >= 45) result.tcCategory = "Tropical Depression";
+      else result.tcCategory = "Low Pressure Area";
+    }
   }
 
   // 4. Extract position (lat/lng)

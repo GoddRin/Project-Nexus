@@ -2,6 +2,7 @@ import { calculateDistance } from "@/lib/weather/distance";
 import { fetchActiveStorms, Storm } from "@/lib/weather/jtwc";
 import { fetchPagasaSignals, pagasaToStormData } from "@/lib/weather/pagasa";
 import { fetchGdacsStorms, isWithinPAR, GdacsStorm } from "@/lib/weather/gdacs";
+import { fetchPanahonCycloneTrackStorms } from "@/lib/weather/panahon";
 
 // Tumauini HEPP Coordinates
 const SITE_LAT = 17.318823;
@@ -74,12 +75,13 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
   }
 
   // ============================================================
-  // Fetch all three sources in parallel
+  // Fetch all four sources in parallel
   // ============================================================
-  const [jtwcResult, pagasaResult, gdacsResult] = await Promise.allSettled([
+  const [jtwcResult, pagasaResult, gdacsResult, panahonTrackResult] = await Promise.allSettled([
     fetchActiveStorms(),
     fetchPagasaSignals(),
     fetchGdacsStorms(),
+    fetchPanahonCycloneTrackStorms(),
   ]);
 
   const jtwcStorms: Storm[] =
@@ -88,6 +90,8 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
     pagasaResult.status === "fulfilled" ? pagasaResult.value : null;
   const gdacsStorms: GdacsStorm[] =
     gdacsResult.status === "fulfilled" ? gdacsResult.value : [];
+  const panahonTrackStorms: Storm[] =
+    panahonTrackResult.status === "fulfilled" ? panahonTrackResult.value : [];
 
   const sourcesChecked: string[] = [];
   const sourcesWithData: string[] = [];
@@ -95,13 +99,15 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
   if (jtwcResult.status === "fulfilled") sourcesChecked.push("jtwc");
   if (pagasaResult.status === "fulfilled") sourcesChecked.push("pagasa");
   if (gdacsResult.status === "fulfilled") sourcesChecked.push("gdacs");
+  if (panahonTrackResult.status === "fulfilled") sourcesChecked.push("panahon");
 
   if (jtwcStorms.length > 0) sourcesWithData.push("jtwc");
   if (pagasaSignals?.hasActiveBulletin) sourcesWithData.push("pagasa");
   if (gdacsStorms.length > 0) sourcesWithData.push("gdacs");
+  if (panahonTrackStorms.length > 0) sourcesWithData.push("panahon");
 
   // Log all sources for debugging
-  console.log(`[Storms] JTWC: ${jtwcStorms.length} storms | PAGASA active: ${pagasaSignals?.hasActiveBulletin ?? "error"} | GDACS: ${gdacsStorms.length} storms`);
+  console.log(`[Storms] JTWC: ${jtwcStorms.length} | PAGASA active: ${pagasaSignals?.hasActiveBulletin ?? "error"} | GDACS: ${gdacsStorms.length} | PANaHON Track: ${panahonTrackStorms.length}`);
 
   // ============================================================
   // Filter JTWC storms to PAR only
@@ -115,7 +121,7 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
   const gdacsParStorms = gdacsStorms.filter((s) => s.isWithinPAR);
 
   // ============================================================
-  // Merge logic: PAGASA > JTWC > GDACS (priority order)
+  // Merge logic: PAGASA > JTWC > GDACS > PANaHON Track (priority order)
   // ============================================================
   let storms: Storm[] = [];
   let source = "none";
@@ -213,9 +219,8 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
     source = "jtwc";
     console.log(`[Storms] JTWC-only: ${jtwcParStorms.length} storms in PAR`);
   }
-  // --- CASE 4: GDACS fallback — both JTWC and PAGASA failed or returned nothing ---
+  // --- CASE 4: GDACS fallback ---
   else if (gdacsParStorms.length > 0) {
-    // Convert GDACS storms to the common Storm format
     storms = gdacsParStorms.map((g) => ({
       id: g.id,
       name: g.name,
@@ -225,8 +230,8 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
       windSpeedKnots: g.windSpeedKnots,
       windSpeedKph: g.windSpeedKph,
       pressureHpa: g.pressureHpa,
-      direction: "WNW", // GDACS doesn't provide movement direction
-      speedKph: 15, // GDACS doesn't provide movement speed
+      direction: "WNW",
+      speedKph: 15,
       distanceKm: g.distanceKm,
       closestApproach: {
         distanceKm: g.distanceKm,
@@ -241,8 +246,14 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
     source = "gdacs";
     console.log(`[Storms] GDACS fallback: ${gdacsParStorms.length} storms in PAR`);
   }
+  // --- CASE 5: PANaHON Track for recent systems / LPAs (e.g. LUIS LPA) ---
+  else if (panahonTrackStorms.length > 0) {
+    storms = panahonTrackStorms;
+    source = "panahon";
+    console.log(`[Storms] Using PANaHON track for recent storm/LPA: ${panahonTrackStorms[0].name}`);
+  }
 
-  const parClear = storms.length === 0;
+  const parClear = storms.length === 0 || storms.every((s) => s.category.toLowerCase().includes("low pressure"));
 
   // Add alias fields (latitude, longitude, maxWinds, maxWindsKph) to guarantee compatibility across all client apps
   const enrichedStorms = storms.map((s) => ({

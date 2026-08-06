@@ -1,0 +1,7 @@
+-- CreateEnum
+CREATE TYPE "EquipmentZone" AS ENUM ('INTAKE', 'PENSTOCK', 'TURBINE_HALL', 'SWITCHYARD', 'SURGE_TANK', 'TAILRACE', 'ACCESS_ROAD', 'OTHER');
+
+-- AlterTable
+ALTER TABLE "PlantEquipment" ADD COLUMN "positionX" DOUBLE PRECISION,
+ADD COLUMN "positionY" DOUBLE PRECISION,
+ADD COLUMN "zone" "EquipmentZone";

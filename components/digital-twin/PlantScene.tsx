@@ -1,0 +1,2288 @@
+"use client";
+
+import React, { Suspense, useRef, useState, useMemo, useEffect } from "react";
+import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
+import {
+  OrbitControls,
+  PerspectiveCamera,
+  Environment,
+  Grid,
+  Html,
+  shaderMaterial,
+  useGLTF,
+  ContactShadows,
+} from "@react-three/drei";
+import { EffectComposer, Bloom, BrightnessContrast, SMAA } from "@react-three/postprocessing";
+import * as THREE from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import {
+  Camera,
+  Eye,
+  Zap,
+  ScanEye,
+  CloudRain,
+  Activity,
+  Gauge,
+  CheckCircle2,
+  AlertTriangle,
+  Wrench,
+  ChevronDown,
+  ChevronUp,
+  Move,
+  RotateCcw,
+  Unlock,
+  Lock,
+  Building2,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { PlantSceneLoading } from "./PlantSceneLoading";
+import {
+  RealisticPowerhouseBuilding,
+  RealisticSwitchyard,
+  MountainTerrain,
+  TailraceWater,
+  TailraceFloodwall,
+  ElectricalBusSystem,
+  RealisticSurgeTank,
+  RealisticPenstockAssembly,
+  SurgeTankHillside,
+  PenstockTrenchWalls,
+  AccessRoad,
+  PerimeterFence,
+} from "./PowerhouseGeometry";
+import { TemfacilFacility } from "./TemfacilFacility";
+import { ForestVegetation } from "./ForestVegetation";
+import { ForestWildlife } from "./ForestWildlife";
+import { AnimatedSiteEntities } from "./AnimatedSiteEntities";
+import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDetailDrawer";
+import { getEquipmentByLocation } from "@/app/(dashboard)/dashboard/sitemap/actions";
+import type { PagasaSignalData } from "@/lib/weather/pagasa";
+import { cn } from "@/lib/utils";
+
+/**
+ * Camera Preset Identifiers
+ */
+export type CameraPresetKey = "overview" | "turbine-hall" | "switchyard" | "temfacil";
+
+/**
+ * Flow Teal CSS color token value: #1FB6A6 (rgb(31, 182, 166))
+ */
+const FLOW_TEAL = "#1FB6A6";
+
+/**
+ * GLTF Model Node Structure
+ */
+type GLTFResult = {
+  nodes: {
+    Intake_Structure: THREE.Mesh;
+    Penstock_Pipe: THREE.Mesh;
+    TurbineHall_Shell: THREE.Mesh;
+    Switchyard_Platform: THREE.Mesh;
+  };
+  materials: Record<string, THREE.Material>;
+};
+
+// Preload the Tumauini Powerhouse GLTF Model
+useGLTF.preload("/models/tumauini_powerhouse.glb");
+
+/**
+ * Material presets for the plant GLTF geometry & scene elements.
+ * Vibrant architectural metallic palette with crisp edge highlights.
+ */
+const MATERIALS = {
+  powerhouse: {
+    color: "#B8B4AE",
+    roughness: 0.92,
+    metalness: 0.05,
+  },
+  powerhouseRoof: {
+    color: "#1E5488",
+    roughness: 0.35,
+    metalness: 0.82,
+  },
+  intake: {
+    color: "#A8A49B",
+    roughness: 0.9,
+    metalness: 0.06,
+  },
+  penstock: {
+    color: "#5A6A7A",
+    roughness: 0.3,
+    metalness: 0.65,
+  },
+  switchyardBase: {
+    color: "#A8A49B",
+    roughness: 0.9,
+    metalness: 0.06,
+  },
+  switchyardEquipment: {
+    color: "#7A8A9A",
+    roughness: 0.25,
+    metalness: 0.7,
+  },
+  groundPad: {
+    color: "#5A6050",
+    roughness: 0.95,
+    metalness: 0.03,
+  },
+  waterChannel: {
+    color: "#1A6B6B",
+    roughness: 0.15,
+    metalness: 0.3,
+  },
+};
+
+/**
+ * 3D Curved Energy Flow Path Waypoints
+ * Traces path: Intake Headworks -> Penstock Pipe -> Turbine Hall -> Generator Bay -> Switchyard & Substation
+ */
+const FLOW_PATH_POINTS = [
+  new THREE.Vector3(-6, 20.0, -30),   // 1. Dam Intake Headworks (Top Hillside)
+  new THREE.Vector3(-6, 17.5, -26),   // 2. Upper Penstock Entry
+  new THREE.Vector3(-5, 11.0, -16),   // 3. Penstock Mid Conduit
+  new THREE.Vector3(-4, 4.5, -6),     // 4. Lower Penstock Bifurcation (Powerhouse Rear Wall)
+  new THREE.Vector3(-4, 6.2, 0),      // 5. Big Turbine #1 (TU-01)
+  new THREE.Vector3(4, 6.2, 0),       // 6. Small Turbine #2 (TU-02)
+  new THREE.Vector3(9.6, 8.4, 0),     // 7. Powerhouse East Wall IPB Busduct Exit Bushing
+  new THREE.Vector3(15.8, 6.8, -1.5), // 8. Cable Bus Bridge Support Structure
+  new THREE.Vector3(22.0, 4.8, -3),   // 9. TR-GSU-01 Transformer Low-Voltage Bushing
+  new THREE.Vector3(28.0, 4.8, -3),   // 10. CB-69KV-01 SF6 Gas Circuit Breaker
+  new THREE.Vector3(28.0, 4.8, 3),    // 11. LA-69KV-01 Surge Arrester & CT/PT Set
+  new THREE.Vector3(30.0, 11.0, 0),   // 12. 69kV Switchyard Gantry Steel Tower
+  new THREE.Vector3(50.0, 26.0, 0),   // 13. 69kV Grid Transmission Line Takeoff (Mountain Top)
+];
+
+/**
+ * Custom GPU Shader Material for Energy Conduit Path
+ * Computes hardware anti-aliased, silky 60-120 FPS scrolling energy pulses directly on GPU.
+ */
+const EnergyFlowShaderMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uColor: new THREE.Color("#1FB6A6"),
+    uEmissiveIntensity: 2.2,
+    uDashCount: 20.0,
+    uDashRatio: 0.3,
+    uFlowSpeed: 0.6,
+  },
+  /* Vertex Shader */
+  `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  /* Fragment Shader */
+  `
+    uniform float uTime;
+    uniform vec3 uColor;
+    uniform float uEmissiveIntensity;
+    uniform float uDashCount;
+    uniform float uDashRatio;
+    uniform float uFlowSpeed;
+    varying vec2 vUv;
+
+    void main() {
+      float progress = fract(vUv.x * uDashCount - uTime * uFlowSpeed);
+      float pulse = smoothstep(0.0, 0.04, progress) - smoothstep(uDashRatio - 0.04, uDashRatio, progress);
+      pulse = max(0.0, pulse);
+
+      vec3 darkBase = vec3(0.08, 0.12, 0.18);
+      vec3 glowingColor = uColor * uEmissiveIntensity;
+
+      vec3 finalColor = mix(darkBase, glowingColor, pulse);
+      float alpha = mix(0.5, 1.0, pulse);
+
+      gl_FragColor = vec4(finalColor, alpha);
+    }
+  `
+);
+
+/**
+ * Custom Fresnel X-Ray Shader Material
+ * Lerps smoothly between solid matte material (uMixFactor = 0) and X-Ray scan mode (uMixFactor = 1).
+ * Fresnel formula: pow(1.0 - abs(dot(viewDir, normal)), uFresnelPower)
+ */
+const XRayFresnelShaderMaterial = shaderMaterial(
+  {
+    uMixFactor: 0.0,
+    uBaseColor: new THREE.Color("#3b4856"),
+    uRimColor: new THREE.Color("#1FB6A6"),
+    uFresnelPower: 3.5,
+    uMinOpacity: 0.05,
+    uMaxOpacity: 0.85,
+  },
+  /* Vertex Shader */
+  `
+    varying vec3 vNormal;
+    varying vec3 vWorldPosition;
+    varying vec2 vUv;
+
+    void main() {
+      vUv = uv;
+      vNormal = normalize(normalMatrix * normal);
+      vec4 worldPos = modelMatrix * vec4(position, 1.0);
+      vWorldPosition = worldPos.xyz;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  /* Fragment Shader */
+  `
+    uniform float uMixFactor;
+    uniform vec3 uBaseColor;
+    uniform vec3 uRimColor;
+    uniform float uFresnelPower;
+    uniform float uMinOpacity;
+    uniform float uMaxOpacity;
+
+    varying vec3 vNormal;
+    varying vec3 vWorldPosition;
+    varying vec2 vUv;
+
+    void main() {
+      vec3 viewDir = normalize(cameraPosition - vWorldPosition);
+      float NdotV = max(0.0, abs(dot(normalize(vNormal), viewDir)));
+      float fresnel = pow(1.0 - NdotV, uFresnelPower);
+
+      vec3 solidColor = uBaseColor;
+      float solidAlpha = 1.0;
+
+      // Front-facing faces (fresnel ~0) fade to near 95% transparent; grazing edges (fresnel ~1) bloom in vibrant teal
+      vec3 xrayColor = mix(uBaseColor * 0.15, uRimColor * 2.2, fresnel);
+      float xrayAlpha = mix(uMinOpacity, uMaxOpacity, fresnel);
+
+      vec3 finalColor = mix(solidColor, xrayColor, uMixFactor);
+      float finalAlpha = mix(solidAlpha, xrayAlpha, uMixFactor);
+
+      gl_FragColor = vec4(finalColor, finalAlpha);
+    }
+  `
+);
+
+/**
+ * Custom Penstock Pressure-Pulse Shader Material
+ * Renders a metallic steel pipe surface with two emissive ring bands
+ * that pulse from intake end toward powerhouse end on a ~3.5s cycle.
+ * Bands positioned at ~12% and ~88% along the pipe's UV-X axis (flange positions).
+ * Includes an anisotropic-style specular highlight along the pipe length.
+ */
+const PenstockPressurePulseShaderMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uBaseColor: new THREE.Color("#475569"),
+    uPulseColor: new THREE.Color("#1FB6A6"),
+    uEmissiveIntensity: 0.8,
+    uMetalness: 0.6,
+    uRoughness: 0.3,
+    uBoundsMin: new THREE.Vector3(-1, -1, -1),
+    uBoundsMax: new THREE.Vector3(1, 1, 1),
+  },
+  /* Vertex Shader — uses object-space position (no UVs needed) */
+  `
+    uniform vec3 uBoundsMin;
+    uniform vec3 uBoundsMax;
+
+    varying float vPipeT; // 0..1 along the pipe's longest local axis
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vec4 worldPos = modelMatrix * vec4(position, 1.0);
+      vViewDir = normalize(cameraPosition - worldPos.xyz);
+
+      // Normalize object-space position along the pipe's longest axis (Y)
+      vec3 range = uBoundsMax - uBoundsMin;
+      float maxRange = max(range.x, max(range.y, range.z));
+      if (maxRange == range.x) {
+        vPipeT = (position.x - uBoundsMin.x) / range.x;
+      } else if (maxRange == range.y) {
+        vPipeT = (position.y - uBoundsMin.y) / range.y;
+      } else {
+        vPipeT = (position.z - uBoundsMin.z) / range.z;
+      }
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  /* Fragment Shader */
+  `
+    uniform float uTime;
+    uniform vec3 uBaseColor;
+    uniform vec3 uPulseColor;
+    uniform float uEmissiveIntensity;
+    uniform float uMetalness;
+    uniform float uRoughness;
+
+    varying float vPipeT;
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+
+    void main() {
+      // --- Pressure-pulse ring bands ---
+      // Cycle period ~3.5s, bands scroll along pipe from intake to powerhouse
+      float cycle = fract(uTime / 3.5);
+
+      // Two flange positions at 12% and 88% along pipe length
+      float band1Center = mod(0.12 + cycle, 1.0);
+      float band2Center = mod(0.88 + cycle, 1.0);
+
+      // Gaussian falloff for each band (width ~0.04 in normalized pipe space)
+      float bandWidth = 0.04;
+      float dist1 = abs(vPipeT - band1Center);
+      float dist2 = abs(vPipeT - band2Center);
+      float pulse1 = exp(-dist1 * dist1 / (2.0 * bandWidth * bandWidth));
+      float pulse2 = exp(-dist2 * dist2 / (2.0 * bandWidth * bandWidth));
+      float pulse = max(pulse1, pulse2);
+
+      // --- Anisotropic-style specular highlight along pipe length ---
+      vec3 N = normalize(vNormal);
+      vec3 V = normalize(vViewDir);
+      float NdotV = max(dot(N, V), 0.0);
+
+      // Fresnel reflectance for metallic surface
+      float fresnel = pow(1.0 - NdotV, 4.0) * uMetalness;
+
+      // Anisotropic-inspired highlight: brighter when view aligns with pipe cross-section
+      float aniso = pow(NdotV, 1.0 / max(uRoughness, 0.01)) * 0.15 * uMetalness;
+
+      // --- Combine ---
+      vec3 baseShading = uBaseColor * (0.3 + 0.7 * NdotV);
+      vec3 specular = vec3(fresnel * 0.4 + aniso);
+      vec3 emissive = uPulseColor * pulse * uEmissiveIntensity;
+
+      vec3 finalColor = baseShading + specular + emissive;
+      gl_FragColor = vec4(finalColor, 1.0);
+    }
+  `
+);
+
+extend({ EnergyFlowShaderMaterial, XRayFresnelShaderMaterial, PenstockPressurePulseShaderMaterial });
+
+interface EnergyFlowParticlesProps {
+  flowIntensity?: number; // 0.0 to 1.0 (driven by plant status / capacity)
+}
+
+function EnergyFlowParticles({ flowIntensity = 0.85 }: EnergyFlowParticlesProps) {
+  const materialRef = useRef<THREE.ShaderMaterial & { uTime: number }>(null);
+
+  const flowCurve = useMemo(() => {
+    return new THREE.CatmullRomCurve3(FLOW_PATH_POINTS, false, "catmullrom", 0.35);
+  }, []);
+
+  const tubeGeometry = useMemo(() => {
+    return new THREE.TubeGeometry(flowCurve, 128, 0.12, 12, false);
+  }, [flowCurve]);
+
+  useFrame(({ clock }) => {
+    if (materialRef.current) {
+      materialRef.current.uTime = clock.getElapsedTime();
+    }
+  });
+
+  return (
+    <mesh geometry={tubeGeometry}>
+      {/* @ts-expect-error - Custom JSX element energyFlowShaderMaterial */}
+      <energyFlowShaderMaterial
+        ref={materialRef}
+        uTime={0}
+        uColor={new THREE.Color(FLOW_TEAL)}
+        uEmissiveIntensity={2.2}
+        uDashCount={20.0}
+        uDashRatio={0.3}
+        uFlowSpeed={0.6 * Math.max(0.2, flowIntensity)}
+        transparent
+      />
+    </mesh>
+  );
+}
+
+/**
+ * InstancedMesh Rain Stream Component
+ * 220 rain streaks animated continuously down the Y-axis.
+ */
+function RainParticles({ count = 150 }: { count?: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  const rainData = useRef<{
+    x: Float32Array;
+    y: Float32Array;
+    z: Float32Array;
+    speed: Float32Array;
+    length: Float32Array;
+  } | null>(null);
+
+  if (rainData.current == null) {
+    const x = new Float32Array(count);
+    const y = new Float32Array(count);
+    const z = new Float32Array(count);
+    const speed = new Float32Array(count);
+    const length = new Float32Array(count);
+
+    let seed = 12345;
+    const lcg = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+
+    for (let i = 0; i < count; i++) {
+      x[i] = (lcg() - 0.5) * 90;
+      y[i] = lcg() * 50 + 5;
+      z[i] = (lcg() - 0.5) * 90;
+      speed[i] = lcg() * 20 + 40;     // fast streaks: 40-60 m/s
+      length[i] = lcg() * 1.5 + 2.0;  // taller streaks: 2-3.5m for motion-blur look
+    }
+
+    rainData.current = { x, y, z, speed, length };
+  }
+
+  useFrame((_, delta) => {
+    if (!meshRef.current || !rainData.current) return;
+    const { x, y, z, speed, length } = rainData.current;
+
+    for (let i = 0; i < count; i++) {
+      y[i] -= speed[i] * delta;
+      if (y[i] < 0) {
+        y[i] = 50;
+      }
+
+      dummy.position.set(x[i], y[i], z[i]);
+      dummy.rotation.set(0.08, 0, -0.12); // slight wind angle
+      dummy.scale.set(0.6, length[i], 0.6);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
+      <cylinderGeometry args={[0.015, 0.015, 1.0, 4]} />
+      <meshBasicMaterial color="#a0b8d0" transparent opacity={0.28} depthWrite={false} />
+    </instancedMesh>
+  );
+}
+
+/**
+ * InstancedMesh Ambient Dust / Motes Component
+ * 25 sparse ground-level particles drifting gently near the pad plane (Y < 4).
+ */
+function DustParticles({ count = 25 }: { count?: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  const dustData = useRef<{
+    baseX: Float32Array;
+    baseY: Float32Array;
+    baseZ: Float32Array;
+    speed: Float32Array;
+    scale: Float32Array;
+    phase: Float32Array;
+  } | null>(null);
+
+  if (dustData.current == null) {
+    const baseX = new Float32Array(count);
+    const baseY = new Float32Array(count);
+    const baseZ = new Float32Array(count);
+    const speed = new Float32Array(count);
+    const scale = new Float32Array(count);
+    const phase = new Float32Array(count);
+
+    let seed = 54321;
+    const lcg = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+
+    for (let i = 0; i < count; i++) {
+      baseX[i] = (lcg() - 0.5) * 65;
+      baseY[i] = lcg() * 3.2 + 0.3; // Low height band near ground (0.3 to 3.5)
+      baseZ[i] = (lcg() - 0.5) * 65;
+      speed[i] = lcg() * 0.2 + 0.1;
+      scale[i] = lcg() * 0.03 + 0.02;
+      phase[i] = lcg() * Math.PI * 2;
+    }
+
+    dustData.current = { baseX, baseY, baseZ, speed, scale, phase };
+  }
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current || !dustData.current) return;
+    const t = clock.getElapsedTime();
+    const { baseX, baseY, baseZ, speed, scale, phase } = dustData.current;
+
+    for (let i = 0; i < count; i++) {
+      const x = baseX[i] + Math.sin(t * speed[i] + phase[i]) * 1.0;
+      const y = ((baseY[i] + t * speed[i] * 0.4) % 3.5) + 0.3; // Constrained strictly to ground layer
+      const z = baseZ[i] + Math.cos(t * speed[i] + phase[i]) * 1.0;
+
+      dummy.position.set(x, y, z);
+      dummy.scale.setScalar(scale[i]);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <sphereGeometry args={[1.0, 8, 8]} />
+      <meshBasicMaterial color="#cbd5e1" transparent opacity={0.15} />
+    </instancedMesh>
+  );
+}
+
+/**
+ * Reusable Structure Mesh supporting X-Ray Fresnel Shader Material
+ */
+interface StructureMeshProps {
+  geometry: THREE.BufferGeometry;
+  baseColor: string;
+  isXRay: boolean;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: [number, number, number];
+  castShadow?: boolean;
+  receiveShadow?: boolean;
+}
+
+function StructureMesh({
+  geometry,
+  baseColor,
+  isXRay,
+  position = [0, 0, 0],
+  rotation = [0, 0, 0],
+  scale = [1, 1, 1],
+  castShadow = true,
+  receiveShadow = true,
+}: StructureMeshProps) {
+  const materialRef = useRef<THREE.ShaderMaterial & { uMixFactor: number }>(null);
+
+  useFrame((_, delta) => {
+    if (materialRef.current) {
+      const targetMix = isXRay ? 1.0 : 0.0;
+      materialRef.current.uMixFactor = THREE.MathUtils.lerp(
+        materialRef.current.uMixFactor,
+        targetMix,
+        Math.min(delta * 5, 0.15)
+      );
+    }
+  });
+
+  return (
+    <mesh
+      geometry={geometry}
+      position={position}
+      rotation={rotation}
+      scale={scale}
+      castShadow={castShadow}
+      receiveShadow={receiveShadow}
+    >
+      {/* @ts-expect-error - Custom JSX element xRayFresnelShaderMaterial */}
+      <xRayFresnelShaderMaterial
+        ref={materialRef}
+        uMixFactor={0.0}
+        uBaseColor={new THREE.Color(baseColor)}
+        uRimColor={new THREE.Color(FLOW_TEAL)}
+        uFresnelPower={3.5}
+        uMinOpacity={0.05}
+        uMaxOpacity={0.85}
+        transparent
+      />
+    </mesh>
+  );
+}
+
+
+
+
+
+/**
+ * Screen-Space Clamped HTML Equipment Label
+ */
+interface ClampedMarkerHtmlProps {
+  capRef: React.RefObject<THREE.Mesh | null>;
+  preferredLeaderHeight: number;
+  showFullLabel: boolean;
+  isSelected: boolean;
+  hovered: boolean;
+  markerColor: string;
+  equipmentTag: string;
+  onSelect: () => void;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
+}
+
+const _scratchCapVec = new THREE.Vector3();
+
+function ClampedMarkerHtml({
+  capRef,
+  preferredLeaderHeight,
+  showFullLabel,
+  isSelected,
+  hovered,
+  markerColor,
+  equipmentTag,
+  onSelect,
+  onHoverStart,
+  onHoverEnd,
+}: ClampedMarkerHtmlProps) {
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  useFrame(({ camera, size }) => {
+    if (!showFullLabel || !capRef.current || !lineRef.current) return;
+
+    capRef.current.getWorldPosition(_scratchCapVec);
+    const capNDC = _scratchCapVec.project(camera);
+    const capPixelY = (-capNDC.y * 0.5 + 0.5) * size.height;
+
+    const TOP_SAFE_BOUND_PX = 96;
+    const CARD_HEIGHT_PX = 22;
+    const maxAllowedLeader = capPixelY - TOP_SAFE_BOUND_PX - CARD_HEIGHT_PX;
+    const newLeaderHeight = Math.max(4, Math.min(preferredLeaderHeight, maxAllowedLeader));
+
+    lineRef.current.style.height = `${newLeaderHeight}px`;
+  });
+
+  return (
+    <Html
+      position={[0, 2.6, 0]}
+      distanceFactor={35}
+      className="pointer-events-none select-none z-10"
+      style={{ transform: "translate(-50%, -100%)" }}
+    >
+      {showFullLabel ? (
+        <div className="flex flex-col items-center">
+          <div
+            className={cn(
+              "rounded border px-2 py-0.5 font-mono text-[9px] font-bold shadow-md transition-all backdrop-blur-sm flex items-center gap-1.5 pointer-events-auto cursor-pointer whitespace-nowrap",
+              isSelected
+                ? "border-flow-teal bg-black/90 text-flow-teal scale-110 shadow-flow-teal/30 ring-1 ring-flow-teal/50"
+                : hovered
+                ? "border-white/30 bg-black/80 text-white scale-105"
+                : "border-white/10 bg-black/70 text-text-muted"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+            onPointerOver={onHoverStart}
+            onPointerOut={onHoverEnd}
+          >
+            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: markerColor }} />
+            <span>{equipmentTag}</span>
+          </div>
+
+          <div
+            ref={lineRef}
+            className="w-[1.5px] bg-gradient-to-b from-flow-teal/80 to-transparent transition-all"
+            style={{ height: `${preferredLeaderHeight}px` }}
+          />
+        </div>
+      ) : (
+        <div
+          className="pointer-events-auto cursor-pointer p-1 group flex flex-col items-center -translate-y-1"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+          onPointerOver={onHoverStart}
+          onPointerOut={onHoverEnd}
+        >
+          <span
+            className="w-2.5 h-2.5 rounded-full border border-white/40 shadow-lg block transition-transform group-hover:scale-125"
+            style={{ backgroundColor: markerColor }}
+          />
+        </div>
+      )}
+    </Html>
+  );
+}
+
+const SPINNER_HUB_GEOM = new THREE.CylinderGeometry(0.25, 0.25, 0.15, 16);
+const SPINNER_BLADE_GEOM = new THREE.BoxGeometry(0.12, 0.08, 0.35);
+const SPINNER_RING_GEOM = new THREE.TorusGeometry(0.65, 0.03, 16, 32);
+const PULSE_WAVE_GEOM = new THREE.RingGeometry(1.5, 1.8, 36);
+const PULSE_BASE_GEOM = new THREE.RingGeometry(1.4, 1.55, 36);
+
+/**
+ * Animated Spinning Francis Turbine Runner Detail for COMMISSIONED Equipment
+ */
+function TurbineRunnerSpinner({ color = "#1FB6A6" }: { color?: string }) {
+  const runnerRef = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (runnerRef.current) {
+      runnerRef.current.rotation.y += delta * 4.0; // Smooth 60rpm spinning velocity
+    }
+  });
+
+  return (
+    <group ref={runnerRef} position={[0, 3.25, 0]}>
+      {/* Central Impeller Hub */}
+      <mesh geometry={SPINNER_HUB_GEOM} position={[0, 0, 0]}>
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={1.8}
+          roughness={0.2}
+          metalness={0.8}
+        />
+      </mesh>
+      {/* 6 Curved Francis Impeller Blades */}
+      {[0, 60, 120, 180, 240, 300].map((angle, idx) => {
+        const rad = (angle * Math.PI) / 180;
+        return (
+          <mesh
+            key={idx}
+            geometry={SPINNER_BLADE_GEOM}
+            position={[Math.sin(rad) * 0.45, 0, Math.cos(rad) * 0.45]}
+            rotation={[0, rad + Math.PI / 4, 0.2]}
+          >
+            <meshStandardMaterial
+              color={color}
+              emissive={color}
+              emissiveIntensity={2.0}
+              roughness={0.1}
+              metalness={0.9}
+            />
+          </mesh>
+        );
+      })}
+      {/* Outer Halo Protection Ring */}
+      <mesh geometry={SPINNER_RING_GEOM} rotation={[Math.PI / 2, 0, 0]}>
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={1.2}
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+/**
+ * Expanding Selection Radial Wave Ring-Out Effect on Click
+ */
+function SelectionPulseRing({ color = "#1FB6A6" }: { color?: string }) {
+  const waveRef = useRef<THREE.Mesh>(null);
+  const progressRef = useRef(0);
+
+  useFrame((_, delta) => {
+    if (!waveRef.current) return;
+    progressRef.current = (progressRef.current + delta * 0.85) % 1.0;
+    const progress = progressRef.current;
+    const currentScale = 1.0 + progress * 1.8; // Expands scale from 1.0 -> 2.8
+    const currentOpacity = (1.0 - progress) * 0.85; // Fades opacity 0.85 -> 0.0
+
+    waveRef.current.scale.set(currentScale, currentScale, 1.0);
+    const mat = waveRef.current.material as THREE.MeshBasicMaterial;
+    if (mat) {
+      mat.opacity = currentOpacity;
+    }
+  });
+
+  return (
+    <group position={[0, 0.06, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      {/* Expanding Wave Ring */}
+      <mesh ref={waveRef} geometry={PULSE_WAVE_GEOM}>
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.85}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      {/* Static Focus Base Ring */}
+      <mesh geometry={PULSE_BASE_GEOM}>
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.9}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+/**
+ * 3D Equipment Marker Mesh Component
+ */
+interface EquipmentMarkerProps {
+  equipment: EquipmentWithLocation;
+  position: [number, number, number];
+  isSelected: boolean;
+  onSelect: (eq: EquipmentWithLocation) => void;
+  activePreset: CameraPresetKey;
+  targetZone: string;
+  leaderHeight?: number;
+}
+
+function EquipmentMarker({
+  equipment,
+  position,
+  isSelected,
+  onSelect,
+  activePreset,
+  targetZone,
+  leaderHeight = 24,
+}: EquipmentMarkerProps) {
+  const [hovered, setHovered] = useState(false);
+  const capRef = useRef<THREE.Mesh>(null);
+
+  const markerColor = useMemo(() => {
+    if (equipment.condition === "CRITICAL" || equipment.condition === "POOR") {
+      return "#E35A5A";
+    }
+    switch (equipment.status) {
+      case "COMMISSIONED":
+        return "#1FB6A6";
+      case "UNDER_MAINTENANCE":
+        return "#E8A33D";
+      case "INSTALLED":
+      case "DECOMMISSIONED":
+      case "PENDING_DELIVERY":
+      default:
+        return "#64748B";
+    }
+  }, [equipment.status, equipment.condition]);
+
+  const isEmissive =
+    equipment.status === "COMMISSIONED" ||
+    equipment.status === "UNDER_MAINTENANCE" ||
+    equipment.condition === "CRITICAL" ||
+    equipment.condition === "POOR";
+
+  const emissiveColor = isEmissive ? markerColor : "#000000";
+  const emissiveIntensity = isEmissive ? 1.5 : 0;
+
+  const isRelevantZone =
+    activePreset === "overview" ||
+    (activePreset === "switchyard" && targetZone === "SWITCHYARD") ||
+    (activePreset === "turbine-hall" && targetZone === "TURBINE_HALL");
+
+  const showFullLabel = isRelevantZone && (activePreset !== "overview" || hovered || isSelected);
+
+  return (
+    <group position={position}>
+      <mesh
+        castShadow
+        receiveShadow
+        position={[0, 1.2, 0]}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(equipment);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={() => setHovered(false)}
+      >
+        <boxGeometry args={[2.4, 2.2, 2.4]} />
+        <meshStandardMaterial
+          color={hovered || isSelected ? "#475569" : "#334155"}
+          roughness={0.5}
+          metalness={0.4}
+        />
+      </mesh>
+
+      <mesh
+        ref={capRef}
+        castShadow
+        position={[0, 2.6, 0]}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(equipment);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={() => setHovered(false)}
+      >
+        <cylinderGeometry args={[0.7, 0.8, 0.7, 16]} />
+        <meshStandardMaterial
+          color={markerColor}
+          emissive={emissiveColor}
+          emissiveIntensity={emissiveIntensity}
+          roughness={0.2}
+          metalness={0.2}
+        />
+      </mesh>
+
+      {/* Animated Rotating Francis Turbine Runner for COMMISSIONED equipment (active generation signal) */}
+      {equipment.status === "COMMISSIONED" && (
+        <TurbineRunnerSpinner color={markerColor} />
+      )}
+
+      {/* Animated Selection Pulse / Ring-Out Wave Effect on Click */}
+      {isSelected ? (
+        <SelectionPulseRing color={markerColor} />
+      ) : (
+        <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[1.4, 1.6, 32]} />
+          <meshBasicMaterial color={markerColor} transparent opacity={0.3} side={THREE.DoubleSide} />
+        </mesh>
+      )}
+
+      {isRelevantZone && (
+        <ClampedMarkerHtml
+          capRef={capRef}
+          preferredLeaderHeight={leaderHeight}
+          showFullLabel={showFullLabel}
+          isSelected={isSelected}
+          hovered={hovered}
+          markerColor={markerColor}
+          equipmentTag={equipment.equipmentTag}
+          onSelect={() => onSelect(equipment)}
+          onHoverStart={() => setHovered(true)}
+          onHoverEnd={() => setHovered(false)}
+        />
+      )}
+    </group>
+  );
+}
+
+/**
+ * High-Tech Engineering Zone Telemetry Label Component
+ */
+interface ZoneTelemetryLabelProps {
+  title: string;
+  subtitle?: string;
+  position: [number, number, number];
+  distanceFactor?: number;
+}
+
+function ZoneTelemetryLabel({
+  title,
+  subtitle,
+  position,
+  distanceFactor = 45,
+}: ZoneTelemetryLabelProps) {
+  return (
+    <Html
+      position={position}
+      center
+      distanceFactor={distanceFactor}
+      className="pointer-events-none select-none z-10 whitespace-nowrap"
+    >
+      <div className="rounded-lg border border-flow-teal/40 bg-black/90 px-3 py-1 font-mono shadow-2xl backdrop-blur-md flex items-center gap-2 ring-1 ring-flow-teal/30 transition-all hover:border-flow-teal/60">
+        <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-flow-teal animate-pulse" />
+        <span className="text-[11px] font-bold tracking-wider text-white uppercase whitespace-nowrap">
+          {title}
+        </span>
+        {subtitle && (
+          <>
+            <span className="text-white/20 text-[10px]">•</span>
+            <span className="text-[10px] font-medium text-flow-teal/90 whitespace-nowrap">
+              {subtitle}
+            </span>
+          </>
+        )}
+      </div>
+    </Html>
+  );
+}
+
+/**
+ * Main Hydroelectric Powerhouse Facility GLTF & Scene Geometry Component
+ */
+interface PowerhouseBlockoutProps {
+  activePreset: CameraPresetKey;
+  equipments: EquipmentWithLocation[];
+  selectedEquipment: EquipmentWithLocation | null;
+  onSelectEquipment: (eq: EquipmentWithLocation) => void;
+  flowIntensity?: number;
+  isXRay?: boolean;
+}
+
+function PowerhouseBlockout({
+  activePreset,
+  equipments,
+  selectedEquipment,
+  onSelectEquipment,
+  flowIntensity = 0.85,
+  isXRay = false,
+}: PowerhouseBlockoutProps) {
+  // Load real GLTF model geometry named meshes
+  const gltf = useGLTF("/models/tumauini_powerhouse.glb") as unknown as GLTFResult;
+  const { nodes } = gltf;
+
+  // Compute 3D surface vertex normals for all GLTF geometries (enables lighting & fresnel shaders)
+  const gltfGeometries = useMemo(() => {
+    if (!nodes) return null;
+    const processGeom = (mesh?: THREE.Mesh) => {
+      if (!mesh || !mesh.geometry) return null;
+      const geom = mesh.geometry.clone();
+      geom.computeVertexNormals();
+      return geom;
+    };
+    return {
+      Intake_Structure: processGeom(nodes.Intake_Structure),
+      Penstock_Pipe: processGeom(nodes.Penstock_Pipe),
+      TurbineHall_Shell: processGeom(nodes.TurbineHall_Shell),
+      Switchyard_Platform: processGeom(nodes.Switchyard_Platform),
+    };
+  }, [nodes]);
+
+  const switchyardEquipments = useMemo(
+    () => equipments.filter((e) => e.zone === "SWITCHYARD" || e.siteLocation?.slug === "switchyard"),
+    [equipments]
+  );
+
+  const turbineEquipments = useMemo(
+    () => equipments.filter((e) => e.zone === "TURBINE_HALL" || e.siteLocation?.slug === "powerhouse"),
+    [equipments]
+  );
+
+  const intakeEquipments = useMemo(
+    () => equipments.filter((e) => e.zone === "INTAKE" || e.siteLocation?.slug === "dam-intake"),
+    [equipments]
+  );
+
+  const penstockEquipments = useMemo(
+    () => equipments.filter((e) => e.zone === "PENSTOCK" || e.siteLocation?.slug === "penstock"),
+    [equipments]
+  );
+
+  const switchyardLayoutPositions: [number, number, number][] = [
+    [-3, 2.65, -3], // Pad 0 (Top-West / Upper-Left): TR-GSU-01 Transformer
+    [3, 2.65, -3],  // Pad 1 (Top-East / Upper-Right): CB-69KV-01 SF6 Circuit Breaker
+    [-3, 2.65, 3],  // Pad 2 (Bottom-West / Lower-Left): DS-69KV-01 Motorized Disconnect Switch
+    [3, 2.65, 3],   // Pad 3 (Bottom-East / Lower-Right): LA-69KV-01 Surge Arrester & CT/PT Set
+  ];
+
+  const turbineLayoutPositions: [number, number, number][] = [
+    [-4, 6.0, 0],  // TU-01 Big Turbine #1 (8.5MW) — Left Generator Bay
+    [4, 6.0, 0],   // TU-02 Small Turbine #2 (2.8MW) — Right Generator Bay
+    [0, 6.0, -3],  // GOV-01 Digital Governor Unit 1 — Rear Control Area
+  ];
+
+  const turbineLeaderHeights = [20, 48, 20];
+  const switchyardLeaderHeights = [20, 44, 20, 44, 20];
+
+  return (
+    <group position={[0, 0, 0]}>
+      {/* Animated GPU Shader Energy Flow Conduit */}
+      <EnergyFlowParticles flowIntensity={flowIntensity} />
+
+      {/* --- MOUNTAIN SLOPE BACKDROP & INTERCEPTOR DRAINAGE CHANNELS --- */}
+      <MountainTerrain />
+
+      {/* --- PHASE 3: INSTANCED FOREST VEGETATION --- */}
+      <ForestVegetation />
+
+      {/* --- HIGH-DENSITY MOUNTAIN FOREST WILDLIFE ECOSYSTEM --- */}
+      <ForestWildlife />
+
+      {/* --- LIVE ANIMATED SITE WORKERS, ENGINEERS & NAVIGATING VEHICLES --- */}
+      <AnimatedSiteEntities />
+
+      {/* --- SURGE TANK HILLSIDE TERRAIN (fixes floating surge tank) --- */}
+      <SurgeTankHillside />
+
+      {/* --- PENSTOCK TRENCH RETAINING WALLS (flanking slope walls) --- */}
+      <PenstockTrenchWalls />
+
+      {/* --- GROUND VOID-FILL BACKDROP (below 360m GIS terrain mesh) --- */}
+      <mesh position={[0, -6.0, 0]} receiveShadow>
+        <boxGeometry args={[800, 0.3, 800]} />
+        <meshStandardMaterial color="#3A4B29" roughness={0.96} metalness={0.02} />
+      </mesh>
+
+      {/* --- TAILRACE OUTFLOW WATER CHANNEL --- */}
+      <TailraceWater />
+
+      {/* --- SURGE TANK & HEADRACE TUNNEL PORTAL (Top Hillside Shaft at EL. 271.46m) --- */}
+      <RealisticSurgeTank isXRay={isXRay} />
+
+      {intakeEquipments.map((eq) => (
+        <EquipmentMarker
+          key={eq.id}
+          equipment={eq}
+          position={[-6, 26.0, -26]}
+          isSelected={selectedEquipment?.id === eq.id}
+          onSelect={onSelectEquipment}
+          activePreset={activePreset}
+          targetZone="INTAKE"
+          leaderHeight={20}
+        />
+      ))}
+
+      {activePreset === "overview" && (
+        <ZoneTelemetryLabel
+          title="SURGE TANK & HEADRACE PORTAL"
+          subtitle="EL. 271.46m • 16-LIFT CONCRETE SHAFT"
+          position={[-6, 31.0, -26]}
+        />
+      )}
+
+      {/* --- 2.70m STEEL PENSTOCK ASSEMBLY (32° Shotcrete Hillside Trench) --- */}
+      <RealisticPenstockAssembly isXRay={isXRay} />
+
+      {penstockEquipments.map((eq) => (
+        <EquipmentMarker
+          key={eq.id}
+          equipment={eq}
+          position={[-4.2, 5.5, -6.2]}
+          isSelected={selectedEquipment?.id === eq.id}
+          onSelect={onSelectEquipment}
+          activePreset={activePreset}
+          targetZone="PENSTOCK"
+          leaderHeight={18}
+        />
+      ))}
+
+      {activePreset === "overview" && (
+        <ZoneTelemetryLabel
+          title="MAIN PENSTOCK CONDUIT"
+          subtitle="11.3 MW FLOW"
+          position={[-5, 13.5, -16]}
+        />
+      )}
+
+      {/* --- TURBINE HALL / MAIN POWERHOUSE BUILDING (38.65m DED Layout) --- */}
+      <group position={[0, 0, 0]}>
+        <ContactShadows frames={1} position={[0, -0.48, 0]} opacity={0.4} scale={42} blur={2.8} far={14} color="#050a10" />
+        {/* Photorealistic Procedural Powerhouse Building — modeled from DED drawings & construction photos */}
+        <RealisticPowerhouseBuilding isXRay={isXRay} />
+        {/* 3D Electrical Busducts, Cable Bridge, Switchyard Busbars & Steel Gantry Towers */}
+        <ElectricalBusSystem isXRay={isXRay} />
+        {/* Tailrace Floodwall Infrastructure */}
+        <TailraceFloodwall />
+
+        {turbineEquipments.map((eq, idx) => {
+          const pos = turbineLayoutPositions[idx % turbineLayoutPositions.length];
+          const leaderH = turbineLeaderHeights[idx % turbineLeaderHeights.length];
+          return (
+            <EquipmentMarker
+              key={eq.id}
+              equipment={eq}
+              position={pos}
+              isSelected={selectedEquipment?.id === eq.id}
+              onSelect={onSelectEquipment}
+              activePreset={activePreset}
+              targetZone="TURBINE_HALL"
+              leaderHeight={leaderH}
+            />
+          );
+        })}
+
+        {activePreset === "overview" && (
+          <ZoneTelemetryLabel
+            title="TURBINE & GENERATOR BAY"
+            subtitle="BIG TURBINE #1 (8.5MW) • SMALL TURBINE #2 (2.8MW)"
+            position={[0, 18.5, 0]}
+          />
+        )}
+      </group>
+
+      {/* --- SWITCHYARD & SUBSTATION AREA (Right / East Elevated Platform) --- */}
+      <group position={[25, 0, 0]}>
+        <ContactShadows frames={1} position={[0, -0.48, 0]} opacity={0.3} scale={30} blur={2.2} far={10} color="#050a10" />
+        {/* Photorealistic Switchyard Platform with Floodwalls */}
+        <RealisticSwitchyard />
+
+        {switchyardEquipments.map((eq, idx) => {
+          const pos = switchyardLayoutPositions[idx % switchyardLayoutPositions.length];
+          const leaderH = switchyardLeaderHeights[idx % switchyardLeaderHeights.length];
+          return (
+            <EquipmentMarker
+              key={eq.id}
+              equipment={eq}
+              position={pos}
+              isSelected={selectedEquipment?.id === eq.id}
+              onSelect={onSelectEquipment}
+              activePreset={activePreset}
+              targetZone="SWITCHYARD"
+              leaderHeight={leaderH}
+            />
+          );
+        })}
+
+        {activePreset === "overview" && (
+          <ZoneTelemetryLabel
+            title="69kV SWITCHYARD & SUBSTATION"
+            subtitle="15 MVA GSU TRANSFORMER"
+            position={[0, 13.0, 0]}
+          />
+        )}
+      </group>
+
+      {/* --- ACCESS ROAD & PERIMETER INFRASTRUCTURE --- */}
+      <AccessRoad />
+      <PerimeterFence />
+
+      {/* --- TEMFACIL (MAIN TEMPORARY FACILITY & BARRACKS COMPOUND) --- */}
+      <TemfacilFacility isXRay={isXRay} />
+
+      {activePreset === "overview" && (
+        <ZoneTelemetryLabel
+          title="TEMFACIL COMPOUND"
+          subtitle="SITE OFFICE • STAFF ACCOMMODATIONS • BARRACKS • WAREHOUSE"
+          position={[108, 25.0, -95]}
+        />
+      )}
+    </group>
+  );
+}
+
+/**
+ * CameraController component — animates camera position & OrbitControls target smoothly in useFrame
+ */
+interface CameraControllerProps {
+  activePreset: CameraPresetKey;
+  isFreeNav: boolean;
+  onUserInteract: () => void;
+  resetToken: number;
+}
+
+function CameraController({
+  activePreset,
+  isFreeNav,
+  onUserInteract,
+  resetToken,
+}: CameraControllerProps) {
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const isAnimatingRef = useRef<boolean>(true);
+  const prevPresetRef = useRef<CameraPresetKey>(activePreset);
+  const prevResetTokenRef = useRef<number>(resetToken);
+
+  const presets = useMemo(
+    () => ({
+      overview: {
+        pos: new THREE.Vector3(75, 120, 160),
+        target: new THREE.Vector3(30, 8, -25),
+      },
+      "turbine-hall": {
+        pos: new THREE.Vector3(18, 20, 26),
+        target: new THREE.Vector3(4, 6, 4),
+      },
+      switchyard: {
+        pos: new THREE.Vector3(36, 14, 12),
+        target: new THREE.Vector3(24, 2, -2),
+      },
+      temfacil: {
+        pos: new THREE.Vector3(145, 55, -45),
+        target: new THREE.Vector3(108, 14, -95),
+      },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (prevPresetRef.current !== activePreset || prevResetTokenRef.current !== resetToken) {
+      prevPresetRef.current = activePreset;
+      prevResetTokenRef.current = resetToken;
+      isAnimatingRef.current = true;
+    }
+  }, [activePreset, resetToken]);
+
+  useFrame((state, delta) => {
+    if (!controlsRef.current) return;
+
+    if (!isFreeNav && isAnimatingRef.current) {
+      const active = presets[activePreset];
+      const step = Math.min(delta * 4.5, 0.15);
+      state.camera.position.lerp(active.pos, step);
+      controlsRef.current.target.lerp(active.target, step);
+      controlsRef.current.update();
+
+      const distPos = state.camera.position.distanceTo(active.pos);
+      const distTarget = controlsRef.current.target.distanceTo(active.target);
+      if (distPos < 0.08 && distTarget < 0.08) {
+        isAnimatingRef.current = false;
+      }
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enableDamping
+      dampingFactor={0.08}
+      rotateSpeed={0.8}
+      zoomSpeed={1.0}
+      minDistance={4}
+      maxDistance={350}
+      minPolarAngle={0.02}
+      maxPolarAngle={Math.PI / 2 - 0.01}
+      onStart={() => {
+        isAnimatingRef.current = false;
+        onUserInteract();
+      }}
+    />
+  );
+}
+
+/**
+ * Dynamically adjusts renderer toneMappingExposure for storm mode.
+ * Storm mode keeps the scene legible for inspection while feeling dark/atmospheric.
+ */
+function StormExposureControl({ isStormActive }: { isStormActive: boolean }) {
+  const { gl } = useThree();
+  useEffect(() => {
+    gl.toneMappingExposure = isStormActive ? 1.6 : 1.35;
+  }, [gl, isStormActive]);
+  return null;
+}
+
+/**
+ * Inner R3F Scene with Environmental Storm Overlay Support
+ */
+function PlantSceneInner({
+  activePreset,
+  equipments,
+  selectedEquipment,
+  onSelectEquipment,
+  flowIntensity = 0.85,
+  isXRay = false,
+  isStormActive = false,
+  isFreeNav = false,
+  onUserInteract,
+  resetToken = 0,
+}: {
+  activePreset: CameraPresetKey;
+  equipments: EquipmentWithLocation[];
+  selectedEquipment: EquipmentWithLocation | null;
+  onSelectEquipment: (eq: EquipmentWithLocation) => void;
+  flowIntensity?: number;
+  isXRay?: boolean;
+  isStormActive?: boolean;
+  isFreeNav?: boolean;
+  onUserInteract: () => void;
+  resetToken?: number;
+}) {
+  return (
+    <>
+      {/* Dynamically adjust tone mapping exposure for storm legibility */}
+      <StormExposureControl isStormActive={isStormActive} />
+      <PerspectiveCamera makeDefault position={[36, 30, 44]} fov={45} far={1500} />
+      <CameraController
+        activePreset={activePreset}
+        isFreeNav={isFreeNav}
+        onUserInteract={onUserInteract}
+        resetToken={resetToken}
+      />
+
+      {/* Scene Background — Tropical Mountain Setting */}
+      <color attach="background" args={[isStormActive ? "#111822" : "#1e2d3d"]} />
+
+      {/* PBR Lighting Rig — maintain minimum legibility in storm mode for inspection use */}
+      <ambientLight intensity={isStormActive ? 0.65 : 1.2} color={isStormActive ? "#8899aa" : "#FFF8F0"} />
+      <hemisphereLight intensity={isStormActive ? 0.45 : 0.8} color={isStormActive ? "#5a7090" : "#87CEEB"} groundColor="#5A6050" />
+      <Environment preset="apartment" environmentIntensity={isStormActive ? 0.35 : 0.8} />
+
+      {/* Primary Solar Key Light — warm golden-hour sunlight */}
+      <directionalLight
+        position={[50, 65, 35]}
+        intensity={isStormActive ? 1.2 : 3.5}
+        color={isStormActive ? "#8899aa" : "#FFF5E6"}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={400}
+        shadow-camera-left={-100}
+        shadow-camera-right={100}
+        shadow-camera-top={100}
+        shadow-camera-bottom={-100}
+        shadow-bias={-0.0001}
+      />
+
+      {/* Cool Sky Fill Light — blue daylight from opposite side */}
+      <directionalLight
+        position={[-40, 45, -30]}
+        intensity={isStormActive ? 0.4 : 0.8}
+        color={isStormActive ? "#6688aa" : "#B0D4FF"}
+      />
+
+      {/* Warm Ground Bounce — reflected earth tones */}
+      <directionalLight
+        position={[0, -15, 0]}
+        intensity={isStormActive ? 0.2 : 0.3}
+        color="#DEB887"
+      />
+
+      {/* Teal Accent Rim Light — architectural edge accent */}
+      <directionalLight
+        position={[-50, 30, 40]}
+        intensity={isStormActive ? 0.25 : 0.5}
+        color="#1FB6A6"
+      />
+
+      {/* Atmospheric Fog — gently suggests depth without obscuring mid-ground (powerhouse is 20-50m from camera) */}
+      {isStormActive && <fog attach="fog" args={["#1a2535", 40, 180]} />}
+
+      {/* Rain — 150 streaks, vertically stretched, semi-transparent so structures remain legible */}
+      {isStormActive && <RainParticles count={150} />}
+
+      {/* Sparse Ambient Ground-Level Dust Motes in Clear Rural Atmosphere */}
+      {!isStormActive && <DustParticles count={25} />}
+
+      <Grid
+        position={[0, 0.01, 0]}
+        args={[350, 350]}
+        cellColor="#4A5A4A"
+        sectionColor="#5A6A5A"
+        cellThickness={0.8}
+        sectionThickness={1.2}
+        fadeDistance={200}
+        sectionSize={10}
+        cellSize={2}
+        infiniteGrid
+      />
+
+      <PowerhouseBlockout
+        activePreset={activePreset}
+        equipments={equipments}
+        selectedEquipment={selectedEquipment}
+        onSelectEquipment={onSelectEquipment}
+        flowIntensity={flowIntensity}
+        isXRay={isXRay}
+      />
+
+      {/* Cinematic Post-Processing Stack with Ultra-Sharp SMAA Anti-Aliasing */}
+      <EffectComposer multisampling={8}>
+        <Bloom
+          mipmapBlur
+          luminanceThreshold={0.88}
+          luminanceSmoothing={0.04}
+          intensity={isStormActive ? 0.3 : 0.55}
+        />
+        <BrightnessContrast
+          brightness={isStormActive ? 0.08 : 0.02}
+          contrast={isStormActive ? 0.12 : 0.1}
+        />
+        <SMAA />
+      </EffectComposer>
+    </>
+  );
+}
+
+interface AlertLogEntry {
+  id: string;
+  timestamp: string;
+  equipmentTag: string;
+  equipmentName: string;
+  type: "ONLINE" | "MAINTENANCE" | "ALERT";
+  message: string;
+}
+
+/**
+ * Collapsible Equipment Alerts & Event Log Feed Panel
+ */
+function AlertsFeedPanel({ equipments }: { equipments: EquipmentWithLocation[] }) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  const logs = useMemo<AlertLogEntry[]>(() => {
+    const entries: AlertLogEntry[] = [];
+
+    equipments.forEach((eq) => {
+      // 1. Check for database maintenance logs on equipment
+      if (eq.maintenanceLogs && eq.maintenanceLogs.length > 0) {
+        eq.maintenanceLogs.forEach((mLog) => {
+          const isMaint = eq.status === "UNDER_MAINTENANCE";
+          const isAlert = eq.condition === "CRITICAL" || eq.condition === "POOR";
+          const dateStr = new Date(mLog.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          entries.push({
+            id: `db-log-${mLog.id}`,
+            timestamp: dateStr,
+            equipmentTag: eq.equipmentTag,
+            equipmentName: eq.name,
+            type: isAlert ? "ALERT" : isMaint ? "MAINTENANCE" : "ONLINE",
+            message: mLog.description || `${mLog.type}: Logged for ${eq.equipmentTag}`,
+          });
+        });
+      } else {
+        // 2. Derive log entry directly from live equipment status & condition
+        if (eq.status === "UNDER_MAINTENANCE") {
+          entries.push({
+            id: `maint-${eq.id}`,
+            timestamp: "14:35 PM",
+            equipmentTag: eq.equipmentTag,
+            equipmentName: eq.name,
+            type: "MAINTENANCE",
+            message: "Status: UNDER_MAINTENANCE • Scheduled annual SF6 gas pressure & contact testing",
+          });
+        } else if (eq.condition === "CRITICAL" || eq.condition === "POOR") {
+          entries.push({
+            id: `alert-${eq.id}`,
+            timestamp: "09:15 AM",
+            equipmentTag: eq.equipmentTag,
+            equipmentName: eq.name,
+            type: "ALERT",
+            message: `Condition: ${eq.condition} • Sensor warning threshold exceeded`,
+          });
+        } else if (eq.status === "COMMISSIONED") {
+          entries.push({
+            id: `online-${eq.id}`,
+            timestamp: "11:10 AM",
+            equipmentTag: eq.equipmentTag,
+            equipmentName: eq.name,
+            type: "ONLINE",
+            message: "Status: COMMISSIONED • Synchronized to grid & operating normally",
+          });
+        }
+      }
+    });
+
+    // Sort logs so MAINTENANCE & ALERT events appear at top
+    return entries
+      .sort((a, b) => {
+        if (a.type === b.type) return 0;
+        if (a.type === "ONLINE") return 1;
+        if (b.type === "ONLINE") return -1;
+        return 0;
+      })
+      .slice(0, 5);
+  }, [equipments]);
+
+  return (
+    <Card className="w-80 border border-black/10 dark:border-white/10 bg-black/85 dark:bg-[#0B1013]/90 shadow-2xl backdrop-blur-md text-text-primary overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-3 bg-white/[0.03] hover:bg-white/[0.06] transition-colors border-b border-black/10 dark:border-white/10 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <Activity className="h-3.5 w-3.5 text-flow-teal" />
+          <span className="font-display text-xs font-semibold uppercase tracking-wider text-white">
+            EQUIPMENT ALERTS & LOGS
+          </span>
+          <span className="rounded-full bg-flow-teal/20 px-2 py-0.5 font-mono text-[10px] text-flow-teal font-bold border border-flow-teal/30">
+            {logs.length}
+          </span>
+        </div>
+        {isOpen ? (
+          <ChevronUp className="h-3.5 w-3.5 text-text-muted" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 text-text-muted" />
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="p-3 max-h-56 overflow-y-auto space-y-2 font-mono text-xs">
+          {logs.map((log) => (
+            <div
+              key={log.id}
+              className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 space-y-1 hover:border-white/20 transition-all"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <span
+                    className={cn(
+                      "h-2 w-2 rounded-full shrink-0",
+                      log.type === "ONLINE" && "bg-flow-teal",
+                      log.type === "MAINTENANCE" && "bg-amber-400 animate-pulse",
+                      log.type === "ALERT" && "bg-red-400 animate-ping"
+                    )}
+                  />
+                  <span className="text-white">{log.equipmentTag}</span>
+                </div>
+                <span className="text-[10px] text-text-muted">{log.timestamp}</span>
+              </div>
+              <p className="text-[11px] text-text-muted line-clamp-2 leading-relaxed">
+                {log.message}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+const DEFAULT_EQUIPMENTS: EquipmentWithLocation[] = [
+  {
+    id: "eq-tu-01",
+    projectId: "proj-1",
+    equipmentTag: "TU-01",
+    name: "Francis Turbine Unit 1 (5.65 MW)",
+    category: "TURBINE",
+    manufacturer: "ANDRITZ Hydro",
+    model: "FR-V-1250",
+    serialNumber: "AND-2025-FT01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Powerhouse Main Bay (Unit 1)",
+    siteLocationId: "loc-powerhouse",
+    zone: "TURBINE_HALL",
+    positionX: 52,
+    positionY: 60,
+    status: "COMMISSIONED",
+    condition: "EXCELLENT",
+    specifications: { "Rated Power": "5.65 MW", "Rated Head": "45 m", "Rated Flow": "14.2 m³/s" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-gen-01",
+    projectId: "proj-1",
+    equipmentTag: "GEN-01",
+    name: "Synchronous Generator Unit 1",
+    category: "GENERATOR",
+    manufacturer: "ANDRITZ Hydro",
+    model: "SG-V-6250",
+    serialNumber: "AND-2025-GEN01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Powerhouse Generator Floor (Unit 1)",
+    siteLocationId: "loc-powerhouse",
+    zone: "TURBINE_HALL",
+    positionX: 50,
+    positionY: 58,
+    status: "COMMISSIONED",
+    condition: "GOOD",
+    specifications: { "Output Voltage": "6.3 kV", "Power Factor": "0.8" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-tr-gsu-01",
+    projectId: "proj-1",
+    equipmentTag: "TR-GSU-01",
+    name: "Main GSU Step-Up Transformer (15 MVA)",
+    category: "TRANSFORMER",
+    manufacturer: "Hyundai Heavy Industries",
+    model: "GSU-12.5M",
+    serialNumber: "HHI-2025-TR01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Outdoor Switchyard Transformer Bay 1",
+    siteLocationId: "loc-switchyard",
+    zone: "SWITCHYARD",
+    positionX: 72,
+    positionY: 68,
+    status: "COMMISSIONED",
+    condition: "EXCELLENT",
+    specifications: { "Rated Power": "15 MVA", "Primary Voltage": "6.3 kV", "Secondary Voltage": "69 kV" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-cb-69kv-01",
+    projectId: "proj-1",
+    equipmentTag: "CB-69KV-01",
+    name: "69kV SF6 Gas Circuit Breaker",
+    category: "CIRCUIT_BREAKER",
+    manufacturer: "Schneider Electric",
+    model: "SF6-69K",
+    serialNumber: "SE-SF6-69-882",
+    installationDate: null,
+    commissionDate: null,
+    location: "Outdoor Switchyard Feeder 1",
+    siteLocationId: "loc-switchyard",
+    zone: "SWITCHYARD",
+    positionX: 76,
+    positionY: 72,
+    status: "UNDER_MAINTENANCE",
+    condition: "FAIR",
+    specifications: { "Rated Voltage": "69 kV", "Rated Current": "1200 A" },
+    maintenanceLogs: [
+      {
+        id: "log-cb-69kv-01",
+        type: "Scheduled Inspection",
+        description: "Status: UNDER_MAINTENANCE • Scheduled annual SF6 gas pressure & contact testing in progress",
+        createdAt: new Date(),
+      },
+    ],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-ds-69kv-01",
+    projectId: "proj-1",
+    equipmentTag: "DS-69KV-01",
+    name: "69kV Motorized Disconnect & Grounding Switch",
+    category: "CIRCUIT_BREAKER",
+    manufacturer: "ABB / Hitachi Energy",
+    model: "SDF-69K",
+    serialNumber: "ABB-DS-2025-04",
+    installationDate: null,
+    commissionDate: null,
+    location: "Outdoor Switchyard Bus Bay 1",
+    siteLocationId: "loc-switchyard",
+    zone: "SWITCHYARD",
+    positionX: 74,
+    positionY: 70,
+    status: "COMMISSIONED",
+    condition: "EXCELLENT",
+    specifications: { "Rated Voltage": "69 kV", "Continuous Current": "1200 A", "Operation": "Motorized Gang" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-la-69kv-01",
+    projectId: "proj-1",
+    equipmentTag: "LA-69KV-01",
+    name: "69kV Surge Arrester & PT/CT Metering Set",
+    category: "PROTECTION_RELAY",
+    manufacturer: "Siemens Energy",
+    model: "3EK4-69K",
+    serialNumber: "SIE-LA-2025-09",
+    installationDate: null,
+    commissionDate: null,
+    location: "Outdoor Switchyard Line Entry Bay",
+    siteLocationId: "loc-switchyard",
+    zone: "SWITCHYARD",
+    positionX: 78,
+    positionY: 74,
+    status: "COMMISSIONED",
+    condition: "EXCELLENT",
+    specifications: { "MCOV": "54 kV", "Discharge Class": "Class 3", "PT Ratio": "69kV / 110V" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-gov-01",
+    projectId: "proj-1",
+    equipmentTag: "GOV-01",
+    name: "Digital Governor Unit 1",
+    category: "GOVERNOR",
+    manufacturer: "Voith Hydro",
+    model: "HydroGyn-PLC",
+    serialNumber: "VH-2025-GOV01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Powerhouse Control Room Level",
+    siteLocationId: "loc-powerhouse",
+    zone: "TURBINE_HALL",
+    positionX: 48,
+    positionY: 55,
+    status: "COMMISSIONED",
+    condition: "EXCELLENT",
+    specifications: { "Control System": "Siemens S7-1500 PLC" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-int-gate-01",
+    projectId: "proj-1",
+    equipmentTag: "INT-GATE-01",
+    name: "Main Intake Radial Gate",
+    category: "GATE_VALVE",
+    manufacturer: "DSD Noell",
+    model: "RAD-GATE-4X4",
+    serialNumber: "DSD-2025-G01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Upper Dam Intake Structure",
+    siteLocationId: "loc-intake",
+    zone: "INTAKE",
+    positionX: 20,
+    positionY: 25,
+    status: "INSTALLED",
+    condition: "GOOD",
+    specifications: { "Gate Dimensions": "4.0 m x 4.0 m" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-pen-valve-01",
+    projectId: "proj-1",
+    equipmentTag: "PEN-VALVE-01",
+    name: "Penstock Butterfly Valve",
+    category: "GATE_VALVE",
+    manufacturer: "VAG Group",
+    model: "BFV-2200-PN10",
+    serialNumber: "VAG-2025-PV01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Penstock Intake Chamber",
+    siteLocationId: "loc-penstock",
+    zone: "PENSTOCK",
+    positionX: 35,
+    positionY: 40,
+    status: "INSTALLED",
+    condition: "GOOD",
+    specifications: { "Nominal Diameter": "2200 mm" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+  {
+    id: "eq-scada-01",
+    projectId: "proj-1",
+    equipmentTag: "SCADA-01",
+    name: "SCADA Master Control Station",
+    category: "SCADA_PLC",
+    manufacturer: "GE Digital",
+    model: "iFIX-Nexus-6.5",
+    serialNumber: "GE-SCADA-01",
+    installationDate: null,
+    commissionDate: null,
+    location: "Powerhouse Server Room",
+    siteLocationId: "loc-powerhouse",
+    zone: "TURBINE_HALL",
+    positionX: 45,
+    positionY: 52,
+    status: "COMMISSIONED",
+    condition: "GOOD",
+    specifications: { "Software": "iFIX 6.5 Proficy" },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: "user-1",
+  },
+];
+
+interface PerfStats {
+  fps: number;
+  ms: number;
+  calls: number;
+  tris: number;
+}
+
+function RenderInfoLogger({ onStatsUpdate }: { onStatsUpdate?: (stats: PerfStats) => void }) {
+  const { gl } = useThree();
+  const frameCount = useRef(0);
+  const lastTime = useRef(typeof performance !== "undefined" ? performance.now() : 0);
+  const lastCalls = useRef(0);
+  const lastTris = useRef(0);
+
+  // Disable auto-reset so EffectComposer doesn't zero out counters before we read them
+  useEffect(() => {
+    gl.info.autoReset = false;
+    return () => { gl.info.autoReset = true; };
+  }, [gl]);
+
+  // Run AFTER render (high renderPriority = late execution after EffectComposer)
+  useFrame(() => {
+    // Capture stats AFTER the render pass completed
+    const calls = gl.info.render.calls;
+    const tris = gl.info.render.triangles;
+    // Only store non-zero reads (EffectComposer may read mid-pass)
+    if (calls > 0 || tris > 0) {
+      lastCalls.current = calls;
+      lastTris.current = tris;
+    }
+    // Manually reset for next frame (since autoReset is disabled)
+    gl.info.reset();
+
+    frameCount.current++;
+    const now = performance.now();
+    const delta = now - lastTime.current;
+
+    if (delta >= 500) {
+      const fps = Math.round((frameCount.current * 1000) / delta);
+      const ms = parseFloat((delta / frameCount.current).toFixed(1));
+      frameCount.current = 0;
+      lastTime.current = now;
+
+      if (onStatsUpdate) {
+        onStatsUpdate({
+          fps,
+          ms,
+          calls: lastCalls.current,
+          tris: lastTris.current,
+        });
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      (window as unknown as { __R3F_INFO__?: Record<string, number> }).__R3F_INFO__ = {
+        calls: lastCalls.current,
+        triangles: lastTris.current,
+        geometries: gl.info.memory.geometries,
+        textures: gl.info.memory.textures,
+      };
+    }
+  }, 1000); // renderPriority=1000: run AFTER scene render + EffectComposer
+  return null;
+}
+
+/**
+ * Main PlantScene Client Component
+ */
+interface PlantSceneProps {
+  flowIntensity?: number; // 0.0 to 1.0 configurable prop for plant capacity/flow rate
+}
+
+export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
+  const [activePreset, setActivePreset] = useState<CameraPresetKey>("overview");
+  const [isFreeNav, setIsFreeNav] = useState<boolean>(false);
+  const [resetToken, setResetToken] = useState<number>(0);
+  const [isXRay, setIsXRay] = useState<boolean>(false);
+  const [devStormToggle, setDevStormToggle] = useState<boolean>(false);
+  const [weatherData, setWeatherData] = useState<PagasaSignalData | null>(null);
+  const [equipments, setEquipments] = useState<EquipmentWithLocation[]>(DEFAULT_EQUIPMENTS);
+  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentWithLocation | null>(null);
+  const [perfStats, setPerfStats] = useState<PerfStats>({ fps: 60, ms: 16.6, calls: 0, tris: 0 });
+
+  const handleSelectPreset = (preset: CameraPresetKey) => {
+    setActivePreset(preset);
+    setIsFreeNav(false);
+    setResetToken((prev) => prev + 1);
+  };
+
+  const handleToggleFreeNav = () => {
+    setIsFreeNav((prev) => !prev);
+  };
+
+  const handleResetCamera = () => {
+    setIsFreeNav(false);
+    setResetToken((prev) => prev + 1);
+  };
+
+  // Fetch real plant equipment records via reverse lookup server action
+  useEffect(() => {
+    let isMounted = true;
+    async function loadEquipments() {
+      try {
+        const records = await getEquipmentByLocation("all");
+        if (isMounted && records && records.length > 0) {
+          setEquipments(records as unknown as EquipmentWithLocation[]);
+        }
+      } catch (err) {
+        console.error("Failed to load digital twin equipments:", err);
+      }
+    }
+    loadEquipments();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Poll live PAGASA Severe Weather Bulletin API every 60s
+  useEffect(() => {
+    let isMounted = true;
+    async function loadWeather() {
+      try {
+        const res = await fetch("/api/weather/pagasa-signals");
+        if (!res.ok) return;
+        const data: PagasaSignalData = await res.json();
+        if (isMounted && data) {
+          setWeatherData(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch PAGASA weather signals:", err);
+      }
+    }
+    loadWeather();
+    const interval = setInterval(loadWeather, 60000); // 60s real-time poll
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Determine active storm environmental overlay state
+  const isRealStorm = Boolean(
+    weatherData?.hasActiveBulletin ||
+    (weatherData?.siteSignalNumber && weatherData.siteSignalNumber > 0)
+  );
+  const isStormActive = isRealStorm || devStormToggle;
+
+  const activeSignalNumber = devStormToggle
+    ? 2
+    : weatherData && weatherData.siteSignalNumber && weatherData.siteSignalNumber > 0
+    ? weatherData.siteSignalNumber
+    : 0;
+
+  const maintCount = useMemo(() => {
+    return equipments.filter((e) => e.status === "UNDER_MAINTENANCE").length;
+  }, [equipments]);
+
+  const alertCount = useMemo(() => {
+    return equipments.filter((e) => e.condition === "CRITICAL" || e.condition === "POOR").length;
+  }, [equipments]);
+
+  const onlineCount = useMemo(() => {
+    return equipments.filter(
+      (e) =>
+        e.status === "COMMISSIONED" &&
+        e.condition !== "CRITICAL" &&
+        e.condition !== "POOR"
+    ).length;
+  }, [equipments]);
+
+  const totalAssetsCount = useMemo(() => {
+    return equipments.length;
+  }, [equipments]);
+
+  const commissionPct = useMemo(() => {
+    if (equipments.length === 0) return 100;
+    return Math.round((onlineCount / equipments.length) * 100);
+  }, [onlineCount, equipments.length]);
+
+  const currentOutputMw = useMemo(() => {
+    return (11.3 * flowIntensity * (commissionPct / 100)).toFixed(1);
+  }, [flowIntensity, commissionPct]);
+
+  return (
+    <div className="relative h-full w-full bg-[var(--bg-base,#0B1013)] overflow-hidden">
+      <Suspense fallback={<PlantSceneLoading />}>
+        <Canvas
+          shadows
+          dpr={[1, 2]}
+          gl={{
+            antialias: true,
+            alpha: false,
+            powerPreference: "high-performance",
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.25,
+          }}
+          className="h-full w-full"
+        >
+          <RenderInfoLogger onStatsUpdate={setPerfStats} />
+          <PlantSceneInner
+            activePreset={activePreset}
+            equipments={equipments}
+            selectedEquipment={selectedEquipment}
+            onSelectEquipment={(eq) => setSelectedEquipment(eq)}
+            flowIntensity={flowIntensity}
+            isXRay={isXRay}
+            isStormActive={isStormActive}
+            isFreeNav={isFreeNav}
+            onUserInteract={() => setIsFreeNav(true)}
+            resetToken={resetToken}
+          />
+        </Canvas>
+      </Suspense>
+
+      {/* HUD Top Status Chips Bar */}
+      <div className="absolute top-20 left-6 z-20 pointer-events-auto flex flex-wrap items-center gap-2.5 max-w-[calc(100vw-24rem)]">
+        {/* Environmental Weather Status Chip */}
+        <div
+          className={cn(
+            "rounded-lg border px-3 py-1.5 font-mono text-xs font-medium backdrop-blur-md flex items-center gap-2 shadow-xl transition-all",
+            isStormActive
+              ? "border-amber-500/50 bg-black/85 text-amber-400 shadow-amber-500/20 ring-1 ring-amber-500/30"
+              : "border-emerald-500/30 bg-black/75 text-emerald-400"
+          )}
+        >
+          <span
+            className={cn(
+              "w-2 h-2 rounded-full shrink-0",
+              isStormActive ? "bg-amber-400 animate-ping" : "bg-emerald-400"
+            )}
+          />
+          <span>
+            {isStormActive
+              ? `TYPHOON WATCH: ${weatherData?.tcName || "NIKA"} • ${weatherData?.maxWindsKph || 120} km/h (Signal #${weatherData?.siteSignalNumber || 2})`
+              : "ATMOSPHERE: CLEAR"}
+          </span>
+        </div>
+
+        {/* Live Commissioning % & Output Gauge Chip */}
+        <div className="rounded-lg border border-flow-teal/30 bg-black/85 text-white px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 text-flow-teal font-semibold">
+            <Gauge className="h-3.5 w-3.5" />
+            <span>{commissionPct}% Commissioned</span>
+          </div>
+          <span className="text-white/20">|</span>
+          <div className="flex items-center gap-1.5 text-white">
+            <Zap className="h-3.5 w-3.5 text-flow-teal fill-flow-teal/20" />
+            <span>{currentOutputMw} MW / 11.3 MW</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-flow-teal animate-pulse" />
+          </div>
+        </div>
+
+        {/* Equipment Status Count Summary Chip */}
+        <div className="rounded-lg border border-white/10 bg-black/85 text-white px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+          <span className="text-flow-teal font-semibold flex items-center gap-1">
+            <CheckCircle2 className="h-3 w-3" />
+            {onlineCount} Online
+          </span>
+          <span className="text-white/20">•</span>
+          <span className="text-amber-400 font-semibold flex items-center gap-1">
+            <Wrench className="h-3 w-3" />
+            {maintCount} Maint
+          </span>
+          <span className="text-white/20">•</span>
+          <span className="text-red-400 font-semibold flex items-center gap-1">
+            <AlertTriangle className="h-3 w-3" />
+            {alertCount} Alert
+          </span>
+        </div>
+
+        {/* Navigation Mode Status Indicator Chip */}
+        <div
+          className={cn(
+            "rounded-lg border px-3 py-1.5 font-mono text-xs font-semibold backdrop-blur-md flex items-center gap-2 shadow-xl transition-all cursor-pointer",
+            isFreeNav
+              ? "border-flow-teal/50 bg-black/85 text-flow-teal shadow-flow-teal/20 ring-1 ring-flow-teal/40"
+              : "border-white/10 bg-black/75 text-text-muted hover:text-white"
+          )}
+          onClick={handleToggleFreeNav}
+          title={isFreeNav ? "Click to lock to preset camera view" : "Click to unlock free orbit & pan"}
+        >
+          {isFreeNav ? (
+            <>
+              <Unlock className="h-3.5 w-3.5 text-flow-teal animate-pulse" />
+              <span>FREE NAV UNLOCKED</span>
+            </>
+          ) : (
+            <>
+              <Lock className="h-3.5 w-3.5 text-text-muted" />
+              <span className="uppercase">PRESET: {activePreset}</span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Collapsible Equipment Alerts Feed Panel (Top-Right, beside detail drawer if open) */}
+      <div className="absolute top-20 right-6 z-20 pointer-events-auto">
+        {!selectedEquipment && <AlertsFeedPanel equipments={equipments} />}
+      </div>
+
+      {/* Equipment Detail Drawer Overlay (Top-Right) */}
+      {selectedEquipment && (
+        <div className="absolute top-20 right-6 z-30 pointer-events-auto">
+          <EquipmentDetailDrawer
+            equipment={selectedEquipment}
+            onClose={() => setSelectedEquipment(null)}
+          />
+        </div>
+      )}
+
+      {/* Camera Presets & Navigation Controls Panel (Bottom-Left) */}
+      <div className="absolute bottom-12 left-6 z-20 pointer-events-auto">
+        <Card className="w-60 border border-black/10 dark:border-white/10 bg-black/80 dark:bg-[#0B1013]/90 shadow-2xl backdrop-blur-md p-3 text-text-primary">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/10 dark:border-white/10">
+            <div className="flex items-center gap-2">
+              <Camera className="h-3.5 w-3.5 text-flow-teal" />
+              <span className="font-display text-xs font-semibold uppercase tracking-wider text-white">
+                CAMERA CONTROLS
+              </span>
+            </div>
+            {isFreeNav && (
+              <span className="rounded bg-flow-teal/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-flow-teal border border-flow-teal/30">
+                FREE NAV
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Button
+              variant={!isFreeNav && activePreset === "overview" ? "default" : "outline"}
+              size="sm"
+              className="justify-start font-sans text-xs font-medium"
+              onClick={() => handleSelectPreset("overview")}
+            >
+              <Eye className="h-3.5 w-3.5 mr-1.5" />
+              Overview Preset
+            </Button>
+
+            <Button
+              variant={!isFreeNav && activePreset === "turbine-hall" ? "default" : "outline"}
+              size="sm"
+              className="justify-start font-sans text-xs font-medium"
+              onClick={() => handleSelectPreset("turbine-hall")}
+            >
+              <Camera className="h-3.5 w-3.5 mr-1.5" />
+              Turbine Hall Preset
+            </Button>
+
+            <Button
+              variant={!isFreeNav && activePreset === "switchyard" ? "default" : "outline"}
+              size="sm"
+              className="justify-start font-sans text-xs font-medium"
+              onClick={() => handleSelectPreset("switchyard")}
+            >
+              <Zap className="h-3.5 w-3.5 mr-1.5" />
+              Switchyard Preset
+            </Button>
+
+            <Button
+              variant={!isFreeNav && activePreset === "temfacil" ? "default" : "outline"}
+              size="sm"
+              className="justify-start font-sans text-xs font-medium"
+              onClick={() => handleSelectPreset("temfacil")}
+            >
+              <Building2 className="h-3.5 w-3.5 mr-1.5" />
+              TEMFACIL Compound
+            </Button>
+
+            {/* Free Orbit & Pan Mode Toggle */}
+            <Button
+              variant={isFreeNav ? "default" : "outline"}
+              size="sm"
+              className={cn(
+                "justify-start font-sans text-xs font-medium transition-all",
+                isFreeNav && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 hover:bg-flow-teal/30 ring-1 ring-flow-teal/40"
+              )}
+              onClick={handleToggleFreeNav}
+            >
+              <Move className="h-3.5 w-3.5 mr-1.5" />
+              {isFreeNav ? "Free Pan & Orbit (Active)" : "Unlock Free Orbit & Pan"}
+            </Button>
+
+            {/* Recenter / Reset Camera View Action */}
+            {isFreeNav && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="justify-start font-sans text-xs font-medium text-text-muted hover:text-white bg-white/[0.04]"
+                onClick={handleResetCamera}
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                Reset View to {activePreset}
+              </Button>
+            )}
+
+            <div className="pt-1.5 mt-1.5 border-t border-white/10 flex flex-col gap-1.5">
+              <Button
+                variant={isXRay ? "default" : "outline"}
+                size="sm"
+                className={cn(
+                  "w-full justify-start font-sans text-xs font-medium transition-all",
+                  isXRay && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 hover:bg-flow-teal/30 ring-1 ring-flow-teal/40"
+                )}
+                onClick={() => setIsXRay(!isXRay)}
+              >
+                <ScanEye className="h-3.5 w-3.5 mr-1.5" />
+                X-Ray View Mode
+              </Button>
+
+              {process.env.NODE_ENV === "development" && (
+                <Button
+                  variant={devStormToggle ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "w-full justify-start font-sans text-xs font-medium transition-all",
+                    devStormToggle && "bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30 ring-1 ring-amber-500/40"
+                  )}
+                  onClick={() => setDevStormToggle(!devStormToggle)}
+                >
+                  <CloudRain className="h-3.5 w-3.5 mr-1.5" />
+                  Storm Overlay (Dev)
+                </Button>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Real-time Hardware Performance Telemetry HUD Chip */}
+      <div className="absolute bottom-6 right-6 z-20 pointer-events-none flex items-center gap-2.5 bg-black/80 backdrop-blur-md border border-emerald-500/30 rounded-lg px-3 py-1.5 font-mono text-[11px] text-emerald-400 shadow-xl">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-bold">{perfStats.fps} FPS</span>
+        </div>
+        <span className="text-gray-600">|</span>
+        <span className="text-gray-300">{perfStats.ms} ms</span>
+        <span className="text-gray-600">|</span>
+        <span className="text-cyan-400">{perfStats.calls} Calls</span>
+        <span className="text-gray-600">|</span>
+        <span className="text-cyan-400">{(perfStats.tris / 1000).toFixed(1)}k Tris</span>
+      </div>
+    </div>
+  );
+}

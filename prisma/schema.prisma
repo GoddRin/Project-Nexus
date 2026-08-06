@@ -603,6 +603,9 @@ model PlantEquipment {
   location          String?  // physical location e.g. "Powerhouse Bay 1"
   siteLocationId    String?  // optional link to SiteLocation from sitemap
   siteLocation      SiteLocation? @relation(fields: [siteLocationId], references: [id], onDelete: SetNull)
+  positionX         Float?   // SVG canvas X coordinate for sitemap reverse lookup
+  positionY         Float?   // SVG canvas Y coordinate for sitemap reverse lookup
+  zone              EquipmentZone? // Zone matching Digital Twin & Sitemap (INTAKE, PENSTOCK, TURBINE_HALL, etc.)
   status            EquipmentStatus @default(INSTALLED)
   condition         EquipmentCondition @default(GOOD)
   specifications    Json?    // flexible key-value specs (rated power, voltage, etc.)
@@ -673,6 +676,17 @@ enum EquipmentCondition {
   FAIR
   POOR
   CRITICAL
+}
+
+enum EquipmentZone {
+  INTAKE
+  PENSTOCK
+  TURBINE_HALL
+  SWITCHYARD
+  SURGE_TANK
+  TAILRACE
+  ACCESS_ROAD
+  OTHER
 }
 
 model DocumentChunk {

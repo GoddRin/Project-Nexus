@@ -1,15 +1,17 @@
 import { prisma } from "@/lib/db/prisma";
 import { SiteMapClient } from "./SiteMapClient";
 import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function SiteMapPage() {
   const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" } });
-  if (!project) return null;
+  if (!project) return notFound();
 
-  const { member } = await getOrCreateUser(project.id);
-  if (!member) {
-    redirect("/dashboard");
+  const { dbUser, member } = await getOrCreateUser(project.id);
+  if (!dbUser || !member) {
+    redirect("/sign-in");
   }
 
   // Fetch locations with comprehensive inclusions
@@ -27,6 +29,15 @@ export default async function SiteMapPage() {
       equipments: true,
     },
     orderBy: { createdAt: "asc" }
+  });
+
+  // Fetch all plant equipment records with position & siteLocation for sitemap pins & reverse lookup
+  const allEquipments = await prisma.plantEquipment.findMany({
+    where: { projectId: project.id },
+    include: {
+      siteLocation: true,
+    },
+    orderBy: { equipmentTag: "asc" },
   });
 
   // Fetch all tickets for the project to filter by zone name in-memory
@@ -68,6 +79,7 @@ export default async function SiteMapPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       <SiteMapClient 
         locations={locations} 
+        allEquipments={allEquipments}
         tickets={tickets} 
         equipmentCounts={equipmentCounts} 
         isWorkingHours={isWorkingHours} 

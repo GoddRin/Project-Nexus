@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type {  SiteLocation  } from "@prisma/client";
+import type { SiteLocation, PlantEquipment } from "@prisma/client";
 import { Maximize, Minimize } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 interface SiteMapSVGProps {
   locations: SiteLocation[];
+  allEquipments?: (PlantEquipment & { siteLocation?: SiteLocation | null })[];
+  selectedEquipmentId?: string | null;
+  onSelectEquipment?: (eq: PlantEquipment & { siteLocation?: SiteLocation | null }) => void;
   activeSlug: string | null;
   selectedSlug: string | null;
   onHover: (slug: string | null) => void;
@@ -20,6 +23,9 @@ interface SiteMapSVGProps {
 
 export function SiteMapSVG({
   locations,
+  allEquipments = [],
+  selectedEquipmentId = null,
+  onSelectEquipment,
   activeSlug,
   selectedSlug,
   onHover,
@@ -1426,6 +1432,74 @@ export function SiteMapSVG({
                 >
                   {label}
                 </text>
+              </g>
+            );
+          })}
+        </g>
+
+        {/* ═══ REAL EQUIPMENT PINS OVERLAY ═══ */}
+        <g
+          style={{
+            opacity: viewMode === "equipment" ? 1 : 0.85,
+            pointerEvents: "auto",
+            transition: "opacity 0.25s ease",
+          }}
+        >
+          {allEquipments?.map((eq) => {
+            if (eq.positionX == null || eq.positionY == null) return null;
+            const cx = (eq.positionX / 100) * 1000;
+            const cy = (eq.positionY / 100) * 560;
+            const isSelected = selectedEquipmentId === eq.id;
+
+            return (
+              <g
+                key={eq.id}
+                transform={`translate(${cx}, ${cy})`}
+                className="cursor-pointer group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onSelectEquipment) onSelectEquipment(eq);
+                  if (eq.siteLocation?.slug) onClick(eq.siteLocation.slug);
+                }}
+              >
+                {/* Outer Glow / Pulse Ring */}
+                <circle
+                  r={isSelected ? "14" : "10"}
+                  fill={isSelected ? "#1FB6A6" : "#0D9488"}
+                  fillOpacity={isSelected ? "0.4" : "0.2"}
+                  className="animate-ping"
+                />
+                {/* Inner Pin Body */}
+                <circle
+                  r={isSelected ? "8" : "6"}
+                  fill={isSelected ? "#1FB6A6" : "#0D9488"}
+                  stroke="#ffffff"
+                  strokeWidth={isSelected ? "2" : "1.5"}
+                  filter="drop-shadow(0 2px 6px rgba(0,0,0,0.5))"
+                />
+                {/* Equipment Tag Label Pill */}
+                <g transform="translate(0, -14)" className="pointer-events-none">
+                  <rect
+                    x={-eq.equipmentTag.length * 3.5 - 4}
+                    y="-8"
+                    width={eq.equipmentTag.length * 7 + 8}
+                    height="14"
+                    rx="3"
+                    fill="#0B1013"
+                    stroke={isSelected ? "#1FB6A6" : "rgba(255,255,255,0.2)"}
+                    strokeWidth="1"
+                  />
+                  <text
+                    textAnchor="middle"
+                    y="2"
+                    fill={isSelected ? "#1FB6A6" : "#E2E8F0"}
+                    fontSize="8.5"
+                    fontWeight="600"
+                    fontFamily="var(--font-mono)"
+                  >
+                    {eq.equipmentTag}
+                  </text>
+                </g>
               </g>
             );
           })}

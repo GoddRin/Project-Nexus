@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/incidents(.*)",
   "/api/mobile(.*)",
   "/api/notifications(.*)",
+  "/models/(.*)",
 ]);
 
 // Next.js 16 proxy convention requires an explicit function declaration

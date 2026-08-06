@@ -37,14 +37,16 @@ interface SiteLocationWithRelations extends SiteLocation {
 
 interface SiteMapClientProps {
   locations: SiteLocationWithRelations[];
+  allEquipments?: (PlantEquipment & { siteLocation?: SiteLocation | null })[];
   tickets: Ticket[];
   equipmentCounts: Record<string, number>;
   isWorkingHours: boolean;
 }
 
-export function SiteMapClient({ locations, tickets, equipmentCounts, isWorkingHours }: SiteMapClientProps) {
+export function SiteMapClient({ locations, allEquipments = [], tickets, equipmentCounts, isWorkingHours }: SiteMapClientProps) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"completion" | "equipment">("completion");
   
   const router = useRouter();
@@ -165,6 +167,14 @@ export function SiteMapClient({ locations, tickets, equipmentCounts, isWorkingHo
         <div className="xl:col-span-3">
           <SiteMapSVG
             locations={locations}
+            allEquipments={allEquipments}
+            selectedEquipmentId={selectedEquipmentId}
+            onSelectEquipment={(eq) => {
+              setSelectedEquipmentId(eq.id);
+              if (eq.siteLocation?.slug) {
+                setSelectedSlug(eq.siteLocation.slug);
+              }
+            }}
             activeSlug={activeSlug}
             selectedSlug={selectedSlug}
             onHover={handleHover}
@@ -510,31 +520,71 @@ export function SiteMapClient({ locations, tickets, equipmentCounts, isWorkingHo
 
               {/* Linked Equipment list */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
-                  <Wrench className="h-4 w-4" /> Linked Equipments
+                <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Wrench className="h-4 w-4" /> Linked Equipments</span>
+                  <span className="text-[10px] font-mono text-flow-teal">Reverse Lookup</span>
                 </h4>
-                {selectedLocation.equipments && selectedLocation.equipments.length > 0 ? (
-                  <div className="max-h-48 overflow-y-auto space-y-2 border border-border-hairline rounded-xl p-2 bg-black/[0.01] dark:bg-white/[0.01]">
-                    {selectedLocation.equipments.map((eq) => (
-                      <div 
-                        key={eq.id}
-                        onClick={() => router.push(`/dashboard/equipment/${eq.id}`)}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-border-hairline cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors"
-                      >
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-text-primary truncate">{eq.name}</p>
-                          <span className="text-[9px] font-mono text-text-muted mt-0.5 block">{eq.equipmentTag}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[9px] font-bold uppercase border px-2 py-0.5 rounded bg-black/[0.04] dark:bg-white/[0.04] border-border-hairline">
-                          {getCategoryIcon(eq.category)}
-                          <span className="text-text-muted">{eq.category.toLowerCase().replace("_", " ")}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-text-muted italic">No plant equipment registered for this zone</p>
-                )}
+                {(() => {
+                  const locEquipments = allEquipments.filter(
+                    eq => eq.siteLocationId === selectedLocation.id || eq.siteLocation?.slug === selectedLocation.slug
+                  );
+                  const displayEquipments = locEquipments.length > 0 ? locEquipments : (selectedLocation.equipments || []);
+
+                  return displayEquipments.length > 0 ? (
+                    <div className="max-h-56 overflow-y-auto space-y-2 border border-border-hairline rounded-xl p-2 bg-black/[0.01] dark:bg-white/[0.01]">
+                      {displayEquipments.map((eq) => {
+                        const isEqSelected = selectedEquipmentId === eq.id;
+                        return (
+                          <div 
+                            key={eq.id}
+                            onClick={() => {
+                              setSelectedEquipmentId(eq.id);
+                            }}
+                            className={cn(
+                              "flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-colors",
+                              isEqSelected 
+                                ? "bg-flow-teal/15 border-flow-teal/40 text-text-primary shadow-[0_0_12px_rgba(31,182,166,0.15)]"
+                                : "bg-black/[0.02] dark:bg-white/[0.02] border-border-hairline hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"
+                            )}
+                          >
+                            <div className="min-w-0 flex-1 pr-2">
+                              <div className="flex items-center gap-1.5">
+                                <p className="text-xs font-bold text-text-primary truncate">{eq.name}</p>
+                                {eq.zone && (
+                                  <span className="text-[8px] font-mono font-semibold uppercase px-1.5 py-0.2 rounded bg-flow-teal/10 text-flow-teal border border-flow-teal/20">
+                                    {eq.zone}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-[9.5px] font-mono text-text-muted mt-0.5">
+                                <span className="font-semibold text-flow-teal">{eq.equipmentTag}</span>
+                                {eq.positionX != null && eq.positionY != null && (
+                                  <span>· Pin: ({eq.positionX}%, {eq.positionY}%)</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div className="flex items-center gap-1 text-[9px] font-bold uppercase border px-2 py-0.5 rounded bg-black/[0.04] dark:bg-white/[0.04] border-border-hairline">
+                                {getCategoryIcon(eq.category)}
+                                <span className="text-text-muted">{eq.category.toLowerCase().replace("_", " ")}</span>
+                              </div>
+                              <Link 
+                                href={`/dashboard/equipment/${eq.id}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-1 rounded text-text-muted hover:text-flow-teal hover:bg-white/10 transition-colors"
+                                title="View full equipment specifications"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-text-muted italic">No plant equipment registered for this zone</p>
+                  );
+                })()}
               </div>
 
               {/* Recent tickets */}

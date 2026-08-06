@@ -25,7 +25,8 @@ const GLASS_CARD = "glass-card h-full";
 
 
 /* Card header with icon dot indicator */
-function CardHeader({ icon: Icon, title, glow = false }: { icon: React.ElementType; title: string; glow?: boolean }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CardHeader({ icon: Icon, title, glow = false }: { icon: any; title: string; glow?: boolean }) {
  return (
  <div className="mb-5 flex items-center gap-3">
  <div className={cn(
@@ -55,7 +56,8 @@ function ScaffoldCard({
  glow = false,
 }: {
  title: string;
- icon: React.ElementType;
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ icon: any;
  children: React.ReactNode;
  delay?: number;
  glow?: boolean;

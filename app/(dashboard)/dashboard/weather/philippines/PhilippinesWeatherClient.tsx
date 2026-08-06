@@ -22,6 +22,9 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryWidget";
+import PanahonLayerControl, { PanahonLayerKey, PanahonTimelineFrame } from "@/components/weather/PanahonLayerControl";
+import type { PanahonStation, PanahonLightning } from "@/components/weather/TyphoonMap";
 
 // Dynamically import Leaflet map to avoid server-side window errors
 const TyphoonMap = dynamic(() => import("@/components/weather/TyphoonMap"), {
@@ -133,13 +136,157 @@ export default function PhilippinesWeatherClient({
 
   console.log("Client Render: storms =", storms.length, "| PAGASA signal =", pagasaSignals.siteSignalNumber, "| TC =", pagasaSignals.tcName);
 
-  // Set first storm expanded by default if available
+  // PANaHON Layers State — Cyclone Track default ON, all additional layers turned OFF by default
+  const [activePanahonLayers, setActivePanahonLayers] = useState<Set<PanahonLayerKey>>(
+    () => new Set(["cyclone"])
+  );
+  const [panahonSynop, setPanahonSynop] = useState<PanahonStation[]>([]);
+  const [panahonAws, setPanahonAws] = useState<PanahonStation[]>([]);
+  const [panahonLightning, setPanahonLightning] = useState<PanahonLightning[]>([]);
+  const [panahonRiverBasin, setPanahonRiverBasin] = useState<PanahonStation[]>([]);
+  const [panahonTimelineFrames, setPanahonTimelineFrames] = useState<PanahonTimelineFrame[]>([]);
+  const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
+  const [isPlayingTimeline, setIsPlayingTimeline] = useState<boolean>(false);
+  const [panahonStatus, setPanahonStatus] = useState<"live" | "cached" | "unavailable">("live");
+
+  const togglePanahonLayer = (layer: PanahonLayerKey) => {
+    setActivePanahonLayers((prev) => {
+      const next = new Set(prev);
+      if (next.has(layer)) {
+        next.delete(layer);
+      } else {
+        next.add(layer);
+      }
+      return next;
+    });
+  };
+
+  // Fetch live PANaHON data streams with periodic 60-second real-time auto-refresh
   useEffect(() => {
-    if (storms.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setExpandedStormId(storms[0].id);
+    async function loadPanahonData(refreshAll = false) {
+      try {
+        if (activePanahonLayers.has("synop") && (refreshAll || panahonSynop.length === 0)) {
+          const res = await fetch(`/api/weather/panahon/synop?parameter=observed_weather&t=${Date.now()}`);
+          if (res.ok) {
+            const j = await res.json();
+            if (j.data && Array.isArray(j.data)) {
+              setPanahonSynop(
+                j.data
+                  .map((s: any) => {
+                    let parsed: any = {};
+                    try { parsed = typeof s.value === "string" ? JSON.parse(s.value) : s.value; } catch {}
+                    const lat = parseFloat(s.lat);
+                    const lon = parseFloat(s.lon);
+                    return {
+                      site_id: s.site_id,
+                      site_name: s.site_name,
+                      lat,
+                      lon,
+                      desc: parsed?.desc,
+                      icon: parsed?.icon,
+                    };
+                  })
+                  .filter((s: any) => !isNaN(s.lat) && !isNaN(s.lon) && isFinite(s.lat) && isFinite(s.lon))
+              );
+            }
+          }
+        }
+
+        if (activePanahonLayers.has("aws") && (refreshAll || panahonAws.length === 0)) {
+          const res = await fetch(`/api/weather/panahon/aws?parameter=rainfall&t=${Date.now()}`);
+          if (res.ok) {
+            const j = await res.json();
+            if (j.data && Array.isArray(j.data)) {
+              setPanahonAws(
+                j.data
+                  .map((s: any) => ({
+                    site_id: s.site_id,
+                    site_name: s.site_name,
+                    lat: parseFloat(s.lat),
+                    lon: parseFloat(s.lon),
+                    value: s.value,
+                  }))
+                  .filter((s: any) => !isNaN(s.lat) && !isNaN(s.lon) && isFinite(s.lat) && isFinite(s.lon))
+              );
+            }
+          }
+        }
+
+        if (activePanahonLayers.has("lightning") && (refreshAll || panahonLightning.length === 0)) {
+          const res = await fetch(`/api/weather/panahon/lightning?t=${Date.now()}`);
+          if (res.ok) {
+            const j = await res.json();
+            if (j.data && Array.isArray(j.data)) {
+              setPanahonLightning(
+                j.data.filter((s: any) => {
+                  const lat = parseFloat(s.lat);
+                  const lon = parseFloat(s.lon);
+                  return !isNaN(lat) && !isNaN(lon) && isFinite(lat) && isFinite(lon);
+                })
+              );
+            }
+          }
+        }
+
+        if (activePanahonLayers.has("riverbasin") && (refreshAll || panahonRiverBasin.length === 0)) {
+          const res = await fetch(`/api/weather/panahon/riverbasin/waterlevel?parameter=waterlevel&t=${Date.now()}`);
+          if (res.ok) {
+            const j = await res.json();
+            if (j.data && Array.isArray(j.data)) {
+              setPanahonRiverBasin(
+                j.data
+                  .map((s: any) => ({
+                    site_id: s.site_id,
+                    site_name: s.site_name,
+                    lat: parseFloat(s.lat),
+                    lon: parseFloat(s.lon),
+                    value: s.value,
+                  }))
+                  .filter((s: any) => !isNaN(s.lat) && !isNaN(s.lon) && isFinite(s.lat) && isFinite(s.lon))
+              );
+            }
+          }
+        }
+
+        if ((activePanahonLayers.has("radar") || activePanahonLayers.has("satellite")) && (refreshAll || panahonTimelineFrames.length === 0)) {
+          const endpoint = activePanahonLayers.has("satellite")
+            ? `/api/weather/panahon/himawari/timeline?t=${Date.now()}`
+            : `/api/weather/panahon/radar/timeline?sublayer=hybrid-reflectivity&t=${Date.now()}`;
+          const res = await fetch(endpoint);
+          if (res.ok) {
+            const j = await res.json();
+            if (j.data && Array.isArray(j.data.timeline)) {
+              setPanahonTimelineFrames(j.data.timeline);
+              if (refreshAll || currentFrameIndex === 0) {
+                setCurrentFrameIndex(j.data.timeline.length - 1);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load PANaHON layers:", err);
+        setPanahonStatus("cached");
+      }
     }
-  }, [storms]);
+
+    loadPanahonData(false);
+
+    // 60-second real-time auto-refresh interval for active map layers
+    const interval = setInterval(() => {
+      loadPanahonData(true);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [activePanahonLayers]);
+
+  // Timeline Auto-Play Timer
+  useEffect(() => {
+    if (!isPlayingTimeline || panahonTimelineFrames.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentFrameIndex((prev) => (prev + 1) % panahonTimelineFrames.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [isPlayingTimeline, panahonTimelineFrames]);
 
   // Fetch live site conditions (wind speed + pressure) from the API
   const refreshConditions = async () => {
@@ -195,7 +342,6 @@ export default function PhilippinesWeatherClient({
   };
 
   // On mount: immediately fetch fresh conditions client-side
-  // (the SSR value may be stale by the time the page hydrates)
   useEffect(() => {
     refreshConditions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,11 +356,11 @@ export default function PhilippinesWeatherClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-refresh JTWC storm data every 5 minutes
+  // Auto-refresh PAGASA & PANaHON storm track data every 60 seconds (real-time stream)
   useEffect(() => {
     const stormInterval = setInterval(() => {
       handleRefresh(forceMock);
-    }, 300000); // 5 minutes for storms
+    }, 60000); // 60 seconds for real-time storm track updates
 
     return () => clearInterval(stormInterval);
   }, [forceMock]);
@@ -394,6 +540,9 @@ export default function PhilippinesWeatherClient({
         </div>
       </div>
 
+      {/* 1.5 RIVER BASIN HYDRO TELEMETRY */}
+      <RiverBasinTelemetryWidget />
+
       {/* 2. KPI CARDS ROW (4 cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Wind speed at Tumauini — live, client-refreshed */}
@@ -532,12 +681,44 @@ export default function PhilippinesWeatherClient({
           </div>
         </div>
 
-        {/* RIGHT PANEL — Leaflet Typhoon Tracker (35% width equivalent) */}
-        <div className="xl:col-span-1 space-y-4">
-          <h3 className="font-display font-semibold tracking-wide text-text-primary text-sm flex items-center gap-2">
-            <Compass className="h-4 w-4 text-flow-teal" /> Storm Track & uncertainty Cone
-          </h3>
-          <TyphoonMap storms={storms} lastUpdated={lastUpdated} />
+        {/* RIGHT PANEL — Leaflet Typhoon Tracker & PANaHON Multi-Layer Map */}
+        <div className="xl:col-span-1 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display font-semibold tracking-wide text-text-primary text-sm flex items-center gap-2">
+              <Compass className="h-4 w-4 text-flow-teal" /> Live Typhoon & PANaHON Map
+            </h3>
+          </div>
+
+          {/* PANaHON Interactive Layer Controller & Timeline */}
+          <PanahonLayerControl
+            activeLayers={activePanahonLayers}
+            onToggleLayer={togglePanahonLayer}
+            timelineFrames={panahonTimelineFrames}
+            currentFrameIndex={currentFrameIndex}
+            onSelectFrameIndex={(idx) => setCurrentFrameIndex(idx)}
+            isPlaying={isPlayingTimeline}
+            onTogglePlay={() => setIsPlayingTimeline(!isPlayingTimeline)}
+            panahonSourceStatus={panahonStatus}
+          />
+
+          <TyphoonMap
+            storms={storms}
+            lastUpdated={lastUpdated}
+            panahonSynop={activePanahonLayers.has("synop") ? panahonSynop : []}
+            panahonAws={activePanahonLayers.has("aws") ? panahonAws : []}
+            panahonLightning={activePanahonLayers.has("lightning") ? panahonLightning : []}
+            panahonRiverBasin={activePanahonLayers.has("riverbasin") ? panahonRiverBasin : []}
+            panahonOverlayUrl={
+              activePanahonLayers.has("radar")
+                ? `/api/weather/panahon/radar?id=${currentFrameIndex}`
+                : activePanahonLayers.has("satellite")
+                ? `/api/weather/panahon/himawari-image?index=${currentFrameIndex}`
+                : activePanahonLayers.has("nwp")
+                ? `/api/weather/panahon/nwp-image?url=prate&model=atmo&t=${currentFrameIndex}`
+                : null
+            }
+            panahonSourceStatus={panahonStatus}
+          />
         </div>
       </div>
 

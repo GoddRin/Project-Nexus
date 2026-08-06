@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ManageEngineers } from "./ManageEngineers";
 import { PhotoGallery } from "./PhotoGallery";
 
+export const dynamic = "force-dynamic";
+
 export default async function LocationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const location = await prisma.siteLocation.findFirst({

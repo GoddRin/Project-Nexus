@@ -68,7 +68,7 @@ export default async function NetworkPage() {
         </LinkComponent>
 
         {types.map(([type, count]) => {
-          const Icon = iconMap[type as NetworkDeviceType] || HelpCircle;
+          const Icon = (iconMap[type as NetworkDeviceType] || HelpCircle) as React.ComponentType<{ className?: string }>;
           return (
             <div key={type} className="glass-card shrink-0 px-6 py-4 flex items-center gap-4">
               <Icon className="h-8 w-8 text-text-muted opacity-80" />
@@ -85,7 +85,7 @@ export default async function NetworkPage() {
         <h2 className="text-lg font-semibold text-text-primary">All Devices</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
           {devices.map((device) => {
-            const Icon = iconMap[device.deviceType] || HelpCircle;
+            const Icon = (iconMap[device.deviceType] || HelpCircle) as React.ComponentType<{ className?: string }>;
             const isOffline = device.status === "OFFLINE";
             const isMaintenance = device.status === "MAINTENANCE";
 
