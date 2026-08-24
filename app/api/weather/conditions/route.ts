@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// Live local conditions for Tumauini HEPP (lat 16.9833, lon 122.0833)
+// Live local conditions for Tumauini HEPP (lat 17.318823, lon 121.9749251)
 // Fetches current wind speed and MSLP from Open-Meteo (no API key required)
 export async function GET() {
   const url =
-    "https://api.open-meteo.com/v1/forecast?latitude=16.9833&longitude=122.0833&current=wind_speed_10m,wind_direction_10m,pressure_msl,temperature_2m,relative_humidity_2m,weather_code&timezone=Asia%2FManila&forecast_days=1";
+    "https://api.open-meteo.com/v1/forecast?latitude=17.318823&longitude=121.9749251&current=wind_speed_10m,wind_direction_10m,pressure_msl,temperature_2m,relative_humidity_2m,weather_code&timezone=Asia%2FManila&forecast_days=1";
 
   try {
     const res = await fetch(url, {

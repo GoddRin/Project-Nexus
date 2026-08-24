@@ -170,8 +170,39 @@ export default function RiverBasinTelemetryWidget() {
               </span>
             </div>
             <div className="text-[9px] text-text-muted mt-1 font-mono flex items-center justify-between">
-              <span className="text-emerald-400 font-semibold text-[8px] uppercase tracking-wider">● Real-time</span>
-              <span>{g.observed_at ? `Observed: ${g.observed_at.split(" ")[1] || g.observed_at} PHT` : "Telemetry Active"}</span>
+              {(() => {
+                if (!g.observed_at) {
+                  return (
+                    <>
+                      <span className="text-cyan-400 font-semibold text-[8px] uppercase tracking-wider">● Active</span>
+                      <span>Telemetry Active</span>
+                    </>
+                  );
+                }
+                const obsDate = new Date(g.observed_at.replace(" ", "T") + "+08:00");
+                const isValid = !isNaN(obsDate.getTime());
+                const isRecent = isValid && (Date.now() - obsDate.getTime()) < 3 * 3600 * 1000;
+                
+                const timeStr = isValid 
+                  ? obsDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })
+                  : g.observed_at.split(" ")[1] || g.observed_at;
+                
+                const dateStr = isValid
+                  ? (new Date().toDateString() === obsDate.toDateString() ? "Today" : obsDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }))
+                  : "";
+
+                return (
+                  <>
+                    <span className={cn(
+                      "font-semibold text-[8px] uppercase tracking-wider",
+                      isRecent ? "text-emerald-400" : "text-cyan-400/80"
+                    )}>
+                      {isRecent ? "● Real-time" : "● Synced"}
+                    </span>
+                    <span>Observed: {dateStr ? `${dateStr} ${timeStr} PHT` : `${timeStr} PHT`}</span>
+                  </>
+                );
+              })()}
             </div>
           </div>
         ))}

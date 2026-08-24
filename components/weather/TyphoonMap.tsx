@@ -1,18 +1,27 @@
 "use client";
 
 import { useEffect, useState, useRef, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, ImageOverlay, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, ImageOverlay, useMap, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Eye, EyeOff } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { PAR_COORDINATES, isWithinPAR } from "@/lib/weather/gdacs";
+import { isRelevantToPhilippines } from "@/lib/weather/storms";
 
 const SITE_LAT = 17.318823;
 const SITE_LNG = 121.9749251;
 
 interface StormForecast {
   time: string;
+  timestamp?: string;
   lat: number;
   lng: number;
   windKph: number;
+  windKnots?: number;
+  category?: string;
+  categoryCode?: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY";
+  distanceKm?: number;
 }
 
 interface Storm {
@@ -39,7 +48,37 @@ interface Storm {
     r50: number;
     r64: number;
   };
+  isWithinPAR?: boolean;
   pubDate?: string;
+}
+
+/**
+ * Format any ISO timestamp into crisp Philippine Standard Time (PHT).
+ */
+function formatPhtDateTime(timeInput?: string): string {
+  if (!timeInput) return "";
+  try {
+    const d = new Date(timeInput);
+    if (!isNaN(d.getTime())) {
+      return (
+        d.toLocaleDateString("en-US", {
+          timeZone: "Asia/Manila",
+          month: "short",
+          day: "numeric",
+        }) +
+        ", " +
+        d.toLocaleTimeString("en-US", {
+          timeZone: "Asia/Manila",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      );
+    }
+    return timeInput;
+  } catch {
+    return timeInput || "";
+  }
 }
 
 /**
@@ -50,7 +89,8 @@ function createLetterBadgeIcon(
   type: string = "TD",
   timeLabel?: string,
   isFirst: boolean = false,
-  isLatest: boolean = false
+  isLatest: boolean = false,
+  inPAR: boolean = false
 ) {
   const t = (type || "TD").toUpperCase();
   let badgeLetter = "D";
@@ -76,27 +116,25 @@ function createLetterBadgeIcon(
     bgGradient = "bg-gradient-to-br from-pink-500 to-purple-800 text-white border-pink-200 shadow-[0_0_18px_rgba(236,72,153,0.95)]";
   }
 
-  // Format timestamp label (e.g. "08-01 20:00")
-  let formattedTime = "";
-  if (timeLabel) {
-    const m = timeLabel.match(/\d{4}-(\d{2}-\d{2}\s+\d{2}:\d{2})/);
-    formattedTime = m ? m[1] : timeLabel;
-  }
+  const formattedTime = formatPhtDateTime(timeLabel);
+
+  const ringClass = isLatest
+    ? inPAR
+      ? `<div class="absolute w-8 h-8 rounded-full border-2 border-red-500/80 animate-ping pointer-events-none"></div>
+         <div class="absolute w-6 h-6 rounded-full bg-red-500/30 animate-pulse pointer-events-none"></div>`
+      : `<div class="absolute w-7 h-7 rounded-full border border-teal-400/80 animate-ping pointer-events-none"></div>`
+    : "";
 
   const html = `
     <div class="relative flex items-center justify-center pointer-events-auto group">
-      ${
-        isLatest
-          ? `<div class="absolute w-7 h-7 rounded-full border border-teal-400/80 animate-ping pointer-events-none"></div>`
-          : ""
-      }
+      ${ringClass}
       <div class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[9px] border ${bgGradient} transition-transform duration-200 group-hover:scale-125">
         ${badgeLetter}
       </div>
       ${
-        formattedTime && (isFirst || isLatest)
+        formattedTime && isLatest
           ? `<div class="absolute left-6 whitespace-nowrap bg-slate-950/95 text-flow-teal font-mono text-[9px] px-2 py-0.5 rounded-md border border-flow-teal/40 shadow-xl flex items-center gap-1.5 backdrop-blur-md">
-              <span class="w-1.5 h-1.5 rounded-full bg-flow-teal animate-pulse"></span>
+              <span class="w-1.5 h-1.5 rounded-full ${inPAR ? "bg-red-500" : "bg-flow-teal"} animate-pulse"></span>
               <span>${formattedTime} PHT</span>
             </div>`
           : ""
@@ -109,6 +147,74 @@ function createLetterBadgeIcon(
     className: "cyclone-letter-badge",
     iconSize: [22, 22],
     iconAnchor: [11, 11],
+  });
+}
+
+/**
+ * Creates custom designated intensity markers for each official forecast point
+ */
+function createForecastBadgeIcon(
+  type: string = "TY",
+  offsetTime: string = "+24h",
+  inPAR: boolean = false
+) {
+  const t = (type || "TY").toUpperCase();
+  let badgeLetter = "TY";
+  let bgGradient = "bg-gradient-to-br from-red-500 to-rose-700 text-white border-red-200 shadow-[0_0_10px_rgba(239,68,68,0.7)]";
+
+  if (t === "LPA" || t === "L") {
+    badgeLetter = "L";
+    bgGradient = "bg-gradient-to-br from-blue-500 to-indigo-700 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]";
+  } else if (t === "TD" || t === "D") {
+    badgeLetter = "D";
+    bgGradient = "bg-gradient-to-br from-sky-400 to-cyan-700 text-white border-sky-300 shadow-[0_0_8px_rgba(2,132,199,0.6)]";
+  } else if (t === "TS" || t === "S") {
+    badgeLetter = "TS";
+    bgGradient = "bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 font-bold border-yellow-200 shadow-[0_0_10px_rgba(234,179,8,0.7)]";
+  } else if (t === "STS") {
+    badgeLetter = "STS";
+    bgGradient = "bg-gradient-to-br from-orange-400 to-amber-600 text-white border-orange-200 shadow-[0_0_10px_rgba(249,115,22,0.7)]";
+  } else if (t === "TY" || t === "T") {
+    badgeLetter = "TY";
+    bgGradient = "bg-gradient-to-br from-red-500 to-rose-700 text-white border-red-200 shadow-[0_0_12px_rgba(239,68,68,0.8)]";
+  } else if (t === "STY" || t === "ST") {
+    badgeLetter = "STY";
+    bgGradient = "bg-gradient-to-br from-pink-500 to-purple-800 text-white border-pink-200 shadow-[0_0_14px_rgba(236,72,153,0.85)]";
+  }
+
+  const borderPar = inPAR ? "ring-2 ring-cyan-400/80 ring-offset-1 ring-offset-slate-950" : "";
+
+  const html = `
+    <div class="relative flex items-center justify-center pointer-events-auto group">
+      <div class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[8px] border ${bgGradient} ${borderPar} transition-transform duration-200 group-hover:scale-125">
+        ${badgeLetter}
+      </div>
+      <div class="absolute -bottom-3.5 whitespace-nowrap bg-slate-950/90 text-slate-300 font-mono text-[8px] px-1 rounded border border-slate-700/60 shadow pointer-events-none">
+        ${offsetTime}
+      </div>
+    </div>
+  `;
+
+  return L.divIcon({
+    html,
+    className: "cyclone-forecast-badge",
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+  });
+}
+
+/**
+ * Creates subtle waypoint dot for past track points
+ */
+function createPastPointIcon() {
+  const html = `
+    <div class="w-2 h-2 rounded-full bg-slate-400/80 border border-slate-200 shadow-sm hover:scale-150 transition-transform"></div>
+  `;
+  return L.divIcon({
+    html,
+    className: "cyclone-past-point",
+    iconSize: [8, 8],
+    iconAnchor: [4, 4],
   });
 }
 
@@ -146,18 +252,27 @@ interface TyphoonMapProps {
   panahonSourceStatus?: "live" | "cached" | "unavailable";
 }
 
-// Map controller — default centered on entire Philippines (Luzon, Visayas, Mindanao)
-function MapRecenter() {
+// Map controller — intelligent centering for PAR & NWPAC systems
+function MapRecenter({ storms }: { storms: Storm[] }) {
   const map = useMap();
 
   useEffect(() => {
     try {
       if (!map || !map.getContainer()) return;
-      map.setView([12.8, 121.8], 5);
+      const hasFarEastStorm = storms.some((s) => s.lng > 135);
+      const hasFarWestStorm = storms.some((s) => s.lng < 114);
+
+      if (hasFarEastStorm || hasFarWestStorm) {
+        // Wide Western Pacific view
+        map.setView([16.0, 128.0], 4);
+      } else {
+        // Standard Philippines PAR view
+        map.setView([13.0, 122.0], 5);
+      }
     } catch {
       // Ignore transient setView errors during unmount/Fast Refresh
     }
-  }, [map]);
+  }, [map, storms]);
 
   return null;
 }
@@ -174,7 +289,21 @@ export default function TyphoonMap({
   panahonSourceStatus = "live",
 }: TyphoonMapProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [showParBoundary, setShowParBoundary] = useState(true);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  const relevantStorms = useMemo(
+    () => storms.filter((s) => isRelevantToPhilippines(s)),
+    [storms]
+  );
+  const parStorms = useMemo(
+    () => relevantStorms.filter((s) => s.isWithinPAR ?? isWithinPAR(s.lat, s.lng)),
+    [relevantStorms]
+  );
+  const regionalStorms = useMemo(
+    () => relevantStorms.filter((s) => !(s.isWithinPAR ?? isWithinPAR(s.lat, s.lng))),
+    [relevantStorms]
+  );
 
   useEffect(() => {
     setIsMounted(true);
@@ -290,7 +419,7 @@ export default function TyphoonMap({
   // Helper to get category-based colors
   const getCategoryColor = (category: string, windKnots: number) => {
     const cat = category.toLowerCase();
-    if (cat.includes("depression")) return "#1FB6A6";
+    if (cat.includes("depression") || cat.includes("low pressure")) return "#1FB6A6";
     if (cat.includes("storm")) return "#E8A33D";
     if (cat.includes("super") || windKnots >= 130) return "#FF2040";
     return "#D6483F";
@@ -303,17 +432,23 @@ export default function TyphoonMap({
     try {
       const d = new Date(dateToFormat);
       if (isNaN(d.getTime())) return null;
-      return d.toLocaleTimeString("en-US", {
-        timeZone: "Asia/Manila",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }) + " PHT " + d.toLocaleDateString("en-US", {
-        timeZone: "Asia/Manila",
-        month: "short",
-        day: "numeric",
-      });
-    } catch { return null; }
+      return (
+        d.toLocaleTimeString("en-US", {
+          timeZone: "Asia/Manila",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }) +
+        " PHT " +
+        d.toLocaleDateString("en-US", {
+          timeZone: "Asia/Manila",
+          month: "short",
+          day: "numeric",
+        })
+      );
+    } catch {
+      return null;
+    }
   };
 
   const lastUpdate = getLastUpdateLabel();
@@ -321,7 +456,7 @@ export default function TyphoonMap({
   return (
     <div ref={mapContainerRef} className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner">
       <MapContainer
-        center={[12.8, 121.8]}
+        center={[13.0, 122.0]}
         zoom={5}
         scrollWheelZoom={false}
         className="w-full h-full"
@@ -340,6 +475,34 @@ export default function TyphoonMap({
           url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
           className="satellite-label-tiles"
         />
+
+        {/* ═══ OFFICIAL PAGASA PAR BOUNDARY POLYGON (Toggleable) ═══ */}
+        {showParBoundary && (
+          <Polygon
+            positions={PAR_COORDINATES}
+            pathOptions={{
+              color: "#00E5FF", // Neon cyan/teal PAR border
+              weight: 2,
+              dashArray: "6, 6",
+              fillColor: "#00E5FF",
+              fillOpacity: 0.03,
+              opacity: 0.9,
+              className: "par-boundary-polygon",
+            }}
+          >
+            <Popup>
+              <div className="p-2 text-slate-900 font-sans text-xs">
+                <h4 className="font-bold text-[#0D9488] text-sm">Philippine Area of Responsibility (PAR)</h4>
+                <p className="text-slate-600 text-xs mt-1">
+                  Official PAGASA meteorological alert and monitoring boundary.
+                </p>
+                <p className="text-[10px] text-slate-400 font-mono mt-1">
+                  Domain: 5°N-25°N, 115°E-135°E
+                </p>
+              </div>
+            </Popup>
+          </Polygon>
+        )}
 
         {/* PANaHON Image Overlay (Radar / Satellite) */}
         {panahonOverlayUrl && (
@@ -435,7 +598,7 @@ export default function TyphoonMap({
               <div className="p-2 text-slate-900 font-sans">
                 <h4 className="font-bold text-sm text-[#0D9488]">Tumauini HEPP</h4>
                 <p className="text-xs text-slate-600">Project Operations Center</p>
-                <p className="text-xs font-mono mt-1">16.9833&deg; N, 122.0833&deg; E</p>
+                <p className="text-xs font-mono mt-1">17.3188&deg; N, 121.9749&deg; E</p>
               </div>
             </Popup>
           </Marker>
@@ -462,13 +625,13 @@ export default function TyphoonMap({
           </>
         )}
 
-        {/* Active Storms Visuals */}
-        {storms.map((storm) => {
+        {/* Active Storms Visuals (PAR + Regional NWPAC) */}
+        {relevantStorms.map((storm) => {
+          const inPAR = storm.isWithinPAR ?? isWithinPAR(storm.lat, storm.lng);
           const stormColor = getCategoryColor(storm.category, storm.windSpeedKnots);
-          const stormIcon = getStormIcon(stormColor);
 
           // Forecast track — skip index 0 ("Current") to avoid duplicating storm marker position
-          const futureForecast = storm.forecast.filter(
+          const futureForecast = (storm.forecast || []).filter(
             (f) => f.time.toLowerCase() !== "current"
           );
           const forecastPoints = futureForecast.map((f) => [f.lat, f.lng] as [number, number]);
@@ -484,41 +647,38 @@ export default function TyphoonMap({
 
           return (
             <div key={storm.id}>
-              {/* ═══ PAST TRACK (emerald green line matching PAGASA track style) ═══ */}
+              {/* ═══ PAST TRACK (emerald green line matching meteorological style) ═══ */}
               {fullPastLine.length > 1 && (
                 <Polyline
                   positions={fullPastLine}
                   pathOptions={{
-                    color: "#10B981", // emerald green line
+                    color: inPAR ? "#10B981" : "#64748B", // emerald green if in PAR, slate if regional
                     weight: 3,
-                    opacity: 0.9,
+                    opacity: 0.85,
                     className: "past-track-line",
                   }}
                 />
               )}
 
-              {/* Past Track Point Markers (custom PAGASA letter badges L, D, TS, STS, TY, STY) */}
+              {/* Past Track Point Markers (Subtle Waypoints) */}
               {(storm.pastTrack || []).map((pt, idx) => (
                 <Marker
                   key={`${storm.id}-past-${idx}`}
                   position={[pt.lat, pt.lng]}
-                  icon={createLetterBadgeIcon(
-                    pt.type || (storm.category.includes("Low") ? "LPA" : "TD"),
-                    pt.time,
-                    idx === 0,
-                    idx === (storm.pastTrack?.length || 1) - 1
-                  )}
+                  icon={createPastPointIcon()}
                 >
                   <Popup>
                     <div className="p-1.5 text-slate-900 font-sans text-xs">
                       <div className="flex items-center gap-1 font-bold mb-0.5">
                         <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-white font-mono">
-                          {pt.type || "TD"}
+                          Past Track
                         </span>
                         <span>{storm.name}</span>
                       </div>
-                      <p className="text-[11px]">{pt.time ? `Time: ${pt.time}` : `${pt.hoursAgo}h ago`}</p>
-                      <p className="font-mono text-[10px] text-slate-500">
+                      <p className="text-[11px] font-semibold text-slate-700">
+                        {pt.time ? formatPhtDateTime(pt.time) : `${pt.hoursAgo}h ago`}
+                      </p>
+                      <p className="font-mono text-[10px] text-slate-500 mt-0.5">
                         {pt.lat.toFixed(1)}&deg;N, {pt.lng.toFixed(1)}&deg;E
                       </p>
                     </div>
@@ -526,7 +686,7 @@ export default function TyphoonMap({
                 </Marker>
               ))}
 
-              {/* ═══ UNCERTAINTY CONE (forecast probability area) ═══ */}
+              {/* ═══ UNCERTAINTY CONE ═══ */}
               {storm.uncertaintyCone && storm.uncertaintyCone.length > 2 && (
                 <Polygon
                   positions={storm.uncertaintyCone.map((p) => [p.lat, p.lng])}
@@ -542,42 +702,75 @@ export default function TyphoonMap({
                 />
               )}
 
-              {/* ═══ FORECAST TRACK (single dashed line — where the storm IS GOING) ═══ */}
-              <Polyline
-                positions={trackPoints}
-                pathOptions={{
-                  color: stormColor,
-                  weight: 3,
-                  dashArray: "6, 8",
-                  opacity: 0.9,
-                  className: "typhoon-track-line",
-                }}
-              />
+              {/* ═══ FORECAST TRACK (dashed line) ═══ */}
+              {trackPoints.length > 1 && (
+                <Polyline
+                  positions={trackPoints}
+                  pathOptions={{
+                    color: stormColor,
+                    weight: 3,
+                    dashArray: "6, 8",
+                    opacity: 0.9,
+                    className: "typhoon-track-line",
+                  }}
+                />
+              )}
 
-              {/* Forecast Point Markers with time labels */}
-              {storm.forecast.map((fc, idx) => {
+              {/* Forecast Point Markers with Designated Intensity Badges per Timestamp */}
+              {(storm.forecast || []).map((fc, idx) => {
                 if (idx === 0) return null; // skip "Current"
+                const fcInPAR = isWithinPAR(fc.lat, fc.lng);
+                const fcCode = fc.categoryCode || (
+                  fc.windKph > 185 ? "STY" :
+                  fc.windKph >= 121 ? "TY" :
+                  fc.windKph >= 89 ? "STS" :
+                  fc.windKph >= 62 ? "TS" :
+                  fc.windKph >= 55 ? "TD" : "LPA"
+                );
+
                 return (
-                  <Circle
+                  <Marker
                     key={`${storm.id}-fc-${idx}`}
-                    center={[fc.lat, fc.lng]}
-                    radius={12000}
-                    pathOptions={{
-                      color: stormColor,
-                      fillColor: "#0B1418",
-                      fillOpacity: 0.85,
-                      weight: 2,
-                      opacity: 0.9,
-                    }}
+                    position={[fc.lat, fc.lng]}
+                    icon={createForecastBadgeIcon(fcCode, fc.time, fcInPAR)}
                   >
                     <Popup>
-                      <div className="p-1 text-slate-900 font-sans text-xs">
-                        <p className="font-bold">{storm.name} — {fc.time}</p>
-                        <p className="mt-0.5">Winds: <span className="font-semibold">{fc.windKph} kph</span></p>
-                        <p className="font-mono text-[10px] text-slate-500">{fc.lat.toFixed(1)}&deg;N, {fc.lng.toFixed(1)}&deg;E</p>
+                      <div className="p-1 font-sans text-xs text-slate-100">
+                        <div className="flex items-center justify-between gap-2 mb-1.5 border-b border-slate-700/80 pb-1">
+                          <span className="font-bold text-sm text-white">
+                            {storm.name} ({fc.time} Forecast)
+                          </span>
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase font-mono ${
+                              fcInPAR ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" : "bg-slate-800 text-slate-300 border border-slate-700"
+                            }`}
+                          >
+                            {fcInPAR ? "Inside PAR" : "NWPAC"}
+                          </span>
+                        </div>
+                        {fc.timestamp && (
+                          <p className="text-[11px] text-slate-300 font-medium mb-1">
+                            Valid: <span className="font-bold text-cyan-300">{formatPhtDateTime(fc.timestamp)} PHT</span>
+                          </p>
+                        )}
+                        <p className="text-xs text-slate-300">
+                          Intensity: <span className="font-bold text-amber-300">{fc.category || fcCode}</span>
+                        </p>
+                        <p className="text-xs text-slate-300">
+                          Max Sustained Winds: <span className="font-bold text-white">{fc.windKph} kph</span>
+                          {fc.windKnots ? <span className="text-slate-400 font-mono"> ({fc.windKnots} kt)</span> : ""}
+                        </p>
+                        {fc.distanceKm !== undefined && (
+                          <p className="text-xs text-slate-300">
+                            Distance to Site: <span className="font-semibold text-slate-100">{fc.distanceKm.toLocaleString()} km</span>
+                          </p>
+                        )}
+                        <p className="font-mono text-[10px] text-slate-400 mt-1">
+                          {fc.lat.toFixed(1)}&deg;N, {fc.lng.toFixed(1)}&deg;E
+                        </p>
                       </div>
                     </Popup>
-                  </Circle>
+                  </Marker>
                 );
               })}
 
@@ -585,42 +778,66 @@ export default function TyphoonMap({
               <Marker
                 position={[storm.lat, storm.lng]}
                 icon={createLetterBadgeIcon(
-                  storm.category.toLowerCase().includes("low pressure") ? "LPA" : "TD",
-                  storm.closestApproach?.eta,
+                  storm.category.toLowerCase().includes("super")
+                    ? "STY"
+                    : storm.category.toLowerCase().includes("typhoon")
+                    ? "TY"
+                    : storm.category.toLowerCase().includes("severe")
+                    ? "STS"
+                    : storm.category.toLowerCase().includes("storm")
+                    ? "TS"
+                    : storm.category.toLowerCase().includes("depression")
+                    ? "TD"
+                    : "LPA",
+                  storm.pubDate || storm.closestApproach?.eta,
                   false,
-                  true
+                  true,
+                  inPAR
                 )}
               >
                 <Popup>
-                  <div className="p-2 text-slate-900 font-sans">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className="text-sm">🌀</span>
-                      <h4 className="font-bold text-sm">{storm.category} {storm.name}</h4>
+                  <div className="p-1 font-sans text-xs text-slate-100">
+                    <div className="flex items-center justify-between gap-2 mb-1.5 border-b border-slate-700/80 pb-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm">🌀</span>
+                        <h4 className="font-bold text-sm text-white">
+                          {storm.category === "Low Pressure Area" ? "Low Pressure Area" : `${storm.category} ${storm.name}`}
+                        </h4>
+                      </div>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase font-mono ${inPAR ? "bg-red-500/20 text-red-300 border border-red-500/40" : "bg-sky-500/20 text-sky-300 border border-sky-500/40"}`}>
+                        {inPAR ? "Inside PAR" : "Outside PAR"}
+                      </span>
                     </div>
-                    <p className="text-xs">Distance to Site: <span className="font-semibold text-red-600">{storm.distanceKm} km</span></p>
-                    <p className="text-xs">Max Winds: <span className="font-semibold">{storm.windSpeedKph} kph</span></p>
-                    <p className="text-xs">Central Pressure: <span className="font-semibold">{storm.pressureHpa} hPa</span></p>
-                    <p className="text-xs font-mono mt-1">{storm.lat.toFixed(2)}&deg;N, {storm.lng.toFixed(2)}&deg;E</p>
+                    {storm.pubDate && (
+                      <p className="text-[11px] text-slate-300 font-medium mb-1">
+                        Observation: <span className="font-bold text-cyan-300">{formatPhtDateTime(storm.pubDate)} PHT</span>
+                      </p>
+                    )}
+                    <p className="text-xs text-slate-300">Distance to Site: <span className="font-semibold text-white">{storm.distanceKm.toLocaleString()} km</span></p>
+                    <p className="text-xs text-slate-300">Max Sustained Winds: <span className="font-bold text-white">{storm.windSpeedKph} kph</span> <span className="text-slate-400 font-mono">({storm.windSpeedKnots} kt)</span></p>
+                    <p className="text-xs text-slate-300">Central Pressure: <span className="font-semibold text-white">{storm.pressureHpa} hPa</span></p>
+                    <p className="text-xs text-slate-300">Movement: <span className="font-semibold text-slate-100">{storm.direction} at {storm.speedKph} kph</span></p>
+                    <p className="text-xs font-mono mt-1 text-slate-400">{storm.lat.toFixed(2)}&deg;N, {storm.lng.toFixed(2)}&deg;E</p>
                   </div>
                 </Popup>
               </Marker>
 
               {/* Wind Radii Circles */}
-              {storm.windRadii.r34 > 0 && (
+              {storm.windRadii?.r34 > 0 && (
                 <Circle
                   center={[storm.lat, storm.lng]}
                   radius={storm.windRadii.r34 * 1000}
                   pathOptions={{ color: "#3B82F6", weight: 1, fill: true, fillOpacity: 0.03, opacity: 0.25 }}
                 />
               )}
-              {storm.windRadii.r50 > 0 && (
+              {storm.windRadii?.r50 > 0 && (
                 <Circle
                   center={[storm.lat, storm.lng]}
                   radius={storm.windRadii.r50 * 1000}
                   pathOptions={{ color: "#E8A33D", weight: 1, fill: true, fillOpacity: 0.03, opacity: 0.25 }}
                 />
               )}
-              {storm.windRadii.r64 > 0 && (
+              {storm.windRadii?.r64 > 0 && (
                 <Circle
                   center={[storm.lat, storm.lng]}
                   radius={storm.windRadii.r64 * 1000}
@@ -631,68 +848,85 @@ export default function TyphoonMap({
           );
         })}
 
-        {/* Default map view centered on entire Philippines */}
-        <MapRecenter />
+        {/* Dynamic map view centered on PAR / Active Storms */}
+        <MapRecenter storms={relevantStorms} />
       </MapContainer>
 
       {/* Status Badge Overlay — Top Left (above zoom buttons) */}
-      {storms.length === 0 ? (
-        <div className="absolute top-2.5 left-3 z-[1000] bg-slate-950/95 backdrop-blur-md border border-slate-800/80 px-3 py-1 rounded-full flex items-center gap-2 shadow-xl pointer-events-auto">
-          <div className="w-2 h-2 rounded-full bg-[#1FB6A6] animate-pulse"></div>
-          <span className="text-[11px] font-bold text-text-primary tracking-wide">PAR Clear: No Active Cyclones</span>
-        </div>
-      ) : storms.every((s) => s.category.toLowerCase().includes("low pressure")) ? (
-        <div className="absolute top-2.5 left-3 z-[1000] bg-slate-950/95 backdrop-blur-md border border-slate-800/80 px-3 py-1 rounded-full flex items-center gap-2 shadow-xl pointer-events-auto max-w-[calc(100%-20px)] truncate">
-          <div className="w-2 h-2 rounded-full bg-[#E8A33D] animate-pulse shrink-0"></div>
-          <span className="text-[11px] font-bold text-text-primary tracking-wide truncate">
-            PAR Clear (24h LPA Track: {storms[0].name})
-          </span>
-        </div>
-      ) : (
-        <div className="absolute top-2.5 left-3 z-[1000] bg-slate-950/95 backdrop-blur-md border border-red-500/50 px-3 py-1 rounded-full flex items-center gap-2 shadow-xl pointer-events-auto">
-          <div className="w-2 h-2 rounded-full bg-red-500 animate-ping shrink-0"></div>
-          <span className="text-[11px] font-bold text-red-400 tracking-wide">
-            WARNING: {storms[0].category} {storms[0].name}
-          </span>
-        </div>
-      )}
+      <div className="absolute top-2.5 left-3 z-[1000] bg-slate-950/95 backdrop-blur-md border border-slate-800/80 px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xl pointer-events-auto max-w-[50%] sm:max-w-[58%]">
+        <div className={cn("w-2 h-2 rounded-full shrink-0", parStorms.length > 0 ? "bg-red-500 animate-ping" : "bg-[#1FB6A6] animate-pulse")}></div>
+        <span className="text-[10px] font-bold text-text-primary tracking-wide truncate">
+          {parStorms.length > 0
+            ? `WARNING: ${parStorms[0].name} (PAR)`
+            : regionalStorms.length > 0
+            ? `PAR Clear • ${regionalStorms.length} NWPAC`
+            : "PAR Clear"}
+        </span>
+      </div>
 
-      {/* PAGASA Official Intensity Legend Bar Overlay — Only visible when storms exist in PAR */}
-      {storms.length > 0 && (
-        <div className="absolute top-2.5 right-3 z-[1000] bg-slate-950/95 backdrop-blur-md border border-slate-800/80 px-3 py-1 rounded-full hidden sm:flex items-center gap-2 text-[10px] font-sans shadow-xl pointer-events-auto">
-          <span className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">INTENSITY</span>
-          <div className="flex items-center gap-1.5">
-            <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-blue-500 to-indigo-700 text-white flex items-center justify-center font-bold text-[8px] border border-blue-300 shadow-[0_0_6px_rgba(59,130,246,0.6)]">L</span> <span className="text-slate-300 font-semibold text-[10px]">LPA</span></span>
-            <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-sky-400 to-cyan-700 text-white flex items-center justify-center font-bold text-[8px] border border-sky-300 shadow-[0_0_6px_rgba(2,132,199,0.6)]">D</span> <span className="text-slate-300 font-semibold text-[10px]">TD</span></span>
-            <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 flex items-center justify-center font-bold text-[8px] border border-yellow-200 shadow-[0_0_6px_rgba(234,179,8,0.6)]">TS</span> <span className="text-slate-300 font-semibold text-[10px]">TS</span></span>
-            <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 text-white flex items-center justify-center font-bold text-[8px] border border-orange-200 shadow-[0_0_6px_rgba(249,115,22,0.6)]">STS</span> <span className="text-slate-300 font-semibold text-[10px]">STS</span></span>
-            <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-red-500 to-rose-700 text-white flex items-center justify-center font-bold text-[8px] border border-red-200 shadow-[0_0_6px_rgba(239,68,68,0.6)]">TY</span> <span className="text-slate-300 font-semibold text-[10px]">TY</span></span>
-            <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-pink-500 to-purple-800 text-white flex items-center justify-center font-bold text-[8px] border border-pink-200 shadow-[0_0_6px_rgba(236,72,153,0.6)]">STY</span> <span className="text-slate-300 font-semibold text-[10px]">STY</span></span>
-            <span className="text-slate-500 font-mono text-[9px] ml-1">--- Forecast</span>
-          </div>
-        </div>
-      )}
+      {/* PAR Border Toggle Button — Top Right */}
+      <div className="absolute top-2.5 right-3 z-[1000] pointer-events-auto">
+        <button
+          type="button"
+          onClick={() => setShowParBoundary((prev) => !prev)}
+          className={cn(
+            "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-sans font-semibold backdrop-blur-md border shadow-xl transition-all cursor-pointer select-none whitespace-nowrap",
+            showParBoundary
+              ? "bg-slate-950/95 text-cyan-400 border-cyan-500/40 hover:bg-slate-900 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+              : "bg-slate-950/95 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+          )}
+          title={showParBoundary ? "Click to hide PAR boundary" : "Click to show PAR boundary"}
+        >
+          {showParBoundary ? (
+            <Eye className="w-3 h-3 text-cyan-400 shrink-0" />
+          ) : (
+            <EyeOff className="w-3 h-3 text-slate-400 shrink-0" />
+          )}
+          <span className={cn("w-2.5 h-[2px] border-t-2 border-dashed inline-block shrink-0", showParBoundary ? "border-cyan-400" : "border-slate-500")}></span>
+          <span>PAR Border</span>
+          <span className={cn(
+            "text-[8px] font-mono px-1 py-0.2 rounded font-bold uppercase shrink-0",
+            showParBoundary ? "bg-cyan-500/20 text-cyan-300" : "bg-slate-800 text-slate-400"
+          )}>
+            {showParBoundary ? "ON" : "OFF"}
+          </span>
+        </button>
+      </div>
 
-      {/* Last Updated + Legend overlay */}
-      {storms.length > 0 && (
-        <div className="absolute bottom-3 left-3 z-[1000] bg-slate-950/85 backdrop-blur-md border border-border-hairline px-3 py-2 rounded-xl shadow-lg space-y-1.5">
+      {/* Bottom Map Legend & Intensity Overlay Card */}
+      <div className="absolute bottom-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md border border-border-hairline p-2.5 rounded-xl shadow-xl space-y-2 pointer-events-auto text-[10px] font-sans max-w-[calc(100%-24px)] sm:max-w-xs">
+        {/* Row 1: Live Telemetry + Track Info */}
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           {lastUpdate && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-[10px] font-semibold text-green-400">Live Data</span>
-              <span className="text-[10px] text-text-muted ml-1">{lastUpdate}</span>
+              <span className="text-[9px] font-semibold text-green-400">Live</span>
+              <span className="text-[9px] text-text-muted">{lastUpdate}</span>
             </div>
           )}
-          <div className="flex items-center gap-3 text-[9px] text-text-muted">
+          <div className="flex items-center gap-2.5 text-[9px] text-text-muted">
             <span className="flex items-center gap-1">
-              <span className="w-4 h-[2px] bg-slate-400 inline-block rounded"></span> Past Track
+              <span className="w-3 h-[2px] bg-slate-400 inline-block rounded"></span> Past
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-4 h-[2px] inline-block rounded" style={{ borderTop: "2px dashed #FF2040" }}></span> Forecast
+              <span className="w-3 h-[2px] inline-block rounded" style={{ borderTop: "2px dashed #FF2040" }}></span> Forecast
             </span>
           </div>
         </div>
-      )}
+
+        {/* Row 2: Intensity Scales */}
+        <div className="pt-1.5 border-t border-slate-800/80 flex items-center gap-2 text-[9px]">
+          <span className="font-bold text-slate-400 uppercase tracking-wider text-[8px] shrink-0">Intensity</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-700 text-white flex items-center justify-center font-bold text-[7px] border border-blue-300">L</span> <span className="text-slate-300 text-[9px]">LPA</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-sky-400 to-cyan-700 text-white flex items-center justify-center font-bold text-[7px] border border-sky-300">D</span> <span className="text-slate-300 text-[9px]">TD</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 flex items-center justify-center font-bold text-[7px] border border-yellow-200">TS</span> <span className="text-slate-300 text-[9px]">TS</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 text-white flex items-center justify-center font-bold text-[7px] border border-orange-200">STS</span> <span className="text-slate-300 text-[9px]">STS</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-red-500 to-rose-700 text-white flex items-center justify-center font-bold text-[7px] border border-red-200">TY</span> <span className="text-slate-300 text-[9px]">TY</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-pink-500 to-purple-800 text-white flex items-center justify-center font-bold text-[7px] border border-pink-200">STY</span> <span className="text-slate-300 text-[9px]">STY</span></span>
+          </div>
+        </div>
+      </div>
 
       <style jsx global>{`
         .leaflet-top.leaflet-left {

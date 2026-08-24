@@ -486,8 +486,31 @@ export function pagasaToStormData(pagasa: PagasaSignalData): PagasaStormData | n
   // - Post-Landfall (Jul 26-28): Rapidly weakens inland over China
   const officialIntensityCurve = [45, 55, 65, 80, 95, 110, 85, 55, 35];
 
-  const forecast: { time: string; lat: number; lng: number; windKph: number }[] = [
-    { time: "Current", lat, lng, windKph: Math.max(windKph, officialIntensityCurve[0]) },
+  const currentCatCode: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY" =
+    windKph > 185 ? "STY" : windKph >= 121 ? "TY" : windKph >= 89 ? "STS" : windKph >= 62 ? "TS" : windKph >= 55 ? "TD" : "LPA";
+
+  const forecast: {
+    time: string;
+    timestamp?: string;
+    lat: number;
+    lng: number;
+    windKph: number;
+    windKnots?: number;
+    category?: string;
+    categoryCode?: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY";
+    distanceKm?: number;
+  }[] = [
+    {
+      time: "Current",
+      timestamp: new Date().toISOString(),
+      lat,
+      lng,
+      windKph: Math.max(windKph, officialIntensityCurve[0]),
+      windKnots,
+      category: pagasa.tcCategory || "Typhoon",
+      categoryCode: currentCatCode,
+      distanceKm: Math.round(calculateDistance(lat, lng, SITE_LAT, SITE_LNG)),
+    },
   ];
 
   for (let i = 0; i < pagasa.forecastPositions.length; i++) {
@@ -498,11 +521,25 @@ export function pagasaToStormData(pagasa: PagasaSignalData): PagasaStormData | n
       const dateMatch = fcText.match(/(\w+\s+\d+,\s+\d{4}\s+[\d:]+\s*(?:AM|PM))/i);
       const timeLabel = dateMatch ? dateMatch[1] : coords.label;
       const forecastWind = officialIntensityCurve[i + 1] ?? Math.max(30, 110 - i * 15);
+      const fKnots = Math.round(forecastWind / 1.852);
+      const fCode: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY" =
+        forecastWind > 185 ? "STY" : forecastWind >= 121 ? "TY" : forecastWind >= 89 ? "STS" : forecastWind >= 62 ? "TS" : forecastWind >= 55 ? "TD" : "LPA";
+      const fCategory =
+        fCode === "STY" ? "Super Typhoon" :
+        fCode === "TY" ? "Typhoon" :
+        fCode === "STS" ? "Severe Tropical Storm" :
+        fCode === "TS" ? "Tropical Storm" :
+        fCode === "TD" ? "Tropical Depression" : "Low Pressure Area";
+
       forecast.push({
         time: timeLabel,
         lat: coords.lat,
         lng: coords.lng,
         windKph: forecastWind,
+        windKnots: fKnots,
+        category: fCategory,
+        categoryCode: fCode,
+        distanceKm: Math.round(calculateDistance(coords.lat, coords.lng, SITE_LAT, SITE_LNG)),
       });
     }
   }

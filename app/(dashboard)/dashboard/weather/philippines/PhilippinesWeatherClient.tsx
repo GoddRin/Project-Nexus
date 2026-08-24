@@ -26,6 +26,9 @@ import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryW
 import PanahonLayerControl, { PanahonLayerKey, PanahonTimelineFrame } from "@/components/weather/PanahonLayerControl";
 import type { PanahonStation, PanahonLightning } from "@/components/weather/TyphoonMap";
 
+import { isWithinPAR } from "@/lib/weather/gdacs";
+import { isRelevantToPhilippines } from "@/lib/weather/storms";
+
 // Dynamically import Leaflet map to avoid server-side window errors
 const TyphoonMap = dynamic(() => import("@/components/weather/TyphoonMap"), {
   ssr: false,
@@ -41,9 +44,14 @@ const TyphoonMap = dynamic(() => import("@/components/weather/TyphoonMap"), {
 
 interface StormForecast {
   time: string;
+  timestamp?: string;
   lat: number;
   lng: number;
   windKph: number;
+  windKnots?: number;
+  category?: string;
+  categoryCode?: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY";
+  distanceKm?: number;
 }
 
 interface Storm {
@@ -70,6 +78,7 @@ interface Storm {
     r50: number;
     r64: number;
   };
+  isWithinPAR?: boolean;
   pubDate?: string;
 }
 
@@ -365,12 +374,16 @@ export default function PhilippinesWeatherClient({
     return () => clearInterval(stormInterval);
   }, [forceMock]);
 
-  // Determine closest storm to Tumauini HEPP (within 1500km for alert banner)
-  const siteAlertStorm = storms.find(s => s.distanceKm <= 1500) 
-    || (pagasaSignals.hasActiveBulletin && storms.length > 0 ? storms[0] : undefined);
+  // Filter storms strictly to systems relevant to the Philippines
+  const relevantStorms = storms.filter(s => isRelevantToPhilippines(s));
+  const parStorms = relevantStorms.filter(s => s.isWithinPAR ?? isWithinPAR(s.lat, s.lng));
+  const regionalStorms = relevantStorms.filter(s => !(s.isWithinPAR ?? isWithinPAR(s.lat, s.lng)));
+
+  // Determine closest active storm to Tumauini HEPP
+  const siteAlertStorm = parStorms.find(s => s.distanceKm <= 1000) 
+    || (pagasaSignals.hasActiveBulletin && parStorms.length > 0 ? parStorms[0] : undefined);
 
   // Use REAL PAGASA signal number from the official bulletin
-  // Falls back to JTWC-derived estimate only if PAGASA scrape fails
   const signalNumber = pagasaSignals.source === "pagasa" 
     ? pagasaSignals.siteSignalNumber
     : (siteAlertStorm 
@@ -384,13 +397,15 @@ export default function PhilippinesWeatherClient({
         })()
       : 0);
 
-  // Determine if we should show an alert (PAGASA has bulletin OR storm is close)
-  const showAlert = pagasaSignals.hasActiveBulletin || (siteAlertStorm !== undefined);
+  // High Priority Alert Banner (only when PAGASA has active bulletin OR storm is threatening within PAR)
+  const showHighAlert = pagasaSignals.hasActiveBulletin || (siteAlertStorm !== undefined);
+  // Informational Regional Monitoring Notice (when PAR is clear but systems are active in NWPAC)
+  const showRegionalNotice = !showHighAlert && regionalStorms.length > 0;
 
   // Render Category colored tags
   const getCategoryClass = (category: string, knots: number) => {
     const cat = category.toLowerCase();
-    if (cat.includes("depression")) {
+    if (cat.includes("depression") || cat.includes("low pressure")) {
       return "bg-flow-teal/15 text-flow-teal border-flow-teal/30";
     }
     if (cat.includes("storm")) {
@@ -414,11 +429,200 @@ export default function PhilippinesWeatherClient({
     return `https://embed.windy.com/embed2.html?lat=12&lon=122&zoom=5&level=surface&overlay=${currentLayer}&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1&key=${apiKey}`;
   };
 
+  const renderStormCard = (storm: Storm, inPAR: boolean) => {
+    const isExpanded = expandedStormId === storm.id;
+    const isLPA = storm.category.toLowerCase().includes("lpa") || storm.category.toLowerCase().includes("low pressure");
+    const displayStormTitle = isLPA ? "Low Pressure Area" : storm.name;
+
+    return (
+      <div 
+        key={storm.id} 
+        className="border border-border-hairline rounded-2xl overflow-hidden transition-all bg-black/[0.01] dark:bg-white/[0.01]"
+      >
+        {/* Card Header Accordion Trigger */}
+        <div 
+          onClick={() => setExpandedStormId(isExpanded ? null : storm.id)}
+          className="p-4 flex items-center justify-between cursor-pointer hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <span className={cn(
+              "text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border shrink-0",
+              getCategoryClass(storm.category, storm.windSpeedKnots)
+            )}>
+              {storm.category}
+            </span>
+            <div className="flex flex-col">
+              <h4 className="text-base font-bold text-text-primary font-display flex items-center gap-2 leading-tight">
+                <span>{displayStormTitle}</span>
+                {!isLPA && !storm.name.includes(storm.id) && (
+                  <span className="font-mono text-xs font-semibold text-text-muted">({storm.id})</span>
+                )}
+                <span className={cn(
+                  "text-[9px] font-bold px-2 py-0.5 rounded uppercase font-mono tracking-wider",
+                  inPAR 
+                    ? "bg-red-500/15 text-red-400 border border-red-500/30" 
+                    : "bg-sky-500/15 text-sky-400 border border-sky-500/30"
+                )}>
+                  {inPAR ? "Inside PAR" : "Outside PAR • NWPAC"}
+                </span>
+              </h4>
+              {storm.pubDate && (
+                <span className="text-[10px] text-text-muted font-medium mt-0.5">
+                  Warning Update: {formatPubDate(storm.pubDate)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider leading-none">Distance to Site</p>
+              <p className="text-sm font-semibold text-text-primary mt-1 font-mono">{storm.distanceKm} km</p>
+            </div>
+            {isExpanded ? <ChevronUp className="h-5 w-5 text-text-muted" /> : <ChevronDown className="h-5 w-5 text-text-muted" />}
+          </div>
+        </div>
+
+        {/* Accordion Content */}
+        {isExpanded && (
+          <div className="p-4 border-t border-border-hairline bg-black/[0.02] dark:bg-white/[0.02] space-y-6">
+            
+            {/* Metric Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
+                <span className="text-[9px] uppercase font-bold text-text-muted block">Position</span>
+                <span className="text-sm font-semibold text-text-primary font-mono mt-1 block">
+                  {storm.lat.toFixed(2)}&deg;N, {storm.lng.toFixed(2)}&deg;E
+                </span>
+              </div>
+              <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
+                <span className="text-[9px] uppercase font-bold text-text-muted block">Max Sustained Winds</span>
+                <span className="text-sm font-semibold text-text-primary mt-1 block">
+                  {storm.windSpeedKph} kph <span className="text-xs text-text-muted font-mono">({storm.windSpeedKnots} kt)</span>
+                </span>
+              </div>
+              <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
+                <span className="text-[9px] uppercase font-bold text-text-muted block">Central Pressure</span>
+                <span className="text-sm font-semibold text-text-primary font-mono mt-1 block">
+                  {storm.pressureHpa} hPa
+                </span>
+              </div>
+              <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
+                <span className="text-[9px] uppercase font-bold text-text-muted block">Movement & Speed</span>
+                <span className="text-sm font-semibold text-text-primary mt-1 block">
+                  {storm.direction} @ {storm.speedKph} kph
+                </span>
+              </div>
+            </div>
+
+            {/* Distance / ETA Analysis Banner */}
+            <div className="p-4 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-border-hairline flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Info className="h-5 w-5 text-flow-teal shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-text-primary">Closest Point of Approach (CPA) forecast to Tumauini HEPP</p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {inPAR 
+                      ? "System is currently within or approaching Philippine Area of Responsibility." 
+                      : "System is outside PAR in Western Pacific; monitoring track vectors."}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 shrink-0 font-mono text-sm">
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-text-muted block font-sans">Min Distance</span>
+                  <span className="font-bold text-text-primary">{storm.closestApproach.distanceKm} km</span>
+                </div>
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-text-muted block font-sans">ETA (Projected)</span>
+                  <span className="font-bold text-text-primary">
+                    {new Date(storm.closestApproach.eta).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit" })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Forecast track table */}
+            {storm.forecast && storm.forecast.length > 0 && (
+              <div>
+                <h5 className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">
+                  Official 5-Day Tropical Cyclone Forecast Profile
+                </h5>
+                <div className="overflow-x-auto border border-border-hairline rounded-xl bg-bg-panel">
+                  <table className="min-w-full divide-y divide-border-hairline">
+                    <thead className="bg-black/[0.02] dark:bg-white/[0.02]">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Interval / Valid Time</th>
+                        <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Coordinates</th>
+                        <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Max Wind Speed</th>
+                        <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Site Distance</th>
+                        <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Classification</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border-hairline font-mono text-xs text-text-primary">
+                      {storm.forecast.map((fc, idx) => {
+                        const fcInPAR = isWithinPAR(fc.lat, fc.lng);
+                        return (
+                          <tr key={idx}>
+                            <td className="px-4 py-2.5 font-sans font-semibold text-text-muted">
+                              <span className="text-text-primary font-bold">{fc.time}</span>
+                              {fc.timestamp && (
+                                <span className="block text-[10px] font-mono text-text-muted font-normal">
+                                  {new Date(fc.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit" })}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-2.5">{fc.lat.toFixed(1)}&deg;N, {fc.lng.toFixed(1)}&deg;E</td>
+                            <td className="px-4 py-2.5">
+                              <span className="font-bold">{fc.windKph} kph</span>
+                              <span className="text-[10px] text-text-muted ml-1">({fc.windKnots || Math.round(fc.windKph / 1.852)} kt)</span>
+                            </td>
+                            <td className="px-4 py-2.5 text-text-muted">
+                              {fc.distanceKm ? `${fc.distanceKm.toLocaleString()} km` : "—"}
+                            </td>
+                            <td className="px-4 py-2.5 font-sans">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className={cn(
+                                  "inline-block px-2 py-0.5 rounded text-[10px] font-bold border",
+                                  fc.windKph > 185 ? "bg-red-600/10 text-red-500 border-red-500/20" :
+                                  fc.windKph >= 121 ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                  fc.windKph >= 61 ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
+                                  "bg-teal-500/10 text-teal-500 border-teal-500/20"
+                                )}>
+                                  {fc.category || (
+                                    fc.windKph > 185 ? "Super Typhoon" :
+                                    fc.windKph >= 121 ? "Typhoon" :
+                                    fc.windKph >= 61 ? "Tropical Storm" : "Tropical Depression"
+                                  )}
+                                </span>
+                                <span className={cn(
+                                  "text-[9px] px-1.5 py-0.2 rounded font-mono font-bold uppercase",
+                                  fcInPAR ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-slate-800 text-slate-400"
+                                )}>
+                                  {fcInPAR ? "PAR" : "NWPAC"}
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       
-      {/* 1. ALERT BANNER (Conditional, top of page — shows if PAGASA has bulletin OR storm within range) */}
-      {showAlert && (
+      {/* 1. HIGH ALERT BANNER (Only when PAGASA has bulletin OR threatening storm inside PAR) */}
+      {showHighAlert && (
         <div className={cn(
           "w-full rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in",
           signalNumber >= 3 
@@ -439,7 +643,7 @@ export default function PhilippinesWeatherClient({
             </div>
             <div>
               <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
-                {pagasaSignals.hasActiveBulletin ? "PAGASA TROPICAL CYCLONE ALERT" : "ACTIVE SITE ALERT"}
+                {pagasaSignals.hasActiveBulletin ? "PAGASA TROPICAL CYCLONE ALERT" : "ACTIVE SITE ALERT (PAR)"}
                 {signalNumber > 0 && (
                   <span className={cn(
                     "px-2 py-0.5 text-[10px] font-bold text-white rounded uppercase tracking-wider",
@@ -468,8 +672,8 @@ export default function PhilippinesWeatherClient({
                   </>
                 ) : siteAlertStorm ? (
                   <>
-                    Typhoon <span className="font-semibold text-signal-red">{siteAlertStorm.name}</span> is currently{" "}
-                    <span className="font-semibold text-text-primary">{siteAlertStorm.distanceKm}km</span> away from Tumauini HEPP with sustained winds of{" "}
+                    {siteAlertStorm.category} <span className="font-semibold text-signal-red">{siteAlertStorm.name}</span> is inside PAR, currently{" "}
+                    <span className="font-semibold text-text-primary">{siteAlertStorm.distanceKm}km</span> from Tumauini HEPP with sustained winds of{" "}
                     <span className="font-semibold text-text-primary">{siteAlertStorm.windSpeedKph} kph</span>.
                   </>
                 ) : null}
@@ -500,16 +704,55 @@ export default function PhilippinesWeatherClient({
         </div>
       )}
 
+      {/* 1.1 REGIONAL MONITORING NOTICE (Calm status when PAR is clear, but tracking systems in NWPAC) */}
+      {showRegionalNotice && (
+        <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
+              <Compass className="h-6 w-6 text-sky-400" />
+            </div>
+            <div>
+              <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
+                <span>PAR CLEAR • REGIONAL MONITORING</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded uppercase tracking-wider">
+                  Outside PAR ({regionalStorms.length} System{regionalStorms.length > 1 ? "s" : ""})
+                </span>
+              </h2>
+              <p className="text-sm text-text-muted mt-0.5">
+                No active tropical cyclones inside the Philippine Area of Responsibility (PAR). Monitoring {regionalStorms.map(s => `${s.category === "Low Pressure Area" ? "Low Pressure Area" : `${s.category} ${s.name}`} (${s.distanceKm}km away)`).join(", ")} in the Northwest Pacific.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => {
+                setExpandedStormId(regionalStorms[0].id);
+                document.getElementById("storm-details")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+            >
+              View NWPAC Systems
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Developer helper toggle to preview mock/real data */}
       <div className="flex justify-between items-center bg-bg-panel/40 border border-border-hairline p-3 rounded-2xl">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-flow-teal animate-pulse"></div>
-            <span className="text-xs text-text-muted">Storms: <span className="font-semibold text-text-primary uppercase">{forceMock ? "Demo Mock" : "JTWC Live"}</span></span>
+            <span className="text-xs text-text-muted">
+              Storms: <span className="font-semibold text-text-primary uppercase">{forceMock ? "Demo Mock" : `JTWC Live (${storms.length} NWPAC)`}</span>
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className={cn("w-2.5 h-2.5 rounded-full", pagasaSignals.source === "pagasa" ? "bg-green-500 animate-pulse" : "bg-signal-amber")}></div>
-            <span className="text-xs text-text-muted">Signals: <span className={cn("font-semibold uppercase", pagasaSignals.source === "pagasa" ? "text-green-500" : "text-signal-amber")}>{pagasaSignals.source === "pagasa" ? "PAGASA Live" : "Unavailable"}</span></span>
+            <span className="text-xs text-text-muted">
+              Signals: <span className={cn("font-semibold uppercase", pagasaSignals.source === "pagasa" ? "text-green-500" : "text-signal-amber")}>
+                {pagasaSignals.source === "pagasa" ? (pagasaSignals.hasActiveBulletin ? `PAGASA Live (${pagasaSignals.tcName})` : "PAGASA Live (PAR Clear)") : "Unavailable"}
+              </span>
+            </span>
           </div>
         </div>
         <div className="flex gap-2">
@@ -579,23 +822,31 @@ export default function PhilippinesWeatherClient({
           </span>
         </div>
 
-        {/* KPI 3: Active Cyclones */}
+        {/* KPI 3: Active Cyclones inside PAR */}
         <div className="p-5 rounded-2xl bg-bg-panel border border-border-hairline shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
           <div className="flex justify-between items-start">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Active storms (PAR)</span>
-            <Activity className="h-4 w-4 text-signal-amber" />
+            <Activity className={cn("h-4 w-4", parStorms.length > 0 ? "text-signal-red" : "text-flow-teal")} />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-display text-2xl font-bold tracking-tight text-text-primary">
-              {storms.length}
+            <span className={cn(
+              "font-display text-2xl font-bold tracking-tight",
+              parStorms.length > 0 ? "text-signal-red" : "text-text-primary"
+            )}>
+              {parStorms.length}
             </span>
-            {storms.length > 0 && (
+            {parStorms.length > 0 ? (
               <span className="w-2.5 h-2.5 rounded-full bg-signal-red animate-ping inline-block"></span>
+            ) : (
+              <span className="text-[10px] text-flow-teal font-semibold font-mono">PAR Clear</span>
             )}
           </div>
+          <span className="text-[9px] text-text-muted font-mono">
+            {regionalStorms.length > 0 ? `${regionalStorms.length} tracking in NWPAC` : "0 in Western Pacific"}
+          </span>
         </div>
 
-        {/* KPI 4: PAGASA Signal — Now using real PAGASA bulletin data */}
+        {/* KPI 4: PAGASA Signal */}
         <div className={cn(
           "p-5 rounded-2xl border shadow-sm relative overflow-hidden flex flex-col justify-between h-28",
           signalNumber >= 3 ? "bg-signal-red/5 border-signal-red/30" :
@@ -618,11 +869,14 @@ export default function PhilippinesWeatherClient({
             )}>
               {getPAGASASignalLabel(signalNumber)}
             </span>
-            {pagasaSignals.hasActiveBulletin && pagasaSignals.tcName && (
-              <span className="text-[10px] text-text-muted">
-                TC {pagasaSignals.tcName} • <span className="text-green-500">PAGASA Live</span>
+            <span className="text-[10px] text-text-muted">
+              {pagasaSignals.hasActiveBulletin && pagasaSignals.tcName
+                ? `TC ${pagasaSignals.tcName} • `
+                : ""}
+              <span className={pagasaSignals.source === "pagasa" ? "text-green-500" : "text-signal-amber"}>
+                {pagasaSignals.source === "pagasa" ? (pagasaSignals.hasActiveBulletin ? "PAGASA Live" : "PAGASA Live (Clear)") : "Unavailable"}
               </span>
-            )}
+            </span>
           </div>
         </div>
       </div>
@@ -676,7 +930,7 @@ export default function PhilippinesWeatherClient({
               allowFullScreen
             ></iframe>
             
-            {/* Watermark Obfuscator: Hides the Windy text watermark above the color scale on the right, without blocking the timeline on the left */}
+            {/* Watermark Obfuscator */}
             <div className="absolute bottom-[16px] right-0 w-[400px] h-[24px] bg-gradient-to-r from-transparent via-[#0B1418]/80 to-[#0B1418] backdrop-blur-[2px] pointer-events-none z-10" />
           </div>
         </div>
@@ -729,148 +983,36 @@ export default function PhilippinesWeatherClient({
         </h3>
 
         {storms.length > 0 ? (
-          <div className="space-y-4">
-            {storms.map((storm) => {
-              const isExpanded = expandedStormId === storm.id;
-              return (
-                <div 
-                  key={storm.id} 
-                  className="border border-border-hairline rounded-2xl overflow-hidden transition-all bg-black/[0.01] dark:bg-white/[0.01]"
-                >
-                  {/* Card Header Accordion Trigger */}
-                  <div 
-                    onClick={() => setExpandedStormId(isExpanded ? null : storm.id)}
-                    className="p-4 flex items-center justify-between cursor-pointer hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                      <span className={cn(
-                        "text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border shrink-0",
-                        getCategoryClass(storm.category, storm.windSpeedKnots)
-                      )}>
-                        {storm.category}
-                      </span>
-                      <div className="flex flex-col">
-                        <h4 className="text-base font-bold text-text-primary font-display flex items-center gap-1.5 leading-tight">
-                          {storm.name} <span className="font-mono text-xs font-semibold text-text-muted">({storm.id})</span>
-                        </h4>
-                        {storm.pubDate && (
-                          <span className="text-[10px] text-text-muted font-medium mt-0.5">
-                            Warning: {formatPubDate(storm.pubDate)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block">
-                        <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider leading-none">Distance</p>
-                        <p className="text-sm font-semibold text-text-primary mt-1 font-mono">{storm.distanceKm} km</p>
-                      </div>
-                      {isExpanded ? <ChevronUp className="h-5 w-5 text-text-muted" /> : <ChevronDown className="h-5 w-5 text-text-muted" />}
-                    </div>
-                  </div>
-
-                  {/* Accordion Content */}
-                  {isExpanded && (
-                    <div className="p-4 border-t border-border-hairline bg-black/[0.02] dark:bg-white/[0.02] space-y-6">
-                      
-                      {/* Metric Stats Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
-                          <span className="text-[9px] uppercase font-bold text-text-muted block">Position</span>
-                          <span className="text-sm font-semibold text-text-primary font-mono mt-1 block">
-                            {storm.lat.toFixed(2)}&deg;N, {storm.lng.toFixed(2)}&deg;E
-                          </span>
-                        </div>
-                        <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
-                          <span className="text-[9px] uppercase font-bold text-text-muted block">Max Winds</span>
-                          <span className="text-sm font-semibold text-text-primary mt-1 block">
-                            {storm.windSpeedKph} kph <span className="text-xs text-text-muted font-mono">({storm.windSpeedKnots} kts)</span>
-                          </span>
-                        </div>
-                        <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
-                          <span className="text-[9px] uppercase font-bold text-text-muted block">Central Pressure</span>
-                          <span className="text-sm font-semibold text-text-primary font-mono mt-1 block">
-                            {storm.pressureHpa} hPa
-                          </span>
-                        </div>
-                        <div className="p-3 bg-bg-panel border border-border-hairline rounded-xl">
-                          <span className="text-[9px] uppercase font-bold text-text-muted block">Move Direction & Speed</span>
-                          <span className="text-sm font-semibold text-text-primary mt-1 block">
-                            {storm.direction} @ {storm.speedKph} kph
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Distance / ETA Analysis Banner */}
-                      <div className="p-4 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-border-hairline flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          <Info className="h-5 w-5 text-flow-teal shrink-0" />
-                          <div>
-                            <p className="text-xs font-semibold text-text-primary">Closest Point of Approach (CPA) forecast to Tumauini HEPP</p>
-                            <p className="text-xs text-text-muted mt-0.5">Calculated based on storm coordinates and projected speed vectors.</p>
-                          </div>
-                        </div>
-                        <div className="flex gap-4 shrink-0 font-mono text-sm">
-                          <div>
-                            <span className="text-[9px] uppercase font-bold text-text-muted block font-sans">Min Distance</span>
-                            <span className="font-bold text-text-primary">{storm.closestApproach.distanceKm} km</span>
-                          </div>
-                          <div>
-                            <span className="text-[9px] uppercase font-bold text-text-muted block font-sans">ETA (Est. Arrival)</span>
-                            <span className="font-bold text-text-primary">
-                              {new Date(storm.closestApproach.eta).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit" })}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Forecast track table */}
-                      <div>
-                        <h5 className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">
-                          Official Tropical Cyclone Forecast Profile
-                        </h5>
-                        <div className="overflow-x-auto border border-border-hairline rounded-xl bg-bg-panel">
-                          <table className="min-w-full divide-y divide-border-hairline">
-                            <thead className="bg-black/[0.02] dark:bg-white/[0.02]">
-                              <tr>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Forecast Interval</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Coordinates</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Max Wind Speed</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-text-muted uppercase font-sans">Classification</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border-hairline font-mono text-xs text-text-primary">
-                              {storm.forecast.map((fc, idx) => (
-                                <tr key={idx}>
-                                  <td className="px-4 py-2.5 font-sans font-semibold text-text-muted">{fc.time}</td>
-                                  <td className="px-4 py-2.5">{fc.lat.toFixed(1)}&deg;N, {fc.lng.toFixed(1)}&deg;E</td>
-                                  <td className="px-4 py-2.5">{fc.windKph} kph</td>
-                                  <td className="px-4 py-2.5 font-sans">
-                                    <span className={cn(
-                                      "inline-block px-2 py-0.5 rounded text-[10px] font-bold border",
-                                      fc.windKph > 185 ? "bg-red-600/10 text-red-500 border-red-500/20" :
-                                      fc.windKph >= 121 ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                      fc.windKph >= 61 ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
-                                      "bg-teal-500/10 text-teal-500 border-teal-500/20"
-                                    )}>
-                                      {fc.windKph > 185 ? "Super Typhoon" :
-                                       fc.windKph >= 121 ? "Typhoon" :
-                                       fc.windKph >= 61 ? "Tropical Storm" : "Tropical Depression"}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                    </div>
-                  )}
+          <div className="space-y-6">
+            {/* PAR Active Storms */}
+            {parStorms.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-signal-red animate-ping"></span>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-signal-red font-display">
+                    Active Systems inside Philippine Area of Responsibility (PAR)
+                  </h4>
                 </div>
-              );
-            })}
+                <div className="space-y-3">
+                  {parStorms.map((storm) => renderStormCard(storm, true))}
+                </div>
+              </div>
+            )}
+
+            {/* Regional Northwest Pacific Monitoring Storms */}
+            {regionalStorms.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400 font-display">
+                    Regional Systems Monitored in Northwest Pacific (Outside PAR)
+                  </h4>
+                </div>
+                <div className="space-y-3">
+                  {regionalStorms.map((storm) => renderStormCard(storm, false))}
+                </div>
+              </div>
+            )}
           </div>
         ) : pagasaSignals.hasActiveBulletin ? (
           <div className="flex flex-col items-center justify-center py-12 bg-signal-amber/5 border border-signal-amber/20 rounded-2xl text-center">

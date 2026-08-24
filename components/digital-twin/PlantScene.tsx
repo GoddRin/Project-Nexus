@@ -33,7 +33,19 @@ import {
   Unlock,
   Lock,
   Building2,
+  Car,
+  Gamepad2,
+  FlaskConical,
+  Palette,
+  Sun,
+  SunMedium,
+  Moon,
+  Sunset,
+  Users,
+  ShieldAlert,
+  Waves,
 } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlantSceneLoading } from "./PlantSceneLoading";
@@ -43,6 +55,7 @@ import {
   MountainTerrain,
   TailraceWater,
   TailraceFloodwall,
+  TailraceFloodgate,
   ElectricalBusSystem,
   RealisticSurgeTank,
   RealisticPenstockAssembly,
@@ -55,6 +68,11 @@ import { TemfacilFacility } from "./TemfacilFacility";
 import { ForestVegetation } from "./ForestVegetation";
 import { ForestWildlife } from "./ForestWildlife";
 import { AnimatedSiteEntities } from "./AnimatedSiteEntities";
+import { SupercarEntity, type SupercarCustomization } from "./SupercarEntity";
+import { GTAPlayerController } from "./GTAPlayerController";
+import { LocomotionLaboratoryModal } from "./LocomotionLaboratoryModal";
+import { SupercarConfiguratorOverlay } from "./SupercarConfiguratorOverlay";
+import { PersonnelProfileModal } from "./PersonnelProfileModal";
 import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDetailDrawer";
 import { getEquipmentByLocation } from "@/app/(dashboard)/dashboard/sitemap/actions";
 import type { PagasaSignalData } from "@/lib/weather/pagasa";
@@ -63,7 +81,15 @@ import { cn } from "@/lib/utils";
 /**
  * Camera Preset Identifiers
  */
-export type CameraPresetKey = "overview" | "turbine-hall" | "switchyard" | "temfacil";
+export type CameraPresetKey =
+  | "overview"
+  | "turbine-hall"
+  | "switchyard"
+  | "tailrace-floodgate"
+  | "temfacil"
+  | "temfacil-guardhouse"
+  | "temfacil-barracks"
+  | "temfacil-office";
 
 /**
  * Flow Teal CSS color token value: #1FB6A6 (rgb(31, 182, 166))
@@ -538,6 +564,235 @@ function DustParticles({ count = 25 }: { count?: number }) {
 }
 
 /**
+ * 🌅 MorningBirdFlock Component
+ * 7 birds soaring in dynamic V-formation with realistic wing flapping across the valley.
+ */
+function MorningBirdFlock() {
+  const groupRef = useRef<THREE.Group>(null);
+  const birdCount = 7;
+  const wingRefs = useRef<(THREE.Group | null)[]>([]);
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return;
+    const t = clock.getElapsedTime() * 0.35;
+    const radius = 140;
+    const x = Math.sin(t) * radius;
+    const z = Math.cos(t) * radius - 40;
+    groupRef.current.position.set(x, 85 + Math.sin(t * 2) * 5, z);
+    groupRef.current.rotation.y = t + Math.PI / 2;
+
+    const flap = Math.sin(clock.getElapsedTime() * 12) * 0.45;
+    wingRefs.current.forEach((w, i) => {
+      if (w) w.rotation.z = (i % 2 === 0 ? 1 : -1) * flap;
+    });
+  });
+
+  return (
+    <group ref={groupRef}>
+      {Array.from({ length: birdCount }).map((_, i) => {
+        const row = Math.floor((i + 1) / 2);
+        const side = i === 0 ? 0 : i % 2 === 1 ? -1 : 1;
+        const xOffset = side * row * 6;
+        const zOffset = -row * 8;
+
+        return (
+          <group key={`bird-${i}`} position={[xOffset, 0, zOffset]}>
+            <mesh position={[0, 0, 0]}>
+              <boxGeometry args={[0.3, 0.2, 1.2]} />
+              <meshStandardMaterial color="#1E293B" roughness={0.8} />
+            </mesh>
+            <group ref={(el) => { wingRefs.current[i * 2] = el; }} position={[-0.15, 0, 0]}>
+              <mesh position={[-1.2, 0, 0]}>
+                <boxGeometry args={[2.4, 0.05, 0.5]} />
+                <meshStandardMaterial color="#334155" roughness={0.8} />
+              </mesh>
+            </group>
+            <group ref={(el) => { wingRefs.current[i * 2 + 1] = el; }} position={[0.15, 0, 0]}>
+              <mesh position={[1.2, 0, 0]}>
+                <boxGeometry args={[2.4, 0.05, 0.5]} />
+                <meshStandardMaterial color="#334155" roughness={0.8} />
+              </mesh>
+            </group>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+/**
+ * 🌙 NightStarrySky Component
+ * 250 instanced twinkling stars across the night hemisphere dome.
+ */
+function NightStarrySky({ count = 250 }: { count?: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  const starData = useMemo(() => {
+    const data = [];
+    let seed = 12345;
+    const lcg = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+    for (let i = 0; i < count; i++) {
+      const radius = 180 + lcg() * 120;
+      const theta = lcg() * Math.PI * 2;
+      const phi = (lcg() * 0.4 + 0.1) * Math.PI;
+      const x = radius * Math.sin(phi) * Math.cos(theta);
+      const y = radius * Math.cos(phi) + 40;
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      const scale = lcg() * 0.8 + 0.4;
+      const phase = lcg() * Math.PI * 2;
+      data.push({ x, y, z, scale, phase });
+    }
+    return data;
+  }, [count]);
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const t = clock.getElapsedTime();
+    for (let i = 0; i < starData.length; i++) {
+      const { x, y, z, scale, phase } = starData[i];
+      const twinkle = Math.sin(t * 3.0 + phase) * 0.4 + 0.6;
+      dummy.position.set(x, y, z);
+      dummy.scale.setScalar(scale * twinkle);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <sphereGeometry args={[0.5, 6, 6]} />
+      <meshBasicMaterial color="#E0F2FE" />
+    </instancedMesh>
+  );
+}
+
+/**
+ * 🌙 NightFireflies Component
+ * 60 glowing yellow-green firefly particles drifting along the river & mountain foliage.
+ */
+function NightFireflies({ count = 60 }: { count?: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  const fireflyData = useMemo(() => {
+    const data = [];
+    let seed = 54321;
+    const lcg = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+    for (let i = 0; i < count; i++) {
+      const x = (lcg() - 0.5) * 180;
+      const z = (lcg() - 0.5) * 180;
+      const y = lcg() * 15 + 4.0;
+      const speed = 0.5 + lcg() * 1.0;
+      const phase = lcg() * Math.PI * 2;
+      data.push({ x, y, z, speed, phase });
+    }
+    return data;
+  }, [count]);
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const t = clock.getElapsedTime();
+    for (let i = 0; i < fireflyData.length; i++) {
+      const { x, y, z, speed, phase } = fireflyData[i];
+      const glow = Math.sin(t * 4.0 * speed + phase) * 0.5 + 0.5;
+      const driftX = Math.sin(t * 0.8 * speed + phase) * 1.8;
+      const driftY = Math.cos(t * 1.2 * speed + phase) * 0.8;
+      const driftZ = Math.sin(t * 0.6 * speed + phase) * 1.8;
+
+      dummy.position.set(x + driftX, y + driftY, z + driftZ);
+      dummy.scale.setScalar(glow * 0.35 + 0.05);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <sphereGeometry args={[0.25, 6, 6]} />
+      <meshStandardMaterial
+        color="#A3E635"
+        emissive="#BEF264"
+        emissiveIntensity={3.0}
+        toneMapped={false}
+      />
+    </instancedMesh>
+  );
+}
+
+/**
+ * 🌙 NightSiteFloodlights Component
+ * High-intensity industrial floodlights illuminating the powerhouse apron, switchyard, and compound.
+ */
+function NightSiteFloodlights() {
+  return (
+    <group>
+      {/* Upper Compound (TEMFACIL Office, Gate & Street) */}
+      <pointLight position={[115, 26.0, -86]} color="#FCD34D" intensity={28.0} distance={90} decay={2} />
+      {/* Basketball Court / Toolbox Stage & Quarters */}
+      <pointLight position={[115, 26.0, -103]} color="#FFFBEB" intensity={35.0} distance={90} decay={2} />
+      {/* Powerhouse Apron & Gantry Crane Deck */}
+      <pointLight position={[20, 32.0, 25]} color="#E0F2FE" intensity={40.0} distance={110} decay={2} />
+      {/* 69kV Switchyard Gantry */}
+      <pointLight position={[65, 22.0, 15]} color="#38BDF8" intensity={20.0} distance={70} decay={2} />
+      {/* Penstock Line & Surge Tank */}
+      <pointLight position={[-40, 48.0, -60]} color="#F59E0B" intensity={18.0} distance={60} decay={2} />
+      {/* River Headpond & Bridge */}
+      <pointLight position={[85, 20.0, -60]} color="#FCD34D" intensity={20.0} distance={65} decay={2} />
+    </group>
+  );
+}
+
+function getFormattedPHTime(): string {
+  const now = new Date();
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Manila",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  }).format(now);
+}
+
+function PhilippineTimeChip({ effectiveTime }: { effectiveTime: "MORNING" | "AFTERNOON" | "NIGHT" }) {
+  const [phTimeStr, setPhTimeStr] = useState<string>("");
+
+  useEffect(() => {
+    setPhTimeStr(getFormattedPHTime());
+    const interval = setInterval(() => {
+      setPhTimeStr(getFormattedPHTime());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-lg border border-amber-500/40 bg-black/85 text-amber-300 px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+      {effectiveTime === "MORNING" ? (
+        <SunMedium className="h-3.5 w-3.5 text-amber-400 animate-spin-slow" />
+      ) : effectiveTime === "AFTERNOON" ? (
+        <Sun className="h-3.5 w-3.5 text-amber-300" />
+      ) : (
+        <Moon className="h-3.5 w-3.5 text-cyan-300" />
+      )}
+      <span className="font-semibold text-white/90">PHT (UTC+8):</span>
+      <span className="font-bold tracking-wider">{phTimeStr || "--:--:--"}</span>
+      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+        {effectiveTime}
+      </span>
+    </div>
+  );
+}
+
+
+/**
  * Reusable Structure Mesh supporting X-Ray Fresnel Shader Material
  */
 interface StructureMeshProps {
@@ -1003,6 +1258,7 @@ interface PowerhouseBlockoutProps {
   onSelectEquipment: (eq: EquipmentWithLocation) => void;
   flowIntensity?: number;
   isXRay?: boolean;
+  onSelectPerson?: (id: string) => void;
 }
 
 function PowerhouseBlockout({
@@ -1012,6 +1268,7 @@ function PowerhouseBlockout({
   onSelectEquipment,
   flowIntensity = 0.85,
   isXRay = false,
+  onSelectPerson,
 }: PowerhouseBlockoutProps) {
   // Load real GLTF model geometry named meshes
   const gltf = useGLTF("/models/tumauini_powerhouse.glb") as unknown as GLTFResult;
@@ -1085,7 +1342,7 @@ function PowerhouseBlockout({
       <ForestWildlife />
 
       {/* --- LIVE ANIMATED SITE WORKERS, ENGINEERS & NAVIGATING VEHICLES --- */}
-      <AnimatedSiteEntities />
+      <AnimatedSiteEntities onSelectPerson={onSelectPerson} />
 
       {/* --- SURGE TANK HILLSIDE TERRAIN (fixes floating surge tank) --- */}
       <SurgeTankHillside />
@@ -1157,8 +1414,9 @@ function PowerhouseBlockout({
         <RealisticPowerhouseBuilding isXRay={isXRay} />
         {/* 3D Electrical Busducts, Cable Bridge, Switchyard Busbars & Steel Gantry Towers */}
         <ElectricalBusSystem isXRay={isXRay} />
-        {/* Tailrace Floodwall Infrastructure */}
+        {/* Tailrace Floodwall Infrastructure & Dual Hydraulic Floodgates */}
         <TailraceFloodwall />
+        <TailraceFloodgate />
 
         {turbineEquipments.map((eq, idx) => {
           const pos = turbineLayoutPositions[idx % turbineLayoutPositions.length];
@@ -1223,7 +1481,7 @@ function PowerhouseBlockout({
       <PerimeterFence />
 
       {/* --- TEMFACIL (MAIN TEMPORARY FACILITY & BARRACKS COMPOUND) --- */}
-      <TemfacilFacility isXRay={isXRay} />
+      <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} />
 
       {activePreset === "overview" && (
         <ZoneTelemetryLabel
@@ -1256,6 +1514,8 @@ function CameraController({
   const isAnimatingRef = useRef<boolean>(true);
   const prevPresetRef = useRef<CameraPresetKey>(activePreset);
   const prevResetTokenRef = useRef<number>(resetToken);
+  const { gl, camera, scene } = useThree();
+  const keysDownRef = useRef<Record<string, boolean>>({});
 
   const presets = useMemo(
     () => ({
@@ -1271,13 +1531,76 @@ function CameraController({
         pos: new THREE.Vector3(36, 14, 12),
         target: new THREE.Vector3(24, 2, -2),
       },
+      "tailrace-floodgate": {
+        pos: new THREE.Vector3(-4, 28, 58),
+        target: new THREE.Vector3(0, 4, 26),
+      },
       temfacil: {
-        pos: new THREE.Vector3(145, 55, -45),
-        target: new THREE.Vector3(108, 14, -95),
+        pos: new THREE.Vector3(135, 60, -40),
+        target: new THREE.Vector3(125, 15, -100),
+      },
+      "temfacil-guardhouse": {
+        pos: new THREE.Vector3(76, 18.0, -56),
+        target: new THREE.Vector3(88, 12.5, -70),
+      },
+      "temfacil-barracks": {
+        pos: new THREE.Vector3(155, 23, -84),
+        target: new THREE.Vector3(155, 15, -107),
+      },
+      "temfacil-office": {
+        pos: new THREE.Vector3(118, 18, -78),
+        target: new THREE.Vector3(118, 15.5, -95),
       },
     }),
     []
   );
+
+  // Keyboard Pan Controls (WASD / Arrow keys / Space / Q / Shift)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = (document.activeElement?.tagName || "").toLowerCase();
+      if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") return;
+      keysDownRef.current[e.code] = true;
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keysDownRef.current[e.code] = false;
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  // Double-click raycast focus: automatically re-centers OrbitControls target on whatever object was clicked
+  useEffect(() => {
+    const domElement = gl.domElement;
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const handleDblClick = (event: MouseEvent) => {
+      const rect = domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      const validHit = intersects.find((hit) => hit.distance > 0.3 && hit.point.y > -10);
+
+      if (validHit && controlsRef.current) {
+        controlsRef.current.target.copy(validHit.point);
+        controlsRef.current.update();
+        isAnimatingRef.current = false;
+        onUserInteract();
+      }
+    };
+
+    domElement.addEventListener("dblclick", handleDblClick);
+    return () => domElement.removeEventListener("dblclick", handleDblClick);
+  }, [gl, camera, scene, onUserInteract]);
 
   useEffect(() => {
     if (prevPresetRef.current !== activePreset || prevResetTokenRef.current !== resetToken) {
@@ -1289,6 +1612,41 @@ function CameraController({
 
   useFrame((state, delta) => {
     if (!controlsRef.current) return;
+
+    // Handle WASD / Arrow Key continuous camera & target translation
+    const keys = keysDownRef.current;
+    if (
+      keys["KeyW"] || keys["KeyS"] || keys["KeyA"] || keys["KeyD"] ||
+      keys["ArrowUp"] || keys["ArrowDown"] || keys["ArrowLeft"] || keys["ArrowRight"] ||
+      keys["KeyQ"] || keys["KeyE"] || keys["Space"]
+    ) {
+      isAnimatingRef.current = false;
+      onUserInteract();
+
+      const forward = new THREE.Vector3();
+      state.camera.getWorldDirection(forward);
+      forward.y = 0;
+      forward.normalize();
+
+      const right = new THREE.Vector3();
+      right.crossVectors(forward, state.camera.up).normalize();
+
+      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 48 : 22) * delta;
+      const move = new THREE.Vector3();
+
+      if (keys["KeyW"] || keys["ArrowUp"]) move.addScaledVector(forward, moveSpeed);
+      if (keys["KeyS"] || keys["ArrowDown"]) move.addScaledVector(forward, -moveSpeed);
+      if (keys["KeyD"] || keys["ArrowRight"]) move.addScaledVector(right, moveSpeed);
+      if (keys["KeyA"] || keys["ArrowLeft"]) move.addScaledVector(right, -moveSpeed);
+      if (keys["KeyE"] || keys["Space"]) move.y += moveSpeed * 0.75;
+      if (keys["KeyQ"]) move.y -= moveSpeed * 0.75;
+
+      if (move.lengthSq() > 0) {
+        state.camera.position.add(move);
+        controlsRef.current.target.add(move);
+        controlsRef.current.update();
+      }
+    }
 
     if (!isFreeNav && isAnimatingRef.current) {
       const active = presets[activePreset];
@@ -1310,11 +1668,14 @@ function CameraController({
       ref={controlsRef}
       makeDefault
       enableDamping
-      dampingFactor={0.08}
-      rotateSpeed={0.8}
-      zoomSpeed={1.0}
-      minDistance={4}
-      maxDistance={350}
+      dampingFactor={0.22}
+      rotateSpeed={0.9}
+      zoomSpeed={1.3}
+      panSpeed={1.2}
+      zoomToCursor={true}
+      screenSpacePanning={true}
+      minDistance={0.05}
+      maxDistance={700}
       minPolarAngle={0.02}
       maxPolarAngle={Math.PI / 2 - 0.01}
       onStart={() => {
@@ -1326,19 +1687,19 @@ function CameraController({
 }
 
 /**
- * Dynamically adjusts renderer toneMappingExposure for storm mode.
- * Storm mode keeps the scene legible for inspection while feeling dark/atmospheric.
+ * Dynamically adjusts renderer toneMappingExposure for storm mode and daytime.
+ * Ensures natural dynamic range without blown-out whites.
  */
 function StormExposureControl({ isStormActive }: { isStormActive: boolean }) {
   const { gl } = useThree();
   useEffect(() => {
-    gl.toneMappingExposure = isStormActive ? 1.6 : 1.35;
+    gl.toneMappingExposure = isStormActive ? 1.35 : 1.0;
   }, [gl, isStormActive]);
   return null;
 }
 
 /**
- * Inner R3F Scene with Environmental Storm Overlay Support
+ * Inner R3F Scene with Environmental Storm & Time-of-Day (Morning, Afternoon, Night) Support
  */
 function PlantSceneInner({
   activePreset,
@@ -1348,9 +1709,13 @@ function PlantSceneInner({
   flowIntensity = 0.85,
   isXRay = false,
   isStormActive = false,
+  effectiveTime = "AFTERNOON",
   isFreeNav = false,
   onUserInteract,
   resetToken = 0,
+  supercarCustomization,
+  isGtaModeActive = false,
+  onSelectPerson,
 }: {
   activePreset: CameraPresetKey;
   equipments: EquipmentWithLocation[];
@@ -1359,10 +1724,72 @@ function PlantSceneInner({
   flowIntensity?: number;
   isXRay?: boolean;
   isStormActive?: boolean;
+  effectiveTime?: "MORNING" | "AFTERNOON" | "NIGHT";
   isFreeNav?: boolean;
   onUserInteract: () => void;
   resetToken?: number;
+  supercarCustomization?: SupercarCustomization;
+  isGtaModeActive?: boolean;
+  onSelectPerson?: (id: string) => void;
 }) {
+  const isNight = effectiveTime === "NIGHT";
+  const isMorning = effectiveTime === "MORNING";
+  const isAfternoon = effectiveTime === "AFTERNOON";
+
+  const ambientColor = isStormActive
+    ? "#8899aa"
+    : isNight
+    ? "#0F172A"
+    : isMorning
+    ? "#F5EFE6"
+    : "#F1F5F9";
+
+  const ambientIntensity = isStormActive
+    ? 0.45
+    : isNight
+    ? 0.28
+    : isMorning
+    ? 0.7
+    : 0.78;
+
+  const hemiTopColor = isStormActive
+    ? "#5a7090"
+    : isNight
+    ? "#0F172A"
+    : isMorning
+    ? "#93C5FD"
+    : "#7DD3FC";
+
+  const hemiGroundColor = isStormActive
+    ? "#5A6050"
+    : isNight
+    ? "#020617"
+    : isMorning
+    ? "#4B5563"
+    : "#374151";
+
+  const sunLightParams = isNight
+    ? { pos: [-60, 80, -40] as [number, number, number], color: "#93C5FD", intensity: 0.8 }
+    : isMorning
+    ? { pos: [90, 55, 60] as [number, number, number], color: "#FFE8C2", intensity: 2.1 }
+    : { pos: [50, 75, 35] as [number, number, number], color: "#FFF8EE", intensity: 2.2 };
+
+  const fogArgs: [string, number, number] = isStormActive
+    ? ["#1a2535", 40, 180]
+    : isNight
+    ? ["#050B14", 80, 300]
+    : isMorning
+    ? ["#E6F0FA", 140, 400]
+    : ["#D9E8F5", 160, 420];
+
+  const bgColor = isStormActive
+    ? "#111822"
+    : isNight
+    ? "#050B14"
+    : isMorning
+    ? "#1C2E3D"
+    : "#1e2d3d";
+
   return (
     <>
       {/* Dynamically adjust tone mapping exposure for storm legibility */}
@@ -1375,19 +1802,19 @@ function PlantSceneInner({
         resetToken={resetToken}
       />
 
-      {/* Scene Background — Tropical Mountain Setting */}
-      <color attach="background" args={[isStormActive ? "#111822" : "#1e2d3d"]} />
+      {/* Scene Background — Dynamic Tropical Mountain Setting */}
+      <color attach="background" args={[bgColor]} />
 
-      {/* PBR Lighting Rig — maintain minimum legibility in storm mode for inspection use */}
-      <ambientLight intensity={isStormActive ? 0.65 : 1.2} color={isStormActive ? "#8899aa" : "#FFF8F0"} />
-      <hemisphereLight intensity={isStormActive ? 0.45 : 0.8} color={isStormActive ? "#5a7090" : "#87CEEB"} groundColor="#5A6050" />
-      <Environment preset="apartment" environmentIntensity={isStormActive ? 0.35 : 0.8} />
+      {/* PBR Lighting Rig — Dynamic Time of Day (Morning / Afternoon / Night) */}
+      <ambientLight intensity={ambientIntensity} color={ambientColor} />
+      <hemisphereLight intensity={isNight ? 0.35 : 0.55} color={hemiTopColor} groundColor={hemiGroundColor} />
+      <Environment preset="apartment" environmentIntensity={isStormActive ? 0.25 : isNight ? 0.12 : 0.38} />
 
-      {/* Primary Solar Key Light — warm golden-hour sunlight */}
+      {/* Primary Key Light (Sun / Moon) */}
       <directionalLight
-        position={[50, 65, 35]}
-        intensity={isStormActive ? 1.2 : 3.5}
-        color={isStormActive ? "#8899aa" : "#FFF5E6"}
+        position={sunLightParams.pos}
+        intensity={sunLightParams.intensity}
+        color={sunLightParams.color}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -1399,35 +1826,36 @@ function PlantSceneInner({
         shadow-bias={-0.0001}
       />
 
-      {/* Cool Sky Fill Light — blue daylight from opposite side */}
+      {/* Cool Sky Fill Light */}
       <directionalLight
         position={[-40, 45, -30]}
-        intensity={isStormActive ? 0.4 : 0.8}
-        color={isStormActive ? "#6688aa" : "#B0D4FF"}
+        intensity={isStormActive ? 0.3 : isNight ? 0.15 : 0.45}
+        color={isStormActive ? "#6688aa" : isNight ? "#1E293B" : "#B0D4FF"}
       />
 
-      {/* Warm Ground Bounce — reflected earth tones */}
+      {/* Warm Ground Bounce */}
       <directionalLight
         position={[0, -15, 0]}
-        intensity={isStormActive ? 0.2 : 0.3}
+        intensity={isStormActive ? 0.15 : isNight ? 0.08 : 0.2}
         color="#DEB887"
       />
 
-      {/* Teal Accent Rim Light — architectural edge accent */}
-      <directionalLight
-        position={[-50, 30, 40]}
-        intensity={isStormActive ? 0.25 : 0.5}
-        color="#1FB6A6"
-      />
+      {/* Atmospheric Fog */}
+      <fog attach="fog" args={fogArgs} />
 
-      {/* Atmospheric Fog — gently suggests depth without obscuring mid-ground (powerhouse is 20-50m from camera) */}
-      {isStormActive && <fog attach="fog" args={["#1a2535", 40, 180]} />}
+      {/* 🌅 MORNING EFFECTS: Soaring Bird Flock in V-Formation */}
+      {!isStormActive && isMorning && <MorningBirdFlock />}
 
-      {/* Rain — 150 streaks, vertically stretched, semi-transparent so structures remain legible */}
+      {/* 🌙 NIGHT EFFECTS: Starry Sky, Fireflies & Site Floodlights */}
+      {!isStormActive && isNight && <NightStarrySky count={250} />}
+      {!isStormActive && isNight && <NightFireflies count={60} />}
+      {!isStormActive && isNight && <NightSiteFloodlights />}
+
+      {/* ☀️ AFTERNOON EFFECTS: Ambient Dust Motes in Clear Rural Atmosphere */}
+      {!isStormActive && isAfternoon && <DustParticles count={25} />}
+
+      {/* 🌧️ TYPHOON STORM: Rain Streaks */}
       {isStormActive && <RainParticles count={150} />}
-
-      {/* Sparse Ambient Ground-Level Dust Motes in Clear Rural Atmosphere */}
-      {!isStormActive && <DustParticles count={25} />}
 
       <Grid
         position={[0, 0.01, 0]}
@@ -1449,10 +1877,22 @@ function PlantSceneInner({
         onSelectEquipment={onSelectEquipment}
         flowIntensity={flowIntensity}
         isXRay={isXRay}
+        onSelectPerson={onSelectPerson}
       />
 
-      {/* Cinematic Post-Processing Stack with Ultra-Sharp SMAA Anti-Aliasing */}
-      <EffectComposer multisampling={8}>
+      {/* --- SUPERCAR SHOWCASE (Ferrari 458 Italia) --- */}
+      <SupercarEntity
+        customization={supercarCustomization}
+        isPlayerControlled={isGtaModeActive}
+      />
+
+      {/* --- GTA-STYLE PLAYER CONTROLLER (Walking/Driving Mode) --- */}
+      {isGtaModeActive && (
+        <GTAPlayerController isActive={isGtaModeActive} onToggleActive={() => {}} />
+      )}
+
+      {/* Cinematic Post-Processing Stack with Ultra-Sharp SMAA Anti-Aliasing (Optimized 60 FPS) */}
+      <EffectComposer multisampling={0}>
         <Bloom
           mipmapBlur
           luminanceThreshold={0.88}
@@ -1915,29 +2355,58 @@ interface PlantSceneProps {
 }
 
 export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
-  const [activePreset, setActivePreset] = useState<CameraPresetKey>("overview");
+  const [activePreset, setActivePreset] = useState<CameraPresetKey>("temfacil");
   const [isFreeNav, setIsFreeNav] = useState<boolean>(false);
   const [resetToken, setResetToken] = useState<number>(0);
+  const [zoomStepToken, setZoomStepToken] = useState<number>(0);
   const [isXRay, setIsXRay] = useState<boolean>(false);
   const [devStormToggle, setDevStormToggle] = useState<boolean>(false);
+  const [isCameraPanelOpen, setIsCameraPanelOpen] = useState<boolean>(true);
   const [weatherData, setWeatherData] = useState<PagasaSignalData | null>(null);
   const [equipments, setEquipments] = useState<EquipmentWithLocation[]>(DEFAULT_EQUIPMENTS);
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentWithLocation | null>(null);
   const [perfStats, setPerfStats] = useState<PerfStats>({ fps: 60, ms: 16.6, calls: 0, tris: 0 });
+  const [isLocomotionLabOpen, setIsLocomotionLabOpen] = useState<boolean>(false);
+
+  // Time-of-day visual mode
+  type TimeMode = "MORNING" | "AFTERNOON" | "NIGHT";
+  const [timeMode, setTimeMode] = useState<TimeMode>("AFTERNOON");
+
+  // Filipino Personnel Dossier & Workforce modal state
+  const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState<boolean>(false);
+  const [selectedPersonnelId, setSelectedPersonnelId] = useState<string | null>(null);
+
+  // Supercar Showcase & Configurator state
+  const [supercarCustomization, setSupercarCustomization] = useState<SupercarCustomization>({
+    bodyColor: "#D90429",
+    rimsColor: "#F8FAFC",
+    caliperColor: "#F59E0B",
+    glassColor: "#1E3A5F",
+    isDriving: false,
+  });
+  const [isSupercarConfigOpen, setIsSupercarConfigOpen] = useState<boolean>(false);
+
+  // GTA-style Player Controller mode
+  const [isGtaModeActive, setIsGtaModeActive] = useState<boolean>(false);
 
   const handleSelectPreset = (preset: CameraPresetKey) => {
     setActivePreset(preset);
     setIsFreeNav(false);
+  };
+
+  const handleResetCamera = () => {
     setResetToken((prev) => prev + 1);
+    setIsFreeNav(false);
+  };
+
+  const handleStepZoom = (deltaY: number) => {
+    setIsFreeNav(true);
+    setZoomStepToken((prev) => prev + 1);
+    window.dispatchEvent(new CustomEvent("plant-scene-step-zoom", { detail: { deltaY } }));
   };
 
   const handleToggleFreeNav = () => {
     setIsFreeNav((prev) => !prev);
-  };
-
-  const handleResetCamera = () => {
-    setIsFreeNav(false);
-    setResetToken((prev) => prev + 1);
   };
 
   // Fetch real plant equipment records via reverse lookup server action
@@ -2030,13 +2499,13 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
       <Suspense fallback={<PlantSceneLoading />}>
         <Canvas
           shadows
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           gl={{
             antialias: true,
             alpha: false,
             powerPreference: "high-performance",
             toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 1.25,
+            toneMappingExposure: 1.0,
           }}
           className="h-full w-full"
         >
@@ -2049,15 +2518,25 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             flowIntensity={flowIntensity}
             isXRay={isXRay}
             isStormActive={isStormActive}
+            effectiveTime={timeMode}
             isFreeNav={isFreeNav}
             onUserInteract={() => setIsFreeNav(true)}
             resetToken={resetToken}
+            supercarCustomization={supercarCustomization}
+            isGtaModeActive={isGtaModeActive}
+            onSelectPerson={(id) => {
+              setSelectedPersonnelId(id);
+              setIsPersonnelModalOpen(true);
+            }}
           />
         </Canvas>
       </Suspense>
 
       {/* HUD Top Status Chips Bar */}
       <div className="absolute top-20 left-6 z-20 pointer-events-auto flex flex-wrap items-center gap-2.5 max-w-[calc(100vw-24rem)]">
+        {/* 🇵🇭 Real-Time Philippine Time & Time-of-Day Status Chip */}
+        <PhilippineTimeChip effectiveTime={timeMode} />
+
         {/* Environmental Weather Status Chip */}
         <div
           className={cn(
@@ -2079,6 +2558,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
               : "ATMOSPHERE: CLEAR"}
           </span>
         </div>
+
 
         {/* Live Commissioning % & Output Gauge Chip */}
         <div className="rounded-lg border border-flow-teal/30 bg-black/85 text-white px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2.5">
@@ -2105,11 +2585,17 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             <Wrench className="h-3 w-3" />
             {maintCount} Maint
           </span>
-          <span className="text-white/20">•</span>
-          <span className="text-red-400 font-semibold flex items-center gap-1">
-            <AlertTriangle className="h-3 w-3" />
-            {alertCount} Alert
-          </span>
+          {alertCount > 0 && (
+            <>
+              <span className="text-white/20">•</span>
+              <span className="text-red-400 font-semibold flex items-center gap-1 animate-pulse">
+                <AlertTriangle className="h-3 w-3" />
+                {alertCount} Critical
+              </span>
+            </>
+          )}
+          <span className="text-white/20">|</span>
+          <span className="text-text-muted">{totalAssetsCount} Assets Total</span>
         </div>
 
         {/* Navigation Mode Status Indicator Chip */}
@@ -2152,121 +2638,288 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
         </div>
       )}
 
-      {/* Camera Presets & Navigation Controls Panel (Bottom-Left) */}
-      <div className="absolute bottom-12 left-6 z-20 pointer-events-auto">
-        <Card className="w-60 border border-black/10 dark:border-white/10 bg-black/80 dark:bg-[#0B1013]/90 shadow-2xl backdrop-blur-md p-3 text-text-primary">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/10 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <Camera className="h-3.5 w-3.5 text-flow-teal" />
-              <span className="font-display text-xs font-semibold uppercase tracking-wider text-white">
-                CAMERA CONTROLS
-              </span>
+      {/* Quick Camera & Layer Controls Floating HUD Panel (Bottom-Left) */}
+      <div className="absolute bottom-6 left-6 z-20 pointer-events-auto">
+        <Card className="border border-white/10 bg-black/85 backdrop-blur-md text-white p-2.5 shadow-2xl transition-all w-64">
+          <div className="flex items-center justify-between pb-1.5 border-b border-white/10">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-flow-teal">
+              <Camera className="h-3.5 w-3.5" />
+              <span>FACILITY NAVIGATION</span>
             </div>
-            {isFreeNav && (
-              <span className="rounded bg-flow-teal/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-flow-teal border border-flow-teal/30">
-                FREE NAV
-              </span>
-            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 w-5 p-0 text-text-muted hover:text-white"
+              onClick={() => setIsCameraPanelOpen(!isCameraPanelOpen)}
+            >
+              {isCameraPanelOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+            </Button>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Button
-              variant={!isFreeNav && activePreset === "overview" ? "default" : "outline"}
-              size="sm"
-              className="justify-start font-sans text-xs font-medium"
-              onClick={() => handleSelectPreset("overview")}
-            >
-              <Eye className="h-3.5 w-3.5 mr-1.5" />
-              Overview Preset
-            </Button>
-
-            <Button
-              variant={!isFreeNav && activePreset === "turbine-hall" ? "default" : "outline"}
-              size="sm"
-              className="justify-start font-sans text-xs font-medium"
-              onClick={() => handleSelectPreset("turbine-hall")}
-            >
-              <Camera className="h-3.5 w-3.5 mr-1.5" />
-              Turbine Hall Preset
-            </Button>
-
-            <Button
-              variant={!isFreeNav && activePreset === "switchyard" ? "default" : "outline"}
-              size="sm"
-              className="justify-start font-sans text-xs font-medium"
-              onClick={() => handleSelectPreset("switchyard")}
-            >
-              <Zap className="h-3.5 w-3.5 mr-1.5" />
-              Switchyard Preset
-            </Button>
-
-            <Button
-              variant={!isFreeNav && activePreset === "temfacil" ? "default" : "outline"}
-              size="sm"
-              className="justify-start font-sans text-xs font-medium"
-              onClick={() => handleSelectPreset("temfacil")}
-            >
-              <Building2 className="h-3.5 w-3.5 mr-1.5" />
-              TEMFACIL Compound
-            </Button>
-
-            {/* Free Orbit & Pan Mode Toggle */}
-            <Button
-              variant={isFreeNav ? "default" : "outline"}
-              size="sm"
-              className={cn(
-                "justify-start font-sans text-xs font-medium transition-all",
-                isFreeNav && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 hover:bg-flow-teal/30 ring-1 ring-flow-teal/40"
-              )}
-              onClick={handleToggleFreeNav}
-            >
-              <Move className="h-3.5 w-3.5 mr-1.5" />
-              {isFreeNav ? "Free Pan & Orbit (Active)" : "Unlock Free Orbit & Pan"}
-            </Button>
-
-            {/* Recenter / Reset Camera View Action */}
-            {isFreeNav && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="justify-start font-sans text-xs font-medium text-text-muted hover:text-white bg-white/[0.04]"
-                onClick={handleResetCamera}
-              >
-                <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                Reset View to {activePreset}
-              </Button>
-            )}
-
-            <div className="pt-1.5 mt-1.5 border-t border-white/10 flex flex-col gap-1.5">
-              <Button
-                variant={isXRay ? "default" : "outline"}
-                size="sm"
-                className={cn(
-                  "w-full justify-start font-sans text-xs font-medium transition-all",
-                  isXRay && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 hover:bg-flow-teal/30 ring-1 ring-flow-teal/40"
-                )}
-                onClick={() => setIsXRay(!isXRay)}
-              >
-                <ScanEye className="h-3.5 w-3.5 mr-1.5" />
-                X-Ray View Mode
-              </Button>
-
-              {process.env.NODE_ENV === "development" && (
+          {isCameraPanelOpen && (
+            <div className="space-y-1.5 pt-2">
+              <div className="grid grid-cols-2 gap-1.5">
                 <Button
-                  variant={devStormToggle ? "default" : "outline"}
+                  variant={activePreset === "overview" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "overview" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("overview")}
+                >
+                  <Eye className="h-3 w-3 mr-1 shrink-0" />
+                  Overview
+                </Button>
+                <Button
+                  variant={activePreset === "turbine-hall" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "turbine-hall" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("turbine-hall")}
+                >
+                  <Zap className="h-3 w-3 mr-1 shrink-0 text-flow-teal" />
+                  Turbine Hall
+                </Button>
+                <Button
+                  variant={activePreset === "switchyard" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "switchyard" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("switchyard")}
+                >
+                  <ScanEye className="h-3 w-3 mr-1 shrink-0 text-amber-400" />
+                  Switchyard
+                </Button>
+                <Button
+                  variant={activePreset === "tailrace-floodgate" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "tailrace-floodgate" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("tailrace-floodgate")}
+                >
+                  <Waves className="h-3 w-3 mr-1 shrink-0 text-cyan-400" />
+                  Tailrace Floodgate
+                </Button>
+                <Button
+                  variant={activePreset === "temfacil" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "temfacil" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("temfacil")}
+                >
+                  <Building2 className="h-3 w-3 mr-1 shrink-0 text-amber-400" />
+                  Temfacil
+                </Button>
+                <Button
+                  variant={activePreset === "temfacil-guardhouse" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "temfacil-guardhouse" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("temfacil-guardhouse")}
+                >
+                  <ShieldAlert className="h-3 w-3 mr-1 shrink-0 text-emerald-400" />
+                  Main Guardhouse
+                </Button>
+                <Button
+                  variant={activePreset === "temfacil-barracks" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "temfacil-barracks" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("temfacil-barracks")}
+                >
+                  <Building2 className="h-3 w-3 mr-1 shrink-0 text-orange-400" />
+                  Barracks & Kusina
+                </Button>
+                <Button
+                  variant={activePreset === "temfacil-office" && !isFreeNav ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                    activePreset === "temfacil-office" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => handleSelectPreset("temfacil-office")}
+                >
+                  <Building2 className="h-3 w-3 mr-1 shrink-0 text-teal-400" />
+                  Staff Office
+                </Button>
+              </div>
+
+              {/* Time of Day Cycle Buttons */}
+              <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1">
+                <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider">Atmosphere Time</span>
+                <div className="grid grid-cols-3 gap-1">
+                  <Button
+                    variant={timeMode === "MORNING" ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                      timeMode === "MORNING" && "border-amber-400/80 bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40"
+                    )}
+                    onClick={() => setTimeMode("MORNING")}
+                  >
+                    <SunMedium className="h-3 w-3 mr-1 text-amber-400" />
+                    Morning
+                  </Button>
+                  <Button
+                    variant={timeMode === "AFTERNOON" ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                      timeMode === "AFTERNOON" && "border-sky-400/80 bg-sky-500/20 text-sky-300 ring-1 ring-sky-400/40"
+                    )}
+                    onClick={() => setTimeMode("AFTERNOON")}
+                  >
+                    <Sun className="h-3 w-3 mr-1 text-amber-300" />
+                    Day
+                  </Button>
+                  <Button
+                    variant={timeMode === "NIGHT" ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                      timeMode === "NIGHT" && "border-indigo-400/80 bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/40"
+                    )}
+                    onClick={() => setTimeMode("NIGHT")}
+                  >
+                    <Moon className="h-3 w-3 mr-1 text-indigo-300" />
+                    Night
+                  </Button>
+                </div>
+              </div>
+
+              {/* Free-Nav Stepped Zoom & Reset Orbit Tools */}
+              <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="font-mono text-[11px] h-6 px-2 flex-1 justify-center"
+                    onClick={() => handleStepZoom(-1)}
+                    title="Step Zoom In"
+                  >
+                    Zoom +
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="font-mono text-[11px] h-6 px-2 flex-1 justify-center"
+                    onClick={() => handleStepZoom(1)}
+                    title="Step Zoom Out"
+                  >
+                    Zoom -
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="font-mono text-[11px] h-6 px-2 justify-center text-text-muted hover:text-white"
+                    onClick={handleResetCamera}
+                    title="Reset to Preset View"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </Button>
+                </div>
+
+                <Button
+                  variant={isXRay ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "w-full justify-start font-mono text-xs transition-all",
+                    isXRay && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 ring-1 ring-flow-teal/30"
+                  )}
+                  onClick={() => setIsXRay(!isXRay)}
+                >
+                  <Activity className="h-3.5 w-3.5 mr-1.5" />
+                  X-Ray Wireframe {isXRay ? "ON" : "OFF"}
+                </Button>
+
+                {process.env.NODE_ENV !== "production" && (
+                  <Button
+                    variant={devStormToggle ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start font-mono text-xs transition-all",
+                      devStormToggle && "bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30 ring-1 ring-amber-500/40"
+                    )}
+                    onClick={() => setDevStormToggle(!devStormToggle)}
+                  >
+                    <CloudRain className="h-3.5 w-3.5 mr-1.5" />
+                    Storm Overlay (Dev)
+                  </Button>
+                )}
+              </div>
+
+              {/* ─── Feature Showcase Toggles ─── */}
+              <div className="pt-1.5 mt-1.5 border-t border-white/10 flex flex-col gap-1.5">
+                <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider mb-0.5">Workforce & Features</span>
+
+                {/* 👥 Filipino Site Personnel Roster & Dossier */}
+                <Button
+                  variant={isPersonnelModalOpen ? "default" : "outline"}
                   size="sm"
                   className={cn(
                     "w-full justify-start font-sans text-xs font-medium transition-all",
-                    devStormToggle && "bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30 ring-1 ring-amber-500/40"
+                    isPersonnelModalOpen && "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30 ring-1 ring-emerald-500/40"
                   )}
-                  onClick={() => setDevStormToggle(!devStormToggle)}
+                  onClick={() => setIsPersonnelModalOpen(!isPersonnelModalOpen)}
                 >
-                  <CloudRain className="h-3.5 w-3.5 mr-1.5" />
-                  Storm Overlay (Dev)
+                  <Users className="h-3.5 w-3.5 mr-1.5 text-emerald-400" />
+                  Site Personnel Roster
                 </Button>
-              )}
+
+                <Button
+                  variant={isSupercarConfigOpen ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "w-full justify-start font-sans text-xs font-medium transition-all",
+                    isSupercarConfigOpen && "bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500/30 ring-1 ring-red-500/40"
+                  )}
+                  onClick={() => setIsSupercarConfigOpen(!isSupercarConfigOpen)}
+                >
+                  <Car className="h-3.5 w-3.5 mr-1.5" />
+                  Supercar Configurator
+                </Button>
+
+                <Button
+                  variant={isGtaModeActive ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "w-full justify-start font-sans text-xs font-medium transition-all",
+                    isGtaModeActive && "bg-purple-500/20 text-purple-400 border-purple-500/50 hover:bg-purple-500/30 ring-1 ring-purple-500/40"
+                  )}
+                  onClick={() => setIsGtaModeActive(!isGtaModeActive)}
+                >
+                  <Gamepad2 className="h-3.5 w-3.5 mr-1.5" />
+                  GTA Driving Mode
+                </Button>
+
+                <Button
+                  variant={isLocomotionLabOpen ? "default" : "outline"}
+                  size="sm"
+                  className={cn(
+                    "w-full justify-start font-sans text-xs font-medium transition-all",
+                    isLocomotionLabOpen && "bg-sky-500/20 text-sky-400 border-sky-500/50 hover:bg-sky-500/30 ring-1 ring-sky-500/40"
+                  )}
+                  onClick={() => setIsLocomotionLabOpen(!isLocomotionLabOpen)}
+                >
+                  <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
+                  Locomotion Laboratory
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </Card>
       </div>
 
@@ -2283,6 +2936,33 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
         <span className="text-gray-600">|</span>
         <span className="text-cyan-400">{(perfStats.tris / 1000).toFixed(1)}k Tris</span>
       </div>
+
+      {/* ─── OVERLAY MODALS ─── */}
+
+      {/* Filipino Personnel Profile Dossier Modal */}
+      {isPersonnelModalOpen && (
+        <PersonnelProfileModal
+          selectedPersonnelId={selectedPersonnelId}
+          onClose={() => setIsPersonnelModalOpen(false)}
+          onSelectPersonnel={(id) => setSelectedPersonnelId(id)}
+        />
+      )}
+
+      {/* Supercar Configurator HUD Overlay */}
+      {isSupercarConfigOpen && (
+        <SupercarConfiguratorOverlay
+          isOpen={isSupercarConfigOpen}
+          customization={supercarCustomization}
+          onChange={(updates) => setSupercarCustomization(prev => ({ ...prev, ...updates }))}
+          onClose={() => setIsSupercarConfigOpen(false)}
+        />
+      )}
+
+      {/* Locomotion Laboratory Modal */}
+      <LocomotionLaboratoryModal
+        isOpen={isLocomotionLabOpen}
+        onClose={() => setIsLocomotionLabOpen(false)}
+      />
     </div>
   );
 }

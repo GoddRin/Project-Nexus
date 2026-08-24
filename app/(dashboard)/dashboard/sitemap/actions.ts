@@ -8,7 +8,7 @@ import { EquipmentZone } from "@prisma/client";
 /**
  * Helper to resolve the target project & enforce auth via getOrCreateUser.
  */
-async function getAuthenticatedProject() {
+async function getAuthenticatedProject(requireAuth: boolean = true) {
   const project = await prisma.project.findUnique({
     where: { slug: "tumauini-hepp" },
   });
@@ -17,7 +17,7 @@ async function getAuthenticatedProject() {
   }
 
   const { dbUser, member } = await getOrCreateUser(project.id);
-  if (!dbUser || !member) {
+  if (requireAuth && (!dbUser || !member)) {
     throw new Error("Unauthorized");
   }
 
@@ -29,7 +29,7 @@ async function getAuthenticatedProject() {
  * returns all associated equipment records.
  */
 export async function getEquipmentByLocation(locationIdentifier: string = "all") {
-  const { project } = await getAuthenticatedProject();
+  const { project } = await getAuthenticatedProject(false);
 
   const isAll = locationIdentifier === "all";
   const knownZones = ["INTAKE", "PENSTOCK", "TURBINE_HALL", "SWITCHYARD", "SURGE_TANK", "TAILRACE", "ACCESS_ROAD", "OTHER"];
@@ -68,7 +68,7 @@ export async function getEquipmentByLocation(locationIdentifier: string = "all")
  * and associated site location if one exists.
  */
 export async function getEquipmentSitemapPosition(equipmentId: string) {
-  const { project } = await getAuthenticatedProject();
+  const { project } = await getAuthenticatedProject(false);
 
   const equipment = await prisma.plantEquipment.findFirst({
     where: {

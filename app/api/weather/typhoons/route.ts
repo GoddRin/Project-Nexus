@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         storms: result.storms,
+        parStorms: result.parStorms,
+        regionalStorms: result.regionalStorms,
         source: result.source,
         parClear: result.parClear,
         sourcesChecked: result.sourcesChecked,

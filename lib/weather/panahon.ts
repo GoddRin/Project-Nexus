@@ -213,8 +213,10 @@ export async function fetchPanahonImage(
   }
 }
 
+import { isWithinPAR } from "@/lib/weather/gdacs";
+
 /**
- * Parses PANaHON cyclone-track vector data into Storm objects (including past 24-48 hr track for LPAs / weakened storms).
+ * Parses PANaHON cyclone-track vector data into Storm objects (only for active recent systems).
  */
 export async function fetchPanahonCycloneTrackStorms(): Promise<Storm[]> {
   try {
@@ -253,6 +255,17 @@ export async function fetchPanahonCycloneTrackStorms(): Promise<Storm[]> {
       if (points.length === 0) continue;
 
       const latestPoint = points[points.length - 1];
+      const latestTimeStr = latestPoint.time.includes("T") ? latestPoint.time : latestPoint.time.replace(" ", "T") + "+08:00";
+      const latestTimestamp = new Date(latestTimeStr).getTime();
+      const hoursOld = (Date.now() - latestTimestamp) / (1000 * 60 * 60);
+
+      // Ignore dissipated / historical tracks whose latest observation point is older than 12 hours
+      // or weakened LPAs older than 6 hours
+      if (hoursOld > 12 || (latestPoint.type === "LPA" && hoursOld > 6)) {
+        console.log(`[PANaHON Cyclone Track] Ignoring stale track "${cleanName}" (latest point was ${hoursOld.toFixed(1)}h ago at ${latestPoint.time})`);
+        continue;
+      }
+
       const isLpa = latestPoint.type === "LPA";
       const category = isLpa
         ? "Low Pressure Area"
@@ -276,6 +289,7 @@ export async function fetchPanahonCycloneTrackStorms(): Promise<Storm[]> {
       });
 
       const distanceKm = Math.round(calculateDistance(latestPoint.lat, latestPoint.lng, SITE_LAT, SITE_LNG));
+      const inPAR = isWithinPAR(latestPoint.lat, latestPoint.lng);
 
       storms.push({
         id: `PANAHON-${cleanName}`,
@@ -297,6 +311,7 @@ export async function fetchPanahonCycloneTrackStorms(): Promise<Storm[]> {
         pastTrack,
         uncertaintyCone: [],
         windRadii: { r34: 0, r50: 0, r64: 0 },
+        isWithinPAR: inPAR,
         source: "panahon",
       } as Storm);
     }

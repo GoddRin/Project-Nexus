@@ -74,27 +74,39 @@ export function TopBar({ className }: TopBarProps) {
  return (
   <header
   className={cn(
-  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-white/[0.03] dark:to-white/[0.01] from-black/[0.03] to-black/[0.01] shell-blur px-6 print:hidden",
+  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-[#0B131B] dark:to-[#070D12] from-white/90 to-slate-50/90 shell-blur px-6 print:hidden",
   className
   )}
   >
-  {/* Search trigger */}
-  <button
-  className="group relative flex h-9 w-72 items-center gap-2.5 rounded-xl dark:bg-white/[0.04] bg-black/[0.04] px-3.5 text-sm text-text-muted border border-border-hairline shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_8px_rgba(0,0,0,0.05)] transition-[background-color,border-color,color,box-shadow] duration-200 dark:hover:bg-white/[0.07] hover:bg-black/[0.07] hover:text-text-primary"
-  onClick={() => {
-  // cmd+k modal will be wired up in a later phase
-  }}
-  >
-  <Search className="h-4 w-4 flex-shrink-0 text-text-muted transition-all duration-300 group-hover:scale-110 group-hover:text-flow-teal" />
-  <span className="hidden truncate sm:inline">Search across SCIC THEPP...</span>
-  <div className="absolute right-2 flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[10px] font-medium text-text-muted border border-border-hairline transition-colors group-hover:text-text-primary">
-  <span>Ctrl</span>
-  <span className="ml-0.5">K</span>
+  {/* Left: Search trigger + Project Ticker */}
+  <div className="flex items-center gap-3">
+    <button
+    className="group relative flex h-9 w-64 md:w-72 items-center gap-2.5 rounded-xl dark:bg-white/[0.04] bg-black/[0.04] px-3.5 text-xs text-text-muted border border-border-hairline shadow-sm transition-all duration-200 dark:hover:bg-white/[0.07] hover:bg-black/[0.07] hover:text-text-primary"
+    onClick={() => {
+      // cmd+k shortcut trigger
+    }}
+    >
+    <Search className="h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-all duration-200 group-hover:text-scic-blue dark:group-hover:text-scic-cyan" />
+    <span className="hidden truncate sm:inline font-medium">Search SCIC Nexus...</span>
+    <div className="absolute right-2 flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[9px] font-semibold text-text-muted border border-border-hairline">
+    <span>Ctrl</span>
+    <span className="ml-0.5">K</span>
+    </div>
+    </button>
+
+    {/* SCIC Hydro Telemetry Ticker (Desktop) */}
+    <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-scic-blue/5 dark:bg-scic-cyan/5 border border-scic-blue/15 dark:border-scic-cyan/15 text-[11px]">
+      <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+      <span className="font-semibold text-text-primary">Pinacanauan River</span>
+      <span className="text-text-muted">·</span>
+      <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">Normal Head</span>
+      <span className="text-text-muted">·</span>
+      <span className="text-text-muted font-medium">PAR Clear</span>
+    </div>
   </div>
-  </button>
 
   {/* Right section */}
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-2.5">
   <ThemeToggle />
   {/* Notifications */}
         <div className="relative" ref={popoverRef}>

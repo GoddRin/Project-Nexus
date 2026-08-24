@@ -148,177 +148,182 @@ export function ProgressDashboardClient({
 
  const now = new Date();
 
- return (
- <div className="space-y-8">
- {/* 1. TOP SECTION: Progress Chart & Current Stat Panel */}
- <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
- {/* Chart Panel */}
- <div className="lg:col-span-2 glass-card p-6">
- <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
- <div>
- <h2 className="font-display text-lg font-bold tracking-wide text-text-primary flex items-center gap-2">
- <TrendingUp className="h-5 w-5 text-flow-teal" />
- Construction Completion S-Curve
- </h2>
- <p className="text-xs text-text-muted">
- Tracking physical work progress percentage over project milestones
- </p>
- </div>
- {isElevated && (
- <Button
- onClick={() => setShowLogSnapshot(!showLogSnapshot)}
- className="bg-flow-teal hover:bg-flow-teal/90 text-black font-semibold shadow-lg text-xs"
- >
- <Plus className="h-4 w-4 mr-1" />
- Log Progress Snapshot
- </Button>
- )}
- </div>
+  return (
+    <div className="space-y-8">
+      {/* 1. TOP SECTION: Progress Chart & Current Stat Panel */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Chart Panel */}
+        <div className="lg:col-span-2 glass-scic-card scic-card-accent-blue p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase bg-scic-blue/10 dark:bg-scic-cyan/10 text-scic-blue dark:text-scic-cyan border border-scic-blue/20 dark:border-scic-cyan/20">
+                  SCIC EPC METRICS
+                </span>
+              </div>
+              <h2 className="font-display text-lg font-bold tracking-wide text-text-primary flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-scic-blue dark:text-scic-cyan" />
+                Construction S-Curve Physical Progress
+              </h2>
+              <p className="text-xs text-text-muted">
+                Tracking cumulative physical work progress vs baseline milestones (Tumauini HEPP)
+              </p>
+            </div>
+            {isElevated && (
+              <Button
+                onClick={() => setShowLogSnapshot(!showLogSnapshot)}
+                className="bg-scic-blue hover:bg-scic-blue/90 dark:bg-scic-cyan dark:hover:bg-scic-cyan/90 text-white dark:text-slate-950 font-bold shadow-md text-xs"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Log Progress Snapshot
+              </Button>
+            )}
+          </div>
 
- {/* Log Snapshot Form Dropdown */}
- {showLogSnapshot && (
- <form
- onSubmit={handleLogSnapshotSubmit}
- className="mb-6 rounded-xl border border-flow-teal/30 bg-flow-teal/[0.04] p-4 space-y-4"
- >
- <h3 className="font-display text-sm font-semibold text-flow-teal">
- Record New Progress Snapshot
- </h3>
- {formError && (
- <p className="text-xs text-signal-red bg-signal-red/10 p-2 rounded-lg border border-signal-red/20">
- {formError}
- </p>
- )}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- <div>
- <label className="block font-mono text-[10px] uppercase text-text-muted mb-1">
- Snapshot Date
- </label>
- <Popover>
- <PopoverTrigger
- className={cn(
- buttonVariants({ variant: "outline" }),
- "w-full justify-start text-left font-normal border-white/10 bg-white/[0.04] text-xs px-3 py-1.5 h-auto",
- !snapshotDate && "text-muted-foreground"
- )}
- >
- <Calendar className="mr-2 h-3.5 w-3.5 text-flow-teal" />
- {snapshotDate ? format(snapshotDate, "MM/dd/yyyy") : <span>Pick a date</span>}
- </PopoverTrigger>
- <PopoverContent className="w-auto p-0" align="start">
- <CalendarPicker
- mode="single"
- selected={snapshotDate}
- onSelect={setSnapshotDate}
- />
- </PopoverContent>
- </Popover>
- </div>
- <div>
- <label className="block font-mono text-[10px] uppercase text-text-muted mb-1">
- Completion Percentage (%)
- </label>
- <input
- type="number"
- min="0"
- max="100"
- step="0.1"
- value={snapshotPercent}
- onChange={(e) => setSnapshotPercent(e.target.value)}
- className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-text-primary focus:border-flow-teal focus:outline-none"
- required
- />
- </div>
- <div>
- <label className="block font-mono text-[10px] uppercase text-text-muted mb-1">
- Notes / Observations
- </label>
- <input
- type="text"
- placeholder="e.g. Tunnel excavation 80% complete"
- value={snapshotNote}
- onChange={(e) => setSnapshotNote(e.target.value)}
- className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-text-primary focus:border-flow-teal focus:outline-none"
- />
- </div>
- </div>
- <div className="flex justify-end gap-2 pt-2">
- <Button
- type="button"
- variant="outline"
- onClick={() => setShowLogSnapshot(false)}
- className="text-xs border-white/10"
- >
- Cancel
- </Button>
- <Button
- type="submit"
- disabled={isPending}
- className="bg-flow-teal text-black font-semibold text-xs"
- >
- Save Snapshot
- </Button>
- </div>
- </form>
- )}
+          {/* Log Snapshot Form Dropdown */}
+          {showLogSnapshot && (
+            <form
+              onSubmit={handleLogSnapshotSubmit}
+              className="mb-6 rounded-xl border border-scic-blue/30 bg-scic-blue/[0.04] p-4 space-y-4"
+            >
+              <h3 className="font-display text-sm font-semibold text-scic-blue dark:text-scic-cyan">
+                Record New Progress Snapshot
+              </h3>
+              {formError && (
+                <p className="text-xs text-signal-red bg-signal-red/10 p-2 rounded-lg border border-signal-red/20">
+                  {formError}
+                </p>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block font-mono text-[10px] uppercase text-text-muted mb-1">
+                    Snapshot Date
+                  </label>
+                  <Popover>
+                    <PopoverTrigger
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full justify-start text-left font-normal border-border-hairline bg-black/[0.02] dark:bg-white/[0.04] text-xs px-3 py-1.5 h-auto",
+                        !snapshotDate && "text-muted-foreground"
+                      )}
+                    >
+                      <Calendar className="mr-2 h-3.5 w-3.5 text-scic-blue dark:text-scic-cyan" />
+                      {snapshotDate ? format(snapshotDate, "MM/dd/yyyy") : <span>Pick a date</span>}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={snapshotDate}
+                        onSelect={setSnapshotDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase text-text-muted mb-1">
+                    Completion Percentage (%)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={snapshotPercent}
+                    onChange={(e) => setSnapshotPercent(e.target.value)}
+                    className="w-full rounded-lg border border-border-hairline bg-black/[0.02] dark:bg-white/[0.04] px-3 py-1.5 text-xs text-text-primary focus:border-scic-blue dark:focus:border-scic-cyan focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase text-text-muted mb-1">
+                    Notes / Observations
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Tunnel excavation 80% complete"
+                    value={snapshotNote}
+                    onChange={(e) => setSnapshotNote(e.target.value)}
+                    className="w-full rounded-lg border border-border-hairline bg-black/[0.02] dark:bg-white/[0.04] px-3 py-1.5 text-xs text-text-primary focus:border-scic-blue dark:focus:border-scic-cyan focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowLogSnapshot(false)}
+                  className="text-xs border-border-hairline"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="bg-scic-blue hover:bg-scic-blue/90 dark:bg-scic-cyan dark:hover:bg-scic-cyan/90 text-white dark:text-slate-950 font-bold text-xs"
+                >
+                  Save Snapshot
+                </Button>
+              </div>
+            </form>
+          )}
 
- <ProgressChart data={snapshots} />
- </div>
+          <ProgressChart data={snapshots} />
+        </div>
 
- {/* Status Stat Summary */}
- <div className="flex flex-col justify-between glass-card p-6">
- <div>
- <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-flow-teal">
- Current Status
- </span>
- <h3 className="mt-1 font-display text-2xl font-bold text-text-primary">
- Overall Progress
- </h3>
- <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] py-8 shadow-inner">
- <span className="font-display text-6xl font-extrabold text-flow-teal tabular-nums drop-shadow-[0_0_20px_rgba(31,182,166,0.4)]">
- {latestPercent}%
- </span>
- <span className="mt-2 font-mono text-xs text-text-muted">
- {snapshots.length > 0 ? "From latest Progress Snapshot" : "From Project master target"}
- </span>
- </div>
- </div>
+        {/* Status Stat Summary */}
+        <div className="flex flex-col justify-between glass-scic-card scic-card-accent-cyan p-6">
+          <div>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-scic-blue dark:text-scic-cyan">
+              Project Status
+            </span>
+            <h3 className="mt-1 font-display text-2xl font-bold text-text-primary">
+              Overall Physical Progress
+            </h3>
+            <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-border-hairline bg-black/[0.02] dark:bg-white/[0.02] py-8 shadow-inner">
+              <span className="font-display text-6xl font-extrabold text-scic-blue dark:text-scic-cyan tabular-nums drop-shadow-sm">
+                {latestPercent}%
+              </span>
+              <span className="mt-2 font-mono text-xs text-text-muted">
+                {snapshots.length > 0 ? "From latest Progress Snapshot" : "From Project master target"}
+              </span>
+            </div>
+          </div>
 
- <div className="mt-6 space-y-3 border-t border-white/10 pt-4 text-xs text-text-muted">
- <div className="flex justify-between items-center">
- <span>Total Snapshots Logged</span>
- <span className="font-mono font-semibold text-text-primary">{snapshots.length}</span>
- </div>
- <div className="flex justify-between items-center">
- <span>Total Milestones</span>
- <span className="font-mono font-semibold text-text-primary">{milestones.length}</span>
- </div>
- </div>
- </div>
- </div>
+          <div className="mt-6 space-y-3 border-t border-border-hairline pt-4 text-xs text-text-muted">
+            <div className="flex justify-between items-center">
+              <span>Total Snapshots Logged</span>
+              <span className="font-mono font-bold text-text-primary">{snapshots.length}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Total Milestones</span>
+              <span className="font-mono font-bold text-text-primary">{milestones.length}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
- {/* 2. MILESTONES TIMELINE & LIST */}
- <div className="glass-card p-6">
- <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
- <div>
- <h2 className="font-display text-lg font-bold tracking-wide text-text-primary flex items-center gap-2">
- <Flag className="h-5 w-5 text-flow-teal" />
- Project Milestones
- </h2>
- <p className="text-xs text-text-muted">
- Key construction goals and completion deadlines
- </p>
- </div>
- {isElevated && (
- <Button
- onClick={() => setShowAddMilestone(!showAddMilestone)}
- className="bg-white/[0.06] hover:bg-white/10 text-text-primary border border-white/10 text-xs"
- >
- <Plus className="h-4 w-4 mr-1" />
- Add Milestone
- </Button>
- )}
- </div>
+      {/* 2. MILESTONES TIMELINE & LIST */}
+      <div className="glass-scic-card scic-card-accent-blue p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 className="font-display text-lg font-bold tracking-wide text-text-primary flex items-center gap-2">
+              <Flag className="h-5 w-5 text-scic-blue dark:text-scic-cyan" />
+              Contract Milestones & Civil Works
+            </h2>
+            <p className="text-xs text-text-muted">
+              Key construction goals, turbine delivery, and commissioning deadlines
+            </p>
+          </div>
+          {isElevated && (
+            <Button
+              onClick={() => setShowAddMilestone(!showAddMilestone)}
+              className="bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/10 text-text-primary border border-border-hairline text-xs font-semibold"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Milestone
+            </Button>
+          )}
+        </div>
 
  {/* Add Milestone Form Dropdown */}
  {showAddMilestone && (
@@ -484,104 +489,104 @@ export function ProgressDashboardClient({
  )}
  </div>
 
- {/* 3. BOTTOM SECTION: Recent Accomplishments Feed & Photo Timeline */}
- <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
- {/* Recent Accomplishments Feed */}
- <div className="glass-card p-6">
- <div className="flex items-center justify-between mb-4">
- <h2 className="font-display text-base font-bold tracking-wide text-text-primary flex items-center gap-2">
- <FileCheck className="h-4 w-4 text-flow-teal" />
- Approved Accomplishment Reports
- </h2>
- <Link
- href="/dashboard/reports"
- className="text-xs text-flow-teal hover:underline flex items-center gap-1 font-medium"
- >
- View All <ChevronRight className="h-3 w-3" />
- </Link>
- </div>
+      {/* 3. BOTTOM SECTION: Recent Accomplishments Feed & Photo Timeline */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Recent Accomplishments Feed */}
+        <div className="glass-scic-card scic-card-accent-blue p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-base font-bold tracking-wide text-text-primary flex items-center gap-2">
+              <FileCheck className="h-4 w-4 text-scic-blue dark:text-scic-cyan" />
+              Approved Accomplishment Reports
+            </h2>
+            <Link
+              href="/dashboard/reports"
+              className="text-xs text-scic-blue dark:text-scic-cyan hover:underline flex items-center gap-1 font-semibold"
+            >
+              View All <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
 
- {recentAccomplishments.length === 0 ? (
- <p className="text-xs text-text-muted py-6 text-center border border-dashed border-white/10 rounded-xl">
- No approved reports found.
- </p>
- ) : (
- <div className="space-y-3">
- {recentAccomplishments.map((item) => (
- <Link
- key={item.id}
- href={`/dashboard/reports/${item.id}`}
- className="block rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/15 hover:bg-white/[0.04] group"
- >
- <div className="flex items-center justify-between">
- <span className="font-display text-xs font-bold text-text-primary group-hover:text-flow-teal transition-colors">
- {item.workArea}
- </span>
- <span className="font-mono text-[10px] text-text-muted">
- {new Date(item.reportDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
- </span>
- </div>
- <p className="mt-1 text-xs text-text-muted line-clamp-2">
- {item.accomplishments}
- </p>
- <p className="mt-2 font-mono text-[9.5px] text-text-muted/70">
- By: {item.submittedByName}
- </p>
- </Link>
- ))}
- </div>
- )}
- </div>
+          {recentAccomplishments.length === 0 ? (
+            <p className="text-xs text-text-muted py-6 text-center border border-dashed border-border-hairline rounded-xl">
+              No approved reports found.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {recentAccomplishments.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/dashboard/reports/${item.id}`}
+                  className="block rounded-xl border border-border-hairline bg-black/[0.01] dark:bg-white/[0.02] p-3 transition-all duration-200 hover:border-scic-blue/30 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-display text-xs font-bold text-text-primary group-hover:text-scic-blue dark:group-hover:text-scic-cyan transition-colors">
+                      {item.workArea}
+                    </span>
+                    <span className="font-mono text-[10px] text-text-muted">
+                      {new Date(item.reportDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-text-muted line-clamp-2">
+                    {item.accomplishments}
+                  </p>
+                  <p className="mt-2 font-mono text-[9.5px] text-text-muted/70">
+                    By: {item.submittedByName}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
 
- {/* Photo Timeline Strip */}
- <div className="glass-card p-6">
- <div className="flex items-center justify-between mb-4">
- <h2 className="font-display text-base font-bold tracking-wide text-text-primary flex items-center gap-2">
- <ImageIcon className="h-4 w-4 text-flow-teal" />
- Site Photo Timeline
- </h2>
- <span className="font-mono text-[10px] text-text-muted">Newest First</span>
- </div>
+        {/* Photo Timeline Strip */}
+        <div className="glass-scic-card scic-card-accent-cyan p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-base font-bold tracking-wide text-text-primary flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-scic-cyan" />
+              Site Photo Timeline
+            </h2>
+            <span className="font-mono text-[10px] text-text-muted">Newest First</span>
+          </div>
 
- {recentPhotos.length === 0 ? (
- <p className="text-xs text-text-muted py-6 text-center border border-dashed border-white/10 rounded-xl">
- No photos uploaded in approved reports.
- </p>
- ) : (
- <div className="grid grid-cols-2 gap-3">
- {recentPhotos.map((photo) => (
- <Link
- key={photo.id}
- href={`/dashboard/reports/${photo.reportId}`}
- className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40"
- >
- {photo.signedUrl ? (
- <img
- src={photo.signedUrl}
- alt={photo.caption || photo.workArea}
- className="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105"
- />
- ) : (
- <div className="h-28 w-full bg-white/5 flex items-center justify-center text-[10px] text-text-muted">
- No Preview
- </div>
- )}
- <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent p-2">
- <p className="font-display text-[11px] font-semibold text-white truncate">
- {photo.workArea}
- </p>
- {photo.caption && (
- <p className="text-[9.5px] text-text-muted truncate">
- {photo.caption}
- </p>
- )}
- </div>
- </Link>
- ))}
- </div>
- )}
- </div>
- </div>
+          {recentPhotos.length === 0 ? (
+            <p className="text-xs text-text-muted py-6 text-center border border-dashed border-border-hairline rounded-xl">
+              No photos uploaded in approved reports.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {recentPhotos.map((photo) => (
+                <Link
+                  key={photo.id}
+                  href={`/dashboard/reports/${photo.reportId}`}
+                  className="group relative overflow-hidden rounded-xl border border-border-hairline bg-black/40"
+                >
+                  {photo.signedUrl ? (
+                    <img
+                      src={photo.signedUrl}
+                      alt={photo.caption || photo.workArea}
+                      className="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-28 w-full bg-white/5 flex items-center justify-center text-[10px] text-text-muted">
+                      No Preview
+                    </div>
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent p-2">
+                    <p className="font-display text-[11px] font-semibold text-white truncate">
+                      {photo.workArea}
+                    </p>
+                    {photo.caption && (
+                      <p className="text-[9.5px] text-text-muted truncate">
+                        {photo.caption}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
  </div>
  );
 }

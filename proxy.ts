@@ -4,6 +4,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/sign-out(.*)",
+  "/digital-twin(.*)",
   "/api/webhook(.*)",
   "/api/assistant/reindex(.*)",
   // Mobile app public routes — no Clerk session available on the device
@@ -19,16 +20,11 @@ const isPublicRoute = createRouteMatcher([
   "/models/(.*)",
 ]);
 
-// Next.js 16 proxy convention requires an explicit function declaration
-const authMiddleware = clerkMiddleware(async (auth, request) => {
+export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
     await auth.protect();
   }
 });
-
-export function proxy(request: NextRequest, event: any) {
-  return authMiddleware(request, event);
-}
 
 export const config = {
   matcher: [

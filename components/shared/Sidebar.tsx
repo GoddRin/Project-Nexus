@@ -34,6 +34,7 @@ import {
   Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { StaClaraLogo } from "./StaClaraLogo";
 
 const CORE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -147,36 +148,40 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  return (
   <aside
     className={cn(
-      "flex h-screen flex-col border-r border-black/[0.06] dark:border-white/[0.06] bg-gradient-to-b from-black/[0.02] to-transparent dark:from-white/[0.04] dark:to-white/[0.01] shell-blur transition-[width] duration-200 ease-in-out print:hidden",
-      collapsed ? "w-16" : "max-md:w-16 md:w-60"
+      "flex h-screen flex-col border-r border-border-hairline bg-gradient-to-b from-[#0B2545]/[0.03] to-transparent dark:from-[#0B131B] dark:to-[#060B10] shell-blur transition-[width] duration-200 ease-in-out print:hidden",
+      collapsed ? "w-16" : "max-md:w-16 md:w-64"
     )}
   >
- {/* Project Switcher */}
-  <div className="border-b border-black/[0.06] dark:border-white/[0.06] p-3">
+ {/* SCIC Corporate & Project Header */}
+  <div className="border-b border-border-hairline p-3">
     <button
       onClick={() => !collapsed && setProjectOpen(!projectOpen)}
       className={cn(
-        "flex w-full items-center gap-2 rounded-xl px-2 py-2 text-left transition-[background-color] duration-150 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]",
+        "flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-all duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]",
         collapsed ? "justify-center" : "max-md:justify-center"
       )}
  >
-        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#121C21] border border-slate-200 dark:border-white/10 overflow-hidden shadow-md p-0.5">
-          <img src="/logo.png" alt="SCIC THEPP Logo" className="h-full w-full object-contain rounded-lg dark:hidden" />
-          <img src="/logo-dark.png" alt="SCIC THEPP Dark Logo" className="hidden h-full w-full object-contain rounded-lg dark:block" />
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline overflow-hidden shadow-sm p-1">
+          <StaClaraLogo className="h-full w-full" />
         </div>
  {!collapsed && (
  <>
  <div className="min-w-0 flex-1 max-md:hidden">
- <p className="truncate font-display text-xs font-semibold text-text-primary">
- Tumauini HEPP
+ <div className="flex items-center gap-1.5">
+   <span className="font-display text-[10px] font-bold tracking-wider uppercase text-scic-blue dark:text-scic-cyan">
+     STA. CLARA INTL
+   </span>
+ </div>
+ <p className="truncate font-display text-xs font-bold text-text-primary">
+   Tumauini HEPP
  </p>
  <p className="truncate font-mono text-[10px] text-text-muted">
- 11.3 MW · Run-of-river
+   11.3 MW · EPC Contract
  </p>
  </div>
  <ChevronDown
  className={cn(
- "h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-transform duration-150 max-md:hidden",
+ "h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-transform duration-200 max-md:hidden",
  projectOpen && "rotate-180"
  )}
  />
@@ -303,22 +308,22 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
                             handleNavClick(item.href);
                           }}
                           className={cn(
-                            "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-[background-color,border-color,color] duration-150",
-                            collapsed ? "justify-center px-0 py-2.5" : "max-md:justify-center max-md:px-0",
+                            "group flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs transition-all duration-150",
+                            collapsed ? "justify-center px-0 py-2" : "max-md:justify-center max-md:px-0",
                             active
-                              ? "bg-white text-text-primary dark:bg-white/[0.08] dark:text-white border border-black/[0.08] dark:border-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(0,0,0,0.2)]"
-                              : "text-text-muted hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary border border-transparent"
+                              ? "bg-scic-blue/10 text-scic-blue dark:bg-scic-cyan/10 dark:text-scic-cyan border border-scic-blue/20 dark:border-scic-cyan/25 shadow-sm font-semibold"
+                              : "text-text-secondary dark:text-text-muted hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary border border-transparent font-normal"
                           )}
                           title={item.label}
                         >
                           <Icon
                             className={cn(
-                              "h-4.5 w-4.5 flex-shrink-0 transition-[color] duration-150",
-                              active ? "text-flow-teal drop-shadow-[0_0_10px_rgba(31,182,166,0.5)]" : "text-text-muted group-hover:text-text-primary"
+                              "h-4 w-4 flex-shrink-0 transition-colors duration-150",
+                              active ? "text-scic-blue dark:text-scic-cyan" : "text-text-muted group-hover:text-text-primary"
                             )}
                           />
                           {!collapsed && (
-                            <span className={cn("truncate max-md:hidden", active ? "font-semibold" : "font-normal")}>
+                            <span className="truncate max-md:hidden">
                               {item.label}
                             </span>
                           )}
@@ -336,16 +341,31 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
   </div>
  </nav>
 
+ {/* HSE Safe Man-Hours Badge */}
+ {!collapsed && (
+   <div className="mx-2 mb-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5 max-md:hidden">
+     <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+     <div className="min-w-0 flex-1">
+       <p className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 leading-tight">
+         1,420,500 HRS
+       </p>
+       <p className="text-[9px] text-text-muted font-medium truncate">
+         Safe Man-Hours · LTI Free
+       </p>
+     </div>
+   </div>
+ )}
+
  {/* User menu & collapse toggle */}
-  <div className="border-t border-black/[0.06] dark:border-white/[0.06] p-2">
+  <div className="border-t border-border-hairline p-2 space-y-1">
     {/* User */}
  <div
  className={cn(
- "flex items-center gap-2.5 rounded-xl px-2.5 py-2",
+ "flex items-center gap-2.5 rounded-xl px-2.5 py-2 bg-black/[0.02] dark:bg-white/[0.02]",
  collapsed ? "justify-center px-2" : "max-md:justify-center max-md:px-2"
  )}
  >
-      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-black/[0.04] dark:bg-white/[0.06] ring-1 ring-black/[0.06] dark:ring-white/[0.08] text-xs font-medium text-text-muted">
+      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-scic-blue/10 dark:bg-scic-cyan/10 border border-scic-blue/20 dark:border-scic-cyan/20 text-xs font-semibold text-scic-blue dark:text-scic-cyan">
         <User className="h-3.5 w-3.5" />
  </div>
  {!collapsed && (
@@ -370,29 +390,29 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  }}
  disabled={signingOut}
  className={cn(
- "flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-xs text-text-muted transition-all duration-150 hover:bg-signal-red/10 hover:text-signal-red",
+ "flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-text-muted transition-all duration-150 hover:bg-signal-red/10 hover:text-signal-red",
  collapsed ? "justify-center px-2" : "max-md:justify-center max-md:px-2",
  signingOut && "opacity-50 pointer-events-none"
  )}
  title="Sign out"
  >
- <LogOut className={cn("h-4 w-4 flex-shrink-0", signingOut && "animate-spin")} />
+ <LogOut className={cn("h-3.5 w-3.5 flex-shrink-0", signingOut && "animate-spin")} />
  {!collapsed && <span className="max-md:hidden">{signingOut ? "Signing out…" : "Sign out"}</span>}
  </button>
 
  {/* Collapse toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="flex h-8 w-full items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary max-md:hidden"
+        className="flex h-7 w-full items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary max-md:hidden text-xs"
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
  <ChevronLeft
  className={cn(
- "h-4 w-4 transition-transform duration-200",
+ "h-3.5 w-3.5 transition-transform duration-200",
  collapsed && "rotate-180"
  )}
  />
- {!collapsed && <span>Collapse</span>}
+ {!collapsed && <span className="ml-1.5 font-medium">Collapse Sidebar</span>}
  </button>
  </div>
  </aside>

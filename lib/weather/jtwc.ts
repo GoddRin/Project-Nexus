@@ -1,13 +1,19 @@
 import { calculateDistance } from "./distance";
+import { isWithinPAR } from "./gdacs";
 
 const SITE_LAT = 17.318823;
 const SITE_LNG = 121.9749251;
 
 export interface StormForecast {
   time: string;
+  timestamp?: string;
   lat: number;
   lng: number;
   windKph: number;
+  windKnots?: number;
+  category?: string;
+  categoryCode?: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY";
+  distanceKm?: number;
 }
 
 export interface Storm {
@@ -27,13 +33,14 @@ export interface Storm {
     eta: string;
   };
   forecast: StormForecast[];
-  pastTrack: { lat: number; lng: number; hoursAgo: number }[];
+  pastTrack: { lat: number; lng: number; hoursAgo: number; time?: string; type?: string }[];
   uncertaintyCone: { lat: number; lng: number }[];
   windRadii: {
     r34: number;
     r50: number;
     r64: number;
   };
+  isWithinPAR?: boolean;
   pubDate?: string;
 }
 
@@ -84,8 +91,126 @@ export async function fetchActiveStorms(): Promise<Storm[]> {
   }
 }
 
+const JTWC_NUMBER_WORDS = new Set([
+  "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN",
+  "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN", "TWENTY",
+  "TWENTY-ONE", "TWENTY-TWO", "TWENTY-THREE", "TWENTY-FOUR", "TWENTY-FIVE", "TWENTY-SIX", "TWENTY-SEVEN", "TWENTY-EIGHT", "TWENTY-NINE", "THIRTY",
+  "THIRTY-ONE", "THIRTY-TWO", "THIRTY-THREE", "THIRTY-FOUR", "THIRTY-FIVE", "INVEST", "NONAME", "UNNAMED"
+]);
+
+export function cleanStormName(rawName: string, stormId: string, category: string, knots: number): { name: string; category: string } {
+  const upper = (rawName || "").trim().toUpperCase();
+  const isNumberWord = JTWC_NUMBER_WORDS.has(upper) || /^\d+W?$/i.test(upper) || upper === stormId.toUpperCase();
+
+  // If wind < 30 kt or explicitly LPA / low pressure
+  if (knots < 30 || category.toLowerCase().includes("lpa") || category.toLowerCase().includes("low pressure")) {
+    return {
+      name: "Low Pressure Area",
+      category: "Low Pressure Area",
+    };
+  }
+
+  // If it's a number word placeholder from JTWC (e.g. "EIGHTEEN") without an official international name
+  if (isNumberWord) {
+    if (knots >= 64) {
+      return {
+        name: stormId,
+        category: knots >= 130 ? "Super Typhoon" : "Typhoon",
+      };
+    }
+    if (knots >= 34) {
+      return {
+        name: stormId,
+        category: "Tropical Storm",
+      };
+    }
+    return {
+      name: stormId,
+      category: "Tropical Depression",
+    };
+  }
+
+  // It has a genuine official international name assigned by RSMC (e.g. SAUDEL)
+  return {
+    name: upper,
+    category: category,
+  };
+}
+
+/**
+ * Convert JTWC Zulu format (e.g. "220600Z" -> Day 22, 06:00 UTC)
+ * or round refDate to the standard 6-hour WMO synoptic cycle (00Z, 06Z, 12Z, 18Z).
+ * 
+ * Standard Synoptic Hours in PHT (UTC+8):
+ * - 00:00 UTC = 08:00 AM PHT
+ * - 06:00 UTC = 02:00 PM PHT
+ * - 12:00 UTC = 08:00 PM PHT
+ * - 18:00 UTC = 02:00 AM PHT (next day)
+ */
+export function parseZuluTimeOrSynoptic(
+  zuluStr?: string,
+  refDate?: string | Date,
+  offsetHours: number = 0
+): string {
+  const base = refDate ? new Date(refDate) : new Date();
+  const validBase = isNaN(base.getTime()) ? new Date() : base;
+
+  if (zuluStr) {
+    const match = zuluStr.trim().match(/^(\d{2})(\d{2})(\d{2})Z$/i);
+    if (match) {
+      const day = parseInt(match[1]);
+      const hour = parseInt(match[2]);
+      const minute = parseInt(match[3]);
+      const year = validBase.getUTCFullYear();
+      let month = validBase.getUTCMonth();
+
+      let d = new Date(Date.UTC(year, month, day, hour, minute, 0, 0));
+      const diffDays = (d.getTime() - validBase.getTime()) / (1000 * 3600 * 24);
+      if (diffDays > 20) {
+        d = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
+      } else if (diffDays < -20) {
+        d = new Date(Date.UTC(year, month + 1, day, hour, minute, 0, 0));
+      }
+      return d.toISOString();
+    }
+  }
+
+  // Snap to nearest 6-hour WMO synoptic standard cycle (00Z, 06Z, 12Z, 18Z)
+  const synopticHours = [0, 6, 12, 18, 24];
+  const curHour = validBase.getUTCHours() + validBase.getUTCMinutes() / 60;
+  let nearestSynoptic = 0;
+  let minDiff = Infinity;
+  for (const sh of synopticHours) {
+    const diff = Math.abs(curHour - sh);
+    if (diff < minDiff) {
+      minDiff = diff;
+      nearestSynoptic = sh;
+    }
+  }
+
+  const roundedBase = new Date(
+    Date.UTC(
+      validBase.getUTCFullYear(),
+      validBase.getUTCMonth(),
+      validBase.getUTCDate(),
+      nearestSynoptic,
+      0,
+      0,
+      0
+    )
+  );
+
+  return new Date(roundedBase.getTime() + offsetHours * 3600 * 1000).toISOString();
+}
+
 function parseWarningText(text: string, stormId: string, stormName: string, pubDate?: string): Storm | null {
-  // Extract Current Position
+  // Extract Current Position & Zulu time
+  let currentZulu: string | undefined = undefined;
+  const zuluPosMatch = text.match(/(\d{6}Z)\s*---\s*(?:NEAR\s+)?0?(\d+\.\d+)([NS])\s+0?(\d+\.\d+)([EW])/i);
+  if (zuluPosMatch) {
+    currentZulu = zuluPosMatch[1];
+  }
+
   let posRegex = /POSITION\s+NEAR\s+0?(\d+\.\d+)([NS])\s+0?(\d+\.\d+)([EW])/i;
   let posMatch = text.match(posRegex);
   if (!posMatch) {
@@ -110,13 +235,17 @@ function parseWarningText(text: string, stormId: string, stormName: string, pubD
   const pressMatch = text.match(pressRegex);
   const pressure = pressMatch ? parseInt(pressMatch[1]) : (knots >= 100 ? 940 : knots >= 64 ? 970 : 995);
   
-  // Derive category
-  let category = "Tropical Depression";
-  if (knots >= 64) {
-    category = knots >= 130 ? "Super Typhoon" : "Typhoon";
+  // Derive category and clean name
+  let rawCategory = "Tropical Depression";
+  if (knots < 30) {
+    rawCategory = "Low Pressure Area";
+  } else if (knots >= 64) {
+    rawCategory = knots >= 130 ? "Super Typhoon" : "Typhoon";
   } else if (knots >= 34) {
-    category = "Tropical Storm";
+    rawCategory = "Tropical Storm";
   }
+
+  const { name: finalName, category: finalCategory } = cleanStormName(stormName, stormId, rawCategory, knots);
   
   // Extract movement: MOVEMENT PAST SIX HOURS - 290 DEGREES AT 16 KTS
   const moveRegex = /MOVEMENT\s+PAST\s+SIX\s+HOURS\s*-\s*(\d+)\s+DEGREES\s+AT\s+(\d+)\s+KTS/i;
@@ -130,24 +259,71 @@ function parseWarningText(text: string, stormId: string, stormName: string, pubD
     speedKph = Math.round(knotsMove * 1.852);
   }
 
-  // Parse forecasts:
-  // 12 HRS, VALID AT:
-  // 061200Z --- 15.1N 142.5E
-  // MAX SUSTAINED WINDS - 145 KT
-  const forecast: StormForecast[] = [{ time: "Current", lat, lng, windKph }];
-  const forecastRegex = /(\d+)\s+HRS,\s+VALID\s+AT:[\s\S]*?---\s*0?(\d+\.\d+)([NS])\s+0?(\d+\.\d+)([EW])[\s\S]*?MAX\s+SUSTAINED\s+WINDS\s+-\s+(\d+)\s+KT/gi;
+  // Standard Synoptic base time
+  const currentTimestamp = parseZuluTimeOrSynoptic(currentZulu, pubDate, 0);
+
+  // Parse forecasts with timestamp, category, and wind intensities
+  const currentCategoryCode: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY" =
+    knots >= 130 ? "STY" : knots >= 64 ? "TY" : knots >= 48 ? "STS" : knots >= 34 ? "TS" : knots >= 28 ? "TD" : "LPA";
+
+  const forecast: StormForecast[] = [
+    {
+      time: "Current",
+      timestamp: currentTimestamp,
+      lat,
+      lng,
+      windKph,
+      windKnots: knots,
+      category: finalCategory,
+      categoryCode: currentCategoryCode,
+      distanceKm: Math.round(calculateDistance(lat, lng, SITE_LAT, SITE_LNG)),
+    },
+  ];
+
+  const forecastRegex = /(\d+)\s+HRS,\s+VALID\s+AT:[\s\S]*?(?:(\d{6}Z)\s*---[\s\S]*?)?0?(\d+\.\d+)([NS])\s+0?(\d+\.\d+)([EW])[\s\S]*?MAX\s+SUSTAINED\s+WINDS\s+-\s+(\d+)\s+KT/gi;
   let fMatch;
   while ((fMatch = forecastRegex.exec(text)) !== null) {
-    let fLat = parseFloat(fMatch[2]);
-    if (fMatch[3].toUpperCase() === 'S') fLat = -fLat;
-    let fLng = parseFloat(fMatch[4]);
-    if (fMatch[5].toUpperCase() === 'W') fLng = -fLng;
-    const fKnots = parseInt(fMatch[6]);
+    const hrs = parseInt(fMatch[1]);
+    const fZulu = fMatch[2];
+    let fLat = parseFloat(fMatch[3]);
+    if (fMatch[4].toUpperCase() === 'S') fLat = -fLat;
+    let fLng = parseFloat(fMatch[5]);
+    if (fMatch[6].toUpperCase() === 'W') fLng = -fLng;
+    const fKnots = parseInt(fMatch[7]);
+    const fKph = Math.round(fKnots * 1.852);
+
+    let fCat = "Tropical Depression";
+    let fCode: "LPA" | "TD" | "TS" | "STS" | "TY" | "STY" = "TD";
+    if (fKnots < 30) {
+      fCat = "Low Pressure Area";
+      fCode = "LPA";
+    } else if (fKnots >= 130) {
+      fCat = "Super Typhoon";
+      fCode = "STY";
+    } else if (fKnots >= 64) {
+      fCat = "Typhoon";
+      fCode = "TY";
+    } else if (fKnots >= 48) {
+      fCat = "Severe Tropical Storm";
+      fCode = "STS";
+    } else if (fKnots >= 34) {
+      fCat = "Tropical Storm";
+      fCode = "TS";
+    }
+
+    const fTimestamp = parseZuluTimeOrSynoptic(fZulu, pubDate || currentTimestamp, hrs);
+    const fDist = Math.round(calculateDistance(fLat, fLng, SITE_LAT, SITE_LNG));
+
     forecast.push({
-      time: `${fMatch[1]} Hours`,
+      time: `+${hrs}h`,
+      timestamp: fTimestamp,
       lat: fLat,
       lng: fLng,
-      windKph: Math.round(fKnots * 1.852)
+      windKph: fKph,
+      windKnots: fKnots,
+      category: fCat,
+      categoryCode: fCode,
+      distanceKm: fDist,
     });
   }
   
@@ -226,8 +402,8 @@ function parseWarningText(text: string, stormId: string, stormName: string, pubD
 
   return {
     id: stormId,
-    name: stormName,
-    category,
+    name: finalName,
+    category: finalCategory,
     lat,
     lng,
     windSpeedKnots: knots,
@@ -248,6 +424,7 @@ function parseWarningText(text: string, stormId: string, stormName: string, pubD
       r50: getRadius(50),
       r64: getRadius(64),
     },
+    isWithinPAR: isWithinPAR(lat, lng),
     pubDate,
   };
 }

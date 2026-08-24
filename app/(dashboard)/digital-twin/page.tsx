@@ -44,7 +44,7 @@ export default function DigitalTwinPage() {
         <div className="flex items-center gap-3 text-xs text-text-muted">
           <div className="hidden sm:flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-1.5 border border-white/[0.06] font-mono text-[11px]">
             <Video className="h-3.5 w-3.5 text-flow-teal" />
-            <span>Orbit: Drag · Pan: Shift+Drag · Zoom: Scroll</span>
+            <span>Orbit: Left-Drag · Pan: Right/Mid-Drag / WASD · Zoom: Scroll · Focus: Double-Click</span>
           </div>
 
           <div className="flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-1.5 border border-white/[0.06] font-mono text-[11px] text-flow-teal">

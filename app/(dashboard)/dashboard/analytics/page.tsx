@@ -39,8 +39,8 @@ export default async function AnalyticsPage() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* SECTION 2: Ticket Trends */}
         <AnimatedSection delay={0.2} className="h-96">
-          <h2 className="mb-4 font-display text-lg font-bold text-text-primary">Ticket Trends (90 days)</h2>
-          <div className="h-[calc(100%-2rem)] rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <h2 className="mb-4 font-display text-base font-bold tracking-wide text-text-primary">Ticket Trends (90 days)</h2>
+          <div className="h-[calc(100%-2rem)] rounded-2xl glass-scic-card p-5">
             <Suspense fallback={<ChartSkeleton />}>
               <TicketTrendsSection projectId={projectId} />
             </Suspense>
@@ -49,8 +49,8 @@ export default async function AnalyticsPage() {
 
         {/* SECTION 3: Report Activity */}
         <AnimatedSection delay={0.3} className="h-96">
-          <h2 className="mb-4 font-display text-lg font-bold text-text-primary">Report Activity (60 days)</h2>
-          <div className="h-[calc(100%-2rem)] rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <h2 className="mb-4 font-display text-base font-bold tracking-wide text-text-primary">Report Activity (60 days)</h2>
+          <div className="h-[calc(100%-2rem)] rounded-2xl glass-scic-card p-5">
             <Suspense fallback={<ChartSkeleton />}>
               <ReportActivitySection projectId={projectId} />
             </Suspense>
@@ -59,8 +59,8 @@ export default async function AnalyticsPage() {
 
         {/* SECTION 4: Asset Health */}
         <AnimatedSection delay={0.4} className="h-96">
-          <h2 className="mb-4 font-display text-lg font-bold text-text-primary">Asset Health</h2>
-          <div className="h-[calc(100%-2rem)] rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <h2 className="mb-4 font-display text-base font-bold tracking-wide text-text-primary">Asset Health</h2>
+          <div className="h-[calc(100%-2rem)] rounded-2xl glass-scic-card p-5">
             <Suspense fallback={<ChartSkeleton />}>
               <AssetHealthSection projectId={projectId} />
             </Suspense>
@@ -69,8 +69,8 @@ export default async function AnalyticsPage() {
 
         {/* SECTION 5: Inventory Activity */}
         <AnimatedSection delay={0.5} className="h-96">
-          <h2 className="mb-4 font-display text-lg font-bold text-text-primary">Inventory Activity (30 days)</h2>
-          <div className="h-[calc(100%-2rem)] rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <h2 className="mb-4 font-display text-base font-bold tracking-wide text-text-primary">Inventory Activity (30 days)</h2>
+          <div className="h-[calc(100%-2rem)] rounded-2xl glass-scic-card p-5">
             <Suspense fallback={<ChartSkeleton />}>
               <InventoryActivitySection projectId={projectId} />
             </Suspense>
@@ -79,8 +79,8 @@ export default async function AnalyticsPage() {
 
         {/* SECTION 6: Visitor Traffic */}
         <AnimatedSection delay={0.6} className="h-96">
-          <h2 className="mb-4 font-display text-lg font-bold text-text-primary">Visitor Traffic (30 days)</h2>
-          <div className="h-[calc(100%-2rem)] rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <h2 className="mb-4 font-display text-base font-bold tracking-wide text-text-primary">Visitor Traffic (30 days)</h2>
+          <div className="h-[calc(100%-2rem)] rounded-2xl glass-scic-card p-5">
             <Suspense fallback={<ChartSkeleton />}>
               <VisitorTrafficSection projectId={projectId} />
             </Suspense>
@@ -89,8 +89,8 @@ export default async function AnalyticsPage() {
 
         {/* SECTION 7: Network Health */}
         <AnimatedSection delay={0.7} className="h-96">
-          <h2 className="mb-4 font-display text-lg font-bold text-text-primary">Network Health</h2>
-          <div className="h-[calc(100%-2rem)]">
+          <h2 className="mb-4 font-display text-base font-bold tracking-wide text-text-primary">Network Health</h2>
+          <div className="h-[calc(100%-2rem)] rounded-2xl glass-scic-card p-5">
             <Suspense fallback={<ChartSkeleton />}>
               <NetworkHealthSection projectId={projectId} />
             </Suspense>
@@ -100,7 +100,7 @@ export default async function AnalyticsPage() {
 
       {/* SECTION 8: Construction Heatmap */}
       <AnimatedSection delay={0.8}>
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-6 shadow-lg backdrop-blur-md">
+        <div className="rounded-2xl glass-scic-card p-6">
           <Suspense fallback={<HeatmapSkeleton />}>
             <ConstructionHeatmapSection projectId={projectId} />
           </Suspense>
@@ -109,7 +109,7 @@ export default async function AnalyticsPage() {
 
       {/* SECTION 9: Weather Correlation */}
       <AnimatedSection delay={0.9}>
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-6 shadow-lg backdrop-blur-md">
+        <div className="rounded-2xl glass-scic-card p-6">
           <Suspense fallback={<ChartSkeleton />}>
             <WeatherCorrelationSection projectId={projectId} />
           </Suspense>

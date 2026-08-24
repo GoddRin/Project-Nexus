@@ -20,34 +20,54 @@ const SITE_LNG = 121.9749251;
 // ============================================================
 // PAR (Philippine Area of Responsibility) Polygon
 // ============================================================
-// The PAR is defined by PAGASA as the area bounded by:
-//   21°N, 116°E (NW corner)
-//   25°N, 135°E (NE corner)
-//    7°N, 135°E (E corner)
-//    4°N, 128°E (SE corner, notch)
-//    4°N, 116°E (SW corner)
-// Simplified to a conservative rectangular bounds for fast checking.
-const PAR_BOUNDS = {
-  minLat: 4,
-  maxLat: 25,
-  minLng: 115,
-  maxLng: 135,
-};
+// Official PAGASA coordinates for the PAR boundary:
+//   Point 1: 25.0°N, 120.0°E (Northwest / Taiwan Strait)
+//   Point 2: 25.0°N, 135.0°E (Northeast corner)
+//   Point 3:  5.0°N, 135.0°E (Southeast corner)
+//   Point 4:  5.0°N, 115.0°E (Southwest corner)
+//   Point 5: 15.0°N, 115.0°E (West Central Luzon)
+//   Point 6: 21.0°N, 120.0°E (Northwest Luzon / Bashi Channel)
+export const PAR_COORDINATES: [number, number][] = [
+  [25, 120],
+  [25, 135],
+  [5, 135],
+  [5, 115],
+  [15, 115],
+  [21, 120],
+  [25, 120],
+];
 
+/**
+ * Checks if a given coordinate (lat, lng) is within the official PAGASA PAR polygon
+ * using the standard ray-casting point-in-polygon algorithm.
+ */
 export function isWithinPAR(lat: number, lng: number): boolean {
-  if (
-    lat < PAR_BOUNDS.minLat ||
-    lat > PAR_BOUNDS.maxLat ||
-    lng < PAR_BOUNDS.minLng ||
-    lng > PAR_BOUNDS.maxLng
-  ) {
+  if (lat < 5 || lat > 25 || lng < 115 || lng > 135) {
     return false;
   }
-  // Handle the bottom-right notch: below 7°N must be east of 128°E
-  if (lat < 7 && lng < 128) {
-    return false;
+
+  const poly = [
+    { lat: 25, lng: 120 },
+    { lat: 25, lng: 135 },
+    { lat: 5, lng: 135 },
+    { lat: 5, lng: 115 },
+    { lat: 15, lng: 115 },
+    { lat: 21, lng: 120 },
+  ];
+
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i].lng,
+      yi = poly[i].lat;
+    const xj = poly[j].lng,
+      yj = poly[j].lat;
+
+    const intersect =
+      yi > lat !== yj > lat &&
+      lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
   }
-  return true;
+  return inside;
 }
 
 export interface GdacsStorm {
