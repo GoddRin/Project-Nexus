@@ -44,6 +44,7 @@ import {
   Users,
   ShieldAlert,
   Waves,
+  Layers,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -774,17 +775,17 @@ function PhilippineTimeChip({ effectiveTime }: { effectiveTime: "MORNING" | "AFT
   }, []);
 
   return (
-    <div className="rounded-lg border border-amber-500/40 bg-black/85 text-amber-300 px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+    <div className="rounded-lg border border-amber-500/40 bg-black/85 text-amber-300 px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-1.5 shrink-0">
       {effectiveTime === "MORNING" ? (
-        <SunMedium className="h-3.5 w-3.5 text-amber-400 animate-spin-slow" />
+        <SunMedium className="h-3 w-3 text-amber-400 animate-spin-slow" />
       ) : effectiveTime === "AFTERNOON" ? (
-        <Sun className="h-3.5 w-3.5 text-amber-300" />
+        <Sun className="h-3 w-3 text-amber-300" />
       ) : (
-        <Moon className="h-3.5 w-3.5 text-cyan-300" />
+        <Moon className="h-3 w-3 text-cyan-300" />
       )}
-      <span className="font-semibold text-white/90">PHT (UTC+8):</span>
+      <span className="font-semibold text-white/90">PHT:</span>
       <span className="font-bold tracking-wider">{phTimeStr || "--:--:--"}</span>
-      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
         {effectiveTime}
       </span>
     </div>
@@ -1409,7 +1410,6 @@ function PowerhouseBlockout({
 
       {/* --- TURBINE HALL / MAIN POWERHOUSE BUILDING (38.65m DED Layout) --- */}
       <group position={[0, 0, 0]}>
-        <ContactShadows frames={1} position={[0, -0.48, 0]} opacity={0.4} scale={42} blur={2.8} far={14} color="#050a10" />
         {/* Photorealistic Procedural Powerhouse Building — modeled from DED drawings & construction photos */}
         <RealisticPowerhouseBuilding isXRay={isXRay} />
         {/* 3D Electrical Busducts, Cable Bridge, Switchyard Busbars & Steel Gantry Towers */}
@@ -1446,7 +1446,6 @@ function PowerhouseBlockout({
 
       {/* --- SWITCHYARD & SUBSTATION AREA (Right / East Elevated Platform) --- */}
       <group position={[25, 0, 0]}>
-        <ContactShadows frames={1} position={[0, -0.48, 0]} opacity={0.3} scale={30} blur={2.2} far={10} color="#050a10" />
         {/* Photorealistic Switchyard Platform with Floodwalls */}
         <RealisticSwitchyard />
 
@@ -1481,7 +1480,7 @@ function PowerhouseBlockout({
       <PerimeterFence />
 
       {/* --- TEMFACIL (MAIN TEMPORARY FACILITY & BARRACKS COMPOUND) --- */}
-      <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} />
+      <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} activePreset={activePreset} />
 
       {activePreset === "overview" && (
         <ZoneTelemetryLabel
@@ -1497,11 +1496,15 @@ function PowerhouseBlockout({
 /**
  * CameraController component — animates camera position & OrbitControls target smoothly in useFrame
  */
+/**
+ * CameraController component — animates camera position & OrbitControls target smoothly in useFrame
+ */
 interface CameraControllerProps {
   activePreset: CameraPresetKey;
   isFreeNav: boolean;
   onUserInteract: () => void;
   resetToken: number;
+  isGtaModeActive?: boolean;
 }
 
 function CameraController({
@@ -1509,11 +1512,14 @@ function CameraController({
   isFreeNav,
   onUserInteract,
   resetToken,
+  isGtaModeActive = false,
 }: CameraControllerProps) {
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const isAnimatingRef = useRef<boolean>(true);
   const prevPresetRef = useRef<CameraPresetKey>(activePreset);
   const prevResetTokenRef = useRef<number>(resetToken);
+  const focusTargetRef = useRef<THREE.Vector3 | null>(null);
+  const focusCamPosRef = useRef<THREE.Vector3 | null>(null);
   const { gl, camera, scene } = useThree();
   const keysDownRef = useRef<Record<string, boolean>>({});
 
@@ -1555,6 +1561,59 @@ function CameraController({
     []
   );
 
+  // Wheel listener directly on canvas DOM element: instantly unlocks Free Nav & cancels preset lerping
+  useEffect(() => {
+    const domElement = gl.domElement;
+    const handleWheel = () => {
+      isAnimatingRef.current = false;
+      focusTargetRef.current = null;
+      focusCamPosRef.current = null;
+      onUserInteract();
+    };
+
+    const handlePointerDown = () => {
+      isAnimatingRef.current = false;
+      focusTargetRef.current = null;
+      focusCamPosRef.current = null;
+      onUserInteract();
+    };
+
+    domElement.addEventListener("wheel", handleWheel, { passive: true });
+    domElement.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    return () => {
+      domElement.removeEventListener("wheel", handleWheel);
+      domElement.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [gl, onUserInteract]);
+
+  // Step Zoom handler for HUD Zoom + and Zoom - buttons
+  useEffect(() => {
+    const handleStepZoom = (e: Event) => {
+      const customEvent = e as CustomEvent<{ deltaY: number }>;
+      if (!controlsRef.current) return;
+      isAnimatingRef.current = false;
+      focusTargetRef.current = null;
+      focusCamPosRef.current = null;
+      onUserInteract();
+
+      const deltaY = customEvent.detail?.deltaY ?? 1;
+      const zoomFactor = deltaY < 0 ? 0.75 : 1.35; // deltaY < 0 is Zoom In, deltaY > 0 is Zoom Out
+      const offset = new THREE.Vector3().subVectors(camera.position, controlsRef.current.target);
+      offset.multiplyScalar(zoomFactor);
+
+      // Clamp distance between 1.5m and 850m
+      const len = offset.length();
+      if (len < 1.5) offset.setLength(1.5);
+      if (len > 850) offset.setLength(850);
+
+      camera.position.addVectors(controlsRef.current.target, offset);
+      controlsRef.current.update();
+    };
+
+    window.addEventListener("plant-scene-step-zoom", handleStepZoom);
+    return () => window.removeEventListener("plant-scene-step-zoom", handleStepZoom);
+  }, [camera, onUserInteract]);
+
   // Keyboard Pan Controls (WASD / Arrow keys / Space / Q / Shift)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1575,7 +1634,7 @@ function CameraController({
     };
   }, []);
 
-  // Double-click raycast focus: automatically re-centers OrbitControls target on whatever object was clicked
+  // Smooth Double-click raycast focus: re-centers OrbitControls target and smoothly glides camera closer
   useEffect(() => {
     const domElement = gl.domElement;
     const raycaster = new THREE.Raycaster();
@@ -1588,11 +1647,27 @@ function CameraController({
 
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children, true);
-      const validHit = intersects.find((hit) => hit.distance > 0.3 && hit.point.y > -10);
+      const validHit = intersects.find((hit) => hit.distance > 0.3 && hit.point.y > -20);
 
       if (validHit && controlsRef.current) {
-        controlsRef.current.target.copy(validHit.point);
-        controlsRef.current.update();
+        const hitPoint = validHit.point;
+        focusTargetRef.current = hitPoint.clone();
+
+        // Calculate a comfortable inspection camera offset
+        const currentOffset = new THREE.Vector3().subVectors(camera.position, controlsRef.current.target);
+        let dist = currentOffset.length();
+        if (dist > 75) {
+          currentOffset.normalize().multiplyScalar(42);
+        } else if (dist < 8) {
+          currentOffset.normalize().multiplyScalar(12);
+        }
+        // Ensure camera stays above ground
+        const targetCamPos = hitPoint.clone().add(currentOffset);
+        if (targetCamPos.y < hitPoint.y + 3) {
+          targetCamPos.y = hitPoint.y + 6;
+        }
+        focusCamPosRef.current = targetCamPos;
+
         isAnimatingRef.current = false;
         onUserInteract();
       }
@@ -1606,12 +1681,14 @@ function CameraController({
     if (prevPresetRef.current !== activePreset || prevResetTokenRef.current !== resetToken) {
       prevPresetRef.current = activePreset;
       prevResetTokenRef.current = resetToken;
+      focusTargetRef.current = null;
+      focusCamPosRef.current = null;
       isAnimatingRef.current = true;
     }
   }, [activePreset, resetToken]);
 
   useFrame((state, delta) => {
-    if (!controlsRef.current) return;
+    if (!controlsRef.current || isGtaModeActive) return;
 
     // Handle WASD / Arrow Key continuous camera & target translation
     const keys = keysDownRef.current;
@@ -1621,6 +1698,8 @@ function CameraController({
       keys["KeyQ"] || keys["KeyE"] || keys["Space"]
     ) {
       isAnimatingRef.current = false;
+      focusTargetRef.current = null;
+      focusCamPosRef.current = null;
       onUserInteract();
 
       const forward = new THREE.Vector3();
@@ -1631,7 +1710,7 @@ function CameraController({
       const right = new THREE.Vector3();
       right.crossVectors(forward, state.camera.up).normalize();
 
-      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 48 : 22) * delta;
+      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 55 : 24) * delta;
       const move = new THREE.Vector3();
 
       if (keys["KeyW"] || keys["ArrowUp"]) move.addScaledVector(forward, moveSpeed);
@@ -1648,6 +1727,24 @@ function CameraController({
       }
     }
 
+    // Handle smooth double-click focus animation
+    if (focusTargetRef.current && focusCamPosRef.current) {
+      const step = Math.min(delta * 5.5, 0.18);
+      state.camera.position.lerp(focusCamPosRef.current, step);
+      controlsRef.current.target.lerp(focusTargetRef.current, step);
+      controlsRef.current.update();
+
+      if (
+        state.camera.position.distanceTo(focusCamPosRef.current) < 0.1 &&
+        controlsRef.current.target.distanceTo(focusTargetRef.current) < 0.1
+      ) {
+        focusTargetRef.current = null;
+        focusCamPosRef.current = null;
+      }
+      return;
+    }
+
+    // Handle preset animation
     if (!isFreeNav && isAnimatingRef.current) {
       const active = presets[activePreset];
       const step = Math.min(delta * 4.5, 0.15);
@@ -1667,19 +1764,21 @@ function CameraController({
     <OrbitControls
       ref={controlsRef}
       makeDefault
+      enabled={!isGtaModeActive}
       enableDamping
-      dampingFactor={0.22}
-      rotateSpeed={0.9}
-      zoomSpeed={1.3}
-      panSpeed={1.2}
-      zoomToCursor={true}
+      dampingFactor={0.08}
+      rotateSpeed={1.0}
+      zoomSpeed={2.2}
+      panSpeed={1.4}
       screenSpacePanning={true}
-      minDistance={0.05}
-      maxDistance={700}
-      minPolarAngle={0.02}
-      maxPolarAngle={Math.PI / 2 - 0.01}
+      minDistance={0.8}
+      maxDistance={1200}
+      minPolarAngle={0.01}
+      maxPolarAngle={Math.PI / 2 + 0.08}
       onStart={() => {
         isAnimatingRef.current = false;
+        focusTargetRef.current = null;
+        focusCamPosRef.current = null;
         onUserInteract();
       }}
     />
@@ -1794,12 +1893,13 @@ function PlantSceneInner({
     <>
       {/* Dynamically adjust tone mapping exposure for storm legibility */}
       <StormExposureControl isStormActive={isStormActive} />
-      <PerspectiveCamera makeDefault position={[36, 30, 44]} fov={45} far={1500} />
+      <PerspectiveCamera makeDefault position={[75, 120, 160]} fov={45} near={0.5} far={2000} />
       <CameraController
         activePreset={activePreset}
         isFreeNav={isFreeNav}
         onUserInteract={onUserInteract}
         resetToken={resetToken}
+        isGtaModeActive={isGtaModeActive}
       />
 
       {/* Scene Background — Dynamic Tropical Mountain Setting */}
@@ -1816,14 +1916,14 @@ function PlantSceneInner({
         intensity={sunLightParams.intensity}
         color={sunLightParams.color}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={400}
-        shadow-camera-left={-100}
-        shadow-camera-right={100}
-        shadow-camera-top={100}
-        shadow-camera-bottom={-100}
-        shadow-bias={-0.0001}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-far={380}
+        shadow-camera-left={-90}
+        shadow-camera-right={90}
+        shadow-camera-top={90}
+        shadow-camera-bottom={-90}
+        shadow-bias={-0.0003}
       />
 
       {/* Cool Sky Fill Light */}
@@ -1892,7 +1992,7 @@ function PlantSceneInner({
       )}
 
       {/* Cinematic Post-Processing Stack with Ultra-Sharp SMAA Anti-Aliasing (Optimized 60 FPS) */}
-      <EffectComposer multisampling={0}>
+      <EffectComposer multisampling={0} enableNormalPass={false}>
         <Bloom
           mipmapBlur
           luminanceThreshold={0.88}
@@ -2319,19 +2419,22 @@ function RenderInfoLogger({ onStatsUpdate }: { onStatsUpdate?: (stats: PerfStats
     const now = performance.now();
     const delta = now - lastTime.current;
 
-    if (delta >= 500) {
+    if (delta >= 400) {
       const fps = Math.round((frameCount.current * 1000) / delta);
       const ms = parseFloat((delta / frameCount.current).toFixed(1));
       frameCount.current = 0;
       lastTime.current = now;
 
-      if (onStatsUpdate) {
-        onStatsUpdate({
-          fps,
-          ms,
-          calls: lastCalls.current,
-          tris: lastTris.current,
-        });
+      // Update DOM directly for zero React re-render overhead
+      if (typeof document !== "undefined") {
+        const elFps = document.getElementById("perf-hud-fps");
+        const elMs = document.getElementById("perf-hud-ms");
+        const elCalls = document.getElementById("perf-hud-calls");
+        const elTris = document.getElementById("perf-hud-tris");
+        if (elFps) elFps.textContent = `${fps} FPS`;
+        if (elMs) elMs.textContent = `${ms} ms`;
+        if (elCalls) elCalls.textContent = `${lastCalls.current} Calls`;
+        if (elTris) elTris.textContent = `${(lastTris.current / 1000).toFixed(1)}k Tris`;
       }
     }
 
@@ -2365,7 +2468,6 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   const [weatherData, setWeatherData] = useState<PagasaSignalData | null>(null);
   const [equipments, setEquipments] = useState<EquipmentWithLocation[]>(DEFAULT_EQUIPMENTS);
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentWithLocation | null>(null);
-  const [perfStats, setPerfStats] = useState<PerfStats>({ fps: 60, ms: 16.6, calls: 0, tris: 0 });
   const [isLocomotionLabOpen, setIsLocomotionLabOpen] = useState<boolean>(false);
 
   // Time-of-day visual mode
@@ -2499,17 +2601,17 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
       <Suspense fallback={<PlantSceneLoading />}>
         <Canvas
           shadows
-          dpr={[1, 1.5]}
+          dpr={[1, 1.2]}
           gl={{
-            antialias: true,
-            alpha: false,
+            antialias: false,
+            alpha: true,
             powerPreference: "high-performance",
             toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1.0,
           }}
           className="h-full w-full"
         >
-          <RenderInfoLogger onStatsUpdate={setPerfStats} />
+          <RenderInfoLogger />
           <PlantSceneInner
             activePreset={activePreset}
             equipments={equipments}
@@ -2532,409 +2634,424 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
         </Canvas>
       </Suspense>
 
-      {/* HUD Top Status Chips Bar */}
-      <div className="absolute top-20 left-6 z-20 pointer-events-auto flex flex-wrap items-center gap-2.5 max-w-[calc(100vw-24rem)]">
-        {/* 🇵🇭 Real-Time Philippine Time & Time-of-Day Status Chip */}
-        <PhilippineTimeChip effectiveTime={timeMode} />
+      {/* ─── HUD Top Bar: Status Chips (Left) & Alerts Panel (Right) ─── */}
+      <div className="absolute top-20 left-6 right-6 z-20 pointer-events-none flex items-start justify-between gap-4">
+        {/* Left Side: Real-time Telemetry & Navigation Status Chips */}
+        <div className="pointer-events-auto flex flex-wrap items-center gap-2 flex-1 min-w-0 pr-2">
+          {/* 🇵🇭 Real-Time Philippine Time & Time-of-Day Status Chip */}
+          <PhilippineTimeChip effectiveTime={timeMode} />
 
-        {/* Environmental Weather Status Chip */}
-        <div
-          className={cn(
-            "rounded-lg border px-3 py-1.5 font-mono text-xs font-medium backdrop-blur-md flex items-center gap-2 shadow-xl transition-all",
-            isStormActive
-              ? "border-amber-500/50 bg-black/85 text-amber-400 shadow-amber-500/20 ring-1 ring-amber-500/30"
-              : "border-emerald-500/30 bg-black/75 text-emerald-400"
-          )}
-        >
-          <span
+          {/* Environmental Weather Status Chip */}
+          <div
             className={cn(
-              "w-2 h-2 rounded-full shrink-0",
-              isStormActive ? "bg-amber-400 animate-ping" : "bg-emerald-400"
+              "rounded-lg border px-2.5 py-1 font-mono text-[11px] font-medium backdrop-blur-md flex items-center gap-1.5 shadow-xl transition-all shrink-0",
+              isStormActive
+                ? "border-amber-500/50 bg-black/85 text-amber-400 shadow-amber-500/20 ring-1 ring-amber-500/30"
+                : "border-emerald-500/30 bg-black/75 text-emerald-400"
             )}
-          />
-          <span>
-            {isStormActive
-              ? `TYPHOON WATCH: ${weatherData?.tcName || "NIKA"} • ${weatherData?.maxWindsKph || 120} km/h (Signal #${weatherData?.siteSignalNumber || 2})`
-              : "ATMOSPHERE: CLEAR"}
-          </span>
-        </div>
-
-
-        {/* Live Commissioning % & Output Gauge Chip */}
-        <div className="rounded-lg border border-flow-teal/30 bg-black/85 text-white px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-flow-teal font-semibold">
-            <Gauge className="h-3.5 w-3.5" />
-            <span>{commissionPct}% Commissioned</span>
+          >
+            <span
+              className={cn(
+                "w-2 h-2 rounded-full shrink-0",
+                isStormActive ? "bg-amber-400 animate-ping" : "bg-emerald-400"
+              )}
+            />
+            <span>
+              {isStormActive
+                ? `TYPHOON: ${weatherData?.tcName || "NIKA"} • Signal #${weatherData?.siteSignalNumber || 2}`
+                : "ATMOSPHERE: CLEAR"}
+            </span>
           </div>
-          <span className="text-white/20">|</span>
-          <div className="flex items-center gap-1.5 text-white">
-            <Zap className="h-3.5 w-3.5 text-flow-teal fill-flow-teal/20" />
-            <span>{currentOutputMw} MW / 11.3 MW</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-flow-teal animate-pulse" />
-          </div>
-        </div>
 
-        {/* Equipment Status Count Summary Chip */}
-        <div className="rounded-lg border border-white/10 bg-black/85 text-white px-3 py-1.5 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
-          <span className="text-flow-teal font-semibold flex items-center gap-1">
-            <CheckCircle2 className="h-3 w-3" />
-            {onlineCount} Online
-          </span>
-          <span className="text-white/20">•</span>
-          <span className="text-amber-400 font-semibold flex items-center gap-1">
-            <Wrench className="h-3 w-3" />
-            {maintCount} Maint
-          </span>
-          {alertCount > 0 && (
-            <>
-              <span className="text-white/20">•</span>
-              <span className="text-red-400 font-semibold flex items-center gap-1 animate-pulse">
-                <AlertTriangle className="h-3 w-3" />
-                {alertCount} Critical
-              </span>
-            </>
-          )}
-          <span className="text-white/20">|</span>
-          <span className="text-text-muted">{totalAssetsCount} Assets Total</span>
-        </div>
-
-        {/* Navigation Mode Status Indicator Chip */}
-        <div
-          className={cn(
-            "rounded-lg border px-3 py-1.5 font-mono text-xs font-semibold backdrop-blur-md flex items-center gap-2 shadow-xl transition-all cursor-pointer",
-            isFreeNav
-              ? "border-flow-teal/50 bg-black/85 text-flow-teal shadow-flow-teal/20 ring-1 ring-flow-teal/40"
-              : "border-white/10 bg-black/75 text-text-muted hover:text-white"
-          )}
-          onClick={handleToggleFreeNav}
-          title={isFreeNav ? "Click to lock to preset camera view" : "Click to unlock free orbit & pan"}
-        >
-          {isFreeNav ? (
-            <>
-              <Unlock className="h-3.5 w-3.5 text-flow-teal animate-pulse" />
-              <span>FREE NAV UNLOCKED</span>
-            </>
-          ) : (
-            <>
-              <Lock className="h-3.5 w-3.5 text-text-muted" />
-              <span className="uppercase">PRESET: {activePreset}</span>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Collapsible Equipment Alerts Feed Panel (Top-Right, beside detail drawer if open) */}
-      <div className="absolute top-20 right-6 z-20 pointer-events-auto">
-        {!selectedEquipment && <AlertsFeedPanel equipments={equipments} />}
-      </div>
-
-      {/* Equipment Detail Drawer Overlay (Top-Right) */}
-      {selectedEquipment && (
-        <div className="absolute top-20 right-6 z-30 pointer-events-auto">
-          <EquipmentDetailDrawer
-            equipment={selectedEquipment}
-            onClose={() => setSelectedEquipment(null)}
-          />
-        </div>
-      )}
-
-      {/* Quick Camera & Layer Controls Floating HUD Panel (Bottom-Left) */}
-      <div className="absolute bottom-6 left-6 z-20 pointer-events-auto">
-        <Card className="border border-white/10 bg-black/85 backdrop-blur-md text-white p-2.5 shadow-2xl transition-all w-64">
-          <div className="flex items-center justify-between pb-1.5 border-b border-white/10">
-            <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-flow-teal">
-              <Camera className="h-3.5 w-3.5" />
-              <span>FACILITY NAVIGATION</span>
+          {/* Live Commissioning % & Output Gauge Chip */}
+          <div className="rounded-lg border border-flow-teal/30 bg-black/85 text-white px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1 text-flow-teal font-semibold">
+              <Gauge className="h-3 w-3" />
+              <span>{commissionPct}%</span>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 w-5 p-0 text-text-muted hover:text-white"
-              onClick={() => setIsCameraPanelOpen(!isCameraPanelOpen)}
-            >
-              {isCameraPanelOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
-            </Button>
+            <span className="text-white/20">|</span>
+            <div className="flex items-center gap-1 text-white">
+              <Zap className="h-3 w-3 text-flow-teal fill-flow-teal/20" />
+              <span>{currentOutputMw} / 11.3 MW</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-flow-teal animate-pulse" />
+            </div>
           </div>
 
-          {isCameraPanelOpen && (
-            <div className="space-y-1.5 pt-2">
-              <div className="grid grid-cols-2 gap-1.5">
-                <Button
-                  variant={activePreset === "overview" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "overview" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("overview")}
-                >
-                  <Eye className="h-3 w-3 mr-1 shrink-0" />
-                  Overview
-                </Button>
-                <Button
-                  variant={activePreset === "turbine-hall" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "turbine-hall" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("turbine-hall")}
-                >
-                  <Zap className="h-3 w-3 mr-1 shrink-0 text-flow-teal" />
-                  Turbine Hall
-                </Button>
-                <Button
-                  variant={activePreset === "switchyard" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "switchyard" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("switchyard")}
-                >
-                  <ScanEye className="h-3 w-3 mr-1 shrink-0 text-amber-400" />
-                  Switchyard
-                </Button>
-                <Button
-                  variant={activePreset === "tailrace-floodgate" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "tailrace-floodgate" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("tailrace-floodgate")}
-                >
-                  <Waves className="h-3 w-3 mr-1 shrink-0 text-cyan-400" />
-                  Tailrace Floodgate
-                </Button>
-                <Button
-                  variant={activePreset === "temfacil" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "temfacil" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("temfacil")}
-                >
-                  <Building2 className="h-3 w-3 mr-1 shrink-0 text-amber-400" />
-                  Temfacil
-                </Button>
-                <Button
-                  variant={activePreset === "temfacil-guardhouse" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "temfacil-guardhouse" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("temfacil-guardhouse")}
-                >
-                  <ShieldAlert className="h-3 w-3 mr-1 shrink-0 text-emerald-400" />
-                  Main Guardhouse
-                </Button>
-                <Button
-                  variant={activePreset === "temfacil-barracks" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "temfacil-barracks" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("temfacil-barracks")}
-                >
-                  <Building2 className="h-3 w-3 mr-1 shrink-0 text-orange-400" />
-                  Barracks & Kusina
-                </Button>
-                <Button
-                  variant={activePreset === "temfacil-office" && !isFreeNav ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "font-mono text-[11px] h-7 px-2 justify-start transition-all",
-                    activePreset === "temfacil-office" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => handleSelectPreset("temfacil-office")}
-                >
-                  <Building2 className="h-3 w-3 mr-1 shrink-0 text-teal-400" />
-                  Staff Office
-                </Button>
-              </div>
+          {/* Equipment Status Count Summary Chip */}
+          <div className="rounded-lg border border-white/10 bg-black/85 text-white px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-1.5 shrink-0">
+            <span className="text-flow-teal font-semibold flex items-center gap-1">
+              <CheckCircle2 className="h-3 w-3" />
+              {onlineCount} Online
+            </span>
+            <span className="text-white/20">•</span>
+            <span className="text-amber-400 font-semibold flex items-center gap-1">
+              <Wrench className="h-3 w-3" />
+              {maintCount} Maint
+            </span>
+            {alertCount > 0 && (
+              <>
+                <span className="text-white/20">•</span>
+                <span className="text-red-400 font-semibold flex items-center gap-1 animate-pulse">
+                  <AlertTriangle className="h-3 w-3" />
+                  {alertCount} Critical
+                </span>
+              </>
+            )}
+            <span className="text-white/20">|</span>
+            <span className="text-text-muted">{totalAssetsCount} Total</span>
+          </div>
 
-              {/* Time of Day Cycle Buttons */}
-              <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1">
-                <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider">Atmosphere Time</span>
-                <div className="grid grid-cols-3 gap-1">
+          {/* Navigation Mode Status Indicator Chip */}
+          <div
+            className={cn(
+              "rounded-lg border px-2.5 py-1 font-mono text-[11px] font-semibold backdrop-blur-md flex items-center gap-1.5 shadow-xl transition-all cursor-pointer shrink-0",
+              isFreeNav
+                ? "border-flow-teal/50 bg-black/85 text-flow-teal shadow-flow-teal/20 ring-1 ring-flow-teal/40"
+                : "border-white/10 bg-black/75 text-text-muted hover:text-white"
+            )}
+            onClick={handleToggleFreeNav}
+            title={isFreeNav ? "Click to lock to preset camera view" : "Click to unlock free orbit & pan"}
+          >
+            {isFreeNav ? (
+              <>
+                <Unlock className="h-3 w-3 text-flow-teal animate-pulse" />
+                <span>FREE NAV</span>
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3 text-text-muted" />
+                <span className="uppercase truncate max-w-[130px]">PRESET: {activePreset}</span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side: Collapsible Equipment Alerts Feed Panel or Equipment Detail Drawer */}
+        <div className="pointer-events-auto shrink-0">
+          {!selectedEquipment && <AlertsFeedPanel equipments={equipments} />}
+          {selectedEquipment && (
+            <EquipmentDetailDrawer
+              equipment={selectedEquipment}
+              onClose={() => setSelectedEquipment(null)}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* ─── HUD Bottom Bar: Facility Navigation (Left), Model Badge (Center), Perf Telemetry (Right) ─── */}
+      <div className="absolute bottom-6 left-6 right-6 z-20 pointer-events-none flex items-end justify-between gap-4">
+        {/* Left Side: Facility Navigation Card */}
+        <div className="pointer-events-auto shrink-0">
+          <Card className="border border-white/10 bg-black/85 backdrop-blur-md text-white p-2.5 shadow-2xl transition-all w-[304px]">
+            <div className="flex items-center justify-between pb-1.5 border-b border-white/10">
+              <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-flow-teal">
+                <Camera className="h-3.5 w-3.5" />
+                <span>FACILITY NAVIGATION</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 w-5 p-0 text-text-muted hover:text-white"
+                onClick={() => setIsCameraPanelOpen(!isCameraPanelOpen)}
+              >
+                {isCameraPanelOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+              </Button>
+            </div>
+
+            {isCameraPanelOpen && (
+              <div className="space-y-1.5 pt-2">
+                <div className="grid grid-cols-2 gap-1.5">
                   <Button
-                    variant={timeMode === "MORNING" ? "default" : "outline"}
+                    variant={activePreset === "overview" && !isFreeNav ? "default" : "outline"}
                     size="sm"
                     className={cn(
-                      "font-mono text-[10px] h-6 px-1 justify-center transition-all",
-                      timeMode === "MORNING" && "border-amber-400/80 bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40"
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "overview" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
                     )}
-                    onClick={() => setTimeMode("MORNING")}
+                    onClick={() => handleSelectPreset("overview")}
+                    title="Powerhouse Overview"
                   >
-                    <SunMedium className="h-3 w-3 mr-1 text-amber-400" />
-                    Morning
+                    <Eye className="h-3 w-3 mr-1.5 shrink-0" />
+                    <span className="truncate">Overview</span>
                   </Button>
                   <Button
-                    variant={timeMode === "AFTERNOON" ? "default" : "outline"}
+                    variant={activePreset === "turbine-hall" && !isFreeNav ? "default" : "outline"}
                     size="sm"
                     className={cn(
-                      "font-mono text-[10px] h-6 px-1 justify-center transition-all",
-                      timeMode === "AFTERNOON" && "border-sky-400/80 bg-sky-500/20 text-sky-300 ring-1 ring-sky-400/40"
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "turbine-hall" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
                     )}
-                    onClick={() => setTimeMode("AFTERNOON")}
+                    onClick={() => handleSelectPreset("turbine-hall")}
+                    title="Turbine Hall Interior"
                   >
-                    <Sun className="h-3 w-3 mr-1 text-amber-300" />
-                    Day
+                    <Zap className="h-3 w-3 mr-1.5 shrink-0 text-flow-teal" />
+                    <span className="truncate">Turbine Hall</span>
                   </Button>
                   <Button
-                    variant={timeMode === "NIGHT" ? "default" : "outline"}
+                    variant={activePreset === "switchyard" && !isFreeNav ? "default" : "outline"}
                     size="sm"
                     className={cn(
-                      "font-mono text-[10px] h-6 px-1 justify-center transition-all",
-                      timeMode === "NIGHT" && "border-indigo-400/80 bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/40"
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "switchyard" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
                     )}
-                    onClick={() => setTimeMode("NIGHT")}
+                    onClick={() => handleSelectPreset("switchyard")}
+                    title="69kV High-Voltage Switchyard"
                   >
-                    <Moon className="h-3 w-3 mr-1 text-indigo-300" />
-                    Night
+                    <ScanEye className="h-3 w-3 mr-1.5 shrink-0 text-amber-400" />
+                    <span className="truncate">Switchyard</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "tailrace-floodgate" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "tailrace-floodgate" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("tailrace-floodgate")}
+                    title="Tailrace Floodgate & River Outlet"
+                  >
+                    <Waves className="h-3 w-3 mr-1.5 shrink-0 text-cyan-400" />
+                    <span className="truncate">Tailrace Gate</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "temfacil" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil")}
+                    title="TEMFACIL Temporary Facility Compound"
+                  >
+                    <Building2 className="h-3 w-3 mr-1.5 shrink-0 text-amber-400" />
+                    <span className="truncate">Temfacil Site</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-guardhouse" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "temfacil-guardhouse" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-guardhouse")}
+                    title="Security Gate 1 & Vehicle Inspection"
+                  >
+                    <ShieldAlert className="h-3 w-3 mr-1.5 shrink-0 text-emerald-400" />
+                    <span className="truncate">Guardhouse</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-barracks" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "temfacil-barracks" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-barracks")}
+                    title="Workers Barracks & Kusina Canteen"
+                  >
+                    <Building2 className="h-3 w-3 mr-1.5 shrink-0 text-orange-400" />
+                    <span className="truncate">Barracks & Food</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "temfacil-office" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office")}
+                    title="Engineering Staff Office"
+                  >
+                    <Building2 className="h-3 w-3 mr-1.5 shrink-0 text-teal-400" />
+                    <span className="truncate">Staff Office</span>
                   </Button>
                 </div>
-              </div>
 
-              {/* Free-Nav Stepped Zoom & Reset Orbit Tools */}
-              <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="font-mono text-[11px] h-6 px-2 flex-1 justify-center"
-                    onClick={() => handleStepZoom(-1)}
-                    title="Step Zoom In"
-                  >
-                    Zoom +
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="font-mono text-[11px] h-6 px-2 flex-1 justify-center"
-                    onClick={() => handleStepZoom(1)}
-                    title="Step Zoom Out"
-                  >
-                    Zoom -
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="font-mono text-[11px] h-6 px-2 justify-center text-text-muted hover:text-white"
-                    onClick={handleResetCamera}
-                    title="Reset to Preset View"
-                  >
-                    <RotateCcw className="h-3 w-3" />
-                  </Button>
+                {/* Time of Day Cycle Buttons */}
+                <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1">
+                  <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider">Atmosphere Time</span>
+                  <div className="grid grid-cols-3 gap-1">
+                    <Button
+                      variant={timeMode === "MORNING" ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                        timeMode === "MORNING" && "border-amber-400/80 bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40"
+                      )}
+                      onClick={() => setTimeMode("MORNING")}
+                    >
+                      <SunMedium className="h-3 w-3 mr-1 text-amber-400" />
+                      Morning
+                    </Button>
+                    <Button
+                      variant={timeMode === "AFTERNOON" ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                        timeMode === "AFTERNOON" && "border-sky-400/80 bg-sky-500/20 text-sky-300 ring-1 ring-sky-400/40"
+                      )}
+                      onClick={() => setTimeMode("AFTERNOON")}
+                    >
+                      <Sun className="h-3 w-3 mr-1 text-amber-300" />
+                      Day
+                    </Button>
+                    <Button
+                      variant={timeMode === "NIGHT" ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                        timeMode === "NIGHT" && "border-indigo-400/80 bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/40"
+                      )}
+                      onClick={() => setTimeMode("NIGHT")}
+                    >
+                      <Moon className="h-3 w-3 mr-1 text-indigo-300" />
+                      Night
+                    </Button>
+                  </div>
                 </div>
 
-                <Button
-                  variant={isXRay ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "w-full justify-start font-mono text-xs transition-all",
-                    isXRay && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 ring-1 ring-flow-teal/30"
-                  )}
-                  onClick={() => setIsXRay(!isXRay)}
-                >
-                  <Activity className="h-3.5 w-3.5 mr-1.5" />
-                  X-Ray Wireframe {isXRay ? "ON" : "OFF"}
-                </Button>
+                {/* Free-Nav Stepped Zoom & Reset Orbit Tools */}
+                <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="font-mono text-[11px] h-6 px-2 flex-1 justify-center"
+                      onClick={() => handleStepZoom(-1)}
+                      title="Step Zoom In"
+                    >
+                      Zoom +
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="font-mono text-[11px] h-6 px-2 flex-1 justify-center"
+                      onClick={() => handleStepZoom(1)}
+                      title="Step Zoom Out"
+                    >
+                      Zoom -
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="font-mono text-[11px] h-6 px-2 justify-center text-text-muted hover:text-white"
+                      onClick={handleResetCamera}
+                      title="Reset to Preset View"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                    </Button>
+                  </div>
 
-                {process.env.NODE_ENV !== "production" && (
                   <Button
-                    variant={devStormToggle ? "default" : "outline"}
+                    variant={isXRay ? "default" : "outline"}
                     size="sm"
                     className={cn(
                       "w-full justify-start font-mono text-xs transition-all",
-                      devStormToggle && "bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30 ring-1 ring-amber-500/40"
+                      isXRay && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 ring-1 ring-flow-teal/30"
                     )}
-                    onClick={() => setDevStormToggle(!devStormToggle)}
+                    onClick={() => setIsXRay(!isXRay)}
                   >
-                    <CloudRain className="h-3.5 w-3.5 mr-1.5" />
-                    Storm Overlay (Dev)
+                    <Activity className="h-3.5 w-3.5 mr-1.5" />
+                    X-Ray Wireframe {isXRay ? "ON" : "OFF"}
                   </Button>
-                )}
+
+                  {process.env.NODE_ENV !== "production" && (
+                    <Button
+                      variant={devStormToggle ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "w-full justify-start font-mono text-xs transition-all",
+                        devStormToggle && "bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30 ring-1 ring-amber-500/40"
+                      )}
+                      onClick={() => setDevStormToggle(!devStormToggle)}
+                    >
+                      <CloudRain className="h-3.5 w-3.5 mr-1.5" />
+                      Storm Overlay (Dev)
+                    </Button>
+                  )}
+                </div>
+
+                {/* ─── Feature Showcase Toggles ─── */}
+                <div className="pt-1.5 mt-1.5 border-t border-white/10 flex flex-col gap-1.5">
+                  <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider mb-0.5">Workforce & Features</span>
+
+                  {/* 👥 Filipino Site Personnel Roster & Dossier */}
+                  <Button
+                    variant={isPersonnelModalOpen ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start font-sans text-xs font-medium transition-all",
+                      isPersonnelModalOpen && "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30 ring-1 ring-emerald-500/40"
+                    )}
+                    onClick={() => setIsPersonnelModalOpen(!isPersonnelModalOpen)}
+                  >
+                    <Users className="h-3.5 w-3.5 mr-1.5 text-emerald-400" />
+                    Site Personnel Roster
+                  </Button>
+
+                  <Button
+                    variant={isSupercarConfigOpen ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start font-sans text-xs font-medium transition-all",
+                      isSupercarConfigOpen && "bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500/30 ring-1 ring-red-500/40"
+                    )}
+                    onClick={() => setIsSupercarConfigOpen(!isSupercarConfigOpen)}
+                  >
+                    <Car className="h-3.5 w-3.5 mr-1.5" />
+                    Supercar Configurator
+                  </Button>
+
+                  <Button
+                    variant={isGtaModeActive ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start font-sans text-xs font-medium transition-all",
+                      isGtaModeActive && "bg-purple-500/20 text-purple-400 border-purple-500/50 hover:bg-purple-500/30 ring-1 ring-purple-500/40"
+                    )}
+                    onClick={() => setIsGtaModeActive(!isGtaModeActive)}
+                  >
+                    <Gamepad2 className="h-3.5 w-3.5 mr-1.5" />
+                    GTA Driving Mode
+                  </Button>
+
+                  <Button
+                    variant={isLocomotionLabOpen ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start font-sans text-xs font-medium transition-all",
+                      isLocomotionLabOpen && "bg-sky-500/20 text-sky-400 border-sky-500/50 hover:bg-sky-500/30 ring-1 ring-sky-500/40"
+                    )}
+                    onClick={() => setIsLocomotionLabOpen(!isLocomotionLabOpen)}
+                  >
+                    <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
+                    Locomotion Laboratory
+                  </Button>
+                </div>
               </div>
-
-              {/* ─── Feature Showcase Toggles ─── */}
-              <div className="pt-1.5 mt-1.5 border-t border-white/10 flex flex-col gap-1.5">
-                <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider mb-0.5">Workforce & Features</span>
-
-                {/* 👥 Filipino Site Personnel Roster & Dossier */}
-                <Button
-                  variant={isPersonnelModalOpen ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "w-full justify-start font-sans text-xs font-medium transition-all",
-                    isPersonnelModalOpen && "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30 ring-1 ring-emerald-500/40"
-                  )}
-                  onClick={() => setIsPersonnelModalOpen(!isPersonnelModalOpen)}
-                >
-                  <Users className="h-3.5 w-3.5 mr-1.5 text-emerald-400" />
-                  Site Personnel Roster
-                </Button>
-
-                <Button
-                  variant={isSupercarConfigOpen ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "w-full justify-start font-sans text-xs font-medium transition-all",
-                    isSupercarConfigOpen && "bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500/30 ring-1 ring-red-500/40"
-                  )}
-                  onClick={() => setIsSupercarConfigOpen(!isSupercarConfigOpen)}
-                >
-                  <Car className="h-3.5 w-3.5 mr-1.5" />
-                  Supercar Configurator
-                </Button>
-
-                <Button
-                  variant={isGtaModeActive ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "w-full justify-start font-sans text-xs font-medium transition-all",
-                    isGtaModeActive && "bg-purple-500/20 text-purple-400 border-purple-500/50 hover:bg-purple-500/30 ring-1 ring-purple-500/40"
-                  )}
-                  onClick={() => setIsGtaModeActive(!isGtaModeActive)}
-                >
-                  <Gamepad2 className="h-3.5 w-3.5 mr-1.5" />
-                  GTA Driving Mode
-                </Button>
-
-                <Button
-                  variant={isLocomotionLabOpen ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "w-full justify-start font-sans text-xs font-medium transition-all",
-                    isLocomotionLabOpen && "bg-sky-500/20 text-sky-400 border-sky-500/50 hover:bg-sky-500/30 ring-1 ring-sky-500/40"
-                  )}
-                  onClick={() => setIsLocomotionLabOpen(!isLocomotionLabOpen)}
-                >
-                  <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
-                  Locomotion Laboratory
-                </Button>
-              </div>
-            </div>
-          )}
-        </Card>
-      </div>
-
-      {/* Real-time Hardware Performance Telemetry HUD Chip */}
-      <div className="absolute bottom-6 right-6 z-20 pointer-events-none flex items-center gap-2.5 bg-black/80 backdrop-blur-md border border-emerald-500/30 rounded-lg px-3 py-1.5 font-mono text-[11px] text-emerald-400 shadow-xl">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-bold">{perfStats.fps} FPS</span>
+            )}
+          </Card>
         </div>
-        <span className="text-gray-600">|</span>
-        <span className="text-gray-300">{perfStats.ms} ms</span>
-        <span className="text-gray-600">|</span>
-        <span className="text-cyan-400">{perfStats.calls} Calls</span>
-        <span className="text-gray-600">|</span>
-        <span className="text-cyan-400">{(perfStats.tris / 1000).toFixed(1)}k Tris</span>
+
+        {/* Center: Powerhouse Architectural Model Badge */}
+        <div className="pointer-events-none select-none hidden lg:flex items-center gap-2 rounded-lg border border-white/10 bg-black/75 px-3.5 py-1.5 font-mono text-[10px] text-text-muted backdrop-blur-md shadow-xl mb-0.5">
+          <Layers className="h-3.5 w-3.5 text-flow-teal shrink-0" />
+          <span>11.3 MW HEPP · Powerhouse Architectural Model</span>
+        </div>
+
+        {/* Right Side: Real-time Hardware Performance Telemetry HUD Chip */}
+        <div className="pointer-events-none select-none flex items-center gap-2.5 bg-black/80 backdrop-blur-md border border-emerald-500/30 rounded-lg px-3 py-1.5 font-mono text-[11px] text-emerald-400 shadow-xl mb-0.5 shrink-0">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span id="perf-hud-fps" className="font-bold">60 FPS</span>
+          </div>
+          <span className="text-gray-600">|</span>
+          <span id="perf-hud-ms" className="text-gray-300">16.6 ms</span>
+          <span className="text-gray-600">|</span>
+          <span id="perf-hud-calls" className="text-cyan-400">-- Calls</span>
+          <span className="text-gray-600">|</span>
+          <span id="perf-hud-tris" className="text-cyan-400">--k Tris</span>
+        </div>
       </div>
 
       {/* ─── OVERLAY MODALS ─── */}

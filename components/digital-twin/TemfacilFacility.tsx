@@ -75,10 +75,13 @@ import {
 export function TemfacilFacility({
   isXRay = false,
   onSelectPerson,
+  activePreset = "temfacil",
 }: {
   isXRay?: boolean;
   onSelectPerson?: (id: string) => void;
+  activePreset?: string;
 }) {
+  const isTemfacilFocused = !activePreset || activePreset.startsWith("temfacil");
   return (
     <group position={[118, 14.0, -95]} rotation={[0, 0, 0]}>
       {/* ═══ 0. UNIFIED HIGH-END INDUSTRIAL SITE FLOORING ═══ */}
@@ -197,7 +200,7 @@ export function TemfacilFacility({
         <AnimatedOfficeBackDoor />
 
         {/* ═══ PLANNING CONTROL HEAD DESK LUNCH SETUP (EATS INSIDE STAFF OFFICE EVERY LUNCH BREAK) ═══ */}
-        <PlanningControlHeadOfficeLunch />
+        {isTemfacilFocused && <PlanningControlHeadOfficeLunch />}
       </group>
 
       {/* ═══ 3. UNIFIED SINGLE STAFF ACCOMMODATIONS (STAFF HOUSE - PROPORTIONAL TO KITCHEN) ═══ */}
@@ -212,7 +215,7 @@ export function TemfacilFacility({
         </mesh>
 
         {/* ═══ STAFF & HEADS LUNCH LOUNGE (80% OF STAFF/HEADS EAT AT STAFF HOUSE) ═══ */}
-        <StaffHouseLoungeDining />
+        {isTemfacilFocused && <StaffHouseLoungeDining />}
 
         {/* Windows Array along Side Walls */}
         {[-4.5, 0, 4.5].map((zOff, i) => (
@@ -332,14 +335,14 @@ export function TemfacilFacility({
         </group>
 
         {/* ═══ REALISTIC OUTDOOR KITCHEN EXTENSION CONNECTED TO BACK OF STAFF HOUSE ═══ */}
-        <TemfacilStaffHouseKitchenExtension />
+        <TemfacilStaffHouseKitchenExtension isDetailVisible={isTemfacilFocused} />
       </group>
 
       {/* ═══ FOREMAN & STAFF HOUSE (PROPERLY ALIGNED INSIDE COMPOUND AT X = 18.0, Z = -40.5 CLOSER TO KITCHEN & CANAL) ═══ */}
       <TemfacilForemanStaffHouse position={[18.0, 0, -40.5]} />
 
       {/* ═══ 4. WORKERS BARRACKS COMPOUND (3 DISTINCT NON-IDENTICAL REALISTIC DORMITORIES + BREEZEWAY + WASHROOM BLOCK) ═══ */}
-      <TemfacilWorkerBarracksCompound position={[37, 0, -12]} onSelectPerson={onSelectPerson} />
+      <TemfacilWorkerBarracksCompound position={[37, 0, -12]} onSelectPerson={onSelectPerson} isDetailVisible={isTemfacilFocused} />
 
       {/* ═══ 5. MAIN WAREHOUSE & EXPANDED MATERIAL LAYDOWN YARD (SMOOTH UPHILL SLOPE Y = +0.8M) ═══ */}
       {/* Elevated on smooth ground slope from Staff Office */}
@@ -473,7 +476,7 @@ export function TemfacilFacility({
       </group>
 
       {/* ═══ 7C. AUTHENTIC CANTEEN & DINING HALL (X=32, Z=14) ═══ */}
-      <TemfacilCanteenBuilding position={[32, 0, 14]} />
+      <TemfacilCanteenBuilding position={[32, 0, 14]} isDetailVisible={isTemfacilFocused} />
 
       {/* ═══ 8. SOLAR LED LIGHT TOWERS & SAFETY INFRASTRUCTURE ═══ */}
       {/* Light Tower 1 */}
@@ -1947,7 +1950,7 @@ function ProfessionalStaffKitchenWorker({
 }
 
 // ─── REALISTIC OUTDOOR KITCHEN EXTENSION (CONNECTED TO REAR OF STAFF HOUSE) ───
-function TemfacilStaffHouseKitchenExtension() {
+function TemfacilStaffHouseKitchenExtension({ isDetailVisible = true }: { isDetailVisible?: boolean }) {
   return (
     <group position={[0, 0, -7.5]}>
       {/* 1. Concrete Slab Floor Deck */}
@@ -2019,7 +2022,9 @@ function TemfacilStaffHouseKitchenExtension() {
         ))}
       </group>
 
-      {/* ═══ REDUCED & ROTATED KITCHEN STAFF (3 STAFF MEMBERS FACING KITCHEN COUNTER & SINKS) ═══ */}
+      {isDetailVisible && (
+        <>
+          {/* ═══ REDUCED & ROTATED KITCHEN STAFF (3 STAFF MEMBERS FACING KITCHEN COUNTER & SINKS) ═══ */}
       {/* 1. Surveyor / IT Tech Washing Dishes at Right Sink (Facing Sink -Z) */}
       <ProfessionalStaffKitchenWorker position={[3.5, 0.06, -10.4]} rotation={[0, Math.PI, 0]} profession="SURVEYOR" action="WASHING_DISHES" skinTone="MEDIUM" />
 
@@ -2028,6 +2033,9 @@ function TemfacilStaffHouseKitchenExtension() {
 
       {/* 3. Pollution Control Officer (PCO) Food Prep at Center Counter (Facing Counter -Z) */}
       <ProfessionalStaffKitchenWorker position={[0.5, 0.06, -10.4]} rotation={[0, Math.PI, 0]} profession="POLLUTION_CONTROL" action="FOOD_PREP" skinTone="LIGHT" />
+
+              </>
+      )}
 
       {/* 5. Rear Single Big Connecting Door Portal */}
       <group position={[0, 1.4, -0.05]}>
@@ -4204,7 +4212,13 @@ function StaffHouseLoungeDining() {
 }
 
 // ─── AUTHENTIC CONSTRUCTION SITE CANTEEN & MESS HALL (EXPANDED KITCHEN SERVING HALL) ───
-function TemfacilCanteenBuilding({ position = [32, 0, 14] }: { position?: [number, number, number] }) {
+function TemfacilCanteenBuilding({
+  position = [32, 0, 14],
+  isDetailVisible = true,
+}: {
+  position?: [number, number, number];
+  isDetailVisible?: boolean;
+}) {
   return (
     <group position={position}>
       {/* 1. Concrete Slab Floor Base (16.5m for Spacious Dining & Kitchen Serving Area) */}
@@ -4324,7 +4338,9 @@ function TemfacilCanteenBuilding({ position = [32, 0, 14] }: { position?: [numbe
         </group>
       ))}
 
-      {/* ─── OPTIMIZED AUTHENTIC CANTEEN DINERS ─── */}
+      {isDetailVisible && (
+        <>
+          {/* ─── OPTIMIZED AUTHENTIC CANTEEN DINERS ─── */}
       {/* Front Table: Left & Right pairs */}
       <CanteenSeatedDiner position={[-2.75, 0.0, -3.2]} facingDir={1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="MEDIUM" />
       <CanteenSeatedDiner position={[-0.85, 0.0, -3.2]} facingDir={-1} role="WORKER" shirtColor="#EAB308" hardhatColor="#16A34A" wearingHardhat={true} skinTone="BRONZE" />
@@ -4363,6 +4379,9 @@ function TemfacilCanteenBuilding({ position = [32, 0, 14] }: { position?: [numbe
       {/* ── REAL-WORLD 4-PHASE ROUTINE WORKERS (WALK IN -> ORDER -> CARRY TRAY -> SIT & EAT -> LEAVE) ── */}
       <CanteenRoutineWorker seatPos={[-0.85, 0.0, 1.2]} facingDir={-1} shiftOffset={0} shirtColor="#EA580C" skinTone="MEDIUM" />
       <CanteenRoutineWorker seatPos={[0.85, 0.0, 1.2]} facingDir={1} shiftOffset={14} shirtColor="#EAB308" skinTone="BRONZE" />
+
+              </>
+      )}
 
       {/* 7. Outdoor Bamboo Resting Bench Alcove (Aligned Flush along Right Side Wall on Gravel Pad) */}
       <group position={[4.4, 0.25, -2.5]} rotation={[0, -Math.PI / 2, 0]}>
@@ -4547,9 +4566,11 @@ function TemfacilForemanStaffHouse({ position = [-6.5, 0, -48.5] }: { position?:
 function TemfacilWorkerBarracksCompound({
   position = [37, 0, -12],
   onSelectPerson,
+  isDetailVisible = true,
 }: {
   position?: [number, number, number];
   onSelectPerson?: (id: string) => void;
+  isDetailVisible?: boolean;
 }) {
   return (
     <group position={position}>
@@ -5342,7 +5363,6 @@ function TemfacilWorkerBarracksCompound({
           name="Mang Cardo"
           shirtColor="#EA580C"
           routineType="WEST_HEAD_CHEF"
-          personnelId="CHEF_MANG_CARDO"
           onSelectPerson={onSelectPerson}
         />
 

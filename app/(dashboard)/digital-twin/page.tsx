@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { PlantSceneLoading } from "@/components/digital-twin/PlantSceneLoading";
-import { Box, Layers, ShieldCheck, Video } from "lucide-react";
+import { Box, ShieldCheck, Video } from "lucide-react";
 
 // Dynamically import PlantScene with ssr disabled for WebGL hydration safety
 const PlantScene = dynamic(
@@ -58,14 +58,6 @@ export default function DigitalTwinPage() {
       <main className="relative flex-1 w-full h-full">
         <PlantScene />
       </main>
-
-      {/* Floating HUD Footer Status */}
-      <footer className="absolute bottom-4 left-6 z-20 pointer-events-none select-none">
-        <div className="flex items-center gap-2 rounded-lg border border-black/10 dark:border-white/10 bg-black/60 dark:bg-[#0B1013]/80 px-3 py-1.5 font-mono text-[10px] text-text-muted backdrop-blur-md">
-          <Layers className="h-3.5 w-3.5 text-flow-teal" />
-          <span>11.3 MW HEPP · Powerhouse Architectural Model</span>
-        </div>
-      </footer>
     </div>
   );
 }

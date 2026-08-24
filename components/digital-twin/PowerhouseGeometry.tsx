@@ -567,7 +567,7 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
 
       {/* Metal railing posts */}
       {Array.from({ length: 8 }, (_, i) => (
-        <mesh key={`rail-${i}`} position={[-10.6, 1.3 + i * 0.52, 4.6 - i * 0.52]} castShadow>
+        <mesh key={`rail-${i}`} position={[-10.6, 1.3 + i * 0.52, 4.6 - i * 0.52]} >
           <cylinderGeometry args={[0.04, 0.04, 1.2, 8]} />
           <meshStandardMaterial color={cc(METAL.railing)} roughness={0.4} metalness={0.7} transparent={cT} opacity={isXRay ? 0.15 : 1} />
         </mesh>
@@ -680,25 +680,25 @@ export function RealisticSwitchyard() {
         </mesh>
         {/* HV Bushings (3 tall porcelain insulators) */}
         {[-0.5, 0, 0.5].map((offset, i) => (
-          <mesh key={`hv-${i}`} position={[offset, 2.8, -0.3]} castShadow material={MAT_INSULATOR_AMBER}>
+          <mesh key={`hv-${i}`} position={[offset, 2.8, -0.3]}  material={MAT_INSULATOR_AMBER}>
             <cylinderGeometry args={[0.06, 0.1, 1.4, 8]} />
           </mesh>
         ))}
         {/* LV Bushings (3 shorter) */}
         {[-0.5, 0, 0.5].map((offset, i) => (
-          <mesh key={`lv-${i}`} position={[offset, 2.4, 0.4]} castShadow material={MAT_INSULATOR_AMBER}>
+          <mesh key={`lv-${i}`} position={[offset, 2.4, 0.4]}  material={MAT_INSULATOR_AMBER}>
             <cylinderGeometry args={[0.05, 0.08, 0.8, 8]} />
           </mesh>
         ))}
         {/* Radiator fin banks — left side */}
         {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={`fin-l-${i}`} position={[-1.3, 0.8, -0.5 + i * 0.25]} castShadow material={MAT_STEEL_FIN}>
+          <mesh key={`fin-l-${i}`} position={[-1.3, 0.8, -0.5 + i * 0.25]}  material={MAT_STEEL_FIN}>
             <boxGeometry args={[0.08, 1.4, 0.18]} />
           </mesh>
         ))}
         {/* Radiator fin banks — right side */}
         {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={`fin-r-${i}`} position={[1.3, 0.8, -0.5 + i * 0.25]} castShadow material={MAT_STEEL_FIN}>
+          <mesh key={`fin-r-${i}`} position={[1.3, 0.8, -0.5 + i * 0.25]}  material={MAT_STEEL_FIN}>
             <boxGeometry args={[0.08, 1.4, 0.18]} />
           </mesh>
         ))}
@@ -733,7 +733,7 @@ export function RealisticSwitchyard() {
       <group position={[-3, 2.65, 3]}>
         {/* 3 Post insulators */}
         {[-0.6, 0, 0.6].map((offset, i) => (
-          <mesh key={`ds-post-${i}`} position={[offset, 1.0, 0]} castShadow material={MAT_INSULATOR_AMBER}>
+          <mesh key={`ds-post-${i}`} position={[offset, 1.0, 0]}  material={MAT_INSULATOR_AMBER}>
             <cylinderGeometry args={[0.07, 0.12, 2.0, 8]} />
           </mesh>
         ))}
@@ -751,7 +751,7 @@ export function RealisticSwitchyard() {
       <group position={[3, 2.65, 3]}>
         {/* 3 Surge arrester stacks (tall porcelain) */}
         {[-0.5, 0, 0.5].map((offset, i) => (
-          <mesh key={`sa-${i}`} position={[offset, 1.5, -0.2]} castShadow material={MAT_INSULATOR_AMBER}>
+          <mesh key={`sa-${i}`} position={[offset, 1.5, -0.2]}  material={MAT_INSULATOR_AMBER}>
             <cylinderGeometry args={[0.08, 0.12, 2.8, 8]} />
           </mesh>
         ))}
@@ -1156,7 +1156,7 @@ export function TailraceWater() {
           [-2.0, 0.0, 2.0].map((zOff, j) => {
             const yB = sampleTerrainY(xOff, 38 + zOff) + 0.15;
             return (
-              <mesh key={`riprap-${i}-${j}`} position={[xOff, yB, zOff]} castShadow receiveShadow>
+              <mesh key={`riprap-${i}-${j}`} position={[xOff, yB, zOff]}  receiveShadow>
                 <dodecahedronGeometry args={[0.45 + ((i + j) % 2) * 0.15, 1]} />
                 <meshStandardMaterial color={i % 2 === 0 ? "#475569" : "#334155"} roughness={0.9} metalness={0.1} />
               </mesh>
@@ -1282,7 +1282,7 @@ export function MeanderingRiverSystem() {
 
       {/* Natural Riverbank Boulders */}
       {riverbankRocks.map((r, idx) => (
-        <mesh key={`rb-boulder-${idx}`} position={r.pos} castShadow receiveShadow>
+        <mesh key={`rb-boulder-${idx}`} position={r.pos}  receiveShadow>
           <dodecahedronGeometry args={[r.scale, 1]} />
           <meshStandardMaterial color={idx % 2 === 0 ? "#475569" : "#334155"} roughness={0.88} />
         </mesh>
@@ -2012,7 +2012,7 @@ export function ElectricalBusSystem({ isXRay = false }: { isXRay?: boolean }) {
 
       {/* Circuit Breaker Bushings (x = 28, y = 4.6, z = -3) */}
       {[-0.5, 0, 0.5].map((offset, i) => (
-        <mesh key={`cb-bush-${i}`} position={[28, 4.6, -3 + offset]} castShadow>
+        <mesh key={`cb-bush-${i}`} position={[28, 4.6, -3 + offset]} >
           <cylinderGeometry args={[0.08, 0.12, 1.0, 12]} />
           <meshStandardMaterial color="#38BDF8" roughness={0.25} metalness={0.8} />
         </mesh>
@@ -2157,7 +2157,7 @@ export function TransmissionTakeoffTower({
       {/* Foundation Steel Anchor Plates */}
       {[-2.0, 2.0].map((x, i) =>
         [-2.0, 2.0].map((z, j) => (
-          <mesh key={`anc-${i}-${j}`} position={[x, 0.85, z]} castShadow>
+          <mesh key={`anc-${i}-${j}`} position={[x, 0.85, z]} >
             <boxGeometry args={[0.5, 0.1, 0.5]} />
             <meshStandardMaterial color="#334155" roughness={0.3} metalness={0.8} />
           </mesh>
@@ -2391,7 +2391,7 @@ export function RealisticPenstockAssembly({ isXRay = false }: { isXRay?: boolean
         const t = i / 5;
         const p = new THREE.Vector3().lerpVectors(pBottom, pTop, t);
         return (
-          <mesh key={`flange-${i}`} position={[p.x, p.y, p.z]} quaternion={pipeQuaternion} castShadow>
+          <mesh key={`flange-${i}`} position={[p.x, p.y, p.z]} quaternion={pipeQuaternion} >
             <cylinderGeometry args={[1.45, 1.45, 0.35, 32]} />
             <meshStandardMaterial color="#1E5488" roughness={0.3} metalness={0.8} />
           </mesh>
@@ -2462,7 +2462,7 @@ export function SurgeTankHillside() {
       {[-8, -4, 0, 4, 8].map((xOff, i) => (
         <group key={`rb-col-${i}`}>
           {[18.5, 20.5].map((yVal, j) => (
-            <mesh key={`rb-${i}-${j}`} position={[-6 + xOff, yVal, -29.6]} castShadow material={MAT_STEEL_RAILING}>
+            <mesh key={`rb-${i}-${j}`} position={[-6 + xOff, yVal, -29.6]}  material={MAT_STEEL_RAILING}>
               <boxGeometry args={[0.3, 0.3, 0.1]} />
             </mesh>
           ))}

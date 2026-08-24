@@ -77,7 +77,21 @@ import {
   MAT_CONCRETE_SLAB,
   MAT_FOOD_STAINLESS_TRAY,
 } from "./SharedMaterials";
-import { UPHILL_ROAD_SPLINE, ROAD_CONSTANTS, getRoadTransform } from "./uphillRoadConfig";
+import {
+  UPHILL_ROAD_SPLINE,
+  DUMP_TRUCK_SPLINE,
+  CREW_VAN_SPLINE,
+  QAQC_PICKUP_SPLINE,
+  SAFETY_PATROL_SPLINE,
+  PEDESTRIAN_PATH_1_SPLINE,
+  PEDESTRIAN_PATH_2_SPLINE,
+  PEDESTRIAN_PATH_3_SPLINE,
+  TEMFACIL_BUILDING_COLLIDERS,
+  resolveBuildingCollisions,
+  ROAD_CONSTANTS,
+  getRoadTransform,
+  getSplineTransform,
+} from "./uphillRoadConfig";
 import { FILIPINO_PERSONNEL_REGISTRY } from "./personnelData";
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1385,7 +1399,17 @@ function ActiveConstructionWorkerMesh({
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ─── A. SCIC HEAVY 10-WHEELER DUMP TRUCK (ISUZU GIGA / HINO 700 STYLE) ──────
-export function SCICHeavyDumpTruck({ bodyColor = "#DC2626", headlightsOn = true }: { bodyColor?: string; headlightsOn?: boolean }) {
+export function SCICHeavyDumpTruck({
+  bodyColor = "#DC2626",
+  headlightsOn = true,
+  brakeLightsOn = false,
+  bedAngle = 0,
+}: {
+  bodyColor?: string;
+  headlightsOn?: boolean;
+  brakeLightsOn?: boolean;
+  bedAngle?: number;
+}) {
   return (
     <group position={[0, 0, 0]}>
       {/* Heavy Heavy-Duty Chassis Rails */}
@@ -1446,38 +1470,40 @@ export function SCICHeavyDumpTruck({ bodyColor = "#DC2626", headlightsOn = true 
         </mesh>
       </group>
 
-      {/* Heavy Ribbed Hydraulic Tipper Dump Bed */}
-      <group position={[0, 1.6, -1.1]}>
-        {/* Bottom Bed Floor */}
-        <mesh position={[0, -0.2, 0]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[2.4, 0.15, 4.4]} />
-        </mesh>
-        {/* Left & Right High Walls */}
-        <mesh position={[-1.15, 0.55, 0]}>
-          <boxGeometry args={[0.12, 1.35, 4.4]} />
-          <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
-        </mesh>
-        <mesh position={[1.15, 0.55, 0]}>
-          <boxGeometry args={[0.12, 1.35, 4.4]} />
-          <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
-        </mesh>
-        {/* Front Wall with Cab Protector Canopy */}
-        <mesh position={[0, 0.55, 2.15]}>
-          <boxGeometry args={[2.3, 1.35, 0.12]} />
-          <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
-        </mesh>
-        <mesh position={[0, 1.25, 2.65]}>
-          <boxGeometry args={[2.3, 0.1, 1.1]} />
-          <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
-        </mesh>
-        {/* Rear Tailgate with Safety Chevron Stripes */}
-        <mesh position={[0, 0.55, -2.15]}>
-          <boxGeometry args={[2.3, 1.35, 0.12]} />
-          <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
-        </mesh>
-        <mesh position={[0, 0.1, -2.22]} material={MAT_YELLOW_SAFETY}>
-          <boxGeometry args={[2.2, 0.22, 0.04]} />
-        </mesh>
+      {/* Heavy Ribbed Hydraulic Tipper Dump Bed (Pivoted at Rear Hinge Z = -3.3) */}
+      <group name="dumpTipperBed" position={[0, 1.4, -3.3]} rotation={[-bedAngle, 0, 0]}>
+        <group position={[0, 0.2, 2.2]}>
+          {/* Bottom Bed Floor */}
+          <mesh position={[0, -0.2, 0]} material={MAT_STEEL_DARK}>
+            <boxGeometry args={[2.4, 0.15, 4.4]} />
+          </mesh>
+          {/* Left & Right High Walls */}
+          <mesh position={[-1.15, 0.55, 0]}>
+            <boxGeometry args={[0.12, 1.35, 4.4]} />
+            <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
+          </mesh>
+          <mesh position={[1.15, 0.55, 0]}>
+            <boxGeometry args={[0.12, 1.35, 4.4]} />
+            <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
+          </mesh>
+          {/* Front Wall with Cab Protector Canopy */}
+          <mesh position={[0, 0.55, 2.15]}>
+            <boxGeometry args={[2.3, 1.35, 0.12]} />
+            <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
+          </mesh>
+          <mesh position={[0, 1.25, 2.65]}>
+            <boxGeometry args={[2.3, 0.1, 1.1]} />
+            <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
+          </mesh>
+          {/* Rear Tailgate with Safety Chevron Stripes */}
+          <mesh position={[0, 0.55, -2.15]}>
+            <boxGeometry args={[2.3, 1.35, 0.12]} />
+            <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.3} />
+          </mesh>
+          <mesh position={[0, 0.1, -2.22]} material={MAT_YELLOW_SAFETY}>
+            <boxGeometry args={[2.2, 0.22, 0.04]} />
+          </mesh>
+        </group>
       </group>
 
       {/* Wheels: 10 Heavy Off-Road Wheels (2 Front Steer + 8 Tandem Dual Rear) */}
@@ -1799,15 +1825,25 @@ export type CheckpointInspectionPhase =
   | "VEHICLE_PASSING"
   | "WALKING_TO_POST";
 
+export interface CheckpointState {
+  phase: CheckpointInspectionPhase;
+  activeVehId: string | null;
+  activeVehDir: 1 | -1;
+  timer: number;
+  walkProgress: number;
+}
+
 export function AnimatedSecurityGateOfficer({
+  checkpointRef,
   checkpointPhase,
   walkProgress,
   activeVehDir,
   onSelectPerson,
 }: {
-  checkpointPhase: CheckpointInspectionPhase;
-  walkProgress: number;
-  activeVehDir: 1 | -1;
+  checkpointRef?: React.MutableRefObject<CheckpointState>;
+  checkpointPhase?: CheckpointInspectionPhase;
+  walkProgress?: number;
+  activeVehDir?: 1 | -1;
   onSelectPerson?: (id: string) => void;
 }) {
   const guardGroupRef = useRef<THREE.Group>(null);
@@ -1831,46 +1867,52 @@ export function AnimatedSecurityGateOfficer({
   useFrame(({ clock }, delta) => {
     const t = clock.getElapsedTime();
     const st = internalStateRef.current;
+    const cp = checkpointRef?.current;
+    const activePhase = cp ? cp.phase : (checkpointPhase || "SENTRY_POST");
+    const activeWalk = cp ? cp.walkProgress : (walkProgress || 0);
+    const activeDir = cp ? cp.activeVehDir : (activeVehDir || 1);
 
     const isWalking =
-      checkpointPhase === "WALKING_TO_VEHICLE" ||
-      checkpointPhase === "WALKING_TO_POST" ||
-      checkpointPhase === "INSPECTING_UNDERCARRIAGE" ||
-      checkpointPhase === "INSPECTING_CARGO_PROHIBITED";
+      activePhase === "WALKING_TO_VEHICLE" ||
+      activePhase === "WALKING_TO_POST" ||
+      activePhase === "INSPECTING_UNDERCARRIAGE" ||
+      activePhase === "INSPECTING_CARGO_PROHIBITED";
 
     // ─── 1. TARGET 3D POSITION & HEADING BASED ON ACTIVE CHECKPOINT PHASE ───
-    const driverZ = activeVehDir === 1 ? 0.35 : -0.35;
-    const cargoZ = activeVehDir === 1 ? 1.85 : -1.85;
+    const driverZ = activeDir === 1 ? 0.35 : -0.35;
+    const cargoZ = activeDir === 1 ? 1.85 : -1.85;
 
-    if (checkpointPhase === "WALKING_TO_VEHICLE") {
-      st.pos.x = THREE.MathUtils.lerp(4.4, 2.6, walkProgress);
-      st.pos.z = THREE.MathUtils.lerp(0.8, driverZ, walkProgress);
-      st.targetRotY = activeVehDir === 1 ? -2.1 : -1.2;
-    } else if (checkpointPhase === "WALKING_TO_POST") {
-      st.pos.x = THREE.MathUtils.lerp(2.6, 4.4, 1.0 - walkProgress);
-      st.pos.z = THREE.MathUtils.lerp(driverZ, 0.8, 1.0 - walkProgress);
+    if (activePhase === "WALKING_TO_VEHICLE") {
+      // Guard physically walks from under guardhouse porch (x=4.4, z=0.8) to driver window (x=2.4, z=driverZ)
+      st.pos.x = THREE.MathUtils.lerp(4.4, 2.4, activeWalk);
+      st.pos.z = THREE.MathUtils.lerp(0.8, driverZ, activeWalk);
+      st.targetRotY = activeDir === 1 ? -2.1 : -1.2;
+    } else if (activePhase === "WALKING_TO_POST") {
+      // Guard physically walks back from vehicle to under guardhouse porch
+      st.pos.x = THREE.MathUtils.lerp(2.4, 4.4, 1.0 - activeWalk);
+      st.pos.z = THREE.MathUtils.lerp(driverZ, 0.8, 1.0 - activeWalk);
       st.targetRotY = 1.15;
-    } else if (checkpointPhase === "INSPECTING_DRIVER_PPE") {
-      st.pos.set(2.6, 0, driverZ);
+    } else if (activePhase === "INSPECTING_DRIVER_PPE") {
+      st.pos.set(2.4, 0, driverZ);
       st.targetRotY = -Math.PI / 2; // Facing driver window
-    } else if (checkpointPhase === "INSPECTING_UNDERCARRIAGE") {
+    } else if (activePhase === "INSPECTING_UNDERCARRIAGE") {
       // Walks along vehicle undercarriage sweeping mirror wand front-to-back
       const sweepZ = Math.sin(t * 2.2) * 1.3;
-      st.pos.set(2.4 + Math.abs(Math.sin(t * 1.5)) * 0.15, 0, driverZ + sweepZ);
+      st.pos.set(2.3 + Math.abs(Math.sin(t * 1.5)) * 0.15, 0, driverZ + sweepZ);
       st.targetRotY = -Math.PI / 2 + Math.sin(t * 2.2) * 0.3;
-    } else if (checkpointPhase === "INSPECTING_CARGO_PROHIBITED") {
+    } else if (activePhase === "INSPECTING_CARGO_PROHIBITED") {
       // Steps along cargo bed peering inside for prohibited items (liquor/firearms/unmanifested tools)
       const cargoPace = Math.sin(t * 1.8) * 0.6;
-      st.pos.set(2.5, 0, cargoZ + cargoPace);
+      st.pos.set(2.4, 0, cargoZ + cargoPace);
       st.targetRotY = -Math.PI / 2 + Math.sin(t * 1.8) * 0.2;
-    } else if (checkpointPhase === "LOGGING_MANIFEST") {
-      st.pos.set(2.6, 0, driverZ);
+    } else if (activePhase === "LOGGING_MANIFEST") {
+      st.pos.set(2.4, 0, driverZ);
       st.targetRotY = -Math.PI / 2;
-    } else if (checkpointPhase === "WAVING_CLEARANCE" || checkpointPhase === "VEHICLE_PASSING") {
-      st.pos.set(3.2, 0, driverZ + (activeVehDir === 1 ? 0.3 : -0.3));
-      st.targetRotY = activeVehDir === 1 ? -Math.PI / 2.3 : -Math.PI / 1.7;
+    } else if (activePhase === "WAVING_CLEARANCE" || activePhase === "VEHICLE_PASSING") {
+      st.pos.set(3.0, 0, driverZ + (activeDir === 1 ? 0.3 : -0.3));
+      st.targetRotY = activeDir === 1 ? -Math.PI / 2.3 : -Math.PI / 1.7;
     } else {
-      // SENTRY_POST
+      // SENTRY_POST (Under guardhouse porch)
       st.pos.set(4.4, 0, 0.8);
       st.scanTimer -= delta;
       if (st.scanTimer <= 0) {
@@ -1890,10 +1932,10 @@ export function AnimatedSecurityGateOfficer({
 
     // ─── 2. ARTICULATED BIOMECHANICAL ANATOMY KINEMATICS ───
     if (isWalking) {
-      const walkSpeed = (checkpointPhase === "WALKING_TO_VEHICLE" || checkpointPhase === "WALKING_TO_POST") ? 8.0 : 4.0;
+      const walkSpeed = (activePhase === "WALKING_TO_VEHICLE" || activePhase === "WALKING_TO_POST") ? 8.0 : 4.0;
       const walkSin = Math.sin(t * walkSpeed);
       const walkCos = Math.cos(t * walkSpeed);
-      const legStride = walkSin * ((checkpointPhase === "WALKING_TO_VEHICLE" || checkpointPhase === "WALKING_TO_POST") ? 0.45 : 0.22);
+      const legStride = walkSin * ((activePhase === "WALKING_TO_VEHICLE" || activePhase === "WALKING_TO_POST") ? 0.45 : 0.22);
       const armSwing = walkSin * 0.28;
       const pelvicBounce = Math.abs(walkSin) * 0.028;
 
@@ -1902,14 +1944,14 @@ export function AnimatedSecurityGateOfficer({
       if (leftLegRef.current) leftLegRef.current.rotation.set(legStride, 0, 0);
       if (rightLegRef.current) rightLegRef.current.rotation.set(-legStride, 0, 0);
 
-      if (checkpointPhase === "INSPECTING_UNDERCARRIAGE") {
+      if (activePhase === "INSPECTING_UNDERCARRIAGE") {
         // Bend forward leaning down to sweep undercarriage mirror beneath chassis
         if (torsoRef.current) torsoRef.current.rotation.set(0.24, walkCos * 0.05, 0);
         if (headRef.current) headRef.current.rotation.set(0.38, -walkCos * 0.06, 0);
         if (leftArmRef.current) leftArmRef.current.rotation.set(-0.7, 0.25, 0.1);
         if (rightArmRef.current) rightArmRef.current.rotation.set(-0.35 + Math.sin(t * 2.2) * 0.15, -0.15, -0.2);
         if (mirrorWandRef.current) mirrorWandRef.current.rotation.set(0.85 + Math.sin(t * 2.2) * 0.2, 0, 0);
-      } else if (checkpointPhase === "INSPECTING_CARGO_PROHIBITED") {
+      } else if (activePhase === "INSPECTING_CARGO_PROHIBITED") {
         // Look up and into truck bed / cargo box with inspection beam
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.22, Math.sin(t * 2.5) * 0.4, 0);
@@ -1929,7 +1971,7 @@ export function AnimatedSecurityGateOfficer({
 
       const breath = Math.sin(t * 1.5) * 0.015;
 
-      if (checkpointPhase === "INSPECTING_DRIVER_PPE") {
+      if (activePhase === "INSPECTING_DRIVER_PPE") {
         // Checking driver pass & PPE compliance
         const checkTick = Math.sin(t * 6.0) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.10, 0, 0);
@@ -1937,7 +1979,7 @@ export function AnimatedSecurityGateOfficer({
         if (leftArmRef.current) leftArmRef.current.rotation.set(-1.1, 0.35, 0.15);
         if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15 + checkTick, -0.2, 0.1);
         if (mirrorWandRef.current) mirrorWandRef.current.rotation.set(0.15, 0, 0);
-      } else if (checkpointPhase === "LOGGING_MANIFEST") {
+      } else if (activePhase === "LOGGING_MANIFEST") {
         // Signing vehicle manifest logbook with blue pen
         const writeTick = Math.sin(t * 12.0) * 0.07;
         const nod = Math.sin(t * 3.0) * 0.04;
@@ -1946,7 +1988,7 @@ export function AnimatedSecurityGateOfficer({
         if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2, 0.4, 0.2);
         if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + writeTick, -0.25, writeTick * 0.3);
         if (mirrorWandRef.current) mirrorWandRef.current.rotation.set(0.15, 0, 0);
-      } else if (checkpointPhase === "WAVING_CLEARANCE" || checkpointPhase === "VEHICLE_PASSING") {
+      } else if (activePhase === "WAVING_CLEARANCE" || activePhase === "VEHICLE_PASSING") {
         // Classic Filipino Traffic Marshal sweeping clearance wave ("Sige po diretso lang!")
         const waveSweep = Math.sin(t * 4.2);
         if (torsoRef.current) torsoRef.current.rotation.set(0.04, 0.12, 0);
@@ -1967,7 +2009,7 @@ export function AnimatedSecurityGateOfficer({
 
     // Toggle inspection spotlight during inspection phases
     if (searchlightRef.current) {
-      const isInspecting = checkpointPhase === "INSPECTING_UNDERCARRIAGE" || checkpointPhase === "INSPECTING_CARGO_PROHIBITED";
+      const isInspecting = activePhase === "INSPECTING_UNDERCARRIAGE" || activePhase === "INSPECTING_CARGO_PROHIBITED";
       searchlightRef.current.intensity = isInspecting ? 2.5 : 0;
     }
   });
@@ -1978,309 +2020,199 @@ export function AnimatedSecurityGateOfficer({
       position={[4.4, 0, 0.8]}
       onClick={(e) => {
         e.stopPropagation();
-        onSelectPerson?.("GUARD_ROBERTO_DIZON");
-      }}
-      onPointerOver={() => {
-        if (typeof document !== "undefined") document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        if (typeof document !== "undefined") document.body.style.cursor = "default";
+        if (onSelectPerson) onSelectPerson("SG_ROBERTO_DIZON");
       }}
     >
-      {/* 🧍 TORSO WITH DOLE / SOSIA PHILIPPINE SECURITY GUARD UNIFORM */}
-      <group ref={torsoRef} position={[0, 0.85, 0]}>
-        {/* Navy Blue Security Uniform Shirt */}
-        <mesh position={[0, 0.25, 0]} material={MAT_SHIRT_BLAZER_NAVY}>
-          <boxGeometry args={[0.38, 0.46, 0.22]} />
-        </mesh>
+      {/* ── SG Roberto "Bert" Dizon Realistic Filipino Security Guard Anatomy ── */}
+      {/* Searchlight / UV Inspection Flashlight SpotLight */}
+      <spotLight
+        ref={searchlightRef}
+        position={[0, 0.7, 0.2]}
+        target-position={[0, -0.5, 1.2]}
+        angle={0.5}
+        penumbra={0.4}
+        intensity={0}
+        color="#E0F2FE"
+        distance={6}
+      />
 
-        {/* Gold SOSIA Security Shield Badge on Left Chest */}
-        <mesh position={[-0.10, 0.33, 0.114]} material={MAT_GOLD_ACCENT}>
-          <boxGeometry args={[0.05, 0.065, 0.012]} />
+      {/* Head with SOSIA Uniform Security Peak Cap & Gold Badge */}
+      <group ref={headRef} position={[0, 1.35, 0]}>
+        {/* Head Mesh with Moreno Filipino Skin */}
+        <mesh position={[0, 0.08, 0]} material={MAT_SKIN_BRONZE}>
+          <boxGeometry args={[0.22, 0.24, 0.22]} />
         </mesh>
-
-        {/* White DOLE / SCIC Nameplate on Right Chest */}
-        <mesh position={[0.10, 0.34, 0.114]} material={MAT_ID_BADGE_WHITE}>
-          <boxGeometry args={[0.07, 0.025, 0.01]} />
-        </mesh>
-
-        {/* Gold Shoulder Epaulets */}
-        <mesh position={[-0.18, 0.48, 0]} material={MAT_GOLD_ACCENT}>
-          <boxGeometry args={[0.07, 0.02, 0.14]} />
-        </mesh>
-        <mesh position={[0.18, 0.48, 0]} material={MAT_GOLD_ACCENT}>
-          <boxGeometry args={[0.07, 0.02, 0.14]} />
-        </mesh>
-
-        {/* Leather Duty Belt with Gold Buckle */}
-        <mesh position={[0, 0.03, 0]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.40, 0.07, 0.24]} />
-        </mesh>
-        <mesh position={[0, 0.03, 0.122]} material={MAT_GOLD_ACCENT}>
-          <boxGeometry args={[0.06, 0.06, 0.012]} />
-        </mesh>
-
-        {/* Holstered Motorola Two-Way Radio on Right Hip with Antenna */}
-        <mesh position={[0.19, 0.06, 0.02]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.05, 0.12, 0.05]} />
-        </mesh>
-        <mesh position={[0.19, 0.18, 0.03]} material={MAT_STEEL_DARK}>
-          <cylinderGeometry args={[0.005, 0.005, 0.12, 4]} />
-        </mesh>
-
-        {/* Side Flashlight Sheath on Left Hip */}
-        <mesh position={[-0.19, 0.04, 0.02]} material={MAT_STEEL_DARK}>
-          <cylinderGeometry args={[0.02, 0.02, 0.14, 6]} />
-        </mesh>
-
-        {/* 👤 HEAD WITH SCULPTED FILIPINO ANATOMY & DOLE / SOSIA SECURITY HELMET */}
-        <group ref={headRef} position={[0, 0.60, 0]}>
-          {/* Head Skull */}
-          <mesh material={MAT_SKIN_BRONZE}>
-            <sphereGeometry args={[0.125, 12, 12]} />
+        {/* Official SOSIA Security Guard Navy Blue Peak Cap */}
+        <group position={[0, 0.20, 0]}>
+          <mesh material={MAT_SHIRT_BLAZER_NAVY}>
+            <cylinderGeometry args={[0.13, 0.12, 0.08, 12]} />
           </mesh>
-
-          {/* White DOLE / SOSIA Security Officer Safety Helmet */}
-          <group position={[0, 0.06, 0]}>
-            <mesh material={MAT_WORKER_HARDHAT_WHITE}>
-              <sphereGeometry args={[0.138, 12, 10]} />
-            </mesh>
-            <mesh position={[0, -0.04, 0.03]} material={MAT_WORKER_HARDHAT_WHITE}>
-              <boxGeometry args={[0.26, 0.024, 0.28]} />
-            </mesh>
-            {/* Gold Security Helmet Crest Badge */}
-            <mesh position={[0, 0.05, 0.136]} material={MAT_GOLD_ACCENT}>
-              <boxGeometry args={[0.038, 0.038, 0.01]} />
-            </mesh>
-          </group>
-
-          {/* Sclera & Dark Brown Filipino Irises */}
-          <mesh position={[-0.040, 0.015, 0.112]} material={MAT_FACE_EYE_WHITE}>
-            <boxGeometry args={[0.026, 0.016, 0.008]} />
+          {/* Black Peak Visor */}
+          <mesh position={[0, -0.02, 0.08]} rotation={[0.2, 0, 0]} material={MAT_STEEL_DARK}>
+            <boxGeometry args={[0.18, 0.02, 0.12]} />
           </mesh>
-          <mesh position={[0.040, 0.015, 0.112]} material={MAT_FACE_EYE_WHITE}>
-            <boxGeometry args={[0.026, 0.016, 0.008]} />
+          {/* Gold SOSIA Security Shield Badge on Cap */}
+          <mesh position={[0, 0.02, 0.122]} material={MAT_GOLD_ACCENT}>
+            <boxGeometry args={[0.04, 0.05, 0.01]} />
           </mesh>
-          <mesh position={[-0.040, 0.015, 0.117]} material={MAT_FACE_EYE_IRIS}>
-            <sphereGeometry args={[0.008, 6, 6]} />
-          </mesh>
-          <mesh position={[0.040, 0.015, 0.117]} material={MAT_FACE_EYE_IRIS}>
-            <sphereGeometry args={[0.008, 6, 6]} />
-          </mesh>
-          <mesh position={[-0.040, 0.015, 0.121]} material={MAT_FACE_EYE_PUPIL}>
-            <sphereGeometry args={[0.004, 4, 4]} />
-          </mesh>
-          <mesh position={[0.040, 0.015, 0.121]} material={MAT_FACE_EYE_PUPIL}>
-            <sphereGeometry args={[0.004, 4, 4]} />
-          </mesh>
-
-          {/* Arched Eyebrows */}
-          <mesh position={[-0.040, 0.036, 0.114]} rotation={[0, 0, -0.1]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.034, 0.008, 0.008]} />
-          </mesh>
-          <mesh position={[0.040, 0.036, 0.114]} rotation={[0, 0, 0.1]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.034, 0.008, 0.008]} />
-          </mesh>
-
-          {/* Sculpted Nose Bridge & Flared Nostrils */}
-          <group position={[0, 0.005, 0.122]}>
-            <mesh position={[0, 0.015, 0]} material={MAT_SKIN_BRONZE}>
-              <boxGeometry args={[0.026, 0.045, 0.022]} />
-            </mesh>
-            <mesh position={[0, -0.015, 0.006]} material={MAT_SKIN_BRONZE}>
-              <sphereGeometry args={[0.018, 6, 6]} />
-            </mesh>
-            <mesh position={[-0.020, -0.018, 0.002]} material={MAT_SKIN_BRONZE}>
-              <boxGeometry args={[0.014, 0.014, 0.015]} />
-            </mesh>
-            <mesh position={[0.020, -0.018, 0.002]} material={MAT_SKIN_BRONZE}>
-              <boxGeometry args={[0.014, 0.014, 0.015]} />
-            </mesh>
-          </group>
-
-          {/* Lips & Neat Trimmed Mustache */}
-          <group position={[0, -0.055, 0.116]}>
-            <mesh material={MAT_FACE_LIPS_MALE}>
-              <boxGeometry args={[0.055, 0.012, 0.010]} />
-            </mesh>
-            <mesh position={[0, -0.012, -0.001]} material={MAT_FACE_LIPS_MALE}>
-              <boxGeometry args={[0.048, 0.014, 0.010]} />
-            </mesh>
-            {/* Mustache */}
-            <mesh position={[0, 0.016, 0.008]} material={MAT_MUSTACHE_BLACK}>
-              <boxGeometry args={[0.095, 0.020, 0.014]} />
-            </mesh>
-          </group>
         </group>
+        {/* Aviator Sunglasses */}
+        <mesh position={[0, 0.09, 0.115]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.16, 0.04, 0.02]} />
+        </mesh>
+      </group>
 
-        {/* 💪 LEFT ARM WITH VEHICLE INSPECTION LOGBOOK CLIPBOARD */}
-        <group ref={leftArmRef} position={[-0.24, 0.38, 0]}>
-          {/* Upper Arm */}
-          <mesh position={[0, -0.16, 0]} material={MAT_SHIRT_BLAZER_NAVY}>
-            <boxGeometry args={[0.10, 0.28, 0.10]} />
+      {/* Articulated Torso (White Security Uniform Shirt + Navy Blue Shoulder Straps) */}
+      <group ref={torsoRef} position={[0, 0.88, 0]}>
+        {/* Upper White Collared Shirt */}
+        <mesh position={[0, 0.15, 0]} material={MAT_ID_BADGE_WHITE}>
+          <boxGeometry args={[0.38, 0.44, 0.22]} />
+        </mesh>
+        {/* Navy Blue Epaulets with Gold Rank Bars */}
+        {[-0.17, 0.17].map((xOff, idx) => (
+          <mesh key={`ep-${idx}`} position={[xOff, 0.35, 0]} material={MAT_SHIRT_BLAZER_NAVY}>
+            <boxGeometry args={[0.08, 0.03, 0.14]} />
           </mesh>
-          {/* Forearm & Hand */}
-          <mesh position={[0, -0.38, 0.08]} material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.09, 0.22, 0.09]} />
+        ))}
+        {/* SCIC / SOSIA Security Gold Chest Badge (Left Pocket) */}
+        <mesh position={[-0.10, 0.22, 0.115]} material={MAT_GOLD_ACCENT}>
+          <boxGeometry args={[0.06, 0.07, 0.01]} />
+        </mesh>
+        {/* White PVC Nameplate "R. DIZON - SG" (Right Pocket) */}
+        <mesh position={[0.10, 0.22, 0.115]} material={MAT_ID_BADGE_WHITE}>
+          <boxGeometry args={[0.08, 0.03, 0.01]} />
+        </mesh>
+        {/* Heavy Duty Duty-Belt (Gun Holster, Pepper Spray, Handcuff Pouch, Flashlight) */}
+        <mesh position={[0, -0.08, 0]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.40, 0.09, 0.24]} />
+        </mesh>
+        {/* Side Holstered Handgun */}
+        <mesh position={[0.21, -0.12, 0]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.05, 0.16, 0.08]} />
+        </mesh>
+        {/* Security Walkie-Talkie Radio on Left Shoulder with Antenna */}
+        <group position={[-0.18, 0.26, 0.08]}>
+          <mesh material={MAT_STEEL_DARK}>
+            <boxGeometry args={[0.05, 0.12, 0.04]} />
           </mesh>
-          {/* Vehicle Logbook Clipboard */}
-          <group position={[0, -0.42, 0.16]} rotation={[0.4, -0.2, 0]}>
-            {/* Hardwood Board */}
-            <mesh material={MAT_TIMBER_STAKE}>
-              <boxGeometry args={[0.22, 0.30, 0.014]} />
-            </mesh>
-            {/* White Manifest Paper with Log Lines */}
-            <mesh position={[0, 0, 0.009]} material={MAT_ID_BADGE_WHITE}>
-              <boxGeometry args={[0.19, 0.26, 0.004]} />
-            </mesh>
-            {/* Silver Clip */}
-            <mesh position={[0, 0.13, 0.015]} material={MAT_STEEL_FRAME}>
-              <boxGeometry args={[0.08, 0.035, 0.018]} />
-            </mesh>
-          </group>
+          <mesh position={[0, 0.09, 0]} material={MAT_STEEL_DARK}>
+            <cylinderGeometry args={[0.005, 0.005, 0.10, 6]} />
+          </mesh>
         </group>
+      </group>
 
-        {/* 💪 RIGHT ARM WITH TELESCOPIC UNDERCARRIAGE INSPECTION MIRROR & FLASHLIGHT */}
-        <group ref={rightArmRef} position={[0.24, 0.38, 0]}>
-          {/* Upper Arm */}
-          <mesh position={[0, -0.16, 0]} material={MAT_SHIRT_BLAZER_NAVY}>
-            <boxGeometry args={[0.10, 0.28, 0.10]} />
+      {/* Left Arm: Holding Aluminum Manifest Clipboard */}
+      <group ref={leftArmRef} position={[-0.24, 1.15, 0]}>
+        <mesh position={[0, -0.18, 0]} material={MAT_ID_BADGE_WHITE}>
+          <boxGeometry args={[0.11, 0.36, 0.11]} />
+        </mesh>
+        <mesh position={[0, -0.38, 0]} material={MAT_SKIN_BRONZE}>
+          <boxGeometry args={[0.09, 0.12, 0.09]} />
+        </mesh>
+        {/* Heavy-Duty Manifest Clipboard */}
+        <group position={[0, -0.42, 0.12]} rotation={[0.4, 0, 0]}>
+          <mesh material={MAT_FOOD_STAINLESS_TRAY}>
+            <boxGeometry args={[0.24, 0.32, 0.02]} />
           </mesh>
-          {/* Forearm & Hand */}
-          <mesh position={[0, -0.38, 0.08]} material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.09, 0.22, 0.09]} />
+          {/* White Paper Manifest Sheet */}
+          <mesh position={[0, 0, 0.012]} material={MAT_ID_BADGE_WHITE}>
+            <boxGeometry args={[0.20, 0.28, 0.005]} />
           </mesh>
+          {/* Blue Signing Ballpen */}
+          <mesh position={[0.08, 0.02, 0.02]} rotation={[0, 0, 0.2]} material={MAT_WORKER_VEST_ROYAL}>
+            <cylinderGeometry args={[0.006, 0.006, 0.14, 6]} />
+          </mesh>
+        </group>
+      </group>
 
-          {/* 🔍 PROFESSIONAL CONVEX UNDERCARRIAGE INSPECTION MIRROR WAND */}
-          <group ref={mirrorWandRef} position={[0, -0.48, 0.12]}>
-            {/* Telescopic Chrome Pole Handle (1.35m long) */}
-            <mesh position={[0, -0.45, 0.15]} rotation={[0.4, 0, 0]} material={MAT_CHROME}>
-              <cylinderGeometry args={[0.012, 0.015, 1.35, 8]} />
+      {/* Right Arm: Articulated Hand with Inspection Mirror Wand / Flashlight */}
+      <group ref={rightArmRef} position={[0.24, 1.15, 0]}>
+        <mesh position={[0, -0.18, 0]} material={MAT_ID_BADGE_WHITE}>
+          <boxGeometry args={[0.11, 0.36, 0.11]} />
+        </mesh>
+        <mesh position={[0, -0.38, 0]} material={MAT_SKIN_BRONZE}>
+          <boxGeometry args={[0.09, 0.12, 0.09]} />
+        </mesh>
+        {/* Telescopic Vehicle Inspection Mirror Wand */}
+        <group ref={mirrorWandRef} position={[0, -0.42, 0.15]}>
+          {/* Long Telescopic Wand Shaft */}
+          <mesh position={[0, -0.35, 0.25]} rotation={[0.5, 0, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+            <cylinderGeometry args={[0.012, 0.012, 0.85, 8]} />
+          </mesh>
+          {/* Convex Mirror Head Disk at Tip */}
+          <group position={[0, -0.68, 0.55]} rotation={[-0.4, 0, 0]}>
+            <mesh material={MAT_YELLOW_SAFETY}>
+              <cylinderGeometry args={[0.12, 0.12, 0.03, 16]} />
             </mesh>
-            {/* Rubber Grip on Top */}
-            <mesh position={[0, 0.05, -0.02]} rotation={[0.4, 0, 0]} material={MAT_STEEL_DARK}>
-              <cylinderGeometry args={[0.018, 0.018, 0.22, 8]} />
+            <mesh position={[0, 0.018, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+              <cylinderGeometry args={[0.11, 0.11, 0.01, 16]} />
             </mesh>
-            {/* Angled Knuckle Joint */}
-            <mesh position={[0, -0.98, 0.42]} material={MAT_STEEL_DARK}>
-              <sphereGeometry args={[0.025, 8, 8]} />
-            </mesh>
-            {/* Convex Mirror Disc (with Stainless Steel Frame) */}
-            <group position={[0, -1.02, 0.48]} rotation={[-0.5, 0, 0]}>
-              {/* Outer Protective Rim */}
-              <mesh material={MAT_YELLOW_SAFETY}>
-                <cylinderGeometry args={[0.12, 0.12, 0.015, 16]} />
-              </mesh>
-              {/* Reflective Convex Glass */}
-              <mesh position={[0, 0.009, 0]} material={MAT_CHROME}>
-                <cylinderGeometry args={[0.108, 0.108, 0.005, 16]} />
-              </mesh>
-              {/* LED Guide Searchlight on Mirror Head */}
-              <mesh position={[0, 0.02, 0.11]} material={MAT_HEADLIGHT_ON}>
-                <sphereGeometry args={[0.02, 8, 8]} />
-              </mesh>
-            </group>
-
-            {/* Active Dynamic Searchlight Spot Beam */}
-            <spotLight
-              ref={searchlightRef}
-              position={[0, -0.9, 0.4]}
-              target-position={[0, -1.2, 2.5]}
-              color="#F0F9FF"
-              intensity={0}
-              distance={6.0}
-              angle={0.45}
-              penumbra={0.4}
-            />
           </group>
         </group>
       </group>
 
-      {/* 👖 NAVY CHARCOAL TROUSERS & POLISHED BLACK BOOTS */}
-      {/* Left Leg */}
-      <group ref={leftLegRef} position={[-0.10, 0.72, 0]}>
-        <mesh position={[0, -0.32, 0]} material={MAT_PANTS_CHARCOAL_OFFICE}>
-          <boxGeometry args={[0.14, 0.64, 0.16]} />
+      {/* Left & Right Legs (Dark Navy Blue Slacks + Glossy Black Combat Boots) */}
+      <group ref={leftLegRef} position={[-0.10, 0.44, 0]}>
+        <mesh position={[0, -0.22, 0]} material={MAT_SHIRT_BLAZER_NAVY}>
+          <boxGeometry args={[0.13, 0.44, 0.14]} />
         </mesh>
-        <mesh position={[0, -0.66, 0.03]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.13, 0.10, 0.22]} />
+        <mesh position={[0, -0.46, 0.02]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.12, 0.10, 0.20]} />
         </mesh>
       </group>
-      {/* Right Leg */}
-      <group ref={rightLegRef} position={[0.10, 0.72, 0]}>
-        <mesh position={[0, -0.32, 0]} material={MAT_PANTS_CHARCOAL_OFFICE}>
-          <boxGeometry args={[0.14, 0.64, 0.16]} />
+      <group ref={rightLegRef} position={[0.10, 0.44, 0]}>
+        <mesh position={[0, -0.22, 0]} material={MAT_SHIRT_BLAZER_NAVY}>
+          <boxGeometry args={[0.13, 0.44, 0.14]} />
         </mesh>
-        <mesh position={[0, -0.66, 0.03]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.13, 0.10, 0.22]} />
+        <mesh position={[0, -0.46, 0.02]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.12, 0.10, 0.20]} />
         </mesh>
       </group>
     </group>
   );
 }
 
-/** 3D Holographic Visual Inspection Status HUD hovering over the checkpoint stop line */
+// ─── CHECKPOINT HOLOGRAPHIC TELEMETRY HUD ──────────────────────────────────
 function CheckpointInspectionHUD({
+  checkpointRef,
   checkpointPhase,
-  activeVehDir,
+  activeVehDir = 1,
 }: {
-  checkpointPhase: CheckpointInspectionPhase;
-  activeVehDir: 1 | -1;
+  checkpointRef?: React.MutableRefObject<CheckpointState>;
+  checkpointPhase?: CheckpointInspectionPhase;
+  activeVehDir?: 1 | -1;
 }) {
   const hudRef = useRef<THREE.Group>(null);
   const scanLineRef = useRef<THREE.Mesh>(null);
 
-  const isInspecting =
-    checkpointPhase === "INSPECTING_DRIVER_PPE" ||
-    checkpointPhase === "INSPECTING_UNDERCARRIAGE" ||
-    checkpointPhase === "INSPECTING_CARGO_PROHIBITED" ||
-    checkpointPhase === "LOGGING_MANIFEST" ||
-    checkpointPhase === "WAVING_CLEARANCE";
-
   useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
+    const cp = checkpointRef?.current;
+    const activePhase = cp ? cp.phase : (checkpointPhase || "SENTRY_POST");
+    const activeDir = cp ? cp.activeVehDir : activeVehDir;
+
+    const isInspecting =
+      activePhase === "INSPECTING_DRIVER_PPE" ||
+      activePhase === "INSPECTING_UNDERCARRIAGE" ||
+      activePhase === "INSPECTING_CARGO_PROHIBITED" ||
+      activePhase === "LOGGING_MANIFEST" ||
+      activePhase === "WAVING_CLEARANCE";
+
     if (hudRef.current) {
-      hudRef.current.position.y = 3.6 + Math.sin(t * 1.8) * 0.06;
+      hudRef.current.visible = isInspecting;
+      if (isInspecting) {
+        const t = clock.getElapsedTime();
+        hudRef.current.position.x = activeDir === 1 ? 1.8 : -1.8;
+        hudRef.current.position.y = 3.6 + Math.sin(t * 1.8) * 0.06;
+      }
     }
     if (scanLineRef.current) {
+      const t = clock.getElapsedTime();
       scanLineRef.current.position.x = Math.sin(t * 4.0) * 1.5;
     }
   });
 
-  if (!isInspecting) return null;
-
-  const phaseDetails = {
-    INSPECTING_DRIVER_PPE: {
-      step: "STEP 1/3: DRIVER ID & PPE VERIFICATION",
-      status: "CHECKING PASS & SAFETY GEAR...",
-      badgeColor: "#F59E0B",
-    },
-    INSPECTING_UNDERCARRIAGE: {
-      step: "STEP 2/3: UNDERCARRIAGE CHASSIS SWEEP",
-      status: "MIRROR SCAN: NO CONCEALED CONTRABAND ✓",
-      badgeColor: "#38BDF8",
-    },
-    INSPECTING_CARGO_PROHIBITED: {
-      step: "STEP 3/3: CARGO CONTRABAND SEARCH",
-      status: "LIQUOR: NONE ✗ | WEAPONS: NONE ✗ | CLEAR ✓",
-      badgeColor: "#10B981",
-    },
-    LOGGING_MANIFEST: {
-      step: "MANIFEST CLEARANCE LOGGING",
-      status: "RECORDING GATE PASS • APPROVED [SG DIZON]",
-      badgeColor: "#10B981",
-    },
-    WAVING_CLEARANCE: {
-      step: "GATE CLEARANCE GRANTED",
-      status: "ACCESS APPROVED • BARRIER OPENING 🟢",
-      badgeColor: "#22C55E",
-    },
-  }[checkpointPhase] || { step: "", status: "", badgeColor: "#FFFFFF" };
-
-  const xPos = activeVehDir === 1 ? 1.8 : -1.8;
-
   return (
-    <group ref={hudRef} position={[xPos, 3.6, 0]}>
+    <group ref={hudRef} position={[1.8, 3.6, 0]} visible={false}>
       {/* HUD Holographic Glass Backdrop */}
       <mesh material={MAT_GLASS_BLUE}>
         <planeGeometry args={[3.8, 1.1]} />
@@ -2294,11 +2226,7 @@ function CheckpointInspectionHUD({
       {/* Header Banner */}
       <mesh position={[0, 0.35, 0.02]}>
         <planeGeometry args={[3.6, 0.28]} />
-        <meshStandardMaterial
-          color={phaseDetails.badgeColor}
-          emissive={phaseDetails.badgeColor}
-          emissiveIntensity={1.2}
-        />
+        <meshStandardMaterial color="#22C55E" emissive="#22C55E" emissiveIntensity={1.2} />
       </mesh>
 
       {/* Animated Scan Beam Line */}
@@ -2306,46 +2234,36 @@ function CheckpointInspectionHUD({
         <planeGeometry args={[0.08, 0.6]} />
         <meshStandardMaterial color="#38BDF8" emissive="#38BDF8" emissiveIntensity={3.0} />
       </mesh>
-
-      {/* Status Indicators (3 Dots) */}
-      {[-0.6, 0, 0.6].map((xDot, idx) => {
-        const isDone =
-          (idx === 0 && checkpointPhase !== "INSPECTING_DRIVER_PPE") ||
-          (idx === 1 && (checkpointPhase === "INSPECTING_CARGO_PROHIBITED" || checkpointPhase === "LOGGING_MANIFEST" || checkpointPhase === "WAVING_CLEARANCE")) ||
-          (idx === 2 && (checkpointPhase === "LOGGING_MANIFEST" || checkpointPhase === "WAVING_CLEARANCE"));
-        return (
-          <mesh key={`dot-${idx}`} position={[xDot, -0.32, 0.03]}>
-            <circleGeometry args={[0.07, 12]} />
-            <meshStandardMaterial
-              color={isDone ? "#22C55E" : "#F59E0B"}
-              emissive={isDone ? "#22C55E" : "#F59E0B"}
-              emissiveIntensity={2.5}
-            />
-          </mesh>
-        );
-      })}
     </group>
   );
 }
 
 function SecurityGateCheckpointSystem({
+  checkpointRef,
   gateAngle,
-  checkpointPhase,
-  walkProgress,
-  activeVehDir,
   onSelectPerson,
 }: {
-  gateAngle: number;
-  checkpointPhase: CheckpointInspectionPhase;
-  walkProgress: number;
-  activeVehDir: 1 | -1;
+  checkpointRef?: React.MutableRefObject<CheckpointState>;
+  gateAngle?: number;
   onSelectPerson?: (id: string) => void;
 }) {
   const gateArmRef = useRef<THREE.Group>(null);
+  const gateLedMatRef = useRef<THREE.MeshStandardMaterial>(null);
 
   useFrame(() => {
+    const cp = checkpointRef?.current;
+    const isGateOpen = cp
+      ? (cp.phase === "WAVING_CLEARANCE" || cp.phase === "VEHICLE_PASSING")
+      : (gateAngle !== undefined && Math.abs(gateAngle) > 0.1);
+
+    const targetAngle = isGateOpen ? -Math.PI / 2.2 : 0;
     if (gateArmRef.current) {
-      gateArmRef.current.rotation.z = THREE.MathUtils.lerp(gateArmRef.current.rotation.z, gateAngle, 0.08);
+      gateArmRef.current.rotation.z = THREE.MathUtils.lerp(gateArmRef.current.rotation.z, targetAngle, 0.08);
+    }
+    if (gateLedMatRef.current) {
+      const col = isGateOpen ? "#22C55E" : "#EF4444";
+      gateLedMatRef.current.color.set(col);
+      gateLedMatRef.current.emissive.set(col);
     }
   });
 
@@ -2479,8 +2397,9 @@ function SecurityGateCheckpointSystem({
       <mesh position={[3.8, 1.26, 0]}>
         <sphereGeometry args={[0.09, 10, 10]} />
         <meshStandardMaterial
-          color={Math.abs(gateAngle) > 0.1 ? "#22C55E" : "#EF4444"}
-          emissive={Math.abs(gateAngle) > 0.1 ? "#22C55E" : "#EF4444"}
+          ref={gateLedMatRef}
+          color="#EF4444"
+          emissive="#EF4444"
           emissiveIntensity={3.5}
         />
       </mesh>
@@ -2499,16 +2418,11 @@ function SecurityGateCheckpointSystem({
       </group>
 
       {/* ═══ 7. FLOATING 3D HOLOGRAPHIC VISUAL INSPECTION TELEMETRY HUD ═══ */}
-      <CheckpointInspectionHUD
-        checkpointPhase={checkpointPhase}
-        activeVehDir={activeVehDir}
-      />
+      <CheckpointInspectionHUD checkpointRef={checkpointRef} />
 
       {/* ═══ 8. 🇵🇭 FULLY ANIMATED DOLE/SOSIA FILIPINO SECURITY GUARD ═══ */}
       <AnimatedSecurityGateOfficer
-        checkpointPhase={checkpointPhase}
-        walkProgress={walkProgress}
-        activeVehDir={activeVehDir}
+        checkpointRef={checkpointRef}
         onSelectPerson={onSelectPerson}
       />
     </group>
@@ -2545,18 +2459,15 @@ function AutonomousSiteTrafficSystem({
     walkProgress: 0,
   });
 
-  // Staggered Vehicle Starting States with Distinct Real-World Construction Routines
+  // Staggered Vehicle Starting States with Dedicated Purpose-Driven Loop Splines
   const vehiclesRef = useRef([
     {
       id: "DUMP_TRUCK",
-      u: 0.15,
-      dir: 1 as 1 | -1,
-      speed: 0.024,
-      maxCruiseSpeed: 0.024,
-      baseLaneOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      lateralOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      targetLateralOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      state: "UPHILL_HAUL",
+      spline: DUMP_TRUCK_SPLINE,
+      u: 0.12, // Climbing mountain road from Quarry
+      speed: 0.015,
+      maxCruiseSpeed: 0.015,
+      state: "HAULING",
       stateTimer: 0,
       isBraking: false,
       hazardLights: false,
@@ -2564,35 +2475,20 @@ function AutonomousSiteTrafficSystem({
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vDumpRef,
-    },
-    {
-      id: "SITE_PICKUP",
-      u: 0.58,
-      dir: 1 as 1 | -1,
-      speed: 0.038,
-      maxCruiseSpeed: 0.038,
-      baseLaneOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      lateralOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      targetLateralOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      state: "UPHILL_HAUL",
-      stateTimer: 0,
-      isBraking: false,
-      hazardLights: false,
-      bedAngle: 0,
-      pos: new THREE.Vector3(),
-      forward: new THREE.Vector3(),
-      ref: vPickupRef,
+      inboundGate: { stopU: 0.27, clearU: 0.35 },
+      outboundGate: { stopU: 0.64, clearU: 0.72 },
+      routines: [
+        { u: 0.48, duration: 4.5, type: "DEPOT_DUMPING", done: false, targetBedAngle: 0.45 },
+        { u: 0.99, duration: 4.0, type: "QUARRY_LOADING", done: false, targetBedAngle: 0.0 },
+      ],
     },
     {
       id: "CREW_VAN",
-      u: 0.88,
-      dir: -1 as 1 | -1,
-      speed: 0.032,
-      maxCruiseSpeed: 0.032,
-      baseLaneOffset: ROAD_CONSTANTS.LANE_DOWNHILL_OFFSET,
-      lateralOffset: ROAD_CONSTANTS.LANE_DOWNHILL_OFFSET,
-      targetLateralOffset: ROAD_CONSTANTS.LANE_DOWNHILL_OFFSET,
-      state: "DOWNHILL_HAUL",
+      spline: CREW_VAN_SPLINE,
+      u: 0.88, // Descending mountain road or returning to terminal
+      speed: 0.017,
+      maxCruiseSpeed: 0.017,
+      state: "CRUISING",
       stateTimer: 0,
       isBraking: false,
       hazardLights: false,
@@ -2600,17 +2496,42 @@ function AutonomousSiteTrafficSystem({
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vVanRef,
+      inboundGate: { stopU: 0.27, clearU: 0.35 },
+      outboundGate: { stopU: 0.63, clearU: 0.71 },
+      routines: [
+        { u: 0.48, duration: 3.5, type: "OFFICE_DROPOFF", done: false, targetBedAngle: 0.0 },
+        { u: 0.99, duration: 3.5, type: "STAFF_BOARDING", done: false, targetBedAngle: 0.0 },
+      ],
+    },
+    {
+      id: "SITE_PICKUP",
+      spline: QAQC_PICKUP_SPLINE,
+      u: 0.38, // Approaching Switchyard Substation
+      speed: 0.019,
+      maxCruiseSpeed: 0.019,
+      state: "INSPECTION_PATROL",
+      stateTimer: 0,
+      isBraking: false,
+      hazardLights: false,
+      bedAngle: 0,
+      pos: new THREE.Vector3(),
+      forward: new THREE.Vector3(),
+      ref: vPickupRef,
+      outboundGate: { stopU: 0.11, clearU: 0.19 },
+      inboundGate: { stopU: 0.82, clearU: 0.90 },
+      routines: [
+        { u: 0.45, duration: 3.0, type: "SWITCHYARD_INSPECT", done: false, targetBedAngle: 0.0 },
+        { u: 0.56, duration: 2.5, type: "PORTAL_INSPECT", done: false, targetBedAngle: 0.0 },
+        { u: 0.99, duration: 3.0, type: "QAQC_STAGING", done: false, targetBedAngle: 0.0 },
+      ],
     },
     {
       id: "SECURITY_PATROL",
-      u: 0.38,
-      dir: 1 as 1 | -1,
-      speed: 0.042,
-      maxCruiseSpeed: 0.042,
-      baseLaneOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      lateralOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      targetLateralOffset: ROAD_CONSTANTS.LANE_UPHILL_OFFSET,
-      state: "UPHILL_HAUL",
+      spline: SAFETY_PATROL_SPLINE,
+      u: 0.05, // Patrolling TEMFACIL compound perimeter
+      speed: 0.017,
+      maxCruiseSpeed: 0.017,
+      state: "PERIMETER_PATROL",
       stateTimer: 0,
       isBraking: false,
       hazardLights: true,
@@ -2618,17 +2539,23 @@ function AutonomousSiteTrafficSystem({
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vPatrolRef,
+      outboundGate: { stopU: 0.47, clearU: 0.55 },
+      inboundGate: { stopU: 0.85, clearU: 0.93 },
+      routines: [
+        { u: 0.01, duration: 2.5, type: "TOOL_SHED_CHECK", done: false, targetBedAngle: 0.0 },
+        { u: 0.68, duration: 2.5, type: "MOUNTAIN_PERIMETER_CHECK", done: false, targetBedAngle: 0.0 },
+      ],
     },
   ]);
 
-  // Pedestrian Crew Walkers
+  // Pedestrian Crew Walkers with Dedicated Paver Pathways & Zero Wall Clipping
   const pedestriansRef = useRef([
     {
       id: "WALKER_1",
-      u: 0.25,
+      spline: PEDESTRIAN_PATH_1_SPLINE,
+      u: 0.20,
       dir: 1 as 1 | -1,
-      speed: 0.009,
-      lateralOffset: ROAD_CONSTANTS.SIDEWALK_OFFSET,
+      speed: 0.012,
       role: "SURVEYOR",
       vestColor: MAT_WORKER_VEST_ORANGE,
       hardhatColor: MAT_WORKER_HARDHAT_WHITE,
@@ -2637,10 +2564,10 @@ function AutonomousSiteTrafficSystem({
     },
     {
       id: "WALKER_2",
-      u: 0.52,
+      spline: PEDESTRIAN_PATH_2_SPLINE,
+      u: 0.55,
       dir: -1 as 1 | -1,
-      speed: 0.008,
-      lateralOffset: -ROAD_CONSTANTS.SIDEWALK_OFFSET,
+      speed: 0.010,
       role: "SAFETY_INSPECTOR",
       vestColor: MAT_WORKER_VEST_GREEN,
       hardhatColor: MAT_WORKER_HARDHAT_GREEN,
@@ -2649,10 +2576,10 @@ function AutonomousSiteTrafficSystem({
     },
     {
       id: "WALKER_3",
-      u: 0.76,
+      spline: PEDESTRIAN_PATH_3_SPLINE,
+      u: 0.70,
       dir: 1 as 1 | -1,
-      speed: 0.010,
-      lateralOffset: ROAD_CONSTANTS.SIDEWALK_OFFSET + 0.3,
+      speed: 0.014,
       role: "CIVIL_FOREMAN",
       vestColor: MAT_WORKER_VEST_BLUE,
       hardhatColor: MAT_WORKER_HARDHAT_YELLOW,
@@ -2666,85 +2593,85 @@ function AutonomousSiteTrafficSystem({
     const vehicles = vehiclesRef.current;
     const pedestrians = pedestriansRef.current;
 
-    // ─── 1. SIMULATE WALKING PEDESTRIANS WITH LIFELIKE GAIT ───
+    // ─── 1. SIMULATE WALKING PEDESTRIANS WITH DEDICATED PAVER PATHWAYS & WALL COLLISION AVOIDANCE ───
     pedestrians.forEach((ped) => {
-      ped.u += ped.dir * ped.speed * delta;
-      if (ped.u >= 0.94) ped.dir = -1;
-      if (ped.u <= 0.06) ped.dir = 1;
+      ped.u = (ped.u + ped.dir * ped.speed * delta + 1.0) % 1.0;
 
-      const transform = getRoadTransform(ped.u, ped.lateralOffset, 0.28);
-      ped.pos.copy(transform.point);
+      const rawTransform = getSplineTransform(ped.spline, ped.u, 0, 0.28);
+      const safe = resolveBuildingCollisions(rawTransform.point, rawTransform.tangent, 0.6);
+      ped.pos.copy(safe.adjustedPos);
 
       if (ped.ref.current) {
-        const yaw = transform.yaw + (ped.dir === -1 ? Math.PI : 0);
-        ped.ref.current.position.set(transform.point.x, transform.point.y, transform.point.z);
+        const yaw = Math.atan2(safe.adjustedForward.x, safe.adjustedForward.z) + (ped.dir === -1 ? Math.PI : 0);
+        ped.ref.current.position.set(safe.adjustedPos.x, safe.adjustedPos.y, safe.adjustedPos.z);
         ped.ref.current.rotation.set(0, yaw, 0);
       }
     });
 
     // ─── 2. ADVANCE CENTRAL SECURITY CHECKPOINT STATE MACHINE ───
-    const GATE_U = ROAD_CONSTANTS.GATE_PROGRESS_U; // 0.655
-
-    // A. Detect nearest vehicle approaching checkpoint if idle
-    if (cp.activeVehId === null) {
+    // A. Detect nearest vehicle approaching an active stop line
+    if (cp.activeVehId === null && cp.phase === "SENTRY_POST") {
       let candidateVeh: (typeof vehicles)[0] | null = null;
+      let candidateDir: 1 | -1 = 1;
       let minDistance = 999;
 
       vehicles.forEach((v) => {
-        if (v.dir === 1 && v.u >= 0.48 && v.u <= 0.62) {
-          const d = Math.abs(v.u - (GATE_U - 0.04));
-          if (d < minDistance) {
-            minDistance = d;
-            candidateVeh = v;
-          }
-        } else if (v.dir === -1 && v.u <= 0.82 && v.u >= 0.69) {
-          const d = Math.abs(v.u - (GATE_U + 0.04));
-          if (d < minDistance) {
-            minDistance = d;
-            candidateVeh = v;
-          }
+        // Inbound Stop Line Approach (Uphill into TEMFACIL)
+        const distIn = v.inboundGate.stopU - v.u;
+        if (distIn > 0 && distIn < 0.055 && distIn < minDistance) {
+          minDistance = distIn;
+          candidateVeh = v;
+          candidateDir = 1;
+        }
+        // Outbound Stop Line Approach (Downhill out of TEMFACIL)
+        const distOut = v.outboundGate.stopU - v.u;
+        if (distOut > 0 && distOut < 0.055 && distOut < minDistance) {
+          minDistance = distOut;
+          candidateVeh = v;
+          candidateDir = -1;
         }
       });
 
       if (candidateVeh) {
         cp.activeVehId = (candidateVeh as any).id;
-        cp.activeVehDir = (candidateVeh as any).dir;
+        cp.activeVehDir = candidateDir;
         cp.phase = "WALKING_TO_VEHICLE";
         cp.walkProgress = 0;
         cp.timer = 0;
       }
     }
 
-    // B. Progress Checkpoint Protocol Sub-routines with Detailed Prohibited Items Inspection
+    // B. Progress Checkpoint Protocol Sub-routines with Visual Inspection Routine (~8.5s total)
     if (cp.phase === "WALKING_TO_VEHICLE") {
-      cp.walkProgress = Math.min(1.0, cp.walkProgress + delta * 1.4);
+      // Guard steps forward to vehicle driver's window holding clipboard and inspection wand
+      cp.walkProgress = Math.min(1.0, cp.walkProgress + delta * 0.9);
       if (cp.walkProgress >= 1.0) {
         cp.phase = "INSPECTING_DRIVER_PPE";
-        cp.timer = 2.0; // 2.0 seconds driver ID & PPE verification
+        cp.timer = 2.2; // 2.2s verifying Driver ID, Gate Pass, Hardhat, and Safety Vest
       }
     } else if (cp.phase === "INSPECTING_DRIVER_PPE") {
       cp.timer -= delta;
       if (cp.timer <= 0) {
         cp.phase = "INSPECTING_UNDERCARRIAGE";
-        cp.timer = 2.8; // 2.8 seconds convex mirror search under chassis
+        cp.timer = 2.2; // 2.2s convex mirror inspection of undercarriage & chassis with searchlight
       }
     } else if (cp.phase === "INSPECTING_UNDERCARRIAGE") {
       cp.timer -= delta;
       if (cp.timer <= 0) {
         cp.phase = "INSPECTING_CARGO_PROHIBITED";
-        cp.timer = 3.2; // 3.2 seconds cargo bed prohibited items / contraband search
+        cp.timer = 2.0; // 2.0s cargo bed prohibited contraband / cargo inspection
       }
     } else if (cp.phase === "INSPECTING_CARGO_PROHIBITED") {
       cp.timer -= delta;
       if (cp.timer <= 0) {
         cp.phase = "LOGGING_MANIFEST";
-        cp.timer = 1.8; // 1.8 seconds signing manifest logbook & stamping pass
+        cp.timer = 1.6; // 1.6s signing approval manifest logbook & stamping pass
       }
     } else if (cp.phase === "LOGGING_MANIFEST") {
       cp.timer -= delta;
       if (cp.timer <= 0) {
         cp.phase = "WAVING_CLEARANCE";
-        cp.timer = 2.0; // 2.0 seconds clearance wave and upward gate lift
+        cp.timer = 1.6; // 1.6s clearance wave and upward boom barrier lift (Green LED)
       }
     } else if (cp.phase === "WAVING_CLEARANCE") {
       cp.timer -= delta;
@@ -2754,13 +2681,21 @@ function AutonomousSiteTrafficSystem({
     } else if (cp.phase === "VEHICLE_PASSING") {
       // Check if active vehicle has completely cleared the gate boundary
       const activeVeh = vehicles.find((v) => v.id === cp.activeVehId);
-      const isCleared = !activeVeh || (activeVeh.dir === 1 && activeVeh.u >= 0.71) || (activeVeh.dir === -1 && activeVeh.u <= 0.59);
+      let isCleared = true;
+      if (activeVeh) {
+        if (cp.activeVehDir === 1) {
+          isCleared = activeVeh.u >= activeVeh.inboundGate.clearU || activeVeh.u < activeVeh.inboundGate.stopU - 0.05;
+        } else {
+          isCleared = activeVeh.u >= activeVeh.outboundGate.clearU || activeVeh.u < activeVeh.outboundGate.stopU - 0.05;
+        }
+      }
       if (isCleared) {
         cp.phase = "WALKING_TO_POST";
         cp.activeVehId = null;
       }
     } else if (cp.phase === "WALKING_TO_POST") {
-      cp.walkProgress = Math.max(0.0, cp.walkProgress - delta * 1.1);
+      // Guard steps safely back to sentry post, lowering boom barrier
+      cp.walkProgress = Math.max(0.0, cp.walkProgress - delta * 0.9);
       if (cp.walkProgress <= 0.0) {
         cp.phase = "SENTRY_POST";
       }
@@ -2770,169 +2705,144 @@ function AutonomousSiteTrafficSystem({
     const isGateOpen = cp.phase === "WAVING_CLEARANCE" || cp.phase === "VEHICLE_PASSING";
     onGateAngleChange(isGateOpen ? -Math.PI / 2.2 : 0);
 
-    // ─── 3. SIMULATE AUTONOMOUS VEHICLES WITH ZERO-COLLISION FLOW ───
+    // ─── 3. SIMULATE AUTONOMOUS VEHICLES ALONG DEDICATED PURPOSE-DRIVEN ROUTES ───
     vehicles.forEach((veh, i) => {
-      // Handle dedicated routine pauses (Dumping, Loading, Shift Transfers)
+      // 1. Handle on-site functional work pauses (Tipping, Drop-offs, QA Inspections)
       if (veh.stateTimer > 0) {
         veh.stateTimer -= delta;
         veh.speed = 0;
         veh.isBraking = true;
-        veh.bedAngle = THREE.MathUtils.lerp(veh.bedAngle, 0, 0.08);
+
+        if (veh.id === "DUMP_TRUCK") {
+          const targetBed = veh.state === "DEPOT_DUMPING" ? 0.45 : 0;
+          veh.bedAngle = THREE.MathUtils.lerp(veh.bedAngle, targetBed, 0.08);
+          if (vDumpRef.current) {
+            const tipperBed = vDumpRef.current.getObjectByName("dumpTipperBed");
+            if (tipperBed) tipperBed.rotation.x = -veh.bedAngle;
+          }
+        }
 
         if (veh.stateTimer <= 0) {
-          if (veh.u >= 0.94) {
-            veh.dir = -1;
-            veh.baseLaneOffset = ROAD_CONSTANTS.LANE_DOWNHILL_OFFSET;
-            veh.targetLateralOffset = ROAD_CONSTANTS.LANE_DOWNHILL_OFFSET;
-            veh.hazardLights = false;
-            veh.state = "DOWNHILL_HAUL";
-          } else if (veh.u <= 0.06) {
-            veh.dir = 1;
-            veh.baseLaneOffset = ROAD_CONSTANTS.LANE_UPHILL_OFFSET;
-            veh.targetLateralOffset = ROAD_CONSTANTS.LANE_UPHILL_OFFSET;
-            veh.hazardLights = false;
-            veh.state = "UPHILL_HAUL";
-          }
+          veh.hazardLights = veh.id === "SECURITY_PATROL";
         }
         return;
       }
 
-      veh.bedAngle = THREE.MathUtils.lerp(veh.bedAngle, 0, 0.08);
-
-      // Compute current 3D world transform
-      const currentTransform = getRoadTransform(veh.u, veh.lateralOffset);
-      veh.pos.copy(currentTransform.point);
-      veh.forward.copy(currentTransform.tangent).multiplyScalar(veh.dir);
+      // Smoothly lower tipper bed if moving
+      if (veh.id === "DUMP_TRUCK" && veh.bedAngle > 0) {
+        veh.bedAngle = THREE.MathUtils.lerp(veh.bedAngle, 0, 0.08);
+        if (vDumpRef.current) {
+          const tipperBed = vDumpRef.current.getObjectByName("dumpTipperBed");
+          if (tipperBed) tipperBed.rotation.x = -veh.bedAngle;
+        }
+      }
 
       let targetSpeed = veh.maxCruiseSpeed;
-      let targetOffset = veh.baseLaneOffset;
       let hardBrake = false;
 
-      // ─── A. STRICT QUEUEING & COLLISION AVOIDANCE (NEVER OVERLAP) ───
+      // 2. Checkpoint Stop Line Compliance (Inbound & Outbound)
+      const checkGateStop = (stopU: number, clearU: number) => {
+        const distToStop = stopU - veh.u;
+        if (distToStop >= 0 && distToStop < 0.055) {
+          if (veh.id === cp.activeVehId) {
+            if (cp.phase !== "WAVING_CLEARANCE" && cp.phase !== "VEHICLE_PASSING") {
+              if (distToStop < 0.005) {
+                targetSpeed = 0;
+                hardBrake = true;
+                veh.u = stopU;
+              } else {
+                targetSpeed = Math.min(targetSpeed, (distToStop / 0.04) * veh.maxCruiseSpeed * 0.45);
+              }
+            } else {
+              targetSpeed = veh.maxCruiseSpeed * 0.85;
+            }
+          } else {
+            // Must wait behind stop line
+            if (distToStop < 0.005) {
+              targetSpeed = 0;
+              hardBrake = true;
+              veh.u = stopU;
+            } else {
+              targetSpeed = Math.min(targetSpeed, (distToStop / 0.04) * veh.maxCruiseSpeed * 0.45);
+            }
+          }
+        }
+      };
+
+      checkGateStop(veh.inboundGate.stopU, veh.inboundGate.clearU);
+      checkGateStop(veh.outboundGate.stopU, veh.outboundGate.clearU);
+
+      // 3. 3D Euclidean Vehicle Anti-Collision Buffer (12.0m warning, 7.5m full stop)
       for (let j = 0; j < vehicles.length; j++) {
         if (i === j) continue;
         const other = vehicles[j];
+        const dist = veh.pos.distanceTo(other.pos);
 
-        if (other.dir === veh.dir) {
-          const deltaU = (other.u - veh.u) * veh.dir;
+        if (dist < 22.0) {
+          const toOther = new THREE.Vector3().subVectors(other.pos, veh.pos).normalize();
+          const dot = veh.forward.dot(toOther);
 
-          if (deltaU > 0 && deltaU < 0.15) {
-            const dist = veh.pos.distanceTo(other.pos);
-            if (dist < 8.0) {
+          if (dot > 0.40) { // Other vehicle is ahead along our heading
+            if (dist < 7.5) {
               targetSpeed = 0;
               hardBrake = true;
-            } else if (dist < 16.0) {
-              targetSpeed = Math.min(targetSpeed, (dist - 7.5) * 0.005);
+            } else if (dist < 18.0) {
+              const followSpeed = ((dist - 7.5) / 10.5) * veh.maxCruiseSpeed;
+              targetSpeed = Math.min(targetSpeed, Math.max(0, followSpeed));
+              if (targetSpeed < 0.003) hardBrake = true;
             }
           }
         }
       }
 
-      // ─── B. CHECKPOINT STOP LINE & CLEARANCE ENFORCEMENT ───
-      if (veh.id === cp.activeVehId) {
-        if (cp.phase !== "WAVING_CLEARANCE" && cp.phase !== "VEHICLE_PASSING") {
-          // Inbound Stop Line: 0.618 | Outbound Stop Line: 0.692
-          if (veh.dir === 1 && veh.u >= 0.618) {
-            targetSpeed = 0;
-            hardBrake = true;
-          } else if (veh.dir === -1 && veh.u <= 0.692) {
-            targetSpeed = 0;
-            hardBrake = true;
-          }
-        } else {
-          // Cleared through gate!
-          targetSpeed = veh.maxCruiseSpeed * 0.85;
-        }
-      } else {
-        // Vehicle is NOT the active vehicle: do not enter gate clearance envelope
-        if (veh.dir === 1 && veh.u >= 0.63 && veh.u <= 0.74) {
-          targetSpeed = 0;
-          hardBrake = true;
-        } else if (veh.dir === -1 && veh.u <= 0.83 && veh.u >= 0.72) {
-          targetSpeed = 0;
-          hardBrake = true;
-        }
-      }
-
-      // ─── C. PEDESTRIAN PROXIMITY DETECTION ───
+      // 4. Pedestrian Proximity Detection
       pedestrians.forEach((ped) => {
-        if (Math.abs(ped.lateralOffset) < 2.5) {
-          const distToPed = veh.pos.distanceTo(ped.pos);
-          if (distToPed < 6.5) {
-            const toPed = new THREE.Vector3().subVectors(ped.pos, veh.pos).normalize();
-            if (veh.forward.dot(toPed) > 0.5) {
-              targetSpeed = 0;
-              hardBrake = true;
-            }
+        const distToPed = veh.pos.distanceTo(ped.pos);
+        if (distToPed < 6.5) {
+          const toPed = new THREE.Vector3().subVectors(ped.pos, veh.pos).normalize();
+          if (veh.forward.dot(toPed) > 0.4) {
+            targetSpeed = 0;
+            hardBrake = true;
           }
         }
       });
 
-      // Apply dynamic velocity and lateral steering dampening
+      // Apply dynamic velocity with smooth acceleration and braking
       veh.isBraking = hardBrake;
-      veh.speed = THREE.MathUtils.damp(veh.speed, targetSpeed, 3.5, delta);
-      veh.targetLateralOffset = targetOffset;
-      veh.lateralOffset = THREE.MathUtils.damp(veh.lateralOffset, veh.targetLateralOffset, 2.4, delta);
+      const accelRate = hardBrake ? 6.0 : 2.5;
+      veh.speed = THREE.MathUtils.damp(veh.speed, targetSpeed, accelRate, delta);
 
-      // Advance along spline
-      veh.u += veh.dir * veh.speed * delta;
+      // Advance smoothly along dedicated loop spline
+      veh.u = (veh.u + veh.speed * delta) % 1.0;
 
-      // ─── D. PURPOSEFUL DESTINATION & REALISTIC ARRIVAL ROUTINES ───
-      if (veh.dir === 1) {
-        if (veh.u >= 0.96 && veh.stateTimer <= 0) {
-          if (veh.id === "DUMP_TRUCK") {
-            veh.state = "DEPOT_DUMPING";
-            veh.stateTimer = 4.5; // 4.5 seconds crushed aggregate unloading
-            veh.hazardLights = true;
-          } else if (veh.id === "CREW_VAN") {
-            veh.state = "OFFICE_DROPOFF";
-            veh.stateTimer = 3.5; // 3.5 seconds staff drop-off routine
-            veh.hazardLights = true;
-          } else if (veh.id === "SITE_PICKUP") {
-            veh.state = "MANAGEMENT_VISIT";
-            veh.stateTimer = 3.0; // 3.0 seconds site engineer visit
-            veh.hazardLights = false;
-          } else {
-            veh.state = "COMPOUND_PATROL";
-            veh.stateTimer = 2.0;
-            veh.hazardLights = true;
-          }
+      // 5. Trigger Dedicated Functional Routines at Work Locations
+      veh.routines.forEach((rt) => {
+        const distToRoutine = Math.abs(veh.u - rt.u);
+        if (distToRoutine < 0.014 && !rt.done && veh.stateTimer <= 0) {
+          veh.state = rt.type;
+          veh.stateTimer = rt.duration;
+          rt.done = true;
+          veh.hazardLights = true;
+        } else if (distToRoutine > 0.15) {
+          rt.done = false; // Reset for next loop cycle
         }
-      } else {
-        if (veh.u <= 0.05 && veh.stateTimer <= 0) {
-          if (veh.id === "DUMP_TRUCK") {
-            veh.state = "QUARRY_LOADING";
-            veh.stateTimer = 4.0; // 4.0 seconds quarry loading routine
-            veh.hazardLights = true;
-          } else if (veh.id === "CREW_VAN") {
-            veh.state = "STAFF_BOARDING";
-            veh.stateTimer = 3.5; // 3.5 seconds crew boarding routine
-            veh.hazardLights = true;
-          } else if (veh.id === "SITE_PICKUP") {
-            veh.state = "SWITCHYARD_INSPECT";
-            veh.stateTimer = 3.0; // 3.0 seconds switchyard QA inspection
-            veh.hazardLights = false;
-          } else {
-            veh.state = "PORTAL_SYNC";
-            veh.stateTimer = 2.0;
-            veh.hazardLights = true;
-          }
-        }
-      }
+      });
 
-      // Clamp bounds
-      veh.u = Math.max(0.04, Math.min(0.97, veh.u));
+      // 6. Compute 3D Transform, Pitch & Orientation with Active Hard Wall Collision Resolution
+      const dCenter = getSplineTransform(veh.spline, veh.u, 0, 0.08);
+      const dAhead = getSplineTransform(veh.spline, veh.u + 0.012, 0, 0.08);
+      const dBehind = getSplineTransform(veh.spline, veh.u - 0.012, 0, 0.08);
 
-      // ─── E. UPDATE 3D MESH POSITION & SMOOTH PITCH/ROLL ───
+      // Active Hard Wall Collision Avoidance & Exterior Boundary Push-Out
+      const safeTransform = resolveBuildingCollisions(dCenter.point, dCenter.tangent, 2.2);
+
+      veh.pos.copy(safeTransform.adjustedPos);
+      veh.forward.copy(safeTransform.adjustedForward);
+
       if (veh.ref.current) {
-        const dCenter = getRoadTransform(veh.u, veh.lateralOffset, 0.08);
-        const dAhead = getRoadTransform(veh.u + veh.dir * 0.014, veh.lateralOffset, 0.08);
-        const dBehind = getRoadTransform(veh.u - veh.dir * 0.014, veh.lateralOffset, 0.08);
-
         const pitch = Math.max(-0.25, Math.min(0.25, Math.atan2(dAhead.point.y - dBehind.point.y, 2.8)));
-        const yaw = dCenter.yaw + (veh.dir === -1 ? Math.PI : 0);
-
-        veh.ref.current.position.set(dCenter.point.x, dCenter.point.y, dCenter.point.z);
+        const yaw = Math.atan2(safeTransform.adjustedForward.x, safeTransform.adjustedForward.z);
+        veh.ref.current.position.set(safeTransform.adjustedPos.x, safeTransform.adjustedPos.y, safeTransform.adjustedPos.z);
         veh.ref.current.rotation.set(pitch, yaw, 0);
       }
     });
@@ -2942,10 +2852,7 @@ function AutonomousSiteTrafficSystem({
     <group>
       {/* ═══ 1. INTERACTIVE TEMFACIL SECURITY CHECKPOINT BOOM GATE WITH FILIPINO OFFICER ═══ */}
       <SecurityGateCheckpointSystem
-        gateAngle={gateAngle}
-        checkpointPhase={checkpointRef.current.phase}
-        walkProgress={checkpointRef.current.walkProgress}
-        activeVehDir={checkpointRef.current.activeVehDir}
+        checkpointRef={checkpointRef}
         onSelectPerson={onSelectPerson}
       />
 
@@ -2971,10 +2878,10 @@ function AutonomousSiteTrafficSystem({
       </group>
 
       {/* ═══ 3. DEDICATED WALKING PEDESTRIANS (ANIMATED BIOMECHANICAL STRIDE) ═══ */}
-      {/* Pedestrian 1: Lead QA/QC Electrical Engineer (Engr. Maria Reyes) */}
+      {/* Pedestrian 1: Lead QA/QC Head (Engr. Elgine Mangcupang) */}
       <group ref={ped1Ref}>
         <HydroProjectPersonMesh
-          personnelId="ENGR_MARIA_REYES"
+          personnelId="ENGR_ELGINE_MANGCUPANG"
           onSelectPerson={onSelectPerson}
           isPatrolling={true}
           gender="FEMALE"
@@ -3009,14 +2916,15 @@ function AutonomousSiteTrafficSystem({
       {/* Pedestrian 3: Senior Surveyor walking downhill on shoulder */}
       <group ref={ped3Ref}>
         <HydroProjectPersonMesh
+          personnelId="SURVEYOR_JOHNNY_FARONGEY"
           onSelectPerson={onSelectPerson}
           isPatrolling={true}
           skinTone="BRONZE"
-          facialHair="MUSTACHE"
+          facialHair="NONE"
           hasHardhat
-          hardhatColor="#FFFFFF"
+          hardhatColor="#EAB308"
           hasVest
-          vestColor="#0D9488"
+          vestColor="#EA580C"
           pantsStyle="CARGO"
           accessory="RADIO"
         />
@@ -3043,30 +2951,29 @@ export function AnimatedSiteEntities({
   return (
     <group>
       {/* ═══ 1. HIGH-PRECISION CIVIL CONSTRUCTION WORKFORCE (HEPP SITE CREWS) ═══ */}
-      {/* Turbine Mechanical Specialist (JC Morales) at Powerhouse Portal */}
+      {/* Electrical Superintendent (Eduardo De Francia) at Powerhouse Portal */}
       <HydroProjectPersonMesh
-        personnelId="TECH_JC_MORALES"
+        personnelId="SUPT_EDUARDO_DEFRANCIA"
         onSelectPerson={onSelectPerson}
         position={[2, 0.42, 4]}
         rotation={[0, Math.PI / 4, 0]}
-        skinTone="LIGHT"
-        hairStyle="POMPADOUR"
-        hasGlasses
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasGlasses={false}
         hasHardhat
-        hardhatColor="#0284C7"
+        hardhatColor="#FFFFFF"
         hasVest
         vestColor="#0284C7"
         pantsStyle="JEANS"
         accessory="RADIO"
       />
-      {/* General Foreman (Foreman Nonoy Macaraeg) */}
+      {/* Civil Works Supervisor (Foreman Jaime Caño Jr.) */}
       <HydroProjectPersonMesh
-        personnelId="FOREMAN_NONOY"
+        personnelId="CIVIL_JAIME_CANO"
         onSelectPerson={onSelectPerson}
         position={[4, 0.42, 2]}
         rotation={[0, -Math.PI / 3, 0]}
         skinTone="BRONZE"
-        facialHair="MUSTACHE"
         hasHardhat
         hardhatColor="#16A34A"
         hasVest
@@ -3089,7 +2996,7 @@ export function AnimatedSiteEntities({
       />
       {/* Field Engineer / QA Staff (White Hard Hat) */}
       <HydroProjectPersonMesh
-        personnelId="ENGR_MARIA_REYES"
+        personnelId="ENGR_ELGINE_MANGCUPANG"
         onSelectPerson={onSelectPerson}
         position={[-8, 0.42, 8]}
         rotation={[0, -Math.PI / 6, 0]}
@@ -3098,7 +3005,7 @@ export function AnimatedSiteEntities({
         hasHardhat
         hardhatColor="#FFFFFF"
         hasVest
-        vestColor="#0284C7"
+        vestColor="#EA580C"
         pantsStyle="JEANS"
         accessory="TABLET"
       />
@@ -3118,26 +3025,27 @@ export function AnimatedSiteEntities({
       />
       {/* Survey Engineer / Staff (White Hard Hat) */}
       <HydroProjectPersonMesh
+        personnelId="SURVEYOR_JOHNNY_FARONGEY"
         onSelectPerson={onSelectPerson}
         position={[78, y1, -112]}
         rotation={[0, -Math.PI / 2, 0]}
         skinTone="BRONZE"
         hasHardhat
-        hardhatColor="#FFFFFF"
+        hardhatColor="#EAB308"
         hasVest
-        vestColor="#0284C7"
+        vestColor="#EA580C"
         pantsStyle="KHAKI"
         accessory="CLIPBOARD"
       />
 
       {/* ═══ 3. TEMFACIL COMPOUND DISPATCH WORKERS (Z = -96m) ═══ */}
-      {/* Heavy Hauler Driver (Erick Dela Cruz) */}
+      {/* Heavy Equipment & Fleet Supervisor (Howell Gene Samson) */}
       <HydroProjectPersonMesh
-        personnelId="DRIVER_ERICK"
+        personnelId="EQUIP_HOWELL_SAMSON"
         onSelectPerson={onSelectPerson}
         position={[94, y2, -96]}
         rotation={[0, Math.PI, 0]}
-        hardhatColor="#16A34A"
+        hardhatColor="#EAB308"
         hasVest
         vestColor="#EA580C"
         pantsStyle="JEANS"

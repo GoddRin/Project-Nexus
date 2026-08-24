@@ -157,32 +157,32 @@ function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number,
   return (
     <group ref={groupRef}>
       {/* Heavy Barrel Torso */}
-      <mesh position={[0, 0.95, 0]} castShadow material={MAT_CARABAO_HIDE}>
+      <mesh position={[0, 0.95, 0]} material={MAT_CARABAO_HIDE}>
         <cylinderGeometry args={[0.55, 0.62, 1.6, 8]} />
       </mesh>
       {/* Rump */}
-      <mesh position={[0, 0.92, -0.65]} castShadow material={MAT_CARABAO_HIDE}>
+      <mesh position={[0, 0.92, -0.65]} material={MAT_CARABAO_HIDE}>
         <sphereGeometry args={[0.54, 8, 8]} />
       </mesh>
       {/* Shoulders / Wither */}
-      <mesh position={[0, 1.05, 0.6]} castShadow material={MAT_CARABAO_HIDE}>
+      <mesh position={[0, 1.05, 0.6]} material={MAT_CARABAO_HIDE}>
         <sphereGeometry args={[0.56, 8, 8]} />
       </mesh>
 
       {/* Head & Sweeping Curved Horns */}
       <group ref={headRef} position={[0, 1.05, 1.0]}>
-        <mesh position={[0, 0.1, 0.35]} rotation={[-0.3, 0, 0]} castShadow material={MAT_CARABAO_HIDE}>
+        <mesh position={[0, 0.1, 0.35]} rotation={[-0.3, 0, 0]} material={MAT_CARABAO_HIDE}>
           <cylinderGeometry args={[0.22, 0.32, 0.65, 8]} />
         </mesh>
-        <mesh position={[0, -0.05, 0.68]} castShadow material={MAT_CARABAO_HIDE}>
+        <mesh position={[0, -0.05, 0.68]} material={MAT_CARABAO_HIDE}>
           <boxGeometry args={[0.32, 0.22, 0.35]} />
         </mesh>
         {/* Left Curved Horn (Crescent sweep) */}
-        <mesh position={[-0.45, 0.32, 0.25]} rotation={[0.4, -0.8, -0.6]} castShadow material={MAT_HORN_GREY}>
+        <mesh position={[-0.45, 0.32, 0.25]} rotation={[0.4, -0.8, -0.6]} material={MAT_HORN_GREY}>
           <cylinderGeometry args={[0.06, 0.12, 0.85, 6]} />
         </mesh>
         {/* Right Curved Horn */}
-        <mesh position={[0.45, 0.32, 0.25]} rotation={[0.4, 0.8, 0.6]} castShadow material={MAT_HORN_GREY}>
+        <mesh position={[0.45, 0.32, 0.25]} rotation={[0.4, 0.8, 0.6]} material={MAT_HORN_GREY}>
           <cylinderGeometry args={[0.06, 0.12, 0.85, 6]} />
         </mesh>
         {/* Drooping Ears */}
@@ -206,22 +206,22 @@ function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number,
 
       {/* Sturdy Hoofed Legs with upper shoulder pivot */}
       <group ref={legFLRef} position={[-0.35, 0.65, 0.5]}>
-        <mesh position={[0, -0.35, 0]} castShadow material={MAT_CARABAO_HIDE}>
+        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
           <cylinderGeometry args={[0.12, 0.09, 0.70, 6]} />
         </mesh>
       </group>
       <group ref={legFRRef} position={[0.35, 0.65, 0.5]}>
-        <mesh position={[0, -0.35, 0]} castShadow material={MAT_CARABAO_HIDE}>
+        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
           <cylinderGeometry args={[0.12, 0.09, 0.70, 6]} />
         </mesh>
       </group>
       <group ref={legRLRef} position={[-0.32, 0.62, -0.55]}>
-        <mesh position={[0, -0.35, 0]} castShadow material={MAT_CARABAO_HIDE}>
+        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
           <cylinderGeometry args={[0.12, 0.09, 0.68, 6]} />
         </mesh>
       </group>
       <group ref={legRRRef} position={[0.32, 0.62, -0.55]}>
-        <mesh position={[0, -0.35, 0]} castShadow material={MAT_CARABAO_HIDE}>
+        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
           <cylinderGeometry args={[0.12, 0.09, 0.68, 6]} />
         </mesh>
       </group>
@@ -415,57 +415,57 @@ function RealisticPhilippineDeer({ basePos, seed = 1.0 }: { basePos: [number, nu
   return (
     <group ref={groupRef} position={[basePos[0], groundY, basePos[1]]}>
       {/* Slender Deer Torso */}
-      <mesh position={[0, 0.9, 0]} castShadow>
+      <mesh position={[0, 0.9, 0]}>
         <cylinderGeometry args={[0.26, 0.22, 1.15, 8]} />
         <meshStandardMaterial color="#6E3B16" roughness={0.8} />
       </mesh>
       {/* Rump */}
-      <mesh position={[0, 0.92, -0.45]} castShadow>
+      <mesh position={[0, 0.92, -0.45]}>
         <sphereGeometry args={[0.26, 7, 7]} />
         <meshStandardMaterial color="#5C3112" roughness={0.8} />
       </mesh>
 
       {/* Head with Branched Antlers */}
       <group ref={headRef} position={[0, 1.2, 0.45]}>
-        <mesh position={[0, 0.22, 0.14]} rotation={[-0.3, 0, 0]} castShadow>
+        <mesh position={[0, 0.22, 0.14]} rotation={[-0.3, 0, 0]}>
           <cylinderGeometry args={[0.1, 0.14, 0.48, 6]} />
           <meshStandardMaterial color="#6E3B16" roughness={0.8} />
         </mesh>
-        <mesh position={[0, 0.35, 0.35]} rotation={[-0.4, 0, 0]} castShadow>
+        <mesh position={[0, 0.35, 0.35]} rotation={[-0.4, 0, 0]}>
           <coneGeometry args={[0.11, 0.34, 6]} />
           <meshStandardMaterial color="#4A2509" roughness={0.8} />
         </mesh>
         {/* Left Antler */}
-        <mesh position={[-0.14, 0.65, 0.12]} rotation={[0.2, -0.3, -0.35]} castShadow material={MAT_HORN_GREY}>
+        <mesh position={[-0.14, 0.65, 0.12]} rotation={[0.2, -0.3, -0.35]} material={MAT_HORN_GREY}>
           <cylinderGeometry args={[0.02, 0.04, 0.55, 5]} />
         </mesh>
         {/* Right Antler */}
-        <mesh position={[0.14, 0.65, 0.12]} rotation={[0.2, 0.3, 0.35]} castShadow material={MAT_HORN_GREY}>
+        <mesh position={[0.14, 0.65, 0.12]} rotation={[0.2, 0.3, 0.35]} material={MAT_HORN_GREY}>
           <cylinderGeometry args={[0.02, 0.04, 0.55, 5]} />
         </mesh>
       </group>
 
       {/* Articulated Slender Legs */}
       <group ref={legFLRef} position={[-0.14, 0.85, 0.38]}>
-        <mesh position={[0, -0.42, 0]} castShadow>
+        <mesh position={[0, -0.42, 0]}>
           <cylinderGeometry args={[0.045, 0.03, 0.85, 6]} />
           <meshStandardMaterial color="#4A2509" roughness={0.9} />
         </mesh>
       </group>
       <group ref={legFRRef} position={[0.14, 0.85, 0.38]}>
-        <mesh position={[0, -0.42, 0]} castShadow>
+        <mesh position={[0, -0.42, 0]}>
           <cylinderGeometry args={[0.045, 0.03, 0.85, 6]} />
           <meshStandardMaterial color="#4A2509" roughness={0.9} />
         </mesh>
       </group>
       <group ref={legRLRef} position={[-0.13, 0.85, -0.38]}>
-        <mesh position={[0, -0.42, 0]} castShadow>
+        <mesh position={[0, -0.42, 0]}>
           <cylinderGeometry args={[0.045, 0.03, 0.85, 6]} />
           <meshStandardMaterial color="#4A2509" roughness={0.9} />
         </mesh>
       </group>
       <group ref={legRRRef} position={[0.13, 0.85, -0.38]}>
-        <mesh position={[0, -0.42, 0]} castShadow>
+        <mesh position={[0, -0.42, 0]}>
           <cylinderGeometry args={[0.045, 0.03, 0.85, 6]} />
           <meshStandardMaterial color="#4A2509" roughness={0.9} />
         </mesh>
@@ -515,7 +515,7 @@ function RealisticPhilippineWildBoar({ basePos, seed = 1.0 }: { basePos: [number
   return (
     <group ref={groupRef}>
       {/* Heavy Barrel Body */}
-      <mesh position={[0, 0.48, 0]} scale={[1.1, 1.0, 1.4]} castShadow>
+      <mesh position={[0, 0.48, 0]} scale={[1.1, 1.0, 1.4]}>
         <sphereGeometry args={[0.34, 8, 8]} />
         <meshStandardMaterial color="#2B1810" roughness={0.95} />
       </mesh>
@@ -526,7 +526,7 @@ function RealisticPhilippineWildBoar({ basePos, seed = 1.0 }: { basePos: [number
       </mesh>
       {/* Snout & Head */}
       <group ref={headRef} position={[0, 0.52, 0.42]}>
-        <mesh position={[0, 0, 0.22]} rotation={[-0.3, 0, 0]} castShadow>
+        <mesh position={[0, 0, 0.22]} rotation={[-0.3, 0, 0]}>
           <coneGeometry args={[0.16, 0.45, 6]} />
           <meshStandardMaterial color="#22130C" roughness={0.95} />
         </mesh>
@@ -540,25 +540,25 @@ function RealisticPhilippineWildBoar({ basePos, seed = 1.0 }: { basePos: [number
       </group>
       {/* Articulated Sturdy Legs (Firmly Grounded on Terrain) */}
       <group ref={legFLRef} position={[-0.2, 0.48, 0.25]}>
-        <mesh position={[0, -0.24, 0]} castShadow>
+        <mesh position={[0, -0.24, 0]}>
           <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
           <meshStandardMaterial color="#1A0D06" roughness={0.95} />
         </mesh>
       </group>
       <group ref={legFRRef} position={[0.2, 0.48, 0.25]}>
-        <mesh position={[0, -0.24, 0]} castShadow>
+        <mesh position={[0, -0.24, 0]}>
           <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
           <meshStandardMaterial color="#1A0D06" roughness={0.95} />
         </mesh>
       </group>
       <group ref={legRLRef} position={[-0.18, 0.48, -0.3]}>
-        <mesh position={[0, -0.24, 0]} castShadow>
+        <mesh position={[0, -0.24, 0]}>
           <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
           <meshStandardMaterial color="#1A0D06" roughness={0.95} />
         </mesh>
       </group>
       <group ref={legRRRef} position={[0.18, 0.48, -0.3]}>
-        <mesh position={[0, -0.24, 0]} castShadow>
+        <mesh position={[0, -0.24, 0]}>
           <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
           <meshStandardMaterial color="#1A0D06" roughness={0.95} />
         </mesh>
@@ -593,13 +593,13 @@ function RealisticPhilippineMacaque({ basePos, seed = 1.0 }: { basePos: [number,
   return (
     <group ref={groupRef}>
       {/* Body */}
-      <mesh position={[0, 0.32, 0]} castShadow>
+      <mesh position={[0, 0.32, 0]}>
         <sphereGeometry args={[0.22, 8, 8]} />
         <meshStandardMaterial color="#6B4B35" roughness={0.9} />
       </mesh>
       {/* Head */}
       <group ref={headRef} position={[0, 0.54, 0.1]}>
-        <mesh castShadow>
+        <mesh>
           <sphereGeometry args={[0.13, 7, 7]} />
           <meshStandardMaterial color="#8D6548" roughness={0.9} />
         </mesh>
@@ -656,13 +656,13 @@ function RealisticPhilippineGoat({ basePos, seed = 1.0 }: { basePos: [number, nu
   return (
     <group ref={groupRef}>
       {/* Body */}
-      <mesh position={[0, 0.50, 0]} castShadow>
+      <mesh position={[0, 0.50, 0]}>
         <boxGeometry args={[0.32, 0.34, 0.65]} />
         <meshStandardMaterial color={seed % 2 === 0 ? "#F8FAFC" : "#78350F"} roughness={0.85} />
       </mesh>
       {/* Head & Horns */}
       <group ref={headRef} position={[0, 0.65, 0.35]}>
-        <mesh position={[0, 0.1, 0.15]} rotation={[-0.4, 0, 0]} castShadow>
+        <mesh position={[0, 0.1, 0.15]} rotation={[-0.4, 0, 0]}>
           <coneGeometry args={[0.1, 0.3, 6]} />
           <meshStandardMaterial color={seed % 2 === 0 ? "#F8FAFC" : "#5C2608"} roughness={0.85} />
         </mesh>
@@ -676,25 +676,25 @@ function RealisticPhilippineGoat({ basePos, seed = 1.0 }: { basePos: [number, nu
       </group>
       {/* Articulated Four Legs (Firmly Grounded on Terrain) */}
       <group ref={legFLRef} position={[-0.12, 0.50, 0.22]}>
-        <mesh position={[0, -0.25, 0]} castShadow>
+        <mesh position={[0, -0.25, 0]}>
           <cylinderGeometry args={[0.035, 0.025, 0.5, 5]} />
           <meshStandardMaterial color="#451A03" roughness={0.9} />
         </mesh>
       </group>
       <group ref={legFRRef} position={[0.12, 0.50, 0.22]}>
-        <mesh position={[0, -0.25, 0]} castShadow>
+        <mesh position={[0, -0.25, 0]}>
           <cylinderGeometry args={[0.035, 0.025, 0.5, 5]} />
           <meshStandardMaterial color="#451A03" roughness={0.9} />
         </mesh>
       </group>
       <group ref={legRLRef} position={[-0.12, 0.50, -0.22]}>
-        <mesh position={[0, -0.25, 0]} castShadow>
+        <mesh position={[0, -0.25, 0]}>
           <cylinderGeometry args={[0.035, 0.025, 0.5, 5]} />
           <meshStandardMaterial color="#451A03" roughness={0.9} />
         </mesh>
       </group>
       <group ref={legRRRef} position={[0.12, 0.50, -0.22]}>
-        <mesh position={[0, -0.25, 0]} castShadow>
+        <mesh position={[0, -0.25, 0]}>
           <cylinderGeometry args={[0.035, 0.025, 0.5, 5]} />
           <meshStandardMaterial color="#451A03" roughness={0.9} />
         </mesh>
@@ -722,7 +722,7 @@ function RealisticMonitorLizard({ basePos, seed = 1.0 }: { basePos: [number, num
   return (
     <group ref={groupRef}>
       {/* Low Flattened Scaly Body */}
-      <mesh position={[0, 0.06, 0]} scale={[1.4, 0.5, 2.2]} castShadow>
+      <mesh position={[0, 0.06, 0]} scale={[1.4, 0.5, 2.2]}>
         <sphereGeometry args={[0.15, 7, 7]} />
         <meshStandardMaterial color="#2B3A24" roughness={0.9} metalness={0.1} />
       </mesh>
@@ -734,7 +734,7 @@ function RealisticMonitorLizard({ basePos, seed = 1.0 }: { basePos: [number, num
         </mesh>
       </group>
       {/* Head */}
-      <mesh position={[0, 0.08, 0.4]} rotation={[0.2, 0, 0]} castShadow>
+      <mesh position={[0, 0.08, 0.4]} rotation={[0.2, 0, 0]}>
         <coneGeometry args={[0.09, 0.32, 5]} />
         <meshStandardMaterial color="#35492D" roughness={0.85} />
       </mesh>
@@ -850,12 +850,12 @@ function RealisticPhilippineAspinDog({
   return (
     <group ref={groupRef}>
       {/* Athletic Canine Torso */}
-      <mesh position={[0, 0.38, 0]} castShadow>
+      <mesh position={[0, 0.38, 0]}>
         <boxGeometry args={[0.22, 0.24, 0.55]} />
         <meshStandardMaterial color={color} roughness={0.75} />
       </mesh>
       {/* Chest Depth */}
-      <mesh position={[0, 0.34, 0.14]} castShadow>
+      <mesh position={[0, 0.34, 0.14]}>
         <boxGeometry args={[0.24, 0.22, 0.28]} />
         <meshStandardMaterial color={color} roughness={0.75} />
       </mesh>
@@ -863,12 +863,12 @@ function RealisticPhilippineAspinDog({
       {/* Head Assembly */}
       <group ref={headRef} position={[0, 0.48, 0.28]}>
         {/* Skull */}
-        <mesh position={[0, 0.06, 0.04]} castShadow>
+        <mesh position={[0, 0.06, 0.04]}>
           <boxGeometry args={[0.16, 0.14, 0.18]} />
           <meshStandardMaterial color={color} roughness={0.75} />
         </mesh>
         {/* Tapered Muzzle / Snout */}
-        <mesh position={[0, 0.02, 0.16]} castShadow>
+        <mesh position={[0, 0.02, 0.16]}>
           <boxGeometry args={[0.10, 0.09, 0.16]} />
           <meshStandardMaterial color="#271810" roughness={0.8} />
         </mesh>
@@ -898,25 +898,25 @@ function RealisticPhilippineAspinDog({
 
       {/* 4 Articulated Canine Legs (Firmly Grounded on Floor) */}
       <group ref={legFLRef} position={[-0.09, 0.38, 0.18]}>
-        <mesh position={[0, -0.19, 0]} castShadow>
+        <mesh position={[0, -0.19, 0]}>
           <cylinderGeometry args={[0.03, 0.022, 0.38, 6]} />
           <meshStandardMaterial color={color} roughness={0.8} />
         </mesh>
       </group>
       <group ref={legFRRef} position={[0.09, 0.38, 0.18]}>
-        <mesh position={[0, -0.19, 0]} castShadow>
+        <mesh position={[0, -0.19, 0]}>
           <cylinderGeometry args={[0.03, 0.022, 0.38, 6]} />
           <meshStandardMaterial color={color} roughness={0.8} />
         </mesh>
       </group>
       <group ref={legRLRef} position={[-0.09, 0.38, -0.18]}>
-        <mesh position={[0, -0.19, 0]} castShadow>
+        <mesh position={[0, -0.19, 0]}>
           <cylinderGeometry args={[0.032, 0.022, 0.38, 6]} />
           <meshStandardMaterial color={color} roughness={0.8} />
         </mesh>
       </group>
       <group ref={legRRRef} position={[0.09, 0.38, -0.18]}>
-        <mesh position={[0, -0.19, 0]} castShadow>
+        <mesh position={[0, -0.19, 0]}>
           <cylinderGeometry args={[0.032, 0.022, 0.38, 6]} />
           <meshStandardMaterial color={color} roughness={0.8} />
         </mesh>

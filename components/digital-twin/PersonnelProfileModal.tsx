@@ -19,7 +19,7 @@ export function PersonnelProfileModal({
   const [activeId, setActiveId] = useState<string>(
     selectedPersonnelId && FILIPINO_PERSONNEL_REGISTRY[selectedPersonnelId]
       ? selectedPersonnelId
-      : allPersonnel[0]?.id || "PM_DANILO_ROXAS"
+      : allPersonnel[0]?.id || "PM_ROMEO_SESE"
   );
 
   const currentPerson: FilipinoPersonnel =
@@ -39,6 +39,16 @@ export function PersonnelProfileModal({
         return "bg-rose-500/20 text-rose-300 border-rose-500/40";
       case "LOGISTICS":
         return "bg-orange-500/20 text-orange-300 border-orange-500/40";
+      case "QA_QC":
+        return "bg-indigo-500/20 text-indigo-300 border-indigo-500/40";
+      case "ENGINEERING":
+        return "bg-cyan-500/20 text-cyan-300 border-cyan-500/40";
+      case "ADMIN_HR":
+        return "bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/40";
+      case "MEDICAL":
+        return "bg-red-500/20 text-red-300 border-red-500/40";
+      case "IT_SYSTEMS":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/40";
       default:
         return "bg-slate-500/20 text-slate-300 border-slate-500/40";
     }
@@ -137,7 +147,7 @@ export function PersonnelProfileModal({
                   {currentPerson.department.replace("_", " ")}
                 </span>
                 <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded-md">
-                  ● Verified Filipino Personnel
+                  ● Verified Personnel
                 </span>
               </div>
 
