@@ -1,6 +1,22 @@
 "use client";
 
 import React, { Suspense, useRef, useState, useMemo, useEffect } from "react";
+
+// WebGL Context Attributes Polyfill to prevent EffectComposer 'null (reading alpha)' on context loss / HMR
+if (typeof window !== "undefined") {
+  const patchContext = (proto: any) => {
+    if (proto && proto.getContextAttributes) {
+      const orig = proto.getContextAttributes;
+      proto.getContextAttributes = function () {
+        const res = orig.call(this);
+        return res || { alpha: true, depth: true, stencil: false, antialias: false, premultipliedAlpha: true };
+      };
+    }
+  };
+  if (typeof WebGLRenderingContext !== "undefined") patchContext(WebGLRenderingContext.prototype);
+  if (typeof WebGL2RenderingContext !== "undefined") patchContext(WebGL2RenderingContext.prototype);
+}
+
 import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
