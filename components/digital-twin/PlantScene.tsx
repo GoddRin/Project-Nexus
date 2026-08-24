@@ -88,6 +88,7 @@ import { AnimatedSiteEntities } from "./AnimatedSiteEntities";
 import { SupercarEntity, type SupercarCustomization } from "./SupercarEntity";
 import { GTAPlayerController } from "./GTAPlayerController";
 import { LocomotionLaboratoryModal } from "./LocomotionLaboratoryModal";
+import { FacilityHolographicBeaconLabel } from "./FacilityHolographicBeaconLabel";
 import { SupercarConfiguratorOverlay } from "./SupercarConfiguratorOverlay";
 import { PersonnelProfileModal } from "./PersonnelProfileModal";
 import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDetailDrawer";
@@ -1276,6 +1277,7 @@ interface PowerhouseBlockoutProps {
   flowIntensity?: number;
   isXRay?: boolean;
   onSelectPerson?: (id: string) => void;
+  onSelectPreset?: (preset: CameraPresetKey) => void;
 }
 
 function PowerhouseBlockout({
@@ -1286,6 +1288,7 @@ function PowerhouseBlockout({
   flowIntensity = 0.85,
   isXRay = false,
   onSelectPerson,
+  onSelectPreset,
 }: PowerhouseBlockoutProps) {
   // Load real GLTF model geometry named meshes
   const gltf = useGLTF("/models/tumauini_powerhouse.glb") as unknown as GLTFResult;
@@ -1338,7 +1341,6 @@ function PowerhouseBlockout({
   const turbineLayoutPositions: [number, number, number][] = [
     [-4, 6.0, 0],  // TU-01 Big Turbine #1 (8.5MW) — Left Generator Bay
     [4, 6.0, 0],   // TU-02 Small Turbine #2 (2.8MW) — Right Generator Bay
-    [0, 6.0, -3],  // GOV-01 Digital Governor Unit 1 — Rear Control Area
   ];
 
   const turbineLeaderHeights = [20, 48, 20];
@@ -1451,13 +1453,26 @@ function PowerhouseBlockout({
           );
         })}
 
-        {activePreset === "overview" && (
-          <ZoneTelemetryLabel
-            title="TURBINE & GENERATOR BAY"
-            subtitle="BIG TURBINE #1 (8.5MW) • SMALL TURBINE #2 (2.8MW)"
-            position={[0, 18.5, 0]}
-          />
-        )}
+        {/* ═══ 🏷️ POWERHOUSE FACILITY 3D HOLOGRAPHIC ROTATING BEACON & HUD LABEL ═══ */}
+        <FacilityHolographicBeaconLabel
+          title="11.3 MW HYDROELECTRIC POWERHOUSE"
+          facilityCode="TUMAUINI-HEPP-01"
+          subtitle="Generator Hall • 2x Francis Hydro Turbines • 69kV Switchyard Substation"
+          elevation="EL. 0.5m MSL"
+          coordinates="17.0621° N, 121.8410° E"
+          themeColor="cyan"
+          position={[0, 18.0, 0]}
+          groundY={0.5}
+          beamHeight={17.5}
+          distanceFactor={55}
+          badges={[
+            { label: "CAPACITY", value: "11.3 MW", icon: "⚡" },
+            { label: "UNITS", value: "2x Francis", icon: "🌊" },
+            { label: "SPEED", value: "600 RPM", icon: "🔄" },
+            { label: "GRID", value: "69kV Online", icon: "🔋" },
+          ]}
+          onClick={() => onSelectPreset?.("turbine-hall")}
+        />
       </group>
 
       {/* --- SWITCHYARD & SUBSTATION AREA (Right / East Elevated Platform) --- */}
@@ -1481,14 +1496,6 @@ function PowerhouseBlockout({
             />
           );
         })}
-
-        {activePreset === "overview" && (
-          <ZoneTelemetryLabel
-            title="69kV SWITCHYARD & SUBSTATION"
-            subtitle="15 MVA GSU TRANSFORMER"
-            position={[0, 13.0, 0]}
-          />
-        )}
       </group>
 
       {/* --- ACCESS ROAD & PERIMETER INFRASTRUCTURE --- */}
@@ -1498,13 +1505,26 @@ function PowerhouseBlockout({
       {/* --- TEMFACIL (MAIN TEMPORARY FACILITY & BARRACKS COMPOUND) --- */}
       <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} activePreset={activePreset} />
 
-      {activePreset === "overview" && (
-        <ZoneTelemetryLabel
-          title="TEMFACIL COMPOUND"
-          subtitle="SITE OFFICE • STAFF ACCOMMODATIONS • BARRACKS • WAREHOUSE"
-          position={[108, 25.0, -95]}
-        />
-      )}
+      {/* ═══ 🏷️ TEMFACIL COMPOUND 3D HOLOGRAPHIC ROTATING BEACON & HUD LABEL ═══ */}
+      <FacilityHolographicBeaconLabel
+        title="TEMFACIL SITE HEADQUARTERS"
+        facilityCode="SCIC-TEMFACIL-01"
+        subtitle="Administrative Complex • Engineering Bay • Logistics Depot & Barracks"
+        elevation="EL. 14.0m MSL"
+        coordinates="17.0654° N, 121.8471° E"
+        themeColor="amber"
+        position={[118, 28.0, -95]}
+        groundY={14.0}
+        beamHeight={14.0}
+        distanceFactor={55}
+        badges={[
+          { label: "PERSONNEL", value: "28 On-Duty", icon: "👥" },
+          { label: "FLEET", value: "4 Logistics", icon: "🚛" },
+          { label: "SECURITY", value: "Active Sentry", icon: "🛡️" },
+          { label: "STATUS", value: "Operational", icon: "🟢" },
+        ]}
+        onClick={() => onSelectPreset?.("temfacil")}
+      />
     </group>
   );
 }
@@ -1831,6 +1851,7 @@ function PlantSceneInner({
   supercarCustomization,
   isGtaModeActive = false,
   onSelectPerson,
+  onSelectPreset,
 }: {
   activePreset: CameraPresetKey;
   equipments: EquipmentWithLocation[];
@@ -1846,6 +1867,7 @@ function PlantSceneInner({
   supercarCustomization?: SupercarCustomization;
   isGtaModeActive?: boolean;
   onSelectPerson?: (id: string) => void;
+  onSelectPreset?: (preset: CameraPresetKey) => void;
 }) {
   const isNight = effectiveTime === "NIGHT";
   const isMorning = effectiveTime === "MORNING";
@@ -1994,6 +2016,7 @@ function PlantSceneInner({
         flowIntensity={flowIntensity}
         isXRay={isXRay}
         onSelectPerson={onSelectPerson}
+        onSelectPreset={onSelectPreset}
       />
 
       {/* --- SUPERCAR SHOWCASE (Ferrari 458 Italia) --- */}
@@ -2646,6 +2669,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
               setSelectedPersonnelId(id);
               setIsPersonnelModalOpen(true);
             }}
+            onSelectPreset={handleSelectPreset}
           />
         </Canvas>
       </Suspense>
