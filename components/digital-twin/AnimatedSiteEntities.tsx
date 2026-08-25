@@ -76,6 +76,8 @@ import {
   MAT_TIMBER_STAKE,
   MAT_CONCRETE_SLAB,
   MAT_FOOD_STAINLESS_TRAY,
+  MAT_SCHMIDT_HAMMER_CHROME,
+  MAT_SCHMIDT_HAMMER_RED,
 } from "./SharedMaterials";
 import {
   UPHILL_ROAD_SPLINE,
@@ -93,6 +95,7 @@ import {
   getSplineTransform,
 } from "./uphillRoadConfig";
 import { FILIPINO_PERSONNEL_REGISTRY } from "./personnelData";
+import { FilipinoCharacterHead } from "./TemfacilFacility";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TERRAIN HEIGHT SAMPLER & SPLINE UTILITIES
@@ -2933,6 +2936,283 @@ function AutonomousSiteTrafficSystem({
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 👷 ENGR. JIMMY M. AQUINO (QC ENGINEER — CIVIL STRUCTURES & TAILRACE HYDRAULIC INSPECTION)
+// ═══════════════════════════════════════════════════════════════════════════
+function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: string) => void }) {
+  const rootRef = useRef<THREE.Group>(null);
+  const leftLegRef = useRef<THREE.Group>(null);
+  const rightLegRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const torsoRef = useRef<THREE.Group>(null);
+  const headRef = useRef<THREE.Group>(null);
+  const hammerRef = useRef<THREE.Group>(null);
+  const clipboardRef = useRef<THREE.Group>(null);
+  const radioRef = useRef<THREE.Group>(null);
+  const laserRef = useRef<THREE.Group>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    if (!rootRef.current) return;
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime();
+
+    // 50-second continuous structural QA/QC inspection routine along dry elevated West Walkway
+    const cycle = t % 50.0;
+    const walkwayX = -10.8;
+    const walkwayY = 5.72;
+
+    let targetX = walkwayX;
+    let targetZ = 7.5;
+    let targetY = walkwayY;
+    let rotY = 0;
+    let isWalking = false;
+    let task = "WALKING";
+
+    if (cycle < 12.0) {
+      // Phase 1: Walking south along elevated floodwall inspection walkway
+      const p = cycle / 12.0;
+      targetZ = THREE.MathUtils.lerp(7.5, 16.5, p);
+      rotY = 0; // facing south
+      isWalking = true;
+      task = "WALKING";
+    } else if (cycle < 22.0) {
+      // Phase 2: Schmidt Rebound Hammer NDT compressive testing on concrete joint
+      targetZ = 16.5;
+      rotY = 0.25; // angled toward concrete floodwall
+      task = "SCHMIDT_TEST";
+    } else if (cycle < 30.0) {
+      // Phase 3: Leaning on yellow safety railing, inspecting tailrace boil turbulence & staff gauge
+      targetZ = 16.5;
+      rotY = Math.PI / 2; // facing east toward tailrace water
+      task = "RAILING_INSPECT";
+    } else if (cycle < 38.0) {
+      // Phase 4: Logging technical readings on QA/QC checklist clipboard
+      targetZ = 16.5;
+      rotY = Math.PI / 2;
+      task = "LOGGING_CLIPBOARD";
+    } else if (cycle < 44.0) {
+      // Phase 5: Two-way radio check reporting clearance to Powerhouse Control Room
+      targetZ = 16.5;
+      rotY = Math.PI / 2;
+      task = "RADIO_REPORT";
+    } else {
+      // Phase 6: Walking north back toward draft tube headwall
+      const p = (cycle - 44.0) / 6.0;
+      targetZ = THREE.MathUtils.lerp(16.5, 7.5, p);
+      rotY = Math.PI; // facing north
+      isWalking = true;
+      task = "WALKING";
+    }
+
+    // Update root position
+    rootRef.current.position.set(targetX, targetY, targetZ);
+    rootRef.current.rotation.y = rotY;
+
+    // Biomechanical Kinematics
+    if (isWalking) {
+      const walkT = t * 6.0;
+      const legStride = Math.sin(walkT) * 0.48;
+      const armSwing = Math.sin(walkT) * 0.38;
+      const bounce = Math.abs(Math.sin(walkT)) * 0.035;
+
+      rootRef.current.position.y = targetY + bounce;
+
+      if (leftLegRef.current) leftLegRef.current.rotation.set(legStride, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(-legStride, 0, 0);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.25, 0.05); // holding clipboard firmly
+      if (rightArmRef.current) rightArmRef.current.rotation.set(armSwing, -0.08, 0.05);
+      if (torsoRef.current) torsoRef.current.rotation.set(0.04, Math.cos(walkT) * 0.05, 0);
+      if (headRef.current) headRef.current.rotation.set(0.05, 0, 0);
+
+      if (hammerRef.current) hammerRef.current.visible = false;
+      if (laserRef.current) laserRef.current.visible = false;
+      if (radioRef.current) radioRef.current.visible = false;
+      if (clipboardRef.current) clipboardRef.current.visible = true;
+    } else if (task === "SCHMIDT_TEST") {
+      // Schmidt Rebound Hammer NDT
+      const hammerPress = Math.sin(t * 3.5);
+      if (leftLegRef.current) leftLegRef.current.rotation.set(0.15, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(-0.25, 0, 0);
+      if (torsoRef.current) torsoRef.current.rotation.set(0.18, 0.1, 0);
+      if (headRef.current) headRef.current.rotation.set(0.32, -0.15, 0);
+
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15 + hammerPress * 0.08, -0.2, 0.1);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.65, 0.35, 0);
+
+      if (hammerRef.current) hammerRef.current.visible = true;
+      if (laserRef.current) laserRef.current.visible = false;
+      if (radioRef.current) radioRef.current.visible = false;
+      if (clipboardRef.current) clipboardRef.current.visible = false;
+    } else if (task === "RAILING_INSPECT") {
+      // Leaning over yellow safety railing inspecting water elevation & floodgate
+      const laserScan = Math.sin(t * 1.5) * 0.12;
+      if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+      if (torsoRef.current) torsoRef.current.rotation.set(0.14, 0, 0);
+      if (headRef.current) headRef.current.rotation.set(0.24 + laserScan * 0.5, 0, 0);
+
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + laserScan, -0.1, -0.05);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.25, 0.1); // resting on railing
+
+      if (laserRef.current) laserRef.current.visible = true;
+      if (hammerRef.current) hammerRef.current.visible = false;
+      if (radioRef.current) radioRef.current.visible = false;
+      if (clipboardRef.current) clipboardRef.current.visible = false;
+    } else if (task === "LOGGING_CLIPBOARD") {
+      // Writing inspection notes onto clipboard
+      const writeMotion = Math.sin(t * 5.0) * 0.04;
+      if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+      if (torsoRef.current) torsoRef.current.rotation.set(0.06, 0, 0);
+      if (headRef.current) headRef.current.rotation.set(0.38, 0, 0);
+
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + writeMotion, -0.3, 0.15);
+
+      if (clipboardRef.current) clipboardRef.current.visible = true;
+      if (hammerRef.current) hammerRef.current.visible = false;
+      if (laserRef.current) laserRef.current.visible = false;
+      if (radioRef.current) radioRef.current.visible = false;
+    } else if (task === "RADIO_REPORT") {
+      // Two-way radio check
+      const headNod = Math.sin(t * 2.5) * 0.08;
+      if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+      if (torsoRef.current) torsoRef.current.rotation.set(0.02, 0, 0);
+      if (headRef.current) headRef.current.rotation.set(headNod, 0.12, 0);
+
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65, -0.25, -0.15); // radio to ear
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.25, 0.05);
+
+      if (radioRef.current) radioRef.current.visible = true;
+      if (clipboardRef.current) clipboardRef.current.visible = true;
+      if (hammerRef.current) hammerRef.current.visible = false;
+      if (laserRef.current) laserRef.current.visible = false;
+    }
+  });
+
+  return (
+    <group
+      ref={rootRef}
+      onClick={(e) => {
+        if (onSelectPerson) {
+          e.stopPropagation();
+          onSelectPerson("QC_JIMMY_AQUINO");
+        }
+      }}
+    >
+      {/* Legs */}
+      <group ref={leftLegRef} position={[-0.1, 0.74, 0]}>
+        <mesh position={[0, -0.37, 0]} material={MAT_PANTS_JEANS}>
+          <boxGeometry args={[0.12, 0.74, 0.14]} />
+        </mesh>
+      </group>
+      <group ref={rightLegRef} position={[0.1, 0.74, 0]}>
+        <mesh position={[0, -0.37, 0]} material={MAT_PANTS_JEANS}>
+          <boxGeometry args={[0.12, 0.74, 0.14]} />
+        </mesh>
+      </group>
+
+      {/* Torso with High-Vis Orange Safety Vest & ID Badge */}
+      <group ref={torsoRef} position={[0, 0.82, 0]}>
+        <mesh position={[0, 0.26, 0]} material={MAT_SHIRT_LIGHT_BLUE}>
+          <boxGeometry args={[0.38, 0.52, 0.22]} />
+        </mesh>
+        {/* High-Vis Orange Safety Vest */}
+        <mesh position={[0, 0.26, 0]} material={MAT_WORKER_VEST_ORANGE}>
+          <boxGeometry args={[0.39, 0.50, 0.23]} />
+        </mesh>
+        {/* Silver Reflective Safety Stripes */}
+        <mesh position={[0, 0.32, 0.118]} material={MAT_FOOD_STAINLESS_TRAY}>
+          <boxGeometry args={[0.36, 0.035, 0.005]} />
+        </mesh>
+        <mesh position={[0, 0.16, 0.118]} material={MAT_FOOD_STAINLESS_TRAY}>
+          <boxGeometry args={[0.36, 0.035, 0.005]} />
+        </mesh>
+        {/* QA/QC ID Badge Lanyard */}
+        <mesh position={[-0.08, 0.22, 0.12]} material={MAT_ID_BADGE_WHITE}>
+          <boxGeometry args={[0.06, 0.09, 0.005]} />
+        </mesh>
+
+        {/* Sculpted Filipino Character Head with White Engineer Hardhat */}
+        <group ref={headRef} position={[0, 0.60, 0]}>
+          <FilipinoCharacterHead skinTone="MEDIUM" headwear="HARDHAT_WHITE" />
+        </group>
+
+        {/* Left Arm & Clipboard */}
+        <group ref={leftArmRef} position={[-0.23, 0.42, 0]}>
+          <mesh position={[0, -0.20, 0]} material={MAT_SHIRT_LIGHT_BLUE}>
+            <boxGeometry args={[0.095, 0.42, 0.095]} />
+          </mesh>
+
+          {/* QA/QC Structural Inspection Checklist Clipboard */}
+          <group ref={clipboardRef} position={[0, -0.32, 0.12]}>
+            {/* Hardboard Base */}
+            <mesh position={[0, 0, 0]} material={MAT_TIMBER_STAKE}>
+              <boxGeometry args={[0.22, 0.32, 0.012]} />
+            </mesh>
+            {/* Checklist White Sheet */}
+            <mesh position={[0, -0.01, 0.008]} material={MAT_ID_BADGE_WHITE}>
+              <boxGeometry args={[0.19, 0.28, 0.002]} />
+            </mesh>
+            {/* Aluminum Clip Header */}
+            <mesh position={[0, 0.14, 0.012]} material={MAT_FOOD_STAINLESS_TRAY}>
+              <boxGeometry args={[0.09, 0.035, 0.015]} />
+            </mesh>
+          </group>
+        </group>
+
+        {/* Right Arm & Handheld Instruments */}
+        <group ref={rightArmRef} position={[0.23, 0.42, 0]}>
+          <mesh position={[0, -0.20, 0]} material={MAT_SHIRT_LIGHT_BLUE}>
+            <boxGeometry args={[0.095, 0.42, 0.095]} />
+          </mesh>
+
+          {/* 🔨 Schmidt Concrete Rebound Hammer NDT Tester */}
+          <group ref={hammerRef} position={[0, -0.36, 0.12]} visible={false}>
+            {/* Red Impact Body */}
+            <mesh position={[0, 0, 0]} material={MAT_SCHMIDT_HAMMER_RED}>
+              <cylinderGeometry args={[0.028, 0.028, 0.24, 10]} />
+            </mesh>
+            {/* Steel Plunger Rod */}
+            <mesh position={[0, -0.16, 0]} material={MAT_SCHMIDT_HAMMER_CHROME}>
+              <cylinderGeometry args={[0.012, 0.012, 0.12, 8]} />
+            </mesh>
+            {/* Calibrated PSI Dial */}
+            <mesh position={[0.02, 0.02, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+              <boxGeometry args={[0.02, 0.06, 0.03]} />
+            </mesh>
+          </group>
+
+          {/* 📏 Laser Distance & Water Elevation Meter */}
+          <group ref={laserRef} position={[0, -0.32, 0.10]} visible={false}>
+            <mesh position={[0, 0, 0]} material={MAT_YELLOW_SAFETY}>
+              <boxGeometry args={[0.055, 0.12, 0.04]} />
+            </mesh>
+            <mesh position={[0, 0.07, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+              <cylinderGeometry args={[0.012, 0.012, 0.02, 8]} />
+            </mesh>
+          </group>
+
+          {/* 📻 Motorola Site Two-Way Radio */}
+          <group ref={radioRef} position={[0, -0.30, 0.08]} visible={false}>
+            <mesh position={[0, 0, 0]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.048, 0.12, 0.032]} />
+            </mesh>
+            {/* Flexible Antenna */}
+            <mesh position={[-0.015, 0.10, 0]} material={MAT_STEEL_DARK}>
+              <cylinderGeometry args={[0.004, 0.004, 0.14, 6]} />
+            </mesh>
+          </group>
+        </group>
+      </group>
+    </group>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    4. MAIN EXPORT: ANIMATED SITE ENTITIES & WORKFORCE LIFE SIMULATION
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -2951,11 +3231,14 @@ export function AnimatedSiteEntities({
   return (
     <group>
       {/* ═══ 1. HIGH-PRECISION CIVIL CONSTRUCTION WORKFORCE (HEPP SITE CREWS) ═══ */}
-      {/* Electrical Superintendent (Eduardo De Francia) at Powerhouse Portal */}
+      {/* 👷 Tailrace Civil QA/QC Quality Engineer (Engr. Jimmy M. Aquino) on dry elevated walkway */}
+      <TailraceCivilQCEngineer onSelectPerson={onSelectPerson} />
+
+      {/* Electrical Superintendent (Eduardo De Francia) on dry switchyard platform */}
       <HydroProjectPersonMesh
         personnelId="SUPT_EDUARDO_DEFRANCIA"
         onSelectPerson={onSelectPerson}
-        position={[2, 0.42, 4]}
+        position={[18, 1.20, -6]}
         rotation={[0, Math.PI / 4, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
@@ -2967,11 +3250,11 @@ export function AnimatedSiteEntities({
         pantsStyle="JEANS"
         accessory="RADIO"
       />
-      {/* Civil Works Supervisor (Foreman Jaime Caño Jr.) */}
+      {/* Civil Works Supervisor (Foreman Jaime Caño Jr.) on dry powerhouse entrance apron */}
       <HydroProjectPersonMesh
         personnelId="CIVIL_JAIME_CANO"
         onSelectPerson={onSelectPerson}
-        position={[4, 0.42, 2]}
+        position={[8, 0.80, -12]}
         rotation={[0, -Math.PI / 3, 0]}
         skinTone="BRONZE"
         hasHardhat
@@ -2980,34 +3263,6 @@ export function AnimatedSiteEntities({
         vestColor="#EA580C"
         pantsStyle="JEANS"
         accessory="CLIPBOARD"
-      />
-      {/* Skilled Mason / Worker (Green Hard Hat) */}
-      <HydroProjectPersonMesh
-        onSelectPerson={onSelectPerson}
-        position={[-6, 0.42, 6]}
-        rotation={[0, Math.PI / 2, 0]}
-        skinTone="DEEP"
-        hasHardhat
-        hardhatColor="#16A34A"
-        hasVest
-        vestColor="#EAB308"
-        pantsStyle="JEANS"
-        accessory="NONE"
-      />
-      {/* Field Engineer / QA Staff (White Hard Hat) */}
-      <HydroProjectPersonMesh
-        personnelId="ENGR_ELGINE_MANGCUPANG"
-        onSelectPerson={onSelectPerson}
-        position={[-8, 0.42, 8]}
-        rotation={[0, -Math.PI / 6, 0]}
-        skinTone="LIGHT"
-        hasGlasses
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="JEANS"
-        accessory="TABLET"
       />
 
       {/* ═══ 2. STRUCTURAL SLAB ROOF REBAR & SURVEY TEAMS (Z = -110m) ═══ */}

@@ -3705,13 +3705,13 @@ function TabletopTransistorRadio({ position = [0, 0, 0], rotation = [0, 0, 0] }:
 // ═══════════════════════════════════════════════════════════════════════════
 // 🗣️ AUTHENTIC HIGH-DETAIL SCULPTED FILIPINO CHARACTER HEAD (ZERO FACELESS WORKERS)
 // ═══════════════════════════════════════════════════════════════════════════
-interface FilipinoCharacterHeadProps {
+export interface FilipinoCharacterHeadProps {
   skinTone?: "LIGHT" | "MEDIUM" | "BRONZE" | "TAN" | "DEEP";
   headwear?: "NONE" | "CHEF_TOQUE" | "HARDHAT_YELLOW" | "HARDHAT_WHITE" | "HARDHAT_ROYAL" | "HARDHAT_GREEN" | "HARDHAT_ORANGE" | "BANDANA";
   hasMustache?: boolean;
 }
 
-function FilipinoCharacterHead({
+export function FilipinoCharacterHead({
   skinTone = "MEDIUM",
   headwear = "NONE",
   hasMustache = false,

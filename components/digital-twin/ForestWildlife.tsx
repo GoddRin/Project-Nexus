@@ -8,6 +8,15 @@ import {
   MAT_CARABAO_HIDE,
   MAT_HORN_GREY,
   MAT_HORNBILL_BEAK,
+  MAT_HORNBILL_RUFOUS,
+  MAT_HORNBILL_CASQUE,
+  MAT_HORNBILL_BEAK_TIP,
+  MAT_HORNBILL_WING_BLACK,
+  MAT_HORNBILL_TAIL_WHITE,
+  MAT_HORNBILL_ORBITAL,
+  MAT_HORNBILL_TALON,
+  MAT_TIMBER_STAKE,
+  MAT_KALABASA_SKIN,
   MAT_EAGLE_FEATHER,
   MAT_EAGLE_CREST,
 } from "./SharedMaterials";
@@ -322,55 +331,198 @@ function RealisticPhilippineEagle({ orbitCenter, flightAltitude = 68, radius = 8
   );
 }
 
-// ─── 3. RUFOUS HORNBILL (KALAW) ──────────────────────────────────────────────
+// ─── 3. SIERRA MADRE RUFOUS HORNBILL (KALAW / BUCEROS HYDROCORAX) ─────────────
 function RealisticRufousHornbill({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
   const groupRef = useRef<THREE.Group>(null);
+  const birdRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
-  const groundY = useMemo(() => sampleTerrainY(basePos[0], basePos[1]) + 8.5, [basePos]); // Perched on high canopy
+  const tailRef = useRef<THREE.Group>(null);
+  const leftWingRef = useRef<THREE.Group>(null);
+  const rightWingRef = useRef<THREE.Group>(null);
+  
+  // Exact physical terrain ground contact height
+  const groundY = useMemo(() => sampleTerrainY(basePos[0], basePos[1]), [basePos]);
+  const perchHeight = 2.4; // Height of ancient ironwood snag perch branch above ground
 
   useFrame(({ clock }) => {
-    if (!groupRef.current) return;
-    const t = clock.getElapsedTime() + seed * 3.5;
-    groupRef.current.rotation.y = Math.sin(t * 0.5) * 0.35 + seed;
-    groupRef.current.rotation.x = Math.sin(t * 1.5) * 0.06;
+    if (!birdRef.current) return;
+    const t = clock.getElapsedTime() + seed * 4.2;
 
+    // Organic avian breathing and body sway
+    const breath = Math.sin(t * 1.6) * 0.015;
+    birdRef.current.position.y = perchHeight + breath;
+    birdRef.current.rotation.y = Math.sin(t * 0.4) * 0.18 + seed * 0.8;
+
+    // Alert head cocking, preening, and call gestures
     if (headRef.current) {
-      headRef.current.rotation.x = Math.sin(t * 2.0) * 0.12;
-      headRef.current.rotation.y = Math.sin(t * 0.8) * 0.25;
+      const isCalling = Math.sin(t * 0.18) > 0.72;
+      if (isCalling) {
+        // Throat tilt back for loud resonance call
+        headRef.current.rotation.x = -0.28 + Math.sin(t * 6.0) * 0.06;
+        headRef.current.rotation.y = Math.sin(t * 1.5) * 0.10;
+      } else {
+        // Inquisitive head pivots looking around the rainforest canopy
+        const twitchT = Math.floor(t * 0.8);
+        const twitchPhase = (t * 0.8) - twitchT;
+        const targetYaw = Math.sin(twitchT * 2.3) * 0.55;
+        const targetPitch = Math.cos(twitchT * 1.7) * 0.15;
+        headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, targetYaw, 0.15);
+        headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0.08 + targetPitch, 0.15);
+      }
     }
+
+    // Counterbalancing tail flick
+    if (tailRef.current) {
+      tailRef.current.rotation.x = 0.42 + Math.sin(t * 1.6) * 0.08;
+      tailRef.current.rotation.z = Math.sin(t * 0.8) * 0.05;
+    }
+
+    // Wing twitch / subtle wing flutter
+    const isFluffing = Math.sin(t * 0.25) > 0.82;
+    const wingAngle = isFluffing ? Math.sin(t * 8.0) * 0.12 : 0;
+    if (leftWingRef.current) leftWingRef.current.rotation.z = wingAngle;
+    if (rightWingRef.current) rightWingRef.current.rotation.z = -wingAngle;
   });
 
   return (
     <group ref={groupRef} position={[basePos[0], groundY, basePos[1]]}>
-      {/* Rufous Body */}
-      <mesh position={[0, 0, 0]} rotation={[0.4, 0, 0]}>
-        <cylinderGeometry args={[0.16, 0.12, 0.7, 6]} />
-        <meshStandardMaterial color="#83210C" roughness={0.7} />
+      {/* ═══ 1. GROUNDED ANCIENT SIERRA MADRE TIMBER SNAG & PERCH BRANCH ═══ */}
+      {/* Root Base firmly anchored into the dirt */}
+      <mesh position={[0, 0.25, 0]} material={MAT_TIMBER_STAKE}>
+        <cylinderGeometry args={[0.22, 0.32, 0.5, 7]} />
       </mesh>
-      {/* Black Wings */}
-      <mesh position={[0, 0.05, -0.05]}>
-        <boxGeometry args={[0.36, 0.4, 0.22]} />
-        <meshStandardMaterial color="#18181B" roughness={0.8} />
+      {/* Main Weathered Snag Trunk rising from ground */}
+      <mesh position={[0, perchHeight * 0.5, 0]} rotation={[0.04, 0.2, -0.06]} material={MAT_TIMBER_STAKE}>
+        <cylinderGeometry args={[0.14, 0.22, perchHeight, 7]} />
       </mesh>
-      {/* White Tail */}
-      <mesh position={[0, -0.38, -0.25]} rotation={[0.4, 0, 0]}>
-        <boxGeometry args={[0.18, 0.55, 0.04]} />
-        <meshStandardMaterial color="#F8FAFC" roughness={0.8} />
+      {/* Moss & Lichen Ring Patches on Trunk */}
+      <mesh position={[0, perchHeight * 0.65, 0]} material={MAT_KALABASA_SKIN}>
+        <cylinderGeometry args={[0.15, 0.16, 0.35, 6]} />
       </mesh>
-      {/* Giant Crimson Casque & Curved Beak */}
-      <group ref={headRef} position={[0, 0.32, 0.22]}>
-        <mesh position={[0, 0, 0]}>
-          <sphereGeometry args={[0.14, 6, 6]} />
-          <meshStandardMaterial color="#991B1B" roughness={0.5} />
+      {/* Horizontal Perch Branch Bark */}
+      <mesh position={[0.22, perchHeight - 0.05, 0]} rotation={[0, 0, Math.PI / 2.2]} material={MAT_TIMBER_STAKE}>
+        <cylinderGeometry args={[0.07, 0.09, 0.75, 6]} />
+      </mesh>
+      {/* Side Branch Spur */}
+      <mesh position={[-0.18, perchHeight * 0.75, 0.1]} rotation={[0.4, 0.3, -0.7]} material={MAT_TIMBER_STAKE}>
+        <cylinderGeometry args={[0.04, 0.06, 0.45, 5]} />
+      </mesh>
+
+      {/* ═══ 2. ANATOMICALLY DETAILED RUFOUS HORNBILL (KALAW) ═══ */}
+      <group ref={birdRef} position={[0.18, perchHeight, 0]}>
+        {/* Scaled Talons tightly grasping the branch */}
+        <group position={[0, -0.02, 0]}>
+          {/* Left Talon */}
+          <group position={[-0.07, 0, 0.02]}>
+            <mesh position={[0, 0.04, 0]} material={MAT_HORNBILL_TALON}>
+              <cylinderGeometry args={[0.022, 0.025, 0.10, 5]} />
+            </mesh>
+            <mesh position={[0, -0.02, 0.04]} rotation={[0.5, 0, 0]} material={MAT_HORNBILL_TALON}>
+              <cylinderGeometry args={[0.012, 0.008, 0.08, 4]} />
+            </mesh>
+          </group>
+          {/* Right Talon */}
+          <group position={[0.07, 0, 0.02]}>
+            <mesh position={[0, 0.04, 0]} material={MAT_HORNBILL_TALON}>
+              <cylinderGeometry args={[0.022, 0.025, 0.10, 5]} />
+            </mesh>
+            <mesh position={[0, -0.02, 0.04]} rotation={[0.5, 0, 0]} material={MAT_HORNBILL_TALON}>
+              <cylinderGeometry args={[0.012, 0.008, 0.08, 4]} />
+            </mesh>
+          </group>
+        </group>
+
+        {/* Robust Aerodynamic Rufous-Chestnut Body */}
+        <mesh position={[0, 0.26, -0.02]} rotation={[0.35, 0, 0]} material={MAT_HORNBILL_RUFOUS}>
+          <cylinderGeometry args={[0.16, 0.13, 0.58, 8]} />
         </mesh>
-        {/* Massive Casque Crest */}
-        <mesh position={[0, 0.15, 0.08]} rotation={[-0.2, 0, 0]} material={MAT_HORNBILL_BEAK}>
-          <boxGeometry args={[0.12, 0.22, 0.45]} />
+        {/* Soft Feathered Breast Contour */}
+        <mesh position={[0, 0.32, 0.11]} material={MAT_HORNBILL_RUFOUS}>
+          <sphereGeometry args={[0.16, 8, 8]} />
         </mesh>
-        {/* Curved Beak */}
-        <mesh position={[0, -0.02, 0.32]} rotation={[0.3, 0, 0]} material={MAT_HORNBILL_BEAK}>
-          <coneGeometry args={[0.10, 0.45, 5]} />
+        {/* Dark Feather Mantle Upper Back */}
+        <mesh position={[0, 0.34, -0.08]} material={MAT_HORNBILL_WING_BLACK}>
+          <sphereGeometry args={[0.15, 8, 8]} />
         </mesh>
+
+        {/* Folded Wings with Secondary & Primary Feather Flights */}
+        <group ref={leftWingRef} position={[-0.14, 0.28, -0.02]}>
+          <mesh position={[-0.04, -0.08, -0.10]} rotation={[0.32, 0.08, -0.1]} material={MAT_HORNBILL_WING_BLACK}>
+            <boxGeometry args={[0.06, 0.38, 0.24]} />
+          </mesh>
+        </group>
+        <group ref={rightWingRef} position={[0.14, 0.28, -0.02]}>
+          <mesh position={[0.04, -0.08, -0.10]} rotation={[0.32, -0.08, 0.1]} material={MAT_HORNBILL_WING_BLACK}>
+            <boxGeometry args={[0.06, 0.38, 0.24]} />
+          </mesh>
+        </group>
+
+        {/* Long Banded Tail (Broad White with Jet-Black Central Band) */}
+        <group ref={tailRef} position={[0, 0.08, -0.22]}>
+          {/* Upper Black Band */}
+          <mesh position={[0, -0.15, -0.14]} rotation={[0.5, 0, 0]} material={MAT_HORNBILL_WING_BLACK}>
+            <boxGeometry args={[0.18, 0.28, 0.03]} />
+          </mesh>
+          {/* Main White Tail Feathers */}
+          <mesh position={[0, -0.38, -0.30]} rotation={[0.5, 0, 0]} material={MAT_HORNBILL_TAIL_WHITE}>
+            <boxGeometry args={[0.20, 0.36, 0.03]} />
+          </mesh>
+        </group>
+
+        {/* Sculpted Head, Scarlet Casque & Ivory Downcurved Bill */}
+        <group ref={headRef} position={[0, 0.56, 0.12]}>
+          {/* Cranium */}
+          <mesh position={[0, 0, 0]} material={MAT_HORNBILL_RUFOUS}>
+            <sphereGeometry args={[0.14, 8, 8]} />
+          </mesh>
+          {/* Black Throat Bib / Chin */}
+          <mesh position={[0, -0.08, 0.06]} material={MAT_HORNBILL_WING_BLACK}>
+            <boxGeometry args={[0.12, 0.08, 0.10]} />
+          </mesh>
+
+          {/* Massive Crimson-Scarlet Casque Ridge */}
+          <group position={[0, 0.12, 0.06]}>
+            <mesh position={[0, 0.04, 0]} rotation={[-0.15, 0, 0]} material={MAT_HORNBILL_CASQUE}>
+              <boxGeometry args={[0.10, 0.16, 0.36]} />
+            </mesh>
+            {/* Casque Forward Crest Tip */}
+            <mesh position={[0, 0.08, 0.14]} rotation={[-0.35, 0, 0]} material={MAT_HORNBILL_CASQUE}>
+              <coneGeometry args={[0.06, 0.18, 6]} />
+            </mesh>
+          </group>
+
+          {/* Heavy Curved Hornbill Beak (Scarlet base blending to ivory tip) */}
+          <group position={[0, -0.02, 0.22]}>
+            {/* Upper Mandible (Crimson base) */}
+            <mesh position={[0, 0.02, 0.06]} rotation={[0.28, 0, 0]} material={MAT_HORNBILL_CASQUE}>
+              <coneGeometry args={[0.085, 0.26, 6]} />
+            </mesh>
+            {/* Lower Mandible Tip (Ivory Yellow) */}
+            <mesh position={[0, -0.06, 0.22]} rotation={[0.42, 0, 0]} material={MAT_HORNBILL_BEAK_TIP}>
+              <coneGeometry args={[0.06, 0.24, 6]} />
+            </mesh>
+          </group>
+
+          {/* Vivid Yellow Orbital Eye Rings & Pupils */}
+          {/* Left Eye */}
+          <group position={[-0.10, 0.03, 0.05]}>
+            <mesh material={MAT_HORNBILL_ORBITAL}>
+              <sphereGeometry args={[0.035, 6, 6]} />
+            </mesh>
+            <mesh position={[-0.015, 0, 0]} material={MAT_HORNBILL_WING_BLACK}>
+              <sphereGeometry args={[0.02, 6, 6]} />
+            </mesh>
+          </group>
+          {/* Right Eye */}
+          <group position={[0.10, 0.03, 0.05]}>
+            <mesh material={MAT_HORNBILL_ORBITAL}>
+              <sphereGeometry args={[0.035, 6, 6]} />
+            </mesh>
+            <mesh position={[0.015, 0, 0]} material={MAT_HORNBILL_WING_BLACK}>
+              <sphereGeometry args={[0.02, 6, 6]} />
+            </mesh>
+          </group>
+        </group>
       </group>
     </group>
   );

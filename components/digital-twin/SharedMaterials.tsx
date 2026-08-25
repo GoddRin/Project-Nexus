@@ -239,5 +239,18 @@ export const MAT_GINGER_ROOT = new THREE.MeshStandardMaterial({ color: "#D97706"
 export const MAT_CLEAVER_BLADE = new THREE.MeshStandardMaterial({ color: "#E2E8F0", roughness: 0.15, metalness: 0.95 });
 export const MAT_WOOD_HANDLE = new THREE.MeshStandardMaterial({ color: "#78350F", roughness: 0.70, metalness: 0.05 });
 
+// 🦅 SIERRA MADRE RUFOUS HORNBILL (KALAW) PBR FEATHERING
+export const MAT_HORNBILL_RUFOUS = new THREE.MeshStandardMaterial({ color: "#83210C", roughness: 0.75, metalness: 0.05 });
+export const MAT_HORNBILL_CASQUE = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.35, metalness: 0.15 });
+export const MAT_HORNBILL_BEAK_TIP = new THREE.MeshStandardMaterial({ color: "#FACC15", roughness: 0.40, metalness: 0.10 });
+export const MAT_HORNBILL_WING_BLACK = new THREE.MeshStandardMaterial({ color: "#18181B", roughness: 0.70, metalness: 0.10 });
+export const MAT_HORNBILL_TAIL_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.80, metalness: 0.0 });
+export const MAT_HORNBILL_ORBITAL = new THREE.MeshStandardMaterial({ color: "#FDE047", roughness: 0.50, metalness: 0.0 });
+export const MAT_HORNBILL_TALON = new THREE.MeshStandardMaterial({ color: "#27272A", roughness: 0.90, metalness: 0.05 });
+
+// 🔬 CIVIL QA/QC SCHMIDT REBOUND HAMMER & GAUGES
+export const MAT_SCHMIDT_HAMMER_CHROME = new THREE.MeshStandardMaterial({ color: "#E2E8F0", roughness: 0.20, metalness: 0.85 });
+export const MAT_SCHMIDT_HAMMER_RED = new THREE.MeshStandardMaterial({ color: "#EF4444", roughness: 0.45, metalness: 0.10 });
+
 
 
