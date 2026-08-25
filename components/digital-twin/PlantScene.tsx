@@ -83,7 +83,8 @@ import {
 import { TemfacilFacility } from "./TemfacilFacility";
 import { ForestVegetation } from "./ForestVegetation";
 import { ForestWildlife } from "./ForestWildlife";
-import { AnimatedSiteEntities } from "./AnimatedSiteEntities";
+import { AnimatedSiteEntities, sampleTerrainY } from "./AnimatedSiteEntities";
+import { SiteElectricalDistribution, SITE_UTILITY_POLES } from "./SiteElectricalDistribution";
 import { SupercarEntity, type SupercarCustomization } from "./SupercarEntity";
 import { GTAPlayerController } from "./GTAPlayerController";
 import { LocomotionLaboratoryModal } from "./LocomotionLaboratoryModal";
@@ -182,7 +183,7 @@ const MATERIALS = {
 
 /**
  * 3D Curved Energy Flow Path Waypoints
- * Traces path: Intake Headworks -> Penstock Pipe -> Turbine Hall -> Generator Bay -> Switchyard & Substation
+ * Traces path: Intake Headworks -> Penstock Pipe -> Turbine Hall -> Generator Bay -> Switchyard & Genset -> Roadside Utility Poles -> Temfacil Compound
  */
 const FLOW_PATH_POINTS = [
   new THREE.Vector3(-6, 20.0, -30),   // 1. Dam Intake Headworks (Top Hillside)
@@ -192,12 +193,16 @@ const FLOW_PATH_POINTS = [
   new THREE.Vector3(-4, 6.2, 0),      // 5. Big Turbine #1 (TU-01)
   new THREE.Vector3(4, 6.2, 0),       // 6. Small Turbine #2 (TU-02)
   new THREE.Vector3(9.6, 8.4, 0),     // 7. Powerhouse East Wall IPB Busduct Exit Bushing
-  new THREE.Vector3(15.8, 6.8, -1.5), // 8. Cable Bus Bridge Support Structure
-  new THREE.Vector3(22.0, 4.8, -3),   // 9. TR-GSU-01 Transformer Low-Voltage Bushing
-  new THREE.Vector3(28.0, 4.8, -3),   // 10. CB-69KV-01 SF6 Gas Circuit Breaker
-  new THREE.Vector3(28.0, 4.8, 3),    // 11. LA-69KV-01 Surge Arrester & CT/PT Set
-  new THREE.Vector3(30.0, 11.0, 0),   // 12. 69kV Switchyard Gantry Steel Tower
-  new THREE.Vector3(50.0, 26.0, 0),   // 13. 69kV Grid Transmission Line Takeoff (Mountain Top)
+  new THREE.Vector3(22.0, 4.8, -3),   // 8. TR-GSU-01 Transformer Low-Voltage Bushing
+  new THREE.Vector3(32.0, 2.5, 4.0),  // 9. Site Industrial Diesel Generator (Genset Hub)
+  new THREE.Vector3(34.0, sampleTerrainY(34.0, 2.0) + 7.9, 2.0),     // 10. Utility Pole P0 (Switchyard Feeder)
+  new THREE.Vector3(44.0, sampleTerrainY(44.0, -4.0) + 7.9, -4.0),   // 11. Utility Pole P1 (Lower Foothill Incline)
+  new THREE.Vector3(54.0, sampleTerrainY(54.0, -22.0) + 7.9, -22.0), // 12. Utility Pole P2 (Lower Mountain S-Curve)
+  new THREE.Vector3(67.0, sampleTerrainY(67.0, -42.0) + 7.9, -42.0), // 13. Utility Pole P3 (Mid-Mountain Climb)
+  new THREE.Vector3(80.0, sampleTerrainY(80.0, -60.0) + 7.9, -60.0), // 14. Utility Pole P4 (Upper Hillside Approach)
+  new THREE.Vector3(94.0, sampleTerrainY(94.0, -74.0) + 7.9, -74.0), // 15. Utility Pole P5 (Guardhouse Junction)
+  new THREE.Vector3(112.0, sampleTerrainY(112.0, -88.0) + 7.9, -88.0), // 16. Utility Pole P6 (Admin Office Boulevard)
+  new THREE.Vector3(136.0, sampleTerrainY(136.0, -96.0) + 7.9, -96.0), // 17. Utility Pole P7 (Barracks & Mess Hall Substation)
 ];
 
 /**
@@ -1125,8 +1130,11 @@ function PowerhouseBlockout({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Animated GPU Shader Energy Flow Conduit */}
+      {/* Animated GPU Shader Energy Flow Conduit along Roadside Utility Poles */}
       <EnergyFlowParticles flowIntensity={flowIntensity} />
+
+      {/* --- SITE ELECTRICAL DISTRIBUTION: GENSET, ROADSIDE POLES & OVERHEAD CATENARY CONDUCTORS --- */}
+      <SiteElectricalDistribution />
 
       {/* --- MOUNTAIN SLOPE BACKDROP & INTERCEPTOR DRAINAGE CHANNELS --- */}
       <MountainTerrain />

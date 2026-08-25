@@ -252,5 +252,15 @@ export const MAT_HORNBILL_TALON = new THREE.MeshStandardMaterial({ color: "#2727
 export const MAT_SCHMIDT_HAMMER_CHROME = new THREE.MeshStandardMaterial({ color: "#E2E8F0", roughness: 0.20, metalness: 0.85 });
 export const MAT_SCHMIDT_HAMMER_RED = new THREE.MeshStandardMaterial({ color: "#EF4444", roughness: 0.45, metalness: 0.10 });
 
+// ⚡ SITE ELECTRICAL DISTRIBUTION, GENSET & ROADSIDE UTILITY POLES
+export const MAT_GENSET_YELLOW = new THREE.MeshStandardMaterial({ color: "#EAB308", roughness: 0.35, metalness: 0.25 });
+export const MAT_GENSET_DARK = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.60, metalness: 0.50 });
+export const MAT_GENSET_RADIATOR = new THREE.MeshStandardMaterial({ color: "#18181B", roughness: 0.85, metalness: 0.20 });
+export const MAT_INSULATOR_CERAMIC = new THREE.MeshStandardMaterial({ color: "#475569", roughness: 0.20, metalness: 0.60 });
+export const MAT_STREETLIGHT_HEAD = new THREE.MeshStandardMaterial({ color: "#334155", roughness: 0.40, metalness: 0.70 });
+export const MAT_STREETLIGHT_LENS = new THREE.MeshStandardMaterial({ color: "#FEF08A", emissive: new THREE.Color("#FDE047"), emissiveIntensity: 1.5, roughness: 0.1 });
+export const MAT_TRANSFORMER_CAN = new THREE.MeshStandardMaterial({ color: "#64748B", roughness: 0.45, metalness: 0.40 });
+export const MAT_CONDUIT_METALLIC = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.30, metalness: 0.80 });
+
 
 
