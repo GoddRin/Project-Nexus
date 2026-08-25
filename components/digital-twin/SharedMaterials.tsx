@@ -162,7 +162,7 @@ export const MAT_VEHICLE_RED = new THREE.MeshStandardMaterial({ color: "#DC2626"
 export const MAT_VEHICLE_SLATE = new THREE.MeshStandardMaterial({ color: "#334155", roughness: 0.4, metalness: 0.3 });
 export const MAT_VEHICLE_CHASSIS = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.5, metalness: 0.6 });
 export const MAT_TIRE_RUBBER = new THREE.MeshStandardMaterial({ color: "#18181B", roughness: 0.9, metalness: 0.0 });
-export const MAT_HEADLIGHT_ON = new THREE.MeshStandardMaterial({ color: "#FEF08A", emissive: new THREE.Color("#FEF08A"), emissiveIntensity: 2.0 });
+export const MAT_HEADLIGHT_ON = new THREE.MeshStandardMaterial({ color: "#FEF08A", emissive: new THREE.Color("#FEF08A"), emissiveIntensity: 4.5 });
 export const MAT_HEADLIGHT_OFF = new THREE.MeshStandardMaterial({ color: "#64748B", roughness: 0.2, metalness: 0.8 });
 
 export const MAT_GALLON_ROYAL_BLUE = new THREE.MeshStandardMaterial({ color: "#1D4ED8", roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 });
@@ -172,7 +172,7 @@ export const MAT_GALLON_SPIGOT_RED = new THREE.MeshStandardMaterial({ color: "#D
 export const MAT_SAFETY_RED = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.4, metalness: 0.1 });
 export const MAT_ROAD_LINE_YELLOW = new THREE.MeshStandardMaterial({ color: "#FACC15", roughness: 0.8, metalness: 0.0 });
 export const MAT_ROAD_LINE_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.8, metalness: 0.0 });
-export const MAT_BRAKELIGHT_ON = new THREE.MeshStandardMaterial({ color: "#EF4444", emissive: new THREE.Color("#EF4444"), emissiveIntensity: 3.0 });
+export const MAT_BRAKELIGHT_ON = new THREE.MeshStandardMaterial({ color: "#EF4444", emissive: new THREE.Color("#EF4444"), emissiveIntensity: 4.0 });
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 🧑 SKIN TONES & FACIAL FEATURES
