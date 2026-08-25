@@ -1461,10 +1461,10 @@ function PowerhouseBlockout({
           elevation="EL. 0.5m MSL"
           coordinates="17.0621° N, 121.8410° E"
           themeColor="cyan"
-          position={[0, 18.0, 0]}
+          position={[0, 28.5, 0]}
           groundY={0.5}
-          beamHeight={17.5}
-          distanceFactor={55}
+          beamHeight={28.0}
+          distanceFactor={65}
           badges={[
             { label: "CAPACITY", value: "11.3 MW", icon: "⚡" },
             { label: "UNITS", value: "2x Francis", icon: "🌊" },
@@ -1513,10 +1513,10 @@ function PowerhouseBlockout({
         elevation="EL. 14.0m MSL"
         coordinates="17.0654° N, 121.8471° E"
         themeColor="amber"
-        position={[118, 28.0, -95]}
+        position={[118, 38.5, -95]}
         groundY={14.0}
-        beamHeight={14.0}
-        distanceFactor={55}
+        beamHeight={24.5}
+        distanceFactor={65}
         badges={[
           { label: "PERSONNEL", value: "28 On-Duty", icon: "👥" },
           { label: "FLEET", value: "4 Logistics", icon: "🚛" },
