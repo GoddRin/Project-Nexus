@@ -94,6 +94,7 @@ import { PersonnelProfileModal } from "./PersonnelProfileModal";
 import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDetailDrawer";
 import { getEquipmentByLocation } from "@/app/(dashboard)/dashboard/sitemap/actions";
 import type { PagasaSignalData } from "@/lib/weather/pagasa";
+import { isWithinPAR } from "@/lib/weather/gdacs";
 import { cn } from "@/lib/utils";
 
 /**
@@ -778,6 +779,19 @@ function getFormattedPHTime(): string {
     second: "2-digit",
     hour12: true,
   }).format(now);
+}
+
+function getAutomaticPHTimeMode(): "MORNING" | "AFTERNOON" | "NIGHT" {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Manila",
+    hour: "numeric",
+    hour12: false,
+  });
+  const hour = parseInt(formatter.format(now), 10);
+  if (hour >= 6 && hour < 12) return "MORNING";
+  if (hour >= 12 && hour < 18) return "AFTERNOON";
+  return "NIGHT";
 }
 
 function PhilippineTimeChip({ effectiveTime }: { effectiveTime: "MORNING" | "AFTERNOON" | "NIGHT" }) {
@@ -2509,9 +2523,9 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentWithLocation | null>(null);
   const [isLocomotionLabOpen, setIsLocomotionLabOpen] = useState<boolean>(false);
 
-  // Time-of-day visual mode
+  // Time-of-day visual mode (initialized dynamically from live Philippine Time)
   type TimeMode = "MORNING" | "AFTERNOON" | "NIGHT";
-  const [timeMode, setTimeMode] = useState<TimeMode>("AFTERNOON");
+  const [timeMode, setTimeMode] = useState<TimeMode>(getAutomaticPHTimeMode);
 
   // Filipino Personnel Dossier & Workforce modal state
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState<boolean>(false);
@@ -2592,16 +2606,19 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
     };
   }, []);
 
-  // Determine active storm environmental overlay state
-  const isRealStorm = Boolean(
-    weatherData?.hasActiveBulletin ||
-    (weatherData?.siteSignalNumber && weatherData.siteSignalNumber > 0)
+  // Determine active storm environmental overlay state based on live PAR boundary and hoisted signals
+  const isStormInPar = Boolean(
+    weatherData?.position && isWithinPAR(weatherData.position.lat, weatherData.position.lng)
   );
+  const isSignalHoisted = Boolean(
+    weatherData?.siteSignalNumber && weatherData.siteSignalNumber > 0
+  );
+  const isRealStorm = isSignalHoisted || isStormInPar;
   const isStormActive = isRealStorm || devStormToggle;
 
   const activeSignalNumber = devStormToggle
     ? 2
-    : weatherData && weatherData.siteSignalNumber && weatherData.siteSignalNumber > 0
+    : weatherData?.siteSignalNumber && weatherData.siteSignalNumber > 0
     ? weatherData.siteSignalNumber
     : 0;
 
@@ -2686,20 +2703,36 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             className={cn(
               "rounded-lg border px-2.5 py-1 font-mono text-[11px] font-medium backdrop-blur-md flex items-center gap-1.5 shadow-xl transition-all shrink-0",
               isStormActive
-                ? "border-amber-500/50 bg-black/85 text-amber-400 shadow-amber-500/20 ring-1 ring-amber-500/30"
+                ? isSignalHoisted
+                  ? "border-red-500/50 bg-black/85 text-red-400 shadow-red-500/20 ring-1 ring-red-500/30"
+                  : "border-amber-500/50 bg-black/85 text-amber-400 shadow-amber-500/20 ring-1 ring-amber-500/30"
+                : weatherData?.hasActiveBulletin
+                ? "border-sky-500/40 bg-black/85 text-sky-400"
                 : "border-emerald-500/30 bg-black/75 text-emerald-400"
             )}
           >
             <span
               className={cn(
                 "w-2 h-2 rounded-full shrink-0",
-                isStormActive ? "bg-amber-400 animate-ping" : "bg-emerald-400"
+                isStormActive
+                  ? isSignalHoisted
+                    ? "bg-red-500 animate-ping"
+                    : "bg-amber-400 animate-ping"
+                  : weatherData?.hasActiveBulletin
+                  ? "bg-sky-400 animate-pulse"
+                  : "bg-emerald-400"
               )}
             />
             <span>
-              {isStormActive
-                ? `TYPHOON: ${weatherData?.tcName || "NIKA"} • Signal #${weatherData?.siteSignalNumber || 2}`
-                : "ATMOSPHERE: CLEAR"}
+              {devStormToggle
+                ? "TYPHOON SIMULATION • TCWS #2"
+                : isSignalHoisted
+                ? `TYPHOON: ${weatherData?.tcName} • TCWS #${weatherData?.siteSignalNumber}`
+                : isStormInPar
+                ? `TYPHOON: ${weatherData?.tcName} (PAR) • MONITORING`
+                : weatherData?.hasActiveBulletin
+                ? `PAR CLEAR • TRACKING ${weatherData?.tcName || "OBET"}`
+                : "ATMOSPHERE: CLEAR • PAR CLEAR"}
             </span>
           </div>
 
