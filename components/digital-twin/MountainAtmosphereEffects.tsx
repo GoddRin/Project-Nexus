@@ -83,10 +83,10 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
         </>
       )}
 
-      {/* ─── 🌙 480+ BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES ─── */}
+      {/* ─── 🌙 BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES ─── */}
       {isDeepNight && (
         <>
-          <BioluminescentForestFireflies count={480} />
+          <BioluminescentForestFireflies count={260} />
           <CelestialShootingStars />
         </>
       )}
@@ -700,9 +700,9 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10. 480+ BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Across All 5 Sectors)
+// 10. BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Lush Wilderness & Ridge Forests)
 // ─────────────────────────────────────────────────────────────────────────────
-function BioluminescentForestFireflies({ count = 480 }: { count?: number }) {
+function BioluminescentForestFireflies({ count = 260 }: { count?: number }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -715,34 +715,43 @@ function BioluminescentForestFireflies({ count = 480 }: { count?: number }) {
     };
 
     for (let i = 0; i < count; i++) {
-      const sector = i % 5;
+      const sector = i % 4;
       let x = 0, z = 0, y = 0;
 
       if (sector === 0) {
-        // Sector 1: Upper Eastern Mountain Ridge & Saddle
-        x = 50 + lcg() * 180;
-        z = -250 + lcg() * 140;
-        y = 14 + lcg() * 52;
+        // Sector 1: Upper Eastern Mountain Ridge & High Forest Trees
+        x = 175 + lcg() * 95;
+        z = -260 + lcg() * 180;
+        y = 16 + lcg() * 45;
       } else if (sector === 1) {
         // Sector 2: Western River Gorge & Penstock Mountain Forest
-        x = -190 + lcg() * 180;
-        z = -170 + lcg() * 240;
-        y = 8 + lcg() * 48;
+        x = -210 + lcg() * 165;
+        z = -180 + lcg() * 220;
+        y = 10 + lcg() * 45;
       } else if (sector === 2) {
-        // Sector 3: Tumauini Riverbank & Bamboo Reeds
-        x = -75 + lcg() * 210;
-        z = 10 + lcg() * 85;
-        y = 1.2 + lcg() * 18;
-      } else if (sector === 3) {
-        // Sector 4: TEMFACIL Compound Perimeter & Forest Margins
-        x = 35 + lcg() * 150;
-        z = -145 + lcg() * 115;
-        y = 12 + lcg() * 22;
+        // Sector 3: Tumauini Riparian Riverbanks & Bamboo Groves
+        x = -85 + lcg() * 180;
+        z = 35 + lcg() * 90;
+        y = 1.5 + lcg() * 16;
       } else {
-        // Sector 5: Headpond Valley & Far Northern Ridge
-        x = -65 + lcg() * 150;
-        z = 75 + lcg() * 125;
-        y = 1.0 + lcg() * 25;
+        // Sector 4: Deep North-East Mountain Forest & Saddle
+        x = 40 + lcg() * 140;
+        z = -280 + lcg() * 110;
+        y = 18 + lcg() * 40;
+      }
+
+      // Strict Facility Exclusion Zone Check (Keep Powerhouse & TEMFACIL clean)
+      const isInTemfacil = x >= 65 && x <= 170 && z >= -150 && z <= -45;
+      const isInPowerhouse = x >= -30 && x <= 75 && z >= -30 && z <= 32;
+
+      if (isInTemfacil) {
+        // Shift outward into the Eastern Sierra Madre forest slope
+        x += 110;
+        z -= 40;
+      } else if (isInPowerhouse) {
+        // Shift outward into the Western river gorge forest
+        x -= 65;
+        z += 45;
       }
 
       const speed = 0.5 + lcg() * 1.4;
