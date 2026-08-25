@@ -519,13 +519,24 @@ export default function TyphoonMap({
             }}
           >
             <Popup>
-              <div className="p-2 text-slate-900 font-sans text-xs">
-                <h4 className="font-bold text-[#0D9488] text-sm">Philippine Area of Responsibility (PAR)</h4>
-                <p className="text-slate-600 text-xs mt-1">
-                  Official PAGASA meteorological alert and monitoring boundary.
+              <div className="p-2.5 text-slate-900 font-sans text-xs max-w-[260px]">
+                <div className="flex items-center gap-1.5 font-bold text-[#0D9488] text-sm">
+                  <span>🛡️</span>
+                  <h4>Philippine Area of Responsibility (PAR)</h4>
+                </div>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">
+                  Official PAGASA &amp; WMO operational monitoring domain (5°N–25°N, 115°E–135°E).
                 </p>
-                <p className="text-[10px] text-slate-400 font-mono mt-1">
-                  Domain: 5°N-25°N, 115°E-135°E
+                <div className="mt-2 text-[10px] bg-slate-100 p-2 rounded-lg border border-slate-200 text-slate-700 space-y-1">
+                  <p className="font-bold text-slate-900 flex items-center gap-1">
+                    <span>💡</span> Meteorological Domain Scope:
+                  </p>
+                  <p className="text-slate-600 leading-normal">
+                    The PAR is an operational weather forecasting zone, not a national territorial border. It intentionally covers Taiwan, Palau, and waters off northern Borneo to provide early alerts for developing cyclones and Habagat enhancements.
+                  </p>
+                </div>
+                <p className="text-[9px] text-slate-400 font-mono mt-2 pt-1 border-t border-slate-200">
+                  Vertices: [25°N, 120°E] → [25°N, 135°E] → [5°N, 135°E] → [5°N, 115°E] → [15°N, 115°E] → [21°N, 120°E]
                 </p>
               </div>
             </Popup>
