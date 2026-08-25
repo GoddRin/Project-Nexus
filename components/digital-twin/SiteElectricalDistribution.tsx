@@ -23,14 +23,15 @@ import {
 } from "./SharedMaterials";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ⚡ SITE ELECTRICAL DISTRIBUTION & GENSET POWER INFRASTRUCTURE
+   ⚡ SITE ELECTRICAL DISTRIBUTION & MOUNTAIN ROADSIDE POWER INFRASTRUCTURE
    
-   Models the operational temporary & permanent electrical distribution:
-     1. Heavy-Duty Sound-Attenuated Industrial Diesel Generator (Genset Hub)
-     2. Concrete Spun Utility Distribution Poles with Crossarms & Ceramic Insulators
-     3. 3-Phase ACSR Overhead Power Conductors with Physical Catenary Sag
-     4. Roadway LED Cobra-Head Streetlights Illuminating the Mountain Access Road
-     5. Pole-Mounted Distribution Transformers & Building Service Drops
+   Engineering Architecture (Option 2 - Clean Roadside Verge & External Substation):
+     1. Heavy-Duty Soundproof Industrial Diesel Generator (Genset Hub at Switchyard)
+     2. Concrete Spun Utility Poles strictly on the Mountain Road Verge (Offset >5.5m)
+     3. Continuous 3-Phase Overhead ACSR Conductors along the Mountain Shoulder
+     4. LED Cobra-Head Roadway Streetlights Illuminating the Haul Road Surface
+     5. Temfacil External Perimeter Substation (Step-Down Transformer & MDP Yard outside compound)
+     6. ZERO poles or wires inside Temfacil courtyard (clean underground duct bank feed)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export interface UtilityPoleData {
@@ -45,93 +46,86 @@ export interface UtilityPoleData {
   label: string;
 }
 
+/**
+ * 7 Concrete Utility Distribution Poles aligned strictly on the Mountain Road Verge
+ * (Clear of all driving lanes, dump trucks, and supercars; terminating outside Temfacil gate)
+ */
 export const SITE_UTILITY_POLES: UtilityPoleData[] = [
   {
     id: "POLE-00",
-    x: 34.0,
-    z: 2.0,
-    hasTransformer: true,
+    x: 28.0,
+    z: 6.0,
+    hasTransformer: false,
     hasStreetlight: true,
     streetlightYaw: Math.PI / 4,
     hasGuyWire: true,
     guyWireAngle: -Math.PI / 4,
-    label: "P0 - Switchyard Genset Feeder",
+    label: "P0 - Switchyard Auxiliary Pad Feeder",
   },
   {
     id: "POLE-01",
-    x: 44.0,
-    z: -4.0,
+    x: 37.5,
+    z: 0.0,
     hasTransformer: false,
     hasStreetlight: true,
-    streetlightYaw: Math.PI / 3,
-    label: "P1 - Lower Foothill Incline",
+    streetlightYaw: -2.02,
+    label: "P1 - Lower Foothill Mountain Verge",
   },
   {
     id: "POLE-02",
-    x: 54.0,
-    z: -22.0,
+    x: 44.5,
+    z: -14.5,
     hasTransformer: false,
     hasStreetlight: true,
-    streetlightYaw: Math.PI / 3,
-    hasGuyWire: true,
-    guyWireAngle: Math.PI / 6,
-    label: "P2 - Lower Mountain S-Curve",
+    streetlightYaw: -2.02,
+    label: "P2 - Lower S-Curve Mountain Embankment",
   },
   {
     id: "POLE-03",
-    x: 67.0,
-    z: -42.0,
+    x: 52.0,
+    z: -29.0,
     hasTransformer: false,
     hasStreetlight: true,
-    streetlightYaw: Math.PI / 3.2,
-    label: "P3 - Mid-Mountain Scenic Climb",
+    streetlightYaw: -2.08,
+    label: "P3 - Mid-Mountain Scenic Verge",
   },
   {
     id: "POLE-04",
-    x: 80.0,
-    z: -60.0,
+    x: 61.0,
+    z: -43.0,
     hasTransformer: false,
     hasStreetlight: true,
-    streetlightYaw: Math.PI / 3.5,
-    hasGuyWire: true,
-    guyWireAngle: Math.PI / 4,
-    label: "P4 - Upper Hillside Approach",
+    streetlightYaw: -2.20,
+    label: "P4 - Upper Mountain Climb Verge",
   },
   {
     id: "POLE-05",
-    x: 94.0,
-    z: -74.0,
-    hasTransformer: true,
+    x: 70.5,
+    z: -56.0,
+    hasTransformer: false,
     hasStreetlight: true,
-    streetlightYaw: Math.PI / 3.8,
-    label: "P5 - Guardhouse & Security Checkpoint Junction",
+    streetlightYaw: -2.21,
+    hasGuyWire: true,
+    guyWireAngle: 0.85,
+    label: "P5 - Plateau Approach Mountain Verge",
   },
   {
     id: "POLE-06",
-    x: 112.0,
-    z: -88.0,
-    hasTransformer: false,
-    hasStreetlight: true,
-    streetlightYaw: Math.PI / 2.5,
-    label: "P6 - Temfacil Admin Boulevard",
-  },
-  {
-    id: "POLE-07",
-    x: 136.0,
-    z: -96.0,
+    x: 80.0,
+    z: -68.0,
     hasTransformer: true,
     hasStreetlight: true,
-    streetlightYaw: 0,
+    streetlightYaw: -2.22,
     hasGuyWire: true,
-    guyWireAngle: -Math.PI / 2,
-    label: "P7 - Workers Barracks & Mess Hall Substation",
+    guyWireAngle: Math.PI / 3,
+    label: "P6 - Temfacil Gate Terminal Substation Pole",
   },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 🏭 1. HEAVY-DUTY INDUSTRIAL DIESEL GENERATOR SET (500 kVA SOUNDPROOF GENSET)
 // ═══════════════════════════════════════════════════════════════════════════
-export function SiteIndustrialGenset({ position = [32.0, 0, 4.0] }: { position?: [number, number, number] }) {
+export function SiteIndustrialGenset({ position = [26.0, 0, 6.0] }: { position?: [number, number, number] }) {
   const gensetRef = useRef<THREE.Group>(null);
   const groundY = useMemo(() => sampleTerrainY(position[0], position[2]), [position]);
 
@@ -254,7 +248,7 @@ export function SiteIndustrialGenset({ position = [32.0, 0, 4.0] }: { position?:
         </mesh>
       </group>
 
-      {/* Main Distribution Panel (MDP) & Heavy Armored Cable Conduits to Feeder Pole */}
+      {/* Main Distribution Panel (MDP) & Heavy Armored Cable Conduits to Feeder Pole P0 */}
       <group position={[1.2, 1.25, 0.85]}>
         <mesh material={MAT_STEEL_FRAME}>
           <boxGeometry args={[0.65, 0.95, 0.18]} />
@@ -269,7 +263,7 @@ export function SiteIndustrialGenset({ position = [32.0, 0, 4.0] }: { position?:
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 🪵 2. CONCRETE UTILITY DISTRIBUTION POLE WITH STREETLIGHT & TRANSFORMER
+// 🪵 2. CONCRETE UTILITY DISTRIBUTION POLE WITH STREETLIGHT & CROSSARM
 // ═══════════════════════════════════════════════════════════════════════════
 export function ConcreteUtilityPole({
   data,
@@ -299,7 +293,7 @@ export function ConcreteUtilityPole({
       </mesh>
 
       {/* ═══ PRIMARY 3-PHASE STEEL CROSSARM & PORCELAIN PIN INSULATORS ═══ */}
-      <group position={[0, poleHeight - 0.75, 0]}>
+      <group position={[0, poleHeight - 0.75, 0]} rotation={[0, streetYaw + Math.PI / 2, 0]}>
         {/* Horizontal Galvanized Steel Angle Crossarm */}
         <mesh material={MAT_STEEL_FRAME} castShadow>
           <boxGeometry args={[2.2, 0.08, 0.08]} />
@@ -342,31 +336,7 @@ export function ConcreteUtilityPole({
         ))}
       </group>
 
-      {/* ═══ POLE-MOUNTED DISTRIBUTION TRANSFORMER (ON SELECTED JUNCTION POLES) ═══ */}
-      {data.hasTransformer && (
-        <group position={[0, poleHeight - 3.4, -0.32]}>
-          {/* Steel Mounting Bracket to Pole */}
-          <mesh position={[0, 0, 0.14]} material={MAT_STEEL_FRAME}>
-            <boxGeometry args={[0.25, 0.65, 0.18]} />
-          </mesh>
-          {/* Oil-Filled Cylindrical Tank Body */}
-          <mesh material={MAT_TRANSFORMER_CAN} castShadow>
-            <cylinderGeometry args={[0.26, 0.26, 0.85, 14]} />
-          </mesh>
-          {/* Top Bushings */}
-          {[-0.12, 0.12].map((bX, bIdx) => (
-            <mesh key={`tx-bush-${bIdx}`} position={[bX, 0.52, 0]} material={MAT_INSULATOR_CERAMIC}>
-              <cylinderGeometry args={[0.025, 0.045, 0.22, 8]} />
-            </mesh>
-          ))}
-          {/* Secondary Low-Voltage Terminals */}
-          <mesh position={[0, -0.25, -0.26]} material={MAT_STEEL_DARK}>
-            <boxGeometry args={[0.18, 0.12, 0.08]} />
-          </mesh>
-        </group>
-      )}
-
-      {/* ═══ COBRA-HEAD LED ROADWAY STREETLIGHT ═══ */}
+      {/* ═══ COBRA-HEAD LED ROADWAY STREETLIGHT (POINTING ACROSS ROAD) ═══ */}
       {data.hasStreetlight && (
         <group position={[0, poleHeight - 1.2, 0]} rotation={[0, streetYaw, 0]}>
           {/* Curved Galvanized Steel Outreach Pipe Arm */}
@@ -404,7 +374,105 @@ export function ConcreteUtilityPole({
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 🌐 3. CONTINUOUS OVERHEAD 3-PHASE CATENARY DISTRIBUTION CONDUCTORS
+// ⚡ 3. TEMFACIL EXTERNAL PERIMETER SUBSTATION & STEP-DOWN TRANSFORMER YARD
+// ═══════════════════════════════════════════════════════════════════════════
+export function TemfacilExternalSubstation({ position = [82.0, 0, -70.0] }: { position?: [number, number, number] }) {
+  const groundY = useMemo(() => sampleTerrainY(position[0], position[2]), [position]);
+
+  return (
+    <group position={[position[0], groundY, position[2]]}>
+      {/* Heavy Reinforced Concrete Equipment Foundation Pad */}
+      <mesh position={[0, 0.12, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
+        <boxGeometry args={[3.8, 0.24, 3.2]} />
+      </mesh>
+
+      {/* Perimeter Safety Chainlink Fence Enclosure with Yellow Caution Frame */}
+      {/* Back Wall */}
+      <mesh position={[0, 1.1, -1.5]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[3.6, 2.0, 0.04]} />
+      </mesh>
+      {/* Left Wall */}
+      <mesh position={[-1.8, 1.1, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.04, 2.0, 3.0]} />
+      </mesh>
+      {/* Right Wall */}
+      <mesh position={[1.8, 1.1, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.04, 2.0, 3.0]} />
+      </mesh>
+
+      {/* High-Voltage OSHA Warning Signboard */}
+      <group position={[0, 1.6, 1.52]}>
+        <mesh material={MAT_YELLOW_SAFETY}>
+          <boxGeometry args={[0.8, 0.5, 0.02]} />
+        </mesh>
+        <mesh position={[0, 0, 0.015]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.72, 0.42, 0.005]} />
+        </mesh>
+      </group>
+
+      {/* Main 3-Phase Step-Down Distribution Transformer (13.8kV -> 480V/230V) */}
+      <group position={[-0.6, 0.24, 0]}>
+        {/* Main Transformer Oil Tank Body */}
+        <mesh position={[0, 0.8, 0]} material={MAT_TRANSFORMER_CAN} castShadow>
+          <boxGeometry args={[1.3, 1.4, 1.1]} />
+        </mesh>
+        {/* External Cooling Radiator Fin Banks */}
+        {[-0.68, 0.68].map((xR, rIdx) => (
+          <group key={`rad-${rIdx}`} position={[xR, 0.8, 0]}>
+            <mesh material={MAT_STEEL_FRAME}>
+              <boxGeometry args={[0.12, 1.1, 0.9]} />
+            </mesh>
+          </group>
+        ))}
+        {/* High-Voltage Primary Bushings */}
+        {[-0.35, 0, 0.35].map((bX, bIdx) => (
+          <mesh key={`pri-bush-${bIdx}`} position={[bX, 1.7, -0.2]} material={MAT_INSULATOR_CERAMIC}>
+            <cylinderGeometry args={[0.04, 0.07, 0.35, 8]} />
+          </mesh>
+        ))}
+        {/* Low-Voltage Secondary Bushing Terminals */}
+        {[-0.3, -0.1, 0.1, 0.3].map((lvX, lvIdx) => (
+          <mesh key={`sec-bush-${lvIdx}`} position={[lvX, 1.65, 0.3]} material={MAT_INSULATOR_CERAMIC}>
+            <cylinderGeometry args={[0.03, 0.05, 0.25, 8]} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* Outdoor Weatherproof Main Distribution Panel (MDP) & Switchgear Cabinet */}
+      <group position={[1.0, 0.24, 0]}>
+        <mesh position={[0, 0.95, 0]} material={MAT_STEEL_FRAME} castShadow>
+          <boxGeometry args={[0.9, 1.65, 0.7]} />
+        </mesh>
+        {/* Stainless Steel Meter Enclosure */}
+        <mesh position={[0, 1.1, 0.36]} material={MAT_FOOD_STAINLESS_TRAY}>
+          <boxGeometry args={[0.4, 0.5, 0.08]} />
+        </mesh>
+        {/* Digital Telemetry Glass Window */}
+        <mesh position={[0, 1.18, 0.41]}>
+          <planeGeometry args={[0.22, 0.14]} />
+          <meshBasicMaterial color="#38BDF8" />
+        </mesh>
+      </group>
+
+      {/* High-Voltage Pothead Riser Pipe coming down from Pole 6 */}
+      <mesh position={[-1.5, 1.8, -0.6]} material={MAT_CONDUIT_METALLIC}>
+        <cylinderGeometry args={[0.05, 0.05, 3.2, 8]} />
+      </mesh>
+
+      {/* Ground-Level Underground Concrete Cable Trench / Duct Bank entering compound */}
+      <mesh position={[2.4, 0.06, 0]} material={MAT_CONCRETE_HEADER} receiveShadow>
+        <boxGeometry args={[1.4, 0.12, 0.7]} />
+      </mesh>
+      {/* Diamond-Plate Trench Cover */}
+      <mesh position={[2.4, 0.13, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[1.36, 0.02, 0.66]} />
+      </mesh>
+    </group>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🌐 4. CONTINUOUS OVERHEAD 3-PHASE CATENARY DISTRIBUTION CONDUCTORS
 // ═══════════════════════════════════════════════════════════════════════════
 export function OverheadDistributionCatenaries() {
   const wireMat = useMemo(
@@ -417,7 +485,7 @@ export function OverheadDistributionCatenaries() {
     []
   );
 
-  // Compute 3 primary phase spans and 1 neutral span between every consecutive pole
+  // Compute 3 primary phase spans and 1 neutral span between consecutive roadside verge poles
   const spans = useMemo(() => {
     const segments: THREE.TubeGeometry[] = [];
     const POLE_H = 8.5;
@@ -431,12 +499,12 @@ export function OverheadDistributionCatenaries() {
       const yB = sampleTerrainY(pB.x, pB.z) + POLE_H - 0.61;
 
       const dist = Math.sqrt((pB.x - pA.x) ** 2 + (pB.z - pA.z) ** 2);
-      const sag = Math.max(0.35, dist * 0.032);
+      const sag = Math.max(0.35, dist * 0.030);
 
       // 3 Primary High-Voltage Phase Conductors
       PHASE_OFFSETS.forEach((xOff) => {
-        const start = new THREE.Vector3(pA.x + xOff * 0.4, yA, pA.z);
-        const end = new THREE.Vector3(pB.x + xOff * 0.4, yB, pB.z);
+        const start = new THREE.Vector3(pA.x + xOff * 0.35, yA, pA.z);
+        const end = new THREE.Vector3(pB.x + xOff * 0.35, yB, pB.z);
         const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
         mid.y -= sag;
 
@@ -445,8 +513,8 @@ export function OverheadDistributionCatenaries() {
       });
 
       // 1 Secondary Neutral Conductor lower on pole
-      const startN = new THREE.Vector3(pA.x, yA - 1.45, pA.z + 0.18);
-      const endN = new THREE.Vector3(pB.x, yB - 1.45, pB.z + 0.18);
+      const startN = new THREE.Vector3(pA.x, yA - 1.45, pA.z + 0.15);
+      const endN = new THREE.Vector3(pB.x, yB - 1.45, pB.z + 0.15);
       const midN = new THREE.Vector3().addVectors(startN, endN).multiplyScalar(0.5);
       midN.y -= sag * 1.1;
       const curveN = new THREE.CatmullRomCurve3([startN, midN, endN]);
@@ -465,21 +533,24 @@ export function OverheadDistributionCatenaries() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 🌟 4. MAIN EXPORT: SITE ELECTRICAL DISTRIBUTION SYSTEM
+// 🌟 5. MAIN EXPORT: SITE ELECTRICAL DISTRIBUTION SYSTEM
 // ═══════════════════════════════════════════════════════════════════════════
 export function SiteElectricalDistribution() {
   return (
     <group>
-      {/* 1. Heavy-Duty Soundproof Industrial Diesel Generator (Genset Hub) */}
-      <SiteIndustrialGenset position={[32.0, 0, 4.0]} />
+      {/* 1. Heavy-Duty Soundproof Industrial Diesel Generator (Genset Hub at Switchyard) */}
+      <SiteIndustrialGenset position={[26.0, 0, 6.0]} />
 
-      {/* 2. Concrete Utility Distribution Poles along Uphill Access Road */}
+      {/* 2. Concrete Utility Distribution Poles along Mountain Road Verge (Offset >5.5m) */}
       {SITE_UTILITY_POLES.map((pole) => (
         <ConcreteUtilityPole key={pole.id} data={pole} />
       ))}
 
       {/* 3. Continuous 3-Phase Overhead Electrical Lines with Catenary Sag */}
       <OverheadDistributionCatenaries />
+
+      {/* 4. Temfacil External Perimeter Substation & Step-Down Transformer Yard (outside gate) */}
+      <TemfacilExternalSubstation position={[82.0, 0, -70.0]} />
     </group>
   );
 }

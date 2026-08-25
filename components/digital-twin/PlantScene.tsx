@@ -183,7 +183,7 @@ const MATERIALS = {
 
 /**
  * 3D Curved Energy Flow Path Waypoints
- * Traces path: Intake Headworks -> Penstock Pipe -> Turbine Hall -> Generator Bay -> Switchyard & Genset -> Roadside Utility Poles -> Temfacil Compound
+ * Traces path: Intake Headworks -> Penstock Pipe -> Turbine Hall -> Generator Bay -> Switchyard & Genset -> Mountain Roadside Poles -> Temfacil External Substation
  */
 const FLOW_PATH_POINTS = [
   new THREE.Vector3(-6, 20.0, -30),   // 1. Dam Intake Headworks (Top Hillside)
@@ -194,15 +194,15 @@ const FLOW_PATH_POINTS = [
   new THREE.Vector3(4, 6.2, 0),       // 6. Small Turbine #2 (TU-02)
   new THREE.Vector3(9.6, 8.4, 0),     // 7. Powerhouse East Wall IPB Busduct Exit Bushing
   new THREE.Vector3(22.0, 4.8, -3),   // 8. TR-GSU-01 Transformer Low-Voltage Bushing
-  new THREE.Vector3(32.0, 2.5, 4.0),  // 9. Site Industrial Diesel Generator (Genset Hub)
-  new THREE.Vector3(34.0, sampleTerrainY(34.0, 2.0) + 7.9, 2.0),     // 10. Utility Pole P0 (Switchyard Feeder)
-  new THREE.Vector3(44.0, sampleTerrainY(44.0, -4.0) + 7.9, -4.0),   // 11. Utility Pole P1 (Lower Foothill Incline)
-  new THREE.Vector3(54.0, sampleTerrainY(54.0, -22.0) + 7.9, -22.0), // 12. Utility Pole P2 (Lower Mountain S-Curve)
-  new THREE.Vector3(67.0, sampleTerrainY(67.0, -42.0) + 7.9, -42.0), // 13. Utility Pole P3 (Mid-Mountain Climb)
-  new THREE.Vector3(80.0, sampleTerrainY(80.0, -60.0) + 7.9, -60.0), // 14. Utility Pole P4 (Upper Hillside Approach)
-  new THREE.Vector3(94.0, sampleTerrainY(94.0, -74.0) + 7.9, -74.0), // 15. Utility Pole P5 (Guardhouse Junction)
-  new THREE.Vector3(112.0, sampleTerrainY(112.0, -88.0) + 7.9, -88.0), // 16. Utility Pole P6 (Admin Office Boulevard)
-  new THREE.Vector3(136.0, sampleTerrainY(136.0, -96.0) + 7.9, -96.0), // 17. Utility Pole P7 (Barracks & Mess Hall Substation)
+  new THREE.Vector3(26.0, 2.5, 6.0),  // 9. Site Industrial Diesel Generator (Genset Hub)
+  new THREE.Vector3(28.0, sampleTerrainY(28.0, 6.0) + 7.9, 6.0),     // 10. Utility Pole P0 (Switchyard Verge)
+  new THREE.Vector3(37.5, sampleTerrainY(37.5, 0.0) + 7.9, 0.0),     // 11. Utility Pole P1 (Lower Foothill Verge)
+  new THREE.Vector3(44.5, sampleTerrainY(44.5, -14.5) + 7.9, -14.5), // 12. Utility Pole P2 (Lower S-Curve Verge)
+  new THREE.Vector3(52.0, sampleTerrainY(52.0, -29.0) + 7.9, -29.0), // 13. Utility Pole P3 (Mid-Mountain Verge)
+  new THREE.Vector3(61.0, sampleTerrainY(61.0, -43.0) + 7.9, -43.0), // 14. Utility Pole P4 (Upper Mountain Verge)
+  new THREE.Vector3(70.5, sampleTerrainY(70.5, -56.0) + 7.9, -56.0), // 15. Utility Pole P5 (Plateau Approach Verge)
+  new THREE.Vector3(80.0, sampleTerrainY(80.0, -68.0) + 7.9, -68.0), // 16. Utility Pole P6 (Gate Terminal Pole)
+  new THREE.Vector3(82.0, sampleTerrainY(82.0, -70.0) + 1.2, -70.0), // 17. Temfacil External Substation Step-Down Transformer
 ];
 
 /**
