@@ -161,20 +161,16 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
   console.log(`[Storms] JTWC: ${jtwcStorms.length} | PAGASA active: ${pagasaSignals?.hasActiveBulletin ?? "error"} | GDACS: ${gdacsStorms.length} | PANaHON Track: ${panahonTrackStorms.length}`);
 
   // Filter storms strictly to those relevant to the Philippines (Inside PAR or in Eastern Approach Corridor)
-  const relevantJtwcStorms = jtwcStorms.filter((s) => isRelevantToPhilippines(s));
-  const jtwcParStorms = relevantJtwcStorms.filter((s) => isWithinPAR(s.lat, s.lng));
-  const jtwcRegionalStorms = relevantJtwcStorms.filter((s) => !isWithinPAR(s.lat, s.lng));
-
-  // Separate GDACS storms into PAR vs Regional (filtered to Philippines relevance)
+  const remainingJtwcStorms = jtwcStorms.filter((s) => isRelevantToPhilippines(s));
   const relevantGdacsStorms = gdacsStorms.filter((s) => isRelevantToPhilippines(s as unknown as Storm));
-  const gdacsParStorms = relevantGdacsStorms.filter((s) => s.isWithinPAR);
-  const gdacsRegionalStorms = relevantGdacsStorms.filter((s) => !s.isWithinPAR);
 
   // ============================================================
-  // Merge logic: PAGASA > JTWC > GDACS > PANaHON
+  // Unified Cross-Source Deduplication & Merge Logic:
+  // Merges PAGASA domestic names & bulletins with JTWC high-precision tracks.
+  // Guarantees ONE single track per physical storm and accurate PAR classification.
   // ============================================================
   let parStorms: Storm[] = [];
-  let regionalStorms: Storm[] = [...jtwcRegionalStorms];
+  let regionalStorms: Storm[] = [];
   let source = "none";
 
   // --- CASE 1: PAGASA has an active bulletin with position ---
@@ -185,14 +181,37 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
       const localName = pagasaSignals.tcName || pagasaStorm.name;
       const localCategory = pagasaSignals.tcCategory || pagasaStorm.category;
 
-      if (jtwcParStorms.length === 0) {
-        // PAGASA only for PAR
-        parStorms = [{ ...(pagasaStorm as unknown as Storm), isWithinPAR: true }];
+      // Find if JTWC tracks this exact same storm (spatial distance < 650km OR matching name)
+      const matchingJtwcIndex = remainingJtwcStorms.findIndex((s) => {
+        const dist = calculateDistance(s.lat, s.lng, pagasaStorm.lat, pagasaStorm.lng);
+        return dist < 650 || s.name.toUpperCase() === localName.toUpperCase();
+      });
+
+      if (matchingJtwcIndex === -1) {
+        // PAGASA only (no corresponding JTWC track found)
+        const inPar = isWithinPAR(pagasaStorm.lat, pagasaStorm.lng);
+        const unifiedStorm: Storm = {
+          ...(pagasaStorm as unknown as Storm),
+          isWithinPAR: inPar,
+        };
+        if (inPar) {
+          parStorms.push(unifiedStorm);
+        } else {
+          regionalStorms.push(unifiedStorm);
+        }
         source = "pagasa";
-        console.log(`[Storms] Using PAGASA-only storm in PAR: ${localName}`);
+        console.log(`[Storms] Using PAGASA-only storm (${inPar ? "Inside PAR" : "Outside PAR"}): ${localName}`);
       } else {
-        // Merge PAGASA + JTWC (PAGASA position is authoritative)
-        const jtwcStorm = jtwcParStorms[0];
+        // Merge PAGASA + JTWC into ONE unified storm entry
+        const jtwcStorm = remainingJtwcStorms[matchingJtwcIndex];
+        // Remove from remaining list so JTWC doesn't create a second duplicate track
+        remainingJtwcStorms.splice(matchingJtwcIndex, 1);
+
+        const inPar = isWithinPAR(pagasaStorm.lat, pagasaStorm.lng) || isWithinPAR(jtwcStorm.lat, jtwcStorm.lng);
+        const displayName = (jtwcStorm.name && jtwcStorm.name.toUpperCase() !== localName.toUpperCase())
+          ? `${localName} (${jtwcStorm.name})`
+          : localName;
+
         const windScaleRatio =
           jtwcStorm.windSpeedKph > 0
             ? pagasaStorm.windSpeedKph / jtwcStorm.windSpeedKph
@@ -200,120 +219,120 @@ export async function getMergedStorms(isMock = false): Promise<MergedStormsResul
         const clampedRatio = Math.max(0.5, Math.min(1.5, windScaleRatio));
 
         const mergedForecast = (
-          pagasaStorm.forecast && pagasaStorm.forecast.length > 1
-            ? pagasaStorm.forecast
-            : jtwcStorm.forecast
+          jtwcStorm.forecast && jtwcStorm.forecast.length > 1
+            ? jtwcStorm.forecast
+            : pagasaStorm.forecast
         ).map((f, idx) => {
           if (idx === 0 || f.time.toLowerCase() === "current") {
             return {
               ...f,
               time: "Current",
-              lat: pagasaStorm.lat,
-              lng: pagasaStorm.lng,
-              windKph: pagasaStorm.windSpeedKph,
+              lat: jtwcStorm.lat,
+              lng: jtwcStorm.lng,
+              windKph: Math.max(pagasaStorm.windSpeedKph, jtwcStorm.windSpeedKph),
             };
           }
           return { ...f, windKph: Math.round(f.windKph * clampedRatio) };
         });
 
-        parStorms = [
-          {
-            ...jtwcStorm,
-            name: localName,
-            category: localCategory || jtwcStorm.category,
-            lat: pagasaStorm.lat,
-            lng: pagasaStorm.lng,
-            windSpeedKph: pagasaStorm.windSpeedKph,
-            windSpeedKnots: pagasaStorm.windSpeedKnots,
-            pressureHpa: pagasaStorm.pressureHpa,
-            direction: pagasaStorm.direction,
-            speedKph: pagasaStorm.speedKph,
-            distanceKm: pagasaStorm.distanceKm,
-            closestApproach: pagasaStorm.closestApproach,
-            forecast: mergedForecast,
-            uncertaintyCone:
-              jtwcStorm.uncertaintyCone.length > 2
-                ? jtwcStorm.uncertaintyCone
-                : pagasaStorm.uncertaintyCone,
-            windRadii:
-              jtwcStorm.windRadii.r34 > 0
-                ? jtwcStorm.windRadii
-                : pagasaStorm.windRadii,
-            pastTrack:
-              pagasaStorm.pastTrack.length > 0
-                ? pagasaStorm.pastTrack
-                : jtwcStorm.pastTrack || [],
-            isWithinPAR: true,
-          },
-        ];
+        const unifiedStorm: Storm = {
+          ...jtwcStorm,
+          name: displayName,
+          category: localCategory || jtwcStorm.category,
+          windSpeedKph: Math.max(pagasaStorm.windSpeedKph, jtwcStorm.windSpeedKph),
+          windSpeedKnots: Math.max(pagasaStorm.windSpeedKnots, jtwcStorm.windSpeedKnots),
+          pressureHpa: pagasaStorm.pressureHpa || jtwcStorm.pressureHpa,
+          direction: pagasaStorm.direction || jtwcStorm.direction,
+          speedKph: pagasaStorm.speedKph || jtwcStorm.speedKph,
+          forecast: mergedForecast,
+          uncertaintyCone:
+            jtwcStorm.uncertaintyCone.length > 2
+              ? jtwcStorm.uncertaintyCone
+              : pagasaStorm.uncertaintyCone,
+          windRadii:
+            jtwcStorm.windRadii.r34 > 0
+              ? jtwcStorm.windRadii
+              : pagasaStorm.windRadii,
+          pastTrack:
+            jtwcStorm.pastTrack && jtwcStorm.pastTrack.length > 0
+              ? jtwcStorm.pastTrack
+              : pagasaStorm.pastTrack || [],
+          isWithinPAR: inPar,
+        };
+
+        if (inPar) {
+          parStorms.push(unifiedStorm);
+        } else {
+          regionalStorms.push(unifiedStorm);
+        }
         source = "pagasa+jtwc";
-        console.log(`[Storms] Merged PAGASA+JTWC: ${localName} @ ${pagasaStorm.lat.toFixed(1)},${pagasaStorm.lng.toFixed(1)}`);
+        console.log(`[Storms] Unified PAGASA+JTWC storm (${inPar ? "Inside PAR" : "Outside PAR"}): ${displayName} @ ${jtwcStorm.lat.toFixed(1)},${jtwcStorm.lng.toFixed(1)}`);
       }
     }
   }
-  // --- CASE 2: PAGASA has active bulletin but no parsed position — use JTWC with PAGASA name ---
-  else if (pagasaSignals?.hasActiveBulletin && jtwcParStorms.length > 0) {
-    const localName = pagasaSignals.tcName || jtwcParStorms[0].name;
-    const localCategory = pagasaSignals.tcCategory || jtwcParStorms[0].category;
-    parStorms = [
-      {
-        ...jtwcParStorms[0],
-        name: localName,
-        category: localCategory,
-        isWithinPAR: true,
-      },
-    ];
-    source = "jtwc+pagasa-name";
-    console.log(`[Storms] PAGASA bulletin active (no position), using JTWC for ${localName}`);
-  }
-  // --- CASE 3: JTWC has PAR storms, PAGASA is clear or unavailable ---
-  else if (jtwcParStorms.length > 0) {
-    parStorms = jtwcParStorms.map((s) => ({ ...s, isWithinPAR: true }));
-    source = "jtwc";
-    console.log(`[Storms] JTWC-only: ${jtwcParStorms.length} storms in PAR`);
-  }
-  // --- CASE 4: GDACS fallback for PAR ---
-  else if (gdacsParStorms.length > 0) {
-    parStorms = gdacsParStorms.map((g) => ({
-      id: g.id,
-      name: g.name,
-      category: g.category,
-      lat: g.lat,
-      lng: g.lng,
-      windSpeedKnots: g.windSpeedKnots,
-      windSpeedKph: g.windSpeedKph,
-      pressureHpa: g.pressureHpa,
-      direction: "WNW",
-      speedKph: 15,
-      distanceKm: g.distanceKm,
-      closestApproach: {
-        distanceKm: g.distanceKm,
-        eta: new Date(Date.now() + 48 * 3600000).toISOString(),
-      },
-      forecast: [{ time: "Current", lat: g.lat, lng: g.lng, windKph: g.windSpeedKph }],
-      pastTrack: [],
-      uncertaintyCone: [],
-      windRadii: { r34: 0, r50: 0, r64: 0 },
-      isWithinPAR: true,
-      pubDate: g.pubDate,
-    }));
-    source = "gdacs";
-    console.log(`[Storms] GDACS fallback: ${gdacsParStorms.length} storms in PAR`);
-  }
-  // --- CASE 5: PANaHON Track (only if active system within PAR) ---
-  else if (panahonTrackStorms.length > 0 && panahonTrackStorms.some((s) => s.isWithinPAR)) {
-    parStorms = panahonTrackStorms.filter((s) => s.isWithinPAR);
-    source = "panahon";
-    console.log(`[Storms] Using PANaHON track for active system in PAR: ${parStorms[0].name}`);
-  } else {
-    // PAR is clear!
-    if (jtwcRegionalStorms.length > 0) {
-      source = "jtwc-regional";
-    } else if (pagasaSignals?.source === "pagasa") {
-      source = "pagasa-clear";
+
+  // --- Add remaining non-duplicate JTWC storms ---
+  for (const jtwc of remainingJtwcStorms) {
+    const inPar = isWithinPAR(jtwc.lat, jtwc.lng);
+    if (inPar) {
+      parStorms.push({ ...jtwc, isWithinPAR: true });
     } else {
-      source = "clear";
+      regionalStorms.push({ ...jtwc, isWithinPAR: false });
     }
+    if (source === "none") source = "jtwc";
+  }
+
+  // --- GDACS fallback if no storms found from PAGASA/JTWC ---
+  if (parStorms.length === 0 && regionalStorms.length === 0 && relevantGdacsStorms.length > 0) {
+    for (const g of relevantGdacsStorms) {
+      const inPar = isWithinPAR(g.lat, g.lng);
+      const gdacsUnified: Storm = {
+        id: g.id,
+        name: g.name,
+        category: g.category,
+        lat: g.lat,
+        lng: g.lng,
+        windSpeedKnots: g.windSpeedKnots,
+        windSpeedKph: g.windSpeedKph,
+        pressureHpa: g.pressureHpa,
+        direction: "WNW",
+        speedKph: 15,
+        distanceKm: g.distanceKm,
+        closestApproach: {
+          distanceKm: g.distanceKm,
+          eta: new Date(Date.now() + 48 * 3600000).toISOString(),
+        },
+        forecast: [{ time: "Current", lat: g.lat, lng: g.lng, windKph: g.windSpeedKph }],
+        pastTrack: [],
+        uncertaintyCone: [],
+        windRadii: { r34: 0, r50: 0, r64: 0 },
+        isWithinPAR: inPar,
+        pubDate: g.pubDate,
+      };
+      if (inPar) {
+        parStorms.push(gdacsUnified);
+      } else {
+        regionalStorms.push(gdacsUnified);
+      }
+    }
+    source = "gdacs";
+  }
+
+  // --- PANaHON Track fallback ---
+  if (parStorms.length === 0 && regionalStorms.length === 0 && panahonTrackStorms.length > 0) {
+    for (const p of panahonTrackStorms) {
+      const inPar = isWithinPAR(p.lat, p.lng);
+      if (inPar) {
+        parStorms.push({ ...p, isWithinPAR: true });
+      } else {
+        regionalStorms.push({ ...p, isWithinPAR: false });
+      }
+    }
+    source = "panahon";
+  }
+
+  if (parStorms.length === 0 && regionalStorms.length === 0) {
+    source = pagasaSignals?.source === "pagasa" ? "pagasa-clear" : "clear";
   }
 
   // Combine storms: PAR storms first, followed by Regional storms sorted by distance

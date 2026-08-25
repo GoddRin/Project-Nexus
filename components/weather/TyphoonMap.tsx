@@ -85,10 +85,13 @@ function formatPhtDateTime(timeInput?: string): string {
  * Creates custom PAGASA letter-badge markers (L for LPA, D for TD, TS, STS, TY, STY)
  * with control-room gradients, glowing halos, and dynamic ripple animations.
  */
+/**
+ * Creates custom PAGASA letter-badge markers (L for LPA, D for TD, TS, STS, TY, STY)
+ * with control-room gradients, glowing halos, and dynamic ripple animations.
+ */
 function createLetterBadgeIcon(
   type: string = "TD",
-  timeLabel?: string,
-  isFirst: boolean = false,
+  stormName?: string,
   isLatest: boolean = false,
   inPAR: boolean = false
 ) {
@@ -116,80 +119,105 @@ function createLetterBadgeIcon(
     bgGradient = "bg-gradient-to-br from-pink-500 to-purple-800 text-white border-pink-200 shadow-[0_0_18px_rgba(236,72,153,0.95)]";
   }
 
-  const formattedTime = formatPhtDateTime(timeLabel);
-
   const ringClass = isLatest
     ? inPAR
-      ? `<div class="absolute w-8 h-8 rounded-full border-2 border-red-500/80 animate-ping pointer-events-none"></div>
-         <div class="absolute w-6 h-6 rounded-full bg-red-500/30 animate-pulse pointer-events-none"></div>`
-      : `<div class="absolute w-7 h-7 rounded-full border border-teal-400/80 animate-ping pointer-events-none"></div>`
+      ? `<div class="absolute w-9 h-9 rounded-full border-2 border-red-500/80 animate-ping pointer-events-none"></div>
+         <div class="absolute w-7 h-7 rounded-full bg-red-500/30 animate-pulse pointer-events-none"></div>`
+      : `<div class="absolute w-8 h-8 rounded-full border border-sky-400/80 animate-ping pointer-events-none"></div>`
+    : "";
+
+  const nameBadge = stormName
+    ? `<div class="absolute left-7 whitespace-nowrap bg-slate-950/95 font-sans font-bold text-[10px] px-2 py-0.5 rounded-md border ${
+        inPAR ? "border-red-500/50 text-red-400" : "border-sky-400/50 text-sky-300"
+      } shadow-xl flex items-center gap-1.5 backdrop-blur-md">
+        <span class="w-1.5 h-1.5 rounded-full ${inPAR ? "bg-red-500" : "bg-sky-400"} animate-pulse"></span>
+        <span>${stormName}</span>
+      </div>`
     : "";
 
   const html = `
     <div class="relative flex items-center justify-center pointer-events-auto group">
       ${ringClass}
-      <div class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[9px] border ${bgGradient} transition-transform duration-200 group-hover:scale-125">
+      <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] border ${bgGradient} transition-transform duration-200 group-hover:scale-125">
         ${badgeLetter}
       </div>
-      ${
-        formattedTime && isLatest
-          ? `<div class="absolute left-6 whitespace-nowrap bg-slate-950/95 text-flow-teal font-mono text-[9px] px-2 py-0.5 rounded-md border border-flow-teal/40 shadow-xl flex items-center gap-1.5 backdrop-blur-md">
-              <span class="w-1.5 h-1.5 rounded-full ${inPAR ? "bg-red-500" : "bg-flow-teal"} animate-pulse"></span>
-              <span>${formattedTime} PHT</span>
-            </div>`
-          : ""
-      }
+      ${nameBadge}
     </div>
   `;
 
   return L.divIcon({
     html,
     className: "cyclone-letter-badge",
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
   });
 }
 
 /**
- * Creates custom designated intensity markers for each official forecast point
+ * Creates decluttered designated intensity markers for forecast points.
+ * Uses sleek circular waypoint dots on intermediate steps and clean milestone badges on 24h intervals.
  */
 function createForecastBadgeIcon(
   type: string = "TY",
   offsetTime: string = "+24h",
+  isMilestone: boolean = true,
   inPAR: boolean = false
 ) {
   const t = (type || "TY").toUpperCase();
   let badgeLetter = "TY";
+  let dotColor = "bg-rose-600 border-red-300";
   let bgGradient = "bg-gradient-to-br from-red-500 to-rose-700 text-white border-red-200 shadow-[0_0_10px_rgba(239,68,68,0.7)]";
 
   if (t === "LPA" || t === "L") {
     badgeLetter = "L";
+    dotColor = "bg-blue-500 border-blue-300";
     bgGradient = "bg-gradient-to-br from-blue-500 to-indigo-700 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]";
   } else if (t === "TD" || t === "D") {
     badgeLetter = "D";
+    dotColor = "bg-sky-500 border-sky-300";
     bgGradient = "bg-gradient-to-br from-sky-400 to-cyan-700 text-white border-sky-300 shadow-[0_0_8px_rgba(2,132,199,0.6)]";
   } else if (t === "TS" || t === "S") {
     badgeLetter = "TS";
+    dotColor = "bg-amber-400 border-yellow-200";
     bgGradient = "bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 font-bold border-yellow-200 shadow-[0_0_10px_rgba(234,179,8,0.7)]";
   } else if (t === "STS") {
     badgeLetter = "STS";
+    dotColor = "bg-orange-500 border-orange-200";
     bgGradient = "bg-gradient-to-br from-orange-400 to-amber-600 text-white border-orange-200 shadow-[0_0_10px_rgba(249,115,22,0.7)]";
   } else if (t === "TY" || t === "T") {
     badgeLetter = "TY";
+    dotColor = "bg-red-500 border-red-200";
     bgGradient = "bg-gradient-to-br from-red-500 to-rose-700 text-white border-red-200 shadow-[0_0_12px_rgba(239,68,68,0.8)]";
   } else if (t === "STY" || t === "ST") {
     badgeLetter = "STY";
+    dotColor = "bg-pink-500 border-pink-200";
     bgGradient = "bg-gradient-to-br from-pink-500 to-purple-800 text-white border-pink-200 shadow-[0_0_14px_rgba(236,72,153,0.85)]";
   }
 
-  const borderPar = inPAR ? "ring-2 ring-cyan-400/80 ring-offset-1 ring-offset-slate-950" : "";
+  const borderPar = inPAR ? "ring-1 ring-cyan-400/90" : "";
 
+  // For non-milestones (e.g. +6h, +12h, +18h), render sleek minimal waypoint dots
+  if (!isMilestone) {
+    const dotHtml = `
+      <div class="relative flex items-center justify-center pointer-events-auto group">
+        <div class="w-2.5 h-2.5 rounded-full ${dotColor} border ${borderPar} shadow-sm transition-transform duration-200 group-hover:scale-150"></div>
+      </div>
+    `;
+    return L.divIcon({
+      html: dotHtml,
+      className: "cyclone-forecast-dot",
+      iconSize: [10, 10],
+      iconAnchor: [5, 5],
+    });
+  }
+
+  // For 24h milestones (+24h, +48h, +72h, +96h, +120h), render clean badge with offset
   const html = `
-    <div class="relative flex items-center justify-center pointer-events-auto group">
-      <div class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[8px] border ${bgGradient} ${borderPar} transition-transform duration-200 group-hover:scale-125">
+    <div class="relative flex flex-col items-center justify-center pointer-events-auto group">
+      <div class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[7.5px] border ${bgGradient} ${borderPar} transition-transform duration-200 group-hover:scale-125">
         ${badgeLetter}
       </div>
-      <div class="absolute -bottom-3.5 whitespace-nowrap bg-slate-950/90 text-slate-300 font-mono text-[8px] px-1 rounded border border-slate-700/60 shadow pointer-events-none">
+      <div class="mt-0.5 whitespace-nowrap bg-slate-950/90 text-slate-300 font-mono text-[7.5px] px-1 py-0.2 rounded border border-slate-700/60 shadow pointer-events-none">
         ${offsetTime}
       </div>
     </div>
@@ -198,8 +226,8 @@ function createForecastBadgeIcon(
   return L.divIcon({
     html,
     className: "cyclone-forecast-badge",
-    iconSize: [18, 18],
-    iconAnchor: [9, 9],
+    iconSize: [20, 26],
+    iconAnchor: [10, 8],
   });
 }
 
@@ -728,11 +756,19 @@ export default function TyphoonMap({
                   fc.windKph >= 55 ? "TD" : "LPA"
                 );
 
+                const isMilestone =
+                  fc.time.includes("24h") ||
+                  fc.time.includes("48h") ||
+                  fc.time.includes("72h") ||
+                  fc.time.includes("96h") ||
+                  fc.time.includes("120h") ||
+                  idx === (storm.forecast || []).length - 1;
+
                 return (
                   <Marker
                     key={`${storm.id}-fc-${idx}`}
                     position={[fc.lat, fc.lng]}
-                    icon={createForecastBadgeIcon(fcCode, fc.time, fcInPAR)}
+                    icon={createForecastBadgeIcon(fcCode, fc.time, isMilestone, fcInPAR)}
                   >
                     <Popup>
                       <div className="p-1 font-sans text-xs text-slate-100">
@@ -789,8 +825,7 @@ export default function TyphoonMap({
                     : storm.category.toLowerCase().includes("depression")
                     ? "TD"
                     : "LPA",
-                  storm.pubDate || storm.closestApproach?.eta,
-                  false,
+                  storm.name,
                   true,
                   inPAR
                 )}
@@ -859,8 +894,8 @@ export default function TyphoonMap({
           {parStorms.length > 0
             ? `WARNING: ${parStorms[0].name} (PAR)`
             : regionalStorms.length > 0
-            ? `PAR Clear • ${regionalStorms.length} NWPAC`
-            : "PAR Clear"}
+            ? `PAR Clear • Tracking ${regionalStorms[0].name}`
+            : "PAR Clear • No Active Storms"}
         </span>
       </div>
 

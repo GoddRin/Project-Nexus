@@ -381,7 +381,7 @@ export default function PhilippinesWeatherClient({
 
   // Determine closest active storm to Tumauini HEPP
   const siteAlertStorm = parStorms.find(s => s.distanceKm <= 1000) 
-    || (pagasaSignals.hasActiveBulletin && parStorms.length > 0 ? parStorms[0] : undefined);
+    || (parStorms.length > 0 ? parStorms[0] : undefined);
 
   // Use REAL PAGASA signal number from the official bulletin
   const signalNumber = pagasaSignals.source === "pagasa" 
@@ -397,10 +397,13 @@ export default function PhilippinesWeatherClient({
         })()
       : 0);
 
-  // High Priority Alert Banner (only when PAGASA has active bulletin OR storm is threatening within PAR)
-  const showHighAlert = pagasaSignals.hasActiveBulletin || (siteAlertStorm !== undefined);
-  // Informational Regional Monitoring Notice (when PAR is clear but systems are active in NWPAC)
-  const showRegionalNotice = !showHighAlert && regionalStorms.length > 0;
+  // High Priority Alert Banner (only when storm is currently inside PAR or TCWS signals are raised)
+  const isStormInsidePar = parStorms.length > 0;
+  const isSignalHoisted = signalNumber > 0;
+  const showHighAlert = isStormInsidePar || isSignalHoisted;
+
+  // Informational Regional Monitoring Notice (when PAR is clear, but tracking systems outside in NWPAC or Habagat alert)
+  const showRegionalNotice = !showHighAlert && (regionalStorms.length > 0 || pagasaSignals.hasActiveBulletin);
 
   // Render Category colored tags
   const getCategoryClass = (category: string, knots: number) => {
@@ -418,7 +421,8 @@ export default function PhilippinesWeatherClient({
   };
 
   const getPAGASASignalLabel = (sigNum: number) => {
-    if (sigNum === 0 && pagasaSignals.hasActiveBulletin) return "Monitoring";
+    if (sigNum === 0 && pagasaSignals.hasActiveBulletin && !isStormInsidePar) return "No Signal (Outside PAR)";
+    if (sigNum === 0 && pagasaSignals.hasActiveBulletin) return "Monitoring (PAR)";
     if (sigNum === 0) return "No Signal";
     if (sigNum >= 4) return `Signal #${sigNum} (Super Typhoon)`;
     return `Signal #${sigNum}`;
@@ -452,11 +456,8 @@ export default function PhilippinesWeatherClient({
               {storm.category}
             </span>
             <div className="flex flex-col">
-              <h4 className="text-base font-bold text-text-primary font-display flex items-center gap-2 leading-tight">
+              <h4 className="font-bold text-sm text-text-primary flex items-center gap-2 flex-wrap">
                 <span>{displayStormTitle}</span>
-                {!isLPA && !storm.name.includes(storm.id) && (
-                  <span className="font-mono text-xs font-semibold text-text-muted">({storm.id})</span>
-                )}
                 <span className={cn(
                   "text-[9px] font-bold px-2 py-0.5 rounded uppercase font-mono tracking-wider",
                   inPAR 
@@ -599,7 +600,7 @@ export default function PhilippinesWeatherClient({
                                   "text-[9px] px-1.5 py-0.2 rounded font-mono font-bold uppercase",
                                   fcInPAR ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-slate-800 text-slate-400"
                                 )}>
-                                  {fcInPAR ? "PAR" : "NWPAC"}
+                                  {fcInPAR ? "Inside PAR" : "NWPAC"}
                                 </span>
                               </div>
                             </td>
@@ -621,7 +622,7 @@ export default function PhilippinesWeatherClient({
   return (
     <div className="space-y-6">
       
-      {/* 1. HIGH ALERT BANNER (Only when PAGASA has bulletin OR threatening storm inside PAR) */}
+      {/* 1. HIGH ALERT BANNER (Only when active storm is inside PAR or TCWS signals are raised) */}
       {showHighAlert && (
         <div className={cn(
           "w-full rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in",
@@ -643,40 +644,21 @@ export default function PhilippinesWeatherClient({
             </div>
             <div>
               <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
-                {pagasaSignals.hasActiveBulletin ? "PAGASA TROPICAL CYCLONE ALERT" : "ACTIVE SITE ALERT (PAR)"}
-                {signalNumber > 0 && (
-                  <span className={cn(
-                    "px-2 py-0.5 text-[10px] font-bold text-white rounded uppercase tracking-wider",
-                    signalNumber >= 3 ? "bg-signal-red" : "bg-signal-amber"
-                  )}>
-                    TCWS #{signalNumber}
-                  </span>
-                )}
+                {isSignalHoisted ? `PAGASA TROPICAL CYCLONE WIND SIGNAL (TCWS #${signalNumber})` : "ACTIVE SITE ALERT (PAR)"}
               </h2>
               <p className="text-sm text-text-muted mt-0.5">
-                {pagasaSignals.hasActiveBulletin ? (
+                {siteAlertStorm ? (
                   <>
-                    {pagasaSignals.tcCategory} <span className="font-semibold text-signal-red">{pagasaSignals.tcName}</span>
-                    {pagasaSignals.position?.description && (
-                      <> — {pagasaSignals.position.description}</>  
-                    )}
-                    {pagasaSignals.maxWindsKph > 0 && (
-                      <>, max winds <span className="font-semibold text-text-primary">{pagasaSignals.maxWindsKph} kph</span></>
-                    )}
-                    {pagasaSignals.movement && (
-                      <>, moving <span className="font-semibold text-text-primary">{pagasaSignals.movement}</span></>
-                    )}.
+                    {siteAlertStorm.category} <span className="font-semibold text-signal-red">{siteAlertStorm.name}</span> is inside PAR, currently{" "}
+                    <span className="font-semibold text-text-primary">{siteAlertStorm.distanceKm} km</span> from Tumauini HEPP with sustained winds of{" "}
+                    <span className="font-semibold text-text-primary">{siteAlertStorm.windSpeedKph} kph</span>.
                     {signalNumber > 0 && (
                       <> <span className="font-semibold text-signal-amber">TCWS #{signalNumber}</span> raised over Isabela.</>
                     )}
                   </>
-                ) : siteAlertStorm ? (
-                  <>
-                    {siteAlertStorm.category} <span className="font-semibold text-signal-red">{siteAlertStorm.name}</span> is inside PAR, currently{" "}
-                    <span className="font-semibold text-text-primary">{siteAlertStorm.distanceKm}km</span> from Tumauini HEPP with sustained winds of{" "}
-                    <span className="font-semibold text-text-primary">{siteAlertStorm.windSpeedKph} kph</span>.
-                  </>
-                ) : null}
+                ) : (
+                  <>Tropical Cyclone Warning Signal active. Monitor site safety protocols.</>
+                )}
               </p>
             </div>
           </div>
@@ -704,7 +686,7 @@ export default function PhilippinesWeatherClient({
         </div>
       )}
 
-      {/* 1.1 REGIONAL MONITORING NOTICE (Calm status when PAR is clear, but tracking systems in NWPAC) */}
+      {/* 1.1 REGIONAL MONITORING & HABAGAT ADVISORY NOTICE (Calm status when PAR is clear) */}
       {showRegionalNotice && (
         <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
           <div className="flex items-center gap-4">
@@ -719,20 +701,27 @@ export default function PhilippinesWeatherClient({
                 </span>
               </h2>
               <p className="text-sm text-text-muted mt-0.5">
-                No active tropical cyclones inside the Philippine Area of Responsibility (PAR). Monitoring {regionalStorms.map(s => `${s.category === "Low Pressure Area" ? "Low Pressure Area" : `${s.category} ${s.name}`} (${s.distanceKm}km away)`).join(", ")} in the Northwest Pacific.
+                No active tropical cyclones inside the Philippine Area of Responsibility (PAR). All TCWS wind signals are lifted. Tracking {regionalStorms.map(s => `${s.category === "Low Pressure Area" ? "Low Pressure Area" : `${s.category} ${s.name}`} (${s.distanceKm} km away)`).join(", ")} in the Northwest Pacific.
               </p>
+              {pagasaSignals.tcName && (
+                <p className="mt-1 text-xs text-sky-300/90 font-medium">
+                  🌧️ <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => {
-                setExpandedStormId(regionalStorms[0].id);
-                document.getElementById("storm-details")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
-            >
-              View NWPAC Systems
-            </button>
+            {regionalStorms.length > 0 && (
+              <button
+                onClick={() => {
+                  setExpandedStormId(regionalStorms[0].id);
+                  document.getElementById("storm-details")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+              >
+                Analyze Track
+              </button>
+            )}
           </div>
         </div>
       )}
