@@ -54,8 +54,32 @@ import {
   MAT_FACE_EYE_WHITE,
   MAT_FACE_EYEBROW,
   MAT_FACE_LIPS,
+  MAT_MUSTACHE_BLACK,
   MAT_CHROME,
   MAT_GALLON_ROYAL_BLUE,
+  MAT_SANDO_WHITE,
+  MAT_SANDO_GREY,
+  MAT_SANDO_RED,
+  MAT_SANDO_BLACK,
+  MAT_SHORTS_BASKETBALL_BLUE,
+  MAT_SHORTS_DENIM,
+  MAT_SHORTS_CARGO,
+  MAT_PAJAMA_PLAID,
+  MAT_PAJAMA_GREY,
+  MAT_TSINELAS_RUBBER,
+  MAT_TSINELAS_RED,
+  MAT_PHONE_BODY,
+  MAT_PHONE_SCREEN_GLOW,
+  MAT_CIGARETTE_TIP_GLOW,
+  MAT_CIGARETTE_BODY,
+  MAT_CIGARETTE_FILTER,
+  MAT_MONOBLOC_STOOL_BLUE,
+  MAT_MONOBLOC_STOOL_RED,
+  MAT_MONOBLOC_STOOL_GREEN,
+  MAT_BATYA_PLASTIC,
+  MAT_SOAP_SUDS,
+  MAT_THERMOS_FLASK,
+  MAT_COFFEE_MUG,
 } from "./SharedMaterials";
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -3518,8 +3542,697 @@ function CrispyFriedTilapiaPan() {
   );
 }
 
+// ─── HIGH-LUMEN INDUSTRIAL OVERHEAD KITCHEN DUAL-TUBE LED FIXTURE ───
+function IndustrialKitchenOverheadLedFixture({ position = [0, 3.35, 0] }: { position?: [number, number, number] }) {
+  return (
+    <group position={position}>
+      {/* Heavy Steel Suspension Cables */}
+      <mesh position={[-0.45, 0.25, 0]} material={MAT_STEEL_DARK}>
+        <cylinderGeometry args={[0.006, 0.006, 0.5, 6]} />
+      </mesh>
+      <mesh position={[0.45, 0.25, 0]} material={MAT_STEEL_DARK}>
+        <cylinderGeometry args={[0.006, 0.006, 0.5, 6]} />
+      </mesh>
+      {/* Industrial White Steel Reflector Canopy */}
+      <mesh position={[0, 0.02, 0]} material={MAT_WHITE_PAINT}>
+        <boxGeometry args={[1.2, 0.06, 0.28]} />
+      </mesh>
+      <mesh position={[0, 0.05, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[1.15, 0.04, 0.2]} />
+      </mesh>
+      {/* Dual Emissive High-CRI LED Glass Tubes */}
+      <mesh position={[0, -0.02, -0.06]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.016, 0.016, 1.12, 10]} />
+        <meshStandardMaterial color="#FFFBEB" emissive={new THREE.Color("#FEF3C7")} emissiveIntensity={3.6} roughness={0.1} />
+      </mesh>
+      <mesh position={[0, -0.02, 0.06]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.016, 0.016, 1.12, 10]} />
+        <meshStandardMaterial color="#FFFBEB" emissive={new THREE.Color("#FEF3C7")} emissiveIntensity={3.6} roughness={0.1} />
+      </mesh>
+      {/* Warm Golden High-Lumen Downward Light Cone */}
+      <pointLight position={[0, -0.15, 0]} color="#FEF3C7" intensity={3.6} distance={13.5} decay={1.15} />
+    </group>
+  );
+}
+
+// ─── OSCILLATING INDUSTRIAL ELECTRIC STAND FAN ───
+function OscillatingElectricStandFan({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  const headRef = useRef<THREE.Group>(null);
+  const bladesRef = useRef<THREE.Group>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime();
+    if (headRef.current) {
+      headRef.current.rotation.y = Math.sin(t * 0.9) * 0.62;
+    }
+    if (bladesRef.current) {
+      bladesRef.current.rotation.z = t * 32.0;
+    }
+  });
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Heavy Circular Cast Iron Base */}
+      <mesh position={[0, 0.03, 0]} material={MAT_ASPHALT_DARK}>
+        <cylinderGeometry args={[0.22, 0.24, 0.06, 16]} />
+      </mesh>
+      {/* Telescopic Steel Stand Pole */}
+      <mesh position={[0, 0.65, 0]} material={MAT_CHROME}>
+        <cylinderGeometry args={[0.018, 0.022, 1.2, 10]} />
+      </mesh>
+      {/* Height Adjustment Screw Collar */}
+      <mesh position={[0, 0.75, 0]} material={MAT_STEEL_DARK}>
+        <cylinderGeometry args={[0.028, 0.028, 0.08, 8]} />
+      </mesh>
+
+      {/* Oscillating Motor Head & Fan Cage */}
+      <group ref={headRef} position={[0, 1.26, 0]}>
+        {/* Motor Housing */}
+        <mesh position={[0, 0, -0.08]} rotation={[Math.PI / 2, 0, 0]} material={MAT_ASPHALT_DARK}>
+          <cylinderGeometry args={[0.065, 0.075, 0.16, 12]} />
+        </mesh>
+        {/* Wire Guard Front & Rear Grill */}
+        <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]} material={MAT_STEEL_FRAME}>
+          <cylinderGeometry args={[0.24, 0.24, 0.06, 16]} />
+        </mesh>
+        {/* Central SCIC Fan Hub Badge */}
+        <mesh position={[0, 0, 0.06]} material={MAT_SIGNBOARD_TEAL}>
+          <cylinderGeometry args={[0.04, 0.04, 0.02, 12]} />
+        </mesh>
+        {/* Spinning 3-Blade Impeller */}
+        <group ref={bladesRef} position={[0, 0, 0.02]}>
+          {[0, (Math.PI * 2) / 3, (Math.PI * 4) / 3].map((angle, i) => (
+            <mesh key={`blade-${i}`} position={[Math.sin(angle) * 0.1, Math.cos(angle) * 0.1, 0]} rotation={[0, 0, -angle + 0.3]} material={MAT_GLASS_BLUE}>
+              <boxGeometry args={[0.06, 0.16, 0.008]} />
+            </mesh>
+          ))}
+        </group>
+      </group>
+    </group>
+  );
+}
+
+// ─── RETRO TRANSISTOR AM/FM RADIO / BLUETOOTH SPEAKER ───
+function TabletopTransistorRadio({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Woodgrain / Slate Radio Body */}
+      <mesh material={MAT_BAMBOO_TIMBER}>
+        <boxGeometry args={[0.24, 0.14, 0.10]} />
+      </mesh>
+      {/* Speaker Grill */}
+      <mesh position={[-0.04, 0, 0.052]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.12, 0.10, 0.01]} />
+      </mesh>
+      {/* Tuning Dial & Knobs */}
+      <mesh position={[0.06, 0.03, 0.054]} material={MAT_CHROME}>
+        <cylinderGeometry args={[0.018, 0.018, 0.01, 8]} />
+      </mesh>
+      <mesh position={[0.06, -0.03, 0.054]} material={MAT_CHROME}>
+        <cylinderGeometry args={[0.014, 0.014, 0.01, 8]} />
+      </mesh>
+      {/* Glowing Green Power / Tuning Indicator LED */}
+      <mesh position={[0.06, 0, 0.054]}>
+        <sphereGeometry args={[0.006, 6, 6]} />
+        <meshStandardMaterial color="#22C55E" emissive={new THREE.Color("#4ADE80")} emissiveIntensity={3.0} />
+      </mesh>
+      {/* Telescopic Antenna */}
+      <mesh position={[-0.09, 0.15, -0.03]} rotation={[0.1, 0, -0.2]} material={MAT_CHROME}>
+        <cylinderGeometry args={[0.003, 0.004, 0.22, 6]} />
+      </mesh>
+    </group>
+  );
+}
+
+// ─── 1. KUYA JUN: SITTING ON MONOBLOC STOOL BROWSING SMARTPHONE ───
+function NighttimeSmartphoneWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  const headRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const phoneGlowRef = useRef<THREE.PointLight>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime();
+    // Head tilts down inspecting smartphone with subtle micro-motions
+    if (headRef.current) {
+      headRef.current.rotation.set(0.32 + Math.sin(t * 1.8) * 0.03, Math.sin(t * 0.7) * 0.05, 0);
+    }
+    // Right thumb scrolls, arm adjusts
+    if (rightArmRef.current) {
+      rightArmRef.current.rotation.set(-1.15 + Math.sin(t * 4.0) * 0.02, -0.22, 0.18);
+    }
+    if (leftArmRef.current) {
+      leftArmRef.current.rotation.set(-1.12, 0.22, -0.18);
+    }
+    // Pulsing soft blue phone screen glow reflection
+    if (phoneGlowRef.current) {
+      phoneGlowRef.current.intensity = 0.85 + Math.sin(t * 8.0) * 0.12;
+    }
+  });
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Classic Filipino Blue Plastic Monobloc Stool ("Bangkito") */}
+      <group position={[0, 0, 0]}>
+        <mesh position={[0, 0.40, 0]} material={MAT_MONOBLOC_STOOL_BLUE}>
+          <boxGeometry args={[0.34, 0.04, 0.34]} />
+        </mesh>
+        {/* Stool Center Finger Grip Slot */}
+        <mesh position={[0, 0.421, 0]} material={MAT_ASPHALT_DARK}>
+          <boxGeometry args={[0.10, 0.002, 0.03]} />
+        </mesh>
+        {/* 4 Angled Stool Legs */}
+        {[-0.13, 0.13].map((x, xi) =>
+          [-0.13, 0.13].map((z, zi) => (
+            <mesh key={`stool-leg-${xi}-${zi}`} position={[x, 0.20, z]} rotation={[z * 0.3, 0, -x * 0.3]} material={MAT_MONOBLOC_STOOL_BLUE}>
+              <boxGeometry args={[0.035, 0.40, 0.035]} />
+            </mesh>
+          ))
+        )}
+      </group>
+
+      {/* Seated Worker in White Sando & Basketball Shorts */}
+      <group position={[0, 0.42, 0]}>
+        {/* Seated Legs with Knee Bend */}
+        <group position={[-0.11, 0, 0]}>
+          <mesh position={[0, 0.06, 0.18]} material={MAT_SHORTS_BASKETBALL_BLUE}>
+            <boxGeometry args={[0.13, 0.12, 0.36]} />
+          </mesh>
+          <mesh position={[0, -0.22, 0.34]} material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.10, 0.36, 0.10]} />
+          </mesh>
+          <mesh position={[0, -0.41, 0.36]} material={MAT_TSINELAS_RUBBER}>
+            <boxGeometry args={[0.11, 0.02, 0.24]} />
+          </mesh>
+        </group>
+        <group position={[0.11, 0, 0]}>
+          <mesh position={[0, 0.06, 0.18]} material={MAT_SHORTS_BASKETBALL_BLUE}>
+            <boxGeometry args={[0.13, 0.12, 0.36]} />
+          </mesh>
+          <mesh position={[0, -0.22, 0.34]} material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.10, 0.36, 0.10]} />
+          </mesh>
+          <mesh position={[0, -0.41, 0.36]} material={MAT_TSINELAS_RUBBER}>
+            <boxGeometry args={[0.11, 0.02, 0.24]} />
+          </mesh>
+        </group>
+
+        {/* Torso in White Sando Undershirt */}
+        <group position={[0, 0.32, 0]}>
+          <mesh material={MAT_SANDO_WHITE}>
+            <boxGeometry args={[0.34, 0.46, 0.20]} />
+          </mesh>
+          <mesh position={[0, 0.21, 0.01]} material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.22, 0.06, 0.19]} />
+          </mesh>
+
+          {/* Head & Natural Hair */}
+          <group ref={headRef} position={[0, 0.48, 0.02]}>
+            <mesh material={MAT_SKIN_MEDIUM}>
+              <boxGeometry args={[0.20, 0.20, 0.20]} />
+            </mesh>
+            <mesh position={[0, -0.09, 0.02]} material={MAT_SKIN_MEDIUM}>
+              <boxGeometry args={[0.14, 0.07, 0.14]} />
+            </mesh>
+            {/* Natural Messy Filipino Hair */}
+            <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
+              <sphereGeometry args={[0.122, 12, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+            </mesh>
+            {/* Eyes looking down at screen */}
+            <mesh position={[-0.045, 0.01, 0.102]} material={MAT_FACE_EYE_IRIS}>
+              <boxGeometry args={[0.02, 0.016, 0.005]} />
+            </mesh>
+            <mesh position={[0.045, 0.01, 0.102]} material={MAT_FACE_EYE_IRIS}>
+              <boxGeometry args={[0.02, 0.016, 0.005]} />
+            </mesh>
+            {/* Nose & Lips */}
+            <mesh position={[0, -0.02, 0.11]} material={MAT_SKIN_MEDIUM}>
+              <boxGeometry args={[0.025, 0.04, 0.02]} />
+            </mesh>
+            <mesh position={[0, -0.06, 0.104]} material={MAT_FACE_LIPS}>
+              <boxGeometry args={[0.04, 0.01, 0.008]} />
+            </mesh>
+          </group>
+
+          {/* Left Arm holding phone */}
+          <group ref={leftArmRef} position={[-0.20, 0.18, 0]}>
+            <mesh position={[0, -0.16, 0]} material={MAT_SKIN_MEDIUM}>
+              <boxGeometry args={[0.08, 0.36, 0.08]} />
+            </mesh>
+          </group>
+
+          {/* Right Arm holding phone & scrolling */}
+          <group ref={rightArmRef} position={[0.20, 0.18, 0]}>
+            <mesh position={[0, -0.16, 0]} material={MAT_SKIN_MEDIUM}>
+              <boxGeometry args={[0.08, 0.36, 0.08]} />
+            </mesh>
+          </group>
+
+          {/* 📱 Held Smartphone with Glowing Blue Screen */}
+          <group position={[0, 0.06, 0.28]} rotation={[-0.45, 0, 0]}>
+            <mesh material={MAT_PHONE_BODY}>
+              <boxGeometry args={[0.09, 0.17, 0.012]} />
+            </mesh>
+            <mesh position={[0, 0, 0.007]} material={MAT_PHONE_SCREEN_GLOW}>
+              <planeGeometry args={[0.082, 0.155]} />
+            </mesh>
+            <pointLight ref={phoneGlowRef} position={[0, 0.04, 0.08]} color="#38BDF8" intensity={0.9} distance={1.4} />
+          </group>
+        </group>
+      </group>
+    </group>
+  );
+}
+
+// ─── 2. KUYA LARRY: SMOKING CIGARETTE ("YOSI BREAK") BY THE BREEZEWAY WALL ───
+function NighttimeSmokingWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  const rightArmRef = useRef<THREE.Group>(null);
+  const headRef = useRef<THREE.Group>(null);
+  const smokePuffRef = useRef<THREE.Group>(null);
+  const cherryLightRef = useRef<THREE.PointLight>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime() % 14.0;
+
+    if (t < 4.5) {
+      // Phase 1: Resting arm down at side, holding cigarette
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-0.25, -0.15, 0.1);
+      if (headRef.current) headRef.current.rotation.set(0, 0.1, 0);
+      if (cherryLightRef.current) cherryLightRef.current.intensity = 0.4;
+      if (smokePuffRef.current) smokePuffRef.current.visible = false;
+    } else if (t < 7.0) {
+      // Phase 2: Lifting cigarette to mouth
+      const p = (t - 4.5) / 2.5;
+      if (rightArmRef.current) rightArmRef.current.rotation.set(THREE.MathUtils.lerp(-0.25, -1.45, p), -0.2, 0.15);
+      if (headRef.current) headRef.current.rotation.set(THREE.MathUtils.lerp(0, -0.12, p), 0.05, 0);
+      if (cherryLightRef.current) cherryLightRef.current.intensity = THREE.MathUtils.lerp(0.4, 1.4, p);
+      if (smokePuffRef.current) smokePuffRef.current.visible = false;
+    } else if (t < 9.5) {
+      // Phase 3: Inhaling puff (cherry glows red hot)
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.45, -0.2, 0.15);
+      if (headRef.current) headRef.current.rotation.set(-0.12, 0.05, 0);
+      if (cherryLightRef.current) cherryLightRef.current.intensity = 1.6 + Math.sin(clock.getElapsedTime() * 12.0) * 0.3;
+      if (smokePuffRef.current) smokePuffRef.current.visible = false;
+    } else {
+      // Phase 4: Lowering arm and exhaling subtle smoke wisps
+      const p = (t - 9.5) / 4.5;
+      if (rightArmRef.current) rightArmRef.current.rotation.set(THREE.MathUtils.lerp(-1.45, -0.25, p), -0.15, 0.1);
+      if (headRef.current) headRef.current.rotation.set(THREE.MathUtils.lerp(-0.12, 0, p), 0.1, 0);
+      if (cherryLightRef.current) cherryLightRef.current.intensity = THREE.MathUtils.lerp(1.4, 0.4, p);
+      if (smokePuffRef.current) {
+        smokePuffRef.current.visible = true;
+        smokePuffRef.current.position.y = 1.42 + p * 0.4;
+        smokePuffRef.current.position.z = 0.15 + p * 0.25;
+        smokePuffRef.current.scale.set(0.6 + p * 1.5, 0.6 + p * 1.5, 0.6 + p * 1.5);
+      }
+    }
+  });
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Bipedal Standing Legs in Green Plaid Pajama Pants */}
+      <mesh position={[-0.10, 0.38, 0]} material={MAT_PAJAMA_PLAID}>
+        <boxGeometry args={[0.13, 0.76, 0.14]} />
+      </mesh>
+      <mesh position={[0.10, 0.38, 0]} material={MAT_PAJAMA_PLAID}>
+        <boxGeometry args={[0.13, 0.76, 0.14]} />
+      </mesh>
+      {/* Red Tsinelas */}
+      <mesh position={[-0.10, 0.015, 0.04]} material={MAT_TSINELAS_RED}>
+        <boxGeometry args={[0.11, 0.03, 0.24]} />
+      </mesh>
+      <mesh position={[0.10, 0.015, 0.04]} material={MAT_TSINELAS_RED}>
+        <boxGeometry args={[0.11, 0.03, 0.24]} />
+      </mesh>
+
+      {/* Torso in Grey Sando */}
+      <group position={[0, 0.98, 0]}>
+        <mesh material={MAT_SANDO_GREY}>
+          <boxGeometry args={[0.36, 0.48, 0.22]} />
+        </mesh>
+        <mesh position={[0, 0.22, 0.01]} material={MAT_SKIN_BRONZE}>
+          <boxGeometry args={[0.24, 0.06, 0.21]} />
+        </mesh>
+
+        {/* Head & Features */}
+        <group ref={headRef} position={[0, 0.50, 0.02]}>
+          <mesh material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.21, 0.21, 0.21]} />
+          </mesh>
+          <mesh position={[0, -0.09, 0.02]} material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.15, 0.07, 0.15]} />
+          </mesh>
+          <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
+            <sphereGeometry args={[0.124, 12, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+          <mesh position={[-0.048, 0.01, 0.108]} material={MAT_FACE_EYE_IRIS}>
+            <boxGeometry args={[0.02, 0.016, 0.005]} />
+          </mesh>
+          <mesh position={[0.048, 0.01, 0.108]} material={MAT_FACE_EYE_IRIS}>
+            <boxGeometry args={[0.02, 0.016, 0.005]} />
+          </mesh>
+          <mesh position={[0, -0.035, 0.118]} material={MAT_MUSTACHE_BLACK}>
+            <boxGeometry args={[0.08, 0.018, 0.012]} />
+          </mesh>
+        </group>
+
+        {/* Left Arm casually resting on breezeway half-wall */}
+        <group position={[-0.22, 0.20, 0]} rotation={[-0.6, 0.2, 0]}>
+          <mesh position={[0, -0.18, 0]} material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.085, 0.38, 0.085]} />
+          </mesh>
+        </group>
+
+        {/* Right Arm Holding Cigarette */}
+        <group ref={rightArmRef} position={[0.22, 0.20, 0]}>
+          <mesh position={[0, -0.18, 0]} material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.085, 0.38, 0.085]} />
+          </mesh>
+          {/* Held Cigarette */}
+          <group position={[0, -0.38, 0.06]} rotation={[0.6, 0, 0]}>
+            <mesh position={[0, 0, 0]} material={MAT_CIGARETTE_FILTER}>
+              <cylinderGeometry args={[0.006, 0.006, 0.02, 6]} />
+            </mesh>
+            <mesh position={[0, 0.035, 0]} material={MAT_CIGARETTE_BODY}>
+              <cylinderGeometry args={[0.006, 0.006, 0.05, 6]} />
+            </mesh>
+            <mesh position={[0, 0.065, 0]} material={MAT_CIGARETTE_TIP_GLOW}>
+              <cylinderGeometry args={[0.006, 0.006, 0.01, 6]} />
+            </mesh>
+            <pointLight ref={cherryLightRef} position={[0, 0.07, 0]} color="#EF4444" intensity={0.5} distance={1.0} />
+          </group>
+        </group>
+
+        {/* Exhaled Rising Smoke Wisps */}
+        <group ref={smokePuffRef} position={[0, 0.44, 0.16]}>
+          <mesh material={MAT_STEAM_PUFF}>
+            <sphereGeometry args={[0.05, 6, 6]} />
+          </mesh>
+          <mesh position={[0.02, 0.04, 0.03]} material={MAT_STEAM_PUFF}>
+            <sphereGeometry args={[0.035, 6, 6]} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
+// ─── 3. MANG NOEL & KUYA DENNIS: KWUNTUHAN OVER 3-IN-1 COFFEE & CRACKERS ───
+function NighttimeKwuntuhanDuo({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  const arm1Ref = useRef<THREE.Group>(null);
+  const head1Ref = useRef<THREE.Group>(null);
+  const arm2Ref = useRef<THREE.Group>(null);
+  const head2Ref = useRef<THREE.Group>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime();
+
+    // Person 1 (Mang Noel): Talking with hand gestures, sipping coffee
+    if (arm1Ref.current) {
+      const talkMotion = Math.sin(t * 3.2);
+      arm1Ref.current.rotation.set(-0.75 + talkMotion * 0.18, talkMotion * 0.25, -0.1);
+    }
+    if (head1Ref.current) {
+      head1Ref.current.rotation.set(Math.sin(t * 2.0) * 0.08, Math.sin(t * 1.2) * 0.15, 0);
+    }
+
+    // Person 2 (Kuya Dennis): Nodding in agreement, laughing lean-back
+    if (arm2Ref.current) {
+      arm2Ref.current.rotation.set(-0.65 + Math.sin(t * 1.5) * 0.1, -0.1, 0.1);
+    }
+    if (head2Ref.current) {
+      head2Ref.current.rotation.set(0.12 + Math.sin(t * 4.5) * 0.06, Math.cos(t * 1.2) * 0.12, 0);
+    }
+  });
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Rustic Wooden Coffee Table */}
+      <mesh position={[0, 0.42, 0]} material={MAT_BAMBOO_TIMBER}>
+        <boxGeometry args={[0.9, 0.06, 0.7]} />
+      </mesh>
+      {/* Table Legs */}
+      {[-0.38, 0.38].map((x, xi) =>
+        [-0.28, 0.28].map((z, zi) => (
+          <mesh key={`tab-leg-${xi}-${zi}`} position={[x, 0.20, z]} material={MAT_STEEL_DARK}>
+            <boxGeometry args={[0.04, 0.40, 0.04]} />
+          </mesh>
+        ))
+      )}
+
+      {/* Table Props: Steaming 3-in-1 Coffee Mugs, Thermos Flask & Biscuit Tin */}
+      <group position={[0, 0.46, 0]}>
+        {/* Red Thermos Flask */}
+        <mesh position={[0, 0.14, 0]} material={MAT_THERMOS_FLASK}>
+          <cylinderGeometry args={[0.06, 0.065, 0.28, 12]} />
+        </mesh>
+        <mesh position={[0, 0.29, 0]} material={MAT_CHROME}>
+          <cylinderGeometry args={[0.035, 0.04, 0.04, 8]} />
+        </mesh>
+        {/* Mug 1 (Mang Noel) */}
+        <mesh position={[-0.22, 0.05, 0.12]} material={MAT_COFFEE_MUG}>
+          <cylinderGeometry args={[0.035, 0.03, 0.10, 10]} />
+        </mesh>
+        {/* Mug 2 (Kuya Dennis) */}
+        <mesh position={[0.22, 0.05, -0.12]} material={MAT_COFFEE_MUG}>
+          <cylinderGeometry args={[0.035, 0.03, 0.10, 10]} />
+        </mesh>
+        {/* SkyFlakes / Fita Cracker Tin */}
+        <mesh position={[0.18, 0.04, 0.14]} material={MAT_YELLOW_SAFETY}>
+          <boxGeometry args={[0.14, 0.08, 0.14]} />
+        </mesh>
+      </group>
+
+      {/* ── MANG NOEL (SEATED ON LEFT, FACING +X) ── */}
+      <group position={[-0.55, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <mesh position={[0, 0.22, 0]} material={MAT_BAMBOO_TIMBER}>
+          <boxGeometry args={[0.32, 0.04, 0.32]} />
+        </mesh>
+        <mesh position={[0, 0.10, 0]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.24, 0.20, 0.24]} />
+        </mesh>
+        {/* Seated Body in Red Sando & Denim Shorts */}
+        <mesh position={[-0.09, 0.26, 0.14]} material={MAT_SHORTS_DENIM}>
+          <boxGeometry args={[0.12, 0.10, 0.32]} />
+        </mesh>
+        <mesh position={[0.09, 0.26, 0.14]} material={MAT_SHORTS_DENIM}>
+          <boxGeometry args={[0.12, 0.10, 0.32]} />
+        </mesh>
+        <mesh position={[0, 0.54, 0]} material={MAT_SANDO_RED}>
+          <boxGeometry args={[0.34, 0.44, 0.20]} />
+        </mesh>
+        <group ref={head1Ref} position={[0, 0.98, 0]}>
+          <mesh material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.20, 0.20, 0.20]} />
+          </mesh>
+          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
+            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+        </group>
+        <group ref={arm1Ref} position={[0.19, 0.68, 0]}>
+          <mesh position={[0, -0.16, 0]} material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.08, 0.32, 0.08]} />
+          </mesh>
+        </group>
+      </group>
+
+      {/* ── KUYA DENNIS (SEATED ON RIGHT, FACING -X) ── */}
+      <group position={[0.55, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh position={[0, 0.22, 0]} material={MAT_BAMBOO_TIMBER}>
+          <boxGeometry args={[0.32, 0.04, 0.32]} />
+        </mesh>
+        <mesh position={[0, 0.10, 0]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.24, 0.20, 0.24]} />
+        </mesh>
+        {/* Seated Body in Black Tank & Grey Pajamas */}
+        <mesh position={[-0.09, 0.26, 0.14]} material={MAT_PAJAMA_GREY}>
+          <boxGeometry args={[0.12, 0.10, 0.32]} />
+        </mesh>
+        <mesh position={[0.09, 0.26, 0.14]} material={MAT_PAJAMA_GREY}>
+          <boxGeometry args={[0.12, 0.10, 0.32]} />
+        </mesh>
+        <mesh position={[0, 0.54, 0]} material={MAT_SANDO_BLACK}>
+          <boxGeometry args={[0.34, 0.44, 0.20]} />
+        </mesh>
+        <group ref={head2Ref} position={[0, 0.98, 0]}>
+          <mesh material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.20, 0.20, 0.20]} />
+          </mesh>
+          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
+            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+        </group>
+        <group ref={arm2Ref} position={[-0.19, 0.68, 0]}>
+          <mesh position={[0, -0.16, 0]} material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.08, 0.32, 0.08]} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
+// ─── 4. KUYA MAR: WASHING CLOTHES ("LABADA") AT THE WATER TROUGH ───
+function NighttimeLaundryWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const torsoRef = useRef<THREE.Group>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime();
+    const scrub = Math.sin(t * 5.5);
+    if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85 + scrub * 0.22, 0.1, -0.15);
+    if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85 - scrub * 0.22, -0.1, 0.15);
+    if (torsoRef.current) torsoRef.current.rotation.set(0.18 + scrub * 0.04, 0, 0);
+  });
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Plastic Wash Basin ("Batya") & Wooden Washboard ("Kuskusan") */}
+      <group position={[0, 0.36, 0.45]}>
+        <mesh material={MAT_BATYA_PLASTIC}>
+          <cylinderGeometry args={[0.32, 0.26, 0.22, 16]} />
+        </mesh>
+        <mesh position={[0, 0.06, 0]} material={MAT_SOAP_SUDS}>
+          <cylinderGeometry args={[0.30, 0.30, 0.04, 16]} />
+        </mesh>
+        <mesh position={[0, 0.08, -0.06]} rotation={[0.45, 0, 0]} material={MAT_BAMBOO_TIMBER}>
+          <boxGeometry args={[0.22, 0.36, 0.03]} />
+        </mesh>
+        <mesh position={[0.26, 0.12, 0]} material={MAT_TSINELAS_RED}>
+          <cylinderGeometry args={[0.045, 0.04, 0.08, 8]} />
+        </mesh>
+      </group>
+
+      {/* Laundry Line with Hanging Clothes next to worker */}
+      <group position={[0, 0, 0]}>
+        <mesh position={[0.7, 1.8, -0.2]} rotation={[0, 0, Math.PI / 2]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.003, 0.003, 2.2, 6]} />
+        </mesh>
+        <mesh position={[0.7, 1.55, -0.8]} rotation={[0, 0.1, 0]} material={MAT_SANDO_WHITE}>
+          <boxGeometry args={[0.04, 0.45, 0.38]} />
+        </mesh>
+        <mesh position={[0.7, 1.55, -0.3]} rotation={[0, -0.08, 0]} material={MAT_SHORTS_BASKETBALL_BLUE}>
+          <boxGeometry args={[0.04, 0.38, 0.32]} />
+        </mesh>
+      </group>
+
+      {/* Standing Worker in Black Tank & Cargo Shorts */}
+      <mesh position={[-0.10, 0.38, 0]} material={MAT_SHORTS_CARGO}>
+        <boxGeometry args={[0.13, 0.76, 0.14]} />
+      </mesh>
+      <mesh position={[0.10, 0.38, 0]} material={MAT_SHORTS_CARGO}>
+        <boxGeometry args={[0.13, 0.76, 0.14]} />
+      </mesh>
+      <mesh position={[-0.10, 0.015, 0.04]} material={MAT_TSINELAS_RUBBER}>
+        <boxGeometry args={[0.11, 0.03, 0.24]} />
+      </mesh>
+      <mesh position={[0.10, 0.015, 0.04]} material={MAT_TSINELAS_RUBBER}>
+        <boxGeometry args={[0.11, 0.03, 0.24]} />
+      </mesh>
+
+      {/* Leaning Torso */}
+      <group ref={torsoRef} position={[0, 0.98, 0]}>
+        <mesh material={MAT_SANDO_BLACK}>
+          <boxGeometry args={[0.36, 0.48, 0.22]} />
+        </mesh>
+        <group position={[0, 0.48, 0.04]} rotation={[0.32, 0, 0]}>
+          <mesh material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.20, 0.20, 0.20]} />
+          </mesh>
+          <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
+            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+        </group>
+        <group ref={leftArmRef} position={[-0.22, 0.18, 0]}>
+          <mesh position={[0, -0.18, 0]} material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.085, 0.38, 0.085]} />
+          </mesh>
+        </group>
+        <group ref={rightArmRef} position={[0.22, 0.18, 0]}>
+          <mesh position={[0, -0.18, 0]} material={MAT_SKIN_MEDIUM}>
+            <boxGeometry args={[0.085, 0.38, 0.085]} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
+// ─── 5. KUYA RANDY: LOUNGING ON WOODEN BENCH AFTER A LONG DAY ───
+function NighttimeLoungingWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
+  const armRef = useRef<THREE.Group>(null);
+  const frameTickRef = useRef<number>(0);
+
+  useFrame(({ clock }) => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 2 !== 0) return;
+    const t = clock.getElapsedTime();
+    if (armRef.current) {
+      armRef.current.rotation.set(-0.4 + Math.sin(t * 1.0) * 0.06, 0, 0.4);
+    }
+  });
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Heavy Timber Bench */}
+      <mesh position={[0, 0.24, 0]} material={MAT_BAMBOO_TIMBER}>
+        <boxGeometry args={[1.4, 0.06, 0.44]} />
+      </mesh>
+      {/* Bench Legs */}
+      {[-0.55, 0.55].map((x, i) => (
+        <mesh key={`bench-leg-${i}`} position={[x, 0.12, 0]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.06, 0.24, 0.38]} />
+        </mesh>
+      ))}
+
+      {/* Relaxed Seated Figure */}
+      <group position={[0, 0.27, 0]}>
+        <mesh position={[-0.10, 0.06, 0.14]} material={MAT_SHORTS_CARGO}>
+          <boxGeometry args={[0.13, 0.10, 0.30]} />
+        </mesh>
+        <mesh position={[0.10, 0.06, 0.14]} material={MAT_SHORTS_CARGO}>
+          <boxGeometry args={[0.13, 0.10, 0.30]} />
+        </mesh>
+        <mesh position={[0, 0.34, -0.04]} rotation={[-0.15, 0, 0]} material={MAT_SANDO_WHITE}>
+          <boxGeometry args={[0.34, 0.46, 0.20]} />
+        </mesh>
+        <group position={[0, 0.68, -0.08]} rotation={[-0.18, 0, 0]}>
+          <mesh material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.20, 0.20, 0.20]} />
+          </mesh>
+          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
+            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+        </group>
+        <group ref={armRef} position={[0.20, 0.45, -0.04]}>
+          <mesh position={[0.14, -0.08, 0]} material={MAT_SKIN_BRONZE}>
+            <boxGeometry args={[0.28, 0.08, 0.08]} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
 // ─── DYNAMIC MULTI-ROUTINE ANIMATED FILIPINO KITCHEN CHEF / COOK ───
 function AnimatedBarracksChef({
+
   name,
   shirtColor,
   routineType,
@@ -4866,17 +5579,9 @@ function TemfacilWorkerBarracksCompound({
           </mesh>
         ))}
 
-        {/* 5. Overhead Hanging Warm Fluorescent Lights */}
-        {[-7, -2.5, 2.5, 7].map((zOff, i) => (
-          <group key={`kit-light-${i}`} position={[0, 3.2, zOff]}>
-            <mesh material={MAT_STEEL_DARK}>
-              <cylinderGeometry args={[0.01, 0.01, 0.6, 6]} />
-            </mesh>
-            <mesh position={[0, -0.3, 0]} material={MAT_WHITE_PAINT}>
-              <boxGeometry args={[0.8, 0.08, 0.2]} />
-            </mesh>
-            <pointLight position={[0, -0.35, 0]} color="#FEF08A" intensity={1.5} distance={7.5} />
-          </group>
+        {/* 5. Overhead High-Lumen Industrial Dual-Tube LED Light Fixtures */}
+        {[-7.5, -4.5, -1.5, 1.5, 4.5, 7.5].map((zOff, i) => (
+          <IndustrialKitchenOverheadLedFixture key={`kit-led-fixture-${i}`} position={[0, 3.35, zOff]} />
         ))}
 
         {/* 6. Painted Kitchen Designation Signboard */}
@@ -5357,8 +6062,8 @@ function TemfacilWorkerBarracksCompound({
           </React.Fragment>
         ))}
 
-        {/* ═══ ANIMATED DYNAMIC FILIPINO KITCHEN CHEFS WITH CONTINUOUS ACTIVE ROUTINES ═══ */}
-        {/* West Side Master Chef: Stirring Wok, Grabbing Seasoning, Pouring Soy/Vinegar, Tasting Broth */}
+        {/* ═══ DEDICATED NIGHTTIME KITCHEN COOKS (REDUCED TO 2 EFFICIENT PROFESSIONAL COOKS) ═══ */}
+        {/* Head Master Chef: Stirring Wok, Grabbing Seasonings, Pouring Soy/Vinegar & Tasting Broth */}
         <AnimatedBarracksChef
           name="Mang Cardo"
           shirtColor="#EA580C"
@@ -5366,7 +6071,7 @@ function TemfacilWorkerBarracksCompound({
           onSelectPerson={onSelectPerson}
         />
 
-        {/* West Side Butcher: Fetching Meat, Hardwood Chopping with Cleaver, Washing at Sink, Adding to Wok */}
+        {/* Prep Chef & Butcher: Chopping Ingredients on Hardwood Board, Washing, Loading into Caldero */}
         <AnimatedBarracksChef
           name="Kuya Ben"
           shirtColor="#0284C7"
@@ -5374,29 +6079,28 @@ function TemfacilWorkerBarracksCompound({
           onSelectPerson={onSelectPerson}
         />
 
-        {/* East Side Veggie/Soup Master: Slicing Kalabasa & Sitaw, Washing Greens, Adding to Sinigang */}
-        <AnimatedBarracksChef
-          name="Mang Noli"
-          shirtColor="#16A34A"
-          routineType="EAST_VEGGIE_SOUP"
-          onSelectPerson={onSelectPerson}
-        />
+        {/* ═══ NIGHTTIME ATMOSPHERE & AMENITIES: OSCILLATING FAN & TABLETOP RADIO ═══ */}
+        {/* Oscillating Industrial Stand Fan cooling the dining breezeway aisle */}
+        <OscillatingElectricStandFan position={[-1.9, 0.2, 0.5]} rotation={[0, Math.PI / 4, 0]} />
 
-        {/* East Side Rice & Logistics Master: Scooping Raw Rice from Sack, Rinsing, Fluffing Rice, Sautéing Sinangag */}
-        <AnimatedBarracksChef
-          name="Kuya Jomar"
-          shirtColor="#CA8A04"
-          routineType="EAST_RICE_LOGISTICS"
-          onSelectPerson={onSelectPerson}
-        />
+        {/* Retro Transistor AM/FM Radio / Bluetooth Speaker on Condiment Spine Shelf */}
+        <TabletopTransistorRadio position={[0, 1.45, 2.4]} rotation={[0, -Math.PI / 2, 0]} />
 
-        {/* Visiting Barracks Worker arriving for a taste test / snack */}
-        <AnimatedBarracksChef
-          name="Kuya Dodong"
-          shirtColor="#EA580C"
-          routineType="VISITING_EATER"
-          onSelectPerson={onSelectPerson}
-        />
+        {/* ═══ AUTHENTIC OFF-DUTY FILIPINO WORKERS IN PAMBAHAY ATTIRE & NIGHT ROUTINES ═══ */}
+        {/* 1. Kuya Jun: Relaxing on blue monobloc stool browsing smartphone with real-time screen face glow */}
+        <NighttimeSmartphoneWorker position={[-1.85, 0.2, 3.4]} rotation={[0, Math.PI * 0.45, 0]} />
+
+        {/* 2. Kuya Larry: Enjoying a cigarette ("Yosi Break") leaning against breezeway half-wall */}
+        <NighttimeSmokingWorker position={[-2.15, 0.2, 6.2]} rotation={[0, Math.PI * 0.4, 0]} />
+
+        {/* 3. Mang Noel & Kuya Dennis: Kwuntuhan / Chit-chatting over hot 3-in-1 coffee & SkyFlakes crackers */}
+        <NighttimeKwuntuhanDuo position={[1.85, 0.2, -4.5]} rotation={[0, 0, 0]} />
+
+        {/* 4. Kuya Mar: Washing clothes ("Labada") in plastic wash basin (batya) with soap suds & hanging laundry */}
+        <NighttimeLaundryWorker position={[1.65, 0.2, 8.4]} rotation={[0, -Math.PI * 0.5, 0]} />
+
+        {/* 5. Kuya Randy: Lounging on wooden bench winding down and stretching after a hard day */}
+        <NighttimeLoungingWorker position={[-1.85, 0.2, -7.2]} rotation={[0, Math.PI * 0.5, 0]} />
       </group>
 
       {/* ═══ BARRACKS 3 (RIGHTMOST - EAST DORMITORY WITH PRIVATE ROOM MODULES) ═══ 2-STORY BUILDING (6.4M HEIGHT) ═══ */}

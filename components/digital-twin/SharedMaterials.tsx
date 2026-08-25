@@ -195,5 +195,36 @@ export const MAT_MUSTACHE_SALT_PEPPER = new THREE.MeshStandardMaterial({ color: 
 export const MAT_STUBBLE_SHADOW = new THREE.MeshStandardMaterial({ color: "#27272A", roughness: 0.95, metalness: 0.0, transparent: true, opacity: 0.45 });
 export const MAT_SAFETY_GLASSES_LENS = new THREE.MeshStandardMaterial({ color: "#38BDF8", roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0.55 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 🩳 NIGHTTIME BARRACKS INDOOR ATTIRE ("PAMBAHAY"), LEISURE & NIGHT LIFE
+// ═══════════════════════════════════════════════════════════════════════════
+export const MAT_SANDO_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.8, metalness: 0.0 });
+export const MAT_SANDO_GREY = new THREE.MeshStandardMaterial({ color: "#64748B", roughness: 0.8, metalness: 0.0 });
+export const MAT_SANDO_RED = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.75, metalness: 0.0 });
+export const MAT_SANDO_BLACK = new THREE.MeshStandardMaterial({ color: "#1E293B", roughness: 0.8, metalness: 0.0 });
+
+export const MAT_SHORTS_BASKETBALL_BLUE = new THREE.MeshStandardMaterial({ color: "#1D4ED8", roughness: 0.65, metalness: 0.05 });
+export const MAT_SHORTS_DENIM = new THREE.MeshStandardMaterial({ color: "#2563EB", roughness: 0.85, metalness: 0.0 });
+export const MAT_SHORTS_CARGO = new THREE.MeshStandardMaterial({ color: "#A89F81", roughness: 0.85, metalness: 0.0 });
+export const MAT_PAJAMA_PLAID = new THREE.MeshStandardMaterial({ color: "#047857", roughness: 0.8, metalness: 0.0 });
+export const MAT_PAJAMA_GREY = new THREE.MeshStandardMaterial({ color: "#475569", roughness: 0.85, metalness: 0.0 });
+export const MAT_TSINELAS_RUBBER = new THREE.MeshStandardMaterial({ color: "#0284C7", roughness: 0.7, metalness: 0.0 });
+export const MAT_TSINELAS_RED = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.7, metalness: 0.0 });
+
+export const MAT_PHONE_BODY = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.2, metalness: 0.8 });
+export const MAT_PHONE_SCREEN_GLOW = new THREE.MeshStandardMaterial({ color: "#E0F2FE", emissive: new THREE.Color("#38BDF8"), emissiveIntensity: 3.5, roughness: 0.1 });
+export const MAT_CIGARETTE_TIP_GLOW = new THREE.MeshStandardMaterial({ color: "#F87171", emissive: new THREE.Color("#EF4444"), emissiveIntensity: 4.5, roughness: 0.2 });
+export const MAT_CIGARETTE_BODY = new THREE.MeshStandardMaterial({ color: "#FFFFFF", roughness: 0.7, metalness: 0.0 });
+export const MAT_CIGARETTE_FILTER = new THREE.MeshStandardMaterial({ color: "#D97706", roughness: 0.8, metalness: 0.0 });
+
+export const MAT_MONOBLOC_STOOL_BLUE = new THREE.MeshStandardMaterial({ color: "#0284C7", roughness: 0.5, metalness: 0.05 });
+export const MAT_MONOBLOC_STOOL_RED = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.5, metalness: 0.05 });
+export const MAT_MONOBLOC_STOOL_GREEN = new THREE.MeshStandardMaterial({ color: "#16A34A", roughness: 0.5, metalness: 0.05 });
+
+export const MAT_BATYA_PLASTIC = new THREE.MeshStandardMaterial({ color: "#059669", roughness: 0.45, metalness: 0.05 });
+export const MAT_SOAP_SUDS = new THREE.MeshStandardMaterial({ color: "#FFFFFF", roughness: 0.3, transparent: true, opacity: 0.85 });
+export const MAT_THERMOS_FLASK = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.3, metalness: 0.7 });
+export const MAT_COFFEE_MUG = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.4, metalness: 0.1 });
+
 
 
