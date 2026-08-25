@@ -881,24 +881,26 @@ export function MountainTerrain() {
         continue;
       }
 
-      // 3. TEMFACIL Expanded Base Land Pad & Mountain Slope Transition
-      // TEMFACIL Compound base platform extends x from 80 to 175, z from -142 to -66
-      const dxPad = Math.max(80.0 - x, 0, x - 175.0);
-      const dzPad = Math.max(-142.0 - z, 0, z - (-66.0));
+      // 3. TEMFACIL Excavated Base Land Pad & Mountain Slope Transition
+      // TEMFACIL Compound base platform extends x from 74 to 180, z from -148 to -60
+      const dxPad = Math.max(74.0 - x, 0, x - 180.0);
+      const dzPad = Math.max(-148.0 - z, 0, z - (-60.0));
       const distPad = Math.hypot(dxPad, dzPad);
 
       if (distPad === 0) {
-        // Flat TEMFACIL compound ground at y = 14.0 (covers all 3 barracks, staff house, office, warehouse)
-        positions[i + 1] = 14.0;
-        terrainColors[i] = 0.30;
-        terrainColors[i + 1] = 0.28;
-        terrainColors[i + 2] = 0.24;
+        // Deep excavation underneath TEMFACIL compound at y = 13.0 (1.0m below the 14.0m civil slab)
+        // This ensures the terrain mesh can NEVER intersect, poke through, or Z-fight with the TEMFACIL flooring!
+        positions[i + 1] = 13.0;
+        terrainColors[i] = 0.28;
+        terrainColors[i + 1] = 0.26;
+        terrainColors[i + 2] = 0.22;
+        continue;
       } else if (distPad < 28.0) {
         // Natural mountain slope rising behind (z < -126) and around TEMFACIL
         const t = distPad / 28.0;
         const smoothT = t * t * (3.0 - 2.0 * t);
-        const origY = Math.max(14.0, y);
-        positions[i + 1] = 14.0 * (1.0 - smoothT) + origY * smoothT;
+        const origY = Math.max(13.0, y);
+        positions[i + 1] = 13.0 * (1.0 - smoothT) + origY * smoothT;
 
         // Rich tropical forest green & mountain soil colors on the slope behind and beside TEMFACIL
         const cGreenR = 0.16, cGreenG = 0.25, cGreenB = 0.13; // Sierra Madre lush green
@@ -908,17 +910,18 @@ export function MountainTerrain() {
         terrainColors[i] = THREE.MathUtils.lerp(cGreenR, cSoilR, mixSoil);
         terrainColors[i + 1] = THREE.MathUtils.lerp(cGreenG, cSoilG, mixSoil);
         terrainColors[i + 2] = THREE.MathUtils.lerp(cGreenB, cSoilB, mixSoil);
+        continue;
       }
 
-      // 4. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 95, z: -75, y=14) down to Powerhouse (x: 34, z: -22, y=0.5)
+      // 4. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 88, z: -70, y=13.8) down to Powerhouse (x: 34, z: -22, y=0.5)
       const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
       const projX = ax + t * dx;
       const projZ = az + t * dz;
       const distToSlopeLine = Math.hypot(x - projX, z - projZ);
 
-      if (distToSlopeLine < 28.0 && x >= 30.0 && x <= 98.0 && z >= -80.0 && z <= -20.0) {
-        const slopeY = 0.5 + t * 13.5;
-        const fade = Math.min(1.0, distToSlopeLine / 28.0);
+      if (distToSlopeLine < 26.0 && x >= 30.0 && x <= 88.0 && z >= -72.0 && z <= -20.0) {
+        const slopeY = 0.5 + t * 13.3;
+        const fade = Math.min(1.0, distToSlopeLine / 26.0);
         positions[i + 1] = slopeY * (1.0 - fade) + positions[i + 1] * fade;
       }
     }

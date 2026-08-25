@@ -23,7 +23,7 @@ export const MAT_GRANITE_BASE = new THREE.MeshStandardMaterial({ color: "#6E6863
 // ═══════════════════════════════════════════════════════════════════════════
 // 🛣️ GROUND, DIRT ROAD & EARTH (Construction Site & Rainforest Terrain)
 // ═══════════════════════════════════════════════════════════════════════════
-export const MAT_ASPHALT_DARK = new THREE.MeshStandardMaterial({ color: "#2C2C2C", roughness: 0.95, metalness: 0.0 });
+export const MAT_ASPHALT_DARK = new THREE.MeshStandardMaterial({ color: "#2C2C2C", roughness: 0.95, metalness: 0.0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
 export const MAT_DIRT_ROAD_HAUL = new THREE.MeshStandardMaterial({ color: "#8C6A43", roughness: 0.94, metalness: 0.02 });
 export const MAT_DIRT_ROAD_RUTS = new THREE.MeshStandardMaterial({ color: "#6A4E2F", roughness: 0.96, metalness: 0.01 });
 export const MAT_DIRT_SHOULDER_EMBANKMENT = new THREE.MeshStandardMaterial({ color: "#523C24", roughness: 0.98, metalness: 0.01 });
@@ -32,9 +32,9 @@ export const MAT_LOG_BARRIER = new THREE.MeshStandardMaterial({ color: "#45321F"
 export const MAT_TIMBER_STAKE = new THREE.MeshStandardMaterial({ color: "#6B4F32", roughness: 0.85, metalness: 0.05 });
 export const MAT_TIMBER_POLE = new THREE.MeshStandardMaterial({ color: "#543E28", roughness: 0.9, metalness: 0.05 });
 export const MAT_SITE_FLOODLIGHT_BODY = new THREE.MeshStandardMaterial({ color: "#334155", roughness: 0.4, metalness: 0.7 });
-export const MAT_EARTH_BROWN_DUST = new THREE.MeshStandardMaterial({ color: "#8B7355", roughness: 0.95, metalness: 0.0 });
+export const MAT_EARTH_BROWN_DUST = new THREE.MeshStandardMaterial({ color: "#8B7355", roughness: 0.95, metalness: 0.0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
 export const MAT_EARTH_BROWN_DARK = new THREE.MeshStandardMaterial({ color: "#5C4033", roughness: 0.95, metalness: 0.0 });
-export const MAT_PAVER_WALKWAY = new THREE.MeshStandardMaterial({ color: "#9C8B7A", roughness: 0.85, metalness: 0.02 });
+export const MAT_PAVER_WALKWAY = new THREE.MeshStandardMaterial({ color: "#9C8B7A", roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 🏭 STEEL & METAL

@@ -127,40 +127,40 @@ export function TemfacilFacility({
     <group position={[118, 14.0, -95]} rotation={[0, 0, 0]}>
       {/* ═══ 0. UNIFIED HIGH-END INDUSTRIAL SITE FLOORING ═══ */}
 
-      {/* A. Engineered Aggregate Crushed Granite Site Base Platform (84m x 82m) */}
-      <group position={[9, 0.02, -16]}>
+      {/* A. Engineered Aggregate Crushed Granite Site Base Platform (84m x 82m) with thick 1.0m solid civil slab */}
+      <group position={[9, -0.45, -16]}>
         <mesh receiveShadow material={MAT_GRANITE_BASE}>
-          <boxGeometry args={[84, 0.05, 82]} />
+          <boxGeometry args={[84, 1.0, 82]} />
         </mesh>
 
         {/* Concrete Edge Retention Curbs (Perimeter Header) */}
-        <mesh position={[0, 0.1, -41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
-          <boxGeometry args={[84.4, 0.2, 0.4]} />
+        <mesh position={[0, 0.58, -41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[84.4, 0.26, 0.4]} />
         </mesh>
-        <mesh position={[0, 0.1, 41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
-          <boxGeometry args={[84.4, 0.2, 0.4]} />
+        <mesh position={[0, 0.58, 41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[84.4, 0.26, 0.4]} />
         </mesh>
-        <mesh position={[-42.1, 0.1, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
-          <boxGeometry args={[0.4, 0.2, 82.4]} />
+        <mesh position={[-42.1, 0.58, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[0.4, 0.26, 82.4]} />
         </mesh>
-        <mesh position={[42.1, 0.1, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
-          <boxGeometry args={[0.4, 0.2, 82.4]} />
+        <mesh position={[42.1, 0.58, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[0.4, 0.26, 82.4]} />
         </mesh>
       </group>
 
       {/* B1. High-End 3D Volumetric Instanced Grass Lawns */}
       {/* Lawn 1: Left lawn behind staff house/kitchen (x = -17.0 to 4.2, z = -33.8 to -55.2) */}
-      <Instanced3DGrassLawn position={[-6.4, 0.048, -44.5]} size={[21.2, 21.4]} />
+      <Instanced3DGrassLawn position={[-6.4, 0.065, -44.5]} size={[21.2, 21.4]} />
       {/* Lawn 2: Rear lawn garden behind Foreman House (x = 8.0 to 28.0, z = -48.0 to -55.0) */}
-      <Instanced3DGrassLawn position={[18.0, 0.048, -51.5]} size={[20.0, 7.0]} />
+      <Instanced3DGrassLawn position={[18.0, 0.065, -51.5]} size={[20.0, 7.0]} />
 
       {/* REALISTIC REINFORCED CONCRETE DRAINAGE CANAL NETWORK (U-CHANNEL SYSTEM) */}
       <TemfacilSiteDrainageCanal />
 
       {/* B2. Internal Paved Asphalt Access Road & Parking Apron */}
-      <group position={[-14, 0.035, 6]}>
-        <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={MAT_ASPHALT_DARK}>
-          <planeGeometry args={[18, 32]} />
+      <group position={[-14, 0.068, 6]}>
+        <mesh receiveShadow material={MAT_ASPHALT_DARK}>
+          <boxGeometry args={[18, 0.03, 32]} />
         </mesh>
       </group>
 
@@ -176,21 +176,25 @@ export function TemfacilFacility({
 
       {/* 2. Distinct Dust-Brown Dirt Access Road Trunk & Uphill Incline Ramp (4.8m Wide) */}
       {/* Lower Dirt Road Segment in Front of Staff Office (X = -13.5, Z = -3.0) */}
-      <mesh position={[-13.5, 0.05, -3.0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={MAT_EARTH_BROWN_DUST}>
-        <planeGeometry args={[5.0, 22.0]} />
-      </mesh>
+      <group position={[-13.5, 0.075, -3.0]}>
+        <mesh receiveShadow material={MAT_EARTH_BROWN_DUST}>
+          <boxGeometry args={[5.0, 0.03, 22.0]} />
+        </mesh>
+      </group>
 
       {/* Sloped Uphill Curved Dirt Access Road Segment (Climbing continuously from Y=0.05m to Y=0.8m) */}
-      <group position={[-20.5, 0.42, -10.0]}>
-        <mesh rotation={[-Math.PI / 2, 0.09, -0.45]} receiveShadow material={MAT_EARTH_BROWN_DUST}>
-          <planeGeometry args={[5.0, 16.0]} />
+      <group position={[-20.5, 0.44, -10.0]}>
+        <mesh rotation={[0.09, -0.45, 0]} receiveShadow material={MAT_EARTH_BROWN_DUST}>
+          <boxGeometry args={[5.0, 0.03, 16.0]} />
         </mesh>
       </group>
 
       {/* Elevated Warehouse Dirt Access Apron (In Front of Shutter Door) */}
-      <mesh position={[-27.5, 0.82, -14.0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={MAT_EARTH_BROWN_DUST}>
-        <planeGeometry args={[12.0, 10.0]} />
-      </mesh>
+      <group position={[-27.5, 0.83, -14.0]}>
+        <mesh receiveShadow material={MAT_EARTH_BROWN_DUST}>
+          <boxGeometry args={[12.0, 0.04, 10.0]} />
+        </mesh>
+      </group>
 
       {/* Stormwater V-Ditch Concrete Channel */}
       <mesh position={[-32.5, 0.08, -2]} receiveShadow material={MAT_STEEL_DARK}>
