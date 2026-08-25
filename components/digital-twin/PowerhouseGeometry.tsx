@@ -243,8 +243,55 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
 
   return (
     <group>
+      {/* ═══════════ POWERHOUSE OPERATIONS CIVIL APRON & LOGISTICS YARD ═══════════ */}
+      {/* Main Reinforced Concrete Civil Operations & Logistics Yard (X: -26m to +38m, Z: -15m to +14m) */}
+      <mesh position={[6.0, 0.18, 0.0]} receiveShadow material={MAT_CONCRETE_PRIMARY}>
+        <boxGeometry args={[66.0, 0.28, 28.0]} />
+      </mesh>
+      {/* Heavy Sub-Base Aggregate Bed */}
+      <mesh position={[6.0, 0.05, 0.0]} receiveShadow material={MAT_CONCRETE_DARK}>
+        <boxGeometry args={[67.0, 0.14, 29.0]} />
+      </mesh>
+      {/* Concrete Yard Safety Perimeter Curb Headers */}
+      {/* West curb */}
+      <mesh position={[-27.2, 0.36, 0.0]} receiveShadow material={MAT_CONCRETE_HEADER}>
+        <boxGeometry args={[0.4, 0.24, 28.4]} />
+      </mesh>
+      {/* North curb */}
+      <mesh position={[6.0, 0.36, -14.2]} receiveShadow material={MAT_CONCRETE_HEADER}>
+        <boxGeometry args={[66.8, 0.24, 0.4]} />
+      </mesh>
+      {/* South curb (left of tailrace) */}
+      <mesh position={[-18.5, 0.36, 14.2]} receiveShadow material={MAT_CONCRETE_HEADER}>
+        <boxGeometry args={[17.0, 0.24, 0.4]} />
+      </mesh>
+      {/* South curb (right of tailrace / parking zone) */}
+      <mesh position={[24.0, 0.36, 14.2]} receiveShadow material={MAT_CONCRETE_HEADER}>
+        <boxGeometry args={[30.0, 0.24, 0.4]} />
+      </mesh>
+
+      {/* ═══ VEHICLE PARKING BAYS (Ambulance, Pickup, Service Van) ═══ */}
+      {[22.0, 26.5, 31.0].map((xBay, i) => (
+        <group key={`pbay-${i}`} position={[xBay, 0.33, 8.5]}>
+          {/* Left Stripe */}
+          <mesh position={[-1.7, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[0.12, 6.0]} />
+            <meshStandardMaterial color="#FFFFFF" roughness={0.4} />
+          </mesh>
+          {/* Right Stripe */}
+          <mesh position={[1.7, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[0.12, 6.0]} />
+            <meshStandardMaterial color="#FFFFFF" roughness={0.4} />
+          </mesh>
+          {/* Wheel Stop Concrete Block */}
+          <mesh position={[0, 0.08, -2.6]} receiveShadow material={MAT_YELLOW_SAFETY}>
+            <boxGeometry args={[2.2, 0.14, 0.22]} />
+          </mesh>
+        </group>
+      ))}
+
       {/* ═══════════ FOUNDATION / PLINTH ═══════════ */}
-      <mesh position={[0, 0.2, 0]} receiveShadow castShadow material={MAT_CONCRETE_DARK}>
+      <mesh position={[0, 0.38, 0]} receiveShadow castShadow material={MAT_CONCRETE_DARK}>
         <boxGeometry args={[21.5, 0.4, 15.5]} />
       </mesh>
 
@@ -793,13 +840,42 @@ export function MountainTerrain() {
       const y = positions[i + 1];
       const z = positions[i + 2];
 
-      // 1. Tailrace Canal & Outfall Channel
-      if (x >= -14.0 && x <= 14.0 && z >= 6.0 && z <= 48.0) {
-        positions[i + 1] = Math.min(y, -0.45);
+      // 1. Deeply Excavate Tailrace Canal & Outfall Channel (well below concrete chute floor)
+      if (x >= -12.0 && x <= 12.0 && z >= 5.5 && z <= 48.0) {
+        positions[i + 1] = -1.35;
+        terrainColors[i] = 0.12;
+        terrainColors[i + 1] = 0.16;
+        terrainColors[i + 2] = 0.13;
         continue;
       }
 
-      // 2. TEMFACIL Expanded Base Land Pad & Mountain Slope Transition
+      // 2. Powerhouse Facility Compound Base Yard (level civil foundation at Y = 0.05m)
+      const dxPH = Math.max(-28.0 - x, 0, x - 42.0);
+      const dzPH = Math.max(-18.0 - z, 0, z - 15.0);
+      const distPH = Math.hypot(dxPH, dzPH);
+
+      if (distPH === 0) {
+        positions[i + 1] = 0.05;
+        // Clean neutral compacted civil ground / crushed aggregate tone (eliminates weird green grid & blotches)
+        terrainColors[i] = 0.28;
+        terrainColors[i + 1] = 0.27;
+        terrainColors[i + 2] = 0.25;
+        continue;
+      } else if (distPH < 16.0 && z > -18.0) {
+        const t = distPH / 16.0;
+        const smoothT = t * t * (3.0 - 2.0 * t);
+        const origY = Math.max(0.05, y);
+        positions[i + 1] = 0.05 * (1.0 - smoothT) + origY * smoothT;
+
+        const cCivilR = 0.28, cCivilG = 0.27, cCivilB = 0.25;
+        const cForestR = 0.14, cForestG = 0.23, cForestB = 0.11;
+        terrainColors[i] = THREE.MathUtils.lerp(cCivilR, cForestR, smoothT);
+        terrainColors[i + 1] = THREE.MathUtils.lerp(cCivilG, cForestG, smoothT);
+        terrainColors[i + 2] = THREE.MathUtils.lerp(cCivilB, cForestB, smoothT);
+        continue;
+      }
+
+      // 3. TEMFACIL Expanded Base Land Pad & Mountain Slope Transition
       // TEMFACIL Compound base platform extends x from 80 to 175, z from -142 to -66
       const dxPad = Math.max(80.0 - x, 0, x - 175.0);
       const dzPad = Math.max(-142.0 - z, 0, z - (-66.0));
@@ -828,7 +904,7 @@ export function MountainTerrain() {
         terrainColors[i + 2] = THREE.MathUtils.lerp(cGreenB, cSoilB, mixSoil);
       }
 
-      // 3. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 95, z: -75, y=14) down to Powerhouse (x: 34, z: -22, y=0.5)
+      // 4. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 95, z: -75, y=14) down to Powerhouse (x: 34, z: -22, y=0.5)
       const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
       const projX = ax + t * dx;
       const projZ = az + t * dz;
@@ -885,7 +961,7 @@ function ExtendedBackgroundMountains() {
         const z = -SIZE / 2 + (r / SEG) * SIZE;
 
         const distFromCenter = Math.hypot(x, z);
-        let y = -0.2;
+        let y = -3.5;
         if (distFromCenter > 165) {
           const outerFactor = (distFromCenter - 165) / 135;
           y = (Math.sin(x * 0.02) * Math.cos(z * 0.02) * 22.0 + Math.sin(x * 0.035 + z * 0.025) * 12.0 + 10.0) * outerFactor - 0.2;
@@ -1123,10 +1199,16 @@ export function TailraceWater() {
         </mesh>
       </group>
 
-      {/* Concrete Tailrace Channel Lining Slab (excavated channel floor extending to river) */}
-      <mesh position={[0, -0.28, 25.8]} receiveShadow material={MAT_CONCRETE_DARK}>
-        <boxGeometry args={[18.5, 0.2, 38.0]} />
+      {/* Sunken Reinforced Concrete Tailrace Chute Floor (clean 1.0m deep channel under water) */}
+      <mesh position={[0, -0.85, 26.5]} receiveShadow material={MAT_CONCRETE_DARK}>
+        <boxGeometry args={[16.8, 0.4, 39.0]} />
       </mesh>
+      {/* Channel training floor curbs */}
+      {[-8.3, 8.3].map((xCurb, i) => (
+        <mesh key={`ch-curb-${i}`} position={[xCurb, -0.65, 26.5]} receiveShadow material={MAT_CONCRETE_PRIMARY}>
+          <boxGeometry args={[0.3, 0.35, 39.0]} />
+        </mesh>
+      ))}
 
       {/* ═══ 2. PHOTOREALISTIC SLOPED CONCRETE TAILRACE WATER SURFACE ═══ */}
       <mesh geometry={tailraceMesh} receiveShadow>
