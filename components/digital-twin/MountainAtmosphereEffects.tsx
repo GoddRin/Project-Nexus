@@ -265,7 +265,7 @@ function PhotorealisticMountainCumulus() {
   const cloudBanks = useMemo(() => {
     return [
       {
-        basePos: [-130, 160, -280] as [number, number, number],
+        basePos: [-130, 105, -280] as [number, number, number],
         puffs: [
           { offset: [0, 6, 0], r: 18 },
           { offset: [-14, 0, 4], r: 15 },
@@ -278,7 +278,7 @@ function PhotorealisticMountainCumulus() {
         ],
       },
       {
-        basePos: [-30, 185, -340] as [number, number, number],
+        basePos: [-30, 120, -340] as [number, number, number],
         puffs: [
           { offset: [0, 8, 0], r: 24 },
           { offset: [-18, 2, 5], r: 19 },
@@ -292,7 +292,7 @@ function PhotorealisticMountainCumulus() {
         ],
       },
       {
-        basePos: [85, 170, -300] as [number, number, number],
+        basePos: [85, 112, -300] as [number, number, number],
         puffs: [
           { offset: [0, 7, 0], r: 20 },
           { offset: [-16, 1, 3], r: 16 },
@@ -305,7 +305,7 @@ function PhotorealisticMountainCumulus() {
         ],
       },
       {
-        basePos: [195, 155, -260] as [number, number, number],
+        basePos: [195, 102, -260] as [number, number, number],
         puffs: [
           { offset: [0, 5, 0], r: 17 },
           { offset: [-13, 0, 3], r: 14 },
