@@ -76,6 +76,11 @@ import {
   MAT_TIMBER_STAKE,
   MAT_CONCRETE_SLAB,
   MAT_FOOD_STAINLESS_TRAY,
+  MAT_FOOD_STAINLESS_COUNTER,
+  MAT_WHITE_PAINT,
+  MAT_WOOD_HANDLE,
+  MAT_PHONE_BODY,
+  MAT_PHONE_SCREEN_GLOW,
   MAT_SCHMIDT_HAMMER_CHROME,
   MAT_SCHMIDT_HAMMER_RED,
 } from "./SharedMaterials";
@@ -143,37 +148,6 @@ function getSafeSplineData(spline: THREE.CatmullRomCurve3, rawProgress: number) 
     pt: spline.getPointAt(u),
     tangent: spline.getTangentAt(u),
   };
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   1. DYNAMIC ANATOMICAL HYDRO PROJECT PERSON MESH
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-export interface HydroProjectPersonMeshProps {
-  personnelId?: string;
-  position?: [number, number, number];
-  rotation?: [number, number, number];
-  gender?: "MALE" | "FEMALE";
-  role?: string;
-  speakerType?: "SAFETY_HEAD" | "HR_HEAD" | "WAREHOUSE_LEAD" | "PROJECT_MANAGER";
-  pose?: "DEFAULT" | "TOOLBOX_CROWD" | "PRAYER" | "DANCE" | "SPEAKING" | "SEATED" | "PATROL";
-  skinTone?: "LIGHT" | "MEDIUM" | "BRONZE" | "DEEP";
-  hairStyle?: "SHORT" | "BALD" | "LONG_MAN" | "WOMAN_PONYTAIL" | "POMPADOUR" | "CHEF_BANDANA";
-  hairColor?: "BLACK" | "BROWN" | "AUBURN" | "WHITE" | "SALT_PEPPER";
-  pantsStyle?: "JEANS" | "CARGO" | "KHAKI" | "CHARCOAL_OFFICE" | "MAONG_JEANS";
-  hasHardhat?: boolean;
-  hardhatColor?: string;
-  hasVest?: boolean;
-  vestColor?: string;
-  hasGlasses?: boolean;
-  hasBeard?: boolean;
-  facialHair?: "NONE" | "MUSTACHE" | "BEARD" | "GOATEE" | "STUBBLE";
-  accessory?: "NONE" | "CLIPBOARD" | "BINDER" | "TABLET" | "RADIO" | "MIC";
-  bodyScale?: [number, number, number];
-  shiftOffset?: number;
-  isPatrolling?: boolean;
-  patrolPoints?: [number, number, number][];
-  onSelectPerson?: (id: string) => void;
 }
 
 // ═══ STAGE & BACKSTAGE STAIRS WAYPOINT COORDINATES (SURGICALLY CALIBRATED) ═══
@@ -282,12 +256,69 @@ function evalWalkFromStage(destPos: [number, number, number], progress: number) 
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. DYNAMIC ANATOMICAL HYDRO PROJECT PERSON MESH
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export interface HydroProjectPersonMeshProps {
+  personnelId?: string;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  gender?: "MALE" | "FEMALE";
+  role?: string;
+  jobRoutine?:
+    | "DEFAULT"
+    | "SURVEYOR"
+    | "GEOLOGIST"
+    | "TUNNEL_QC"
+    | "TUNNEL_FOREMAN"
+    | "JUMBO_OPERATOR"
+    | "MECHANICAL_SUPT"
+    | "ELECTRICAL_SUPT"
+    | "ELECTRICAL_SUPERVISOR"
+    | "ELECTRICAL_FOREMAN"
+    | "CIVIL_SUPERVISOR"
+    | "CIVIL_4S_SUPERVISOR"
+    | "CIVIL_FOREMAN"
+    | "TECHNICAL_HEAD"
+    | "CAD_OPERATOR"
+    | "DOC_CONTROLLER"
+    | "QUANTITY_SURVEYOR"
+    | "JR_QAQC_ENGR"
+    | "EXECUTIVE_PM"
+    | "HR_ADMIN"
+    | "IT_SPECIALIST"
+    | "WAREHOUSE_LEAD"
+    | "SECURITY_OFFICER"
+    | "PROJECT_NURSE";
+  speakerType?: "SAFETY_HEAD" | "HR_HEAD" | "WAREHOUSE_LEAD" | "PROJECT_MANAGER";
+  pose?: "DEFAULT" | "TOOLBOX_CROWD" | "PRAYER" | "DANCE" | "SPEAKING" | "SEATED" | "PATROL";
+  skinTone?: "LIGHT" | "MEDIUM" | "BRONZE" | "DEEP";
+  hairStyle?: "SHORT" | "BALD" | "LONG_MAN" | "WOMAN_PONYTAIL" | "POMPADOUR" | "CHEF_BANDANA";
+  hairColor?: "BLACK" | "BROWN" | "AUBURN" | "WHITE" | "SALT_PEPPER";
+  pantsStyle?: "JEANS" | "CARGO" | "KHAKI" | "CHARCOAL_OFFICE" | "MAONG_JEANS";
+  hasHardhat?: boolean;
+  hardhatColor?: string;
+  hasVest?: boolean;
+  vestColor?: string;
+  hasGlasses?: boolean;
+  hasBeard?: boolean;
+  facialHair?: "NONE" | "MUSTACHE" | "BEARD" | "GOATEE" | "STUBBLE";
+  accessory?: "NONE" | "CLIPBOARD" | "BINDER" | "TABLET" | "RADIO" | "MIC" | "HAMMER" | "TOTAL_STATION" | "SLUMP_CONE" | "MULTIMETER" | "TORQUE_WRENCH" | "BARCODE_SCANNER";
+  bodyScale?: [number, number, number];
+  shiftOffset?: number;
+  isPatrolling?: boolean;
+  patrolPoints?: [number, number, number][];
+  onSelectPerson?: (id: string) => void;
+}
+
 export function HydroProjectPersonMesh({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   gender = "MALE",
   speakerType,
   pose = "DEFAULT",
+  jobRoutine,
   skinTone = "MEDIUM",
   hairStyle = "SHORT",
   hairColor = "BLACK",
@@ -317,8 +348,40 @@ export function HydroProjectPersonMesh({
   const rightLegRef = useRef<THREE.Group>(null);
   const eyeOpenRef = useRef<THREE.Group>(null);
   const eyeClosedRef = useRef<THREE.Group>(null);
-  const mouthRef = useRef<THREE.Mesh>(null);
   const prayingHandsRef = useRef<THREE.Group>(null);
+
+  // Dedicated refs for job accessories & dynamic tools
+  const propToolRef = useRef<THREE.Group>(null);
+  const laserBeamRef = useRef<THREE.Mesh>(null);
+
+  // Automatically determine active routine from personnelId or prop
+  const activeRoutine = useMemo(() => {
+    if (jobRoutine && jobRoutine !== "DEFAULT") return jobRoutine;
+    if (personnelId === "SURVEYOR_JOHNNY_FARONGEY") return "SURVEYOR";
+    if (personnelId === "GEO_AMOR_FLORESCA") return "GEOLOGIST";
+    if (personnelId === "QC_JAIRUZ_BATAC") return "TUNNEL_QC";
+    if (personnelId === "TUNNEL_RICHARD_PINASEN" || personnelId === "TUNNEL_RUDY_MARCOS") return "TUNNEL_FOREMAN";
+    if (personnelId === "WORKER_BENJAMIN_FOMEGAS") return "JUMBO_OPERATOR";
+    if (personnelId === "SUPT_EUGENIO_HANOPOL") return "MECHANICAL_SUPT";
+    if (personnelId === "SUPT_EDUARDO_DEFRANCIA") return "ELECTRICAL_SUPT";
+    if (personnelId === "ELEC_JOSUE_ABELLERA") return "ELECTRICAL_SUPERVISOR";
+    if (personnelId === "FOREMAN_WARLITO_DEFRANCIA") return "ELECTRICAL_FOREMAN";
+    if (personnelId === "CIVIL_JAIME_CANO") return "CIVIL_SUPERVISOR";
+    if (personnelId === "CIVIL_HENRY_ESTRADA") return "CIVIL_4S_SUPERVISOR";
+    if (personnelId === "FOREMAN_ANTHONY_ROSALES") return "CIVIL_FOREMAN";
+    if (personnelId === "ENGR_NOEL_LAVAPIE") return "TECHNICAL_HEAD";
+    if (personnelId === "CAD_ELBERT_FIGURACION") return "CAD_OPERATOR";
+    if (personnelId === "DOC_JAYSON_AGGABAO") return "DOC_CONTROLLER";
+    if (personnelId === "QS_CRISTINE_ALMAZAN") return "QUANTITY_SURVEYOR";
+    if (personnelId === "QC_JHON_JAYME") return "JR_QAQC_ENGR";
+    if (personnelId === "DEPUTY_NATHANIEL_PRINCIPE" || personnelId === "PM_ROMEO_SESE") return "EXECUTIVE_PM";
+    if (personnelId === "HR_JOSHUA_ADMIN" || personnelId === "HR_RANDY_GAMBOA") return "HR_ADMIN";
+    if (personnelId === "IT_MARC_SALVA") return "IT_SPECIALIST";
+    if (personnelId === "WAREHOUSE_VINCENT_ANDALLO") return "WAREHOUSE_LEAD";
+    if (personnelId === "SEC_RONALD_MALTO") return "SECURITY_OFFICER";
+    if (personnelId === "NURSE_RUSSELLE_ALCANTARA") return "PROJECT_NURSE";
+    return "DEFAULT";
+  }, [jobRoutine, personnelId]);
 
   const skinMat = useMemo(() => {
     switch (skinTone) {
@@ -457,15 +520,15 @@ export function HydroProjectPersonMesh({
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    const t = clock.getElapsedTime();
+    const t = clock.getElapsedTime() + shiftOffset;
 
     // 1. Dynamic Speaker Motion on Stage
-    const speakerState = speakerType ? getSpeakerTransform(t) : null;
+    const speakerState = speakerType ? getSpeakerTransform(clock.getElapsedTime()) : null;
     let currentPose = pose;
     let isCurrentlyWalking = isPatrolling;
 
     if (speakerState) {
-      groupRef.current.position.set(...speakerState.pos);
+      groupRef.current.position.set(speakerState.pos[0], speakerState.pos[1], speakerState.pos[2]);
       groupRef.current.rotation.y = speakerState.rotY;
       currentPose = speakerState.activePose;
       isCurrentlyWalking = speakerState.isWalking;
@@ -473,7 +536,7 @@ export function HydroProjectPersonMesh({
 
     // 2. Toolbox Meeting Crowd State Cycling
     if (pose === "TOOLBOX_CROWD") {
-      const meetingT = (t + shiftOffset * 0.2) % 180.0;
+      const meetingT = (t * 0.2) % 180.0;
       currentPose = meetingT < 15.0 ? "PRAYER" : (meetingT >= 55.0 && meetingT < 85.0) ? "DANCE" : "DEFAULT";
     }
 
@@ -484,7 +547,7 @@ export function HydroProjectPersonMesh({
       if (prayingHandsRef.current) prayingHandsRef.current.visible = false;
 
       const walkCadence = 6.2;
-      const walkT = t * walkCadence + shiftOffset;
+      const walkT = t * walkCadence;
       const strideSin = Math.sin(walkT);
       const strideCos = Math.cos(walkT);
 
@@ -495,11 +558,9 @@ export function HydroProjectPersonMesh({
       // Natural counter arm swing with dynamic elbow flare
       const armSwing = strideSin * 0.44;
 
-      // Biomechanical Pelvic Bounce (double frequency peak on each step)
+      // Biomechanical Pelvic Bounce
       const pelvicBounce = Math.abs(strideSin) * 0.042;
-      // Lateral pelvic sway & weight shift
       const lateralSway = Math.sin(walkT * 0.5) * 0.025;
-      // Transverse Torso Counter-twist
       const torsoTwist = strideCos * 0.08;
 
       groupRef.current.position.y = (speakerState ? speakerState.pos[1] : position[1]) + pelvicBounce;
@@ -507,16 +568,10 @@ export function HydroProjectPersonMesh({
       if (torsoRef.current) torsoRef.current.rotation.set(0.04, torsoTwist, lateralSway);
       if (headRef.current) headRef.current.rotation.set(-0.02, -torsoTwist * 0.6, -lateralSway * 0.5);
 
-      if (leftLegRef.current) {
-        leftLegRef.current.rotation.set(legStrideL, 0, -lateralSway);
-      }
-      if (rightLegRef.current) {
-        rightLegRef.current.rotation.set(legStrideR, 0, -lateralSway);
-      }
+      if (leftLegRef.current) leftLegRef.current.rotation.set(legStrideL, 0, -lateralSway);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(legStrideR, 0, -lateralSway);
 
-      if (leftArmRef.current) {
-        leftArmRef.current.rotation.set(-armSwing, 0.10, -0.08);
-      }
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-armSwing, 0.10, -0.08);
       if (rightArmRef.current) {
         if (speakerState?.isHoldingMic) {
           rightArmRef.current.rotation.set(-1.4, -0.15, -0.1);
@@ -529,16 +584,13 @@ export function HydroProjectPersonMesh({
 
     // ═══ POSE 1: REVERENT OPENING PRAYER ═══
     if (currentPose === "PRAYER") {
-      const prayerBreath = Math.sin(t * 1.5 + shiftOffset) * 0.015;
-      if (headRef.current) headRef.current.rotation.set(0.28 + prayerBreath, 0, 0); // Head bowed solemnly
+      const prayerBreath = Math.sin(t * 1.5) * 0.015;
+      if (headRef.current) headRef.current.rotation.set(0.28 + prayerBreath, 0, 0);
       if (torsoRef.current) torsoRef.current.rotation.set(0.05, 0, 0);
       if (eyeOpenRef.current) eyeOpenRef.current.visible = false;
       if (eyeClosedRef.current) eyeClosedRef.current.visible = true;
       if (prayingHandsRef.current) prayingHandsRef.current.visible = true;
 
-      const breath = Math.sin(t * 1.4 + shiftOffset) * 0.015;
-      if (headRef.current) headRef.current.rotation.set(0.35 + breath, 0, 0);
-      if (torsoRef.current) torsoRef.current.rotation.set(0.08 + breath * 0.5, 0, 0);
       if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.45, 0.25);
       if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15, -0.45, -0.25);
       if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
@@ -552,12 +604,11 @@ export function HydroProjectPersonMesh({
       if (eyeClosedRef.current) eyeClosedRef.current.visible = false;
       if (prayingHandsRef.current) prayingHandsRef.current.visible = false;
 
-      const syncT = t + shiftOffset * 0.04;
+      const syncT = t;
       const stretchPhase = (syncT * 0.8) % 30.0;
       const basePosY = speakerState ? speakerState.pos[1] : position[1];
 
       if (stretchPhase < 7.5) {
-        // Move 1: Torso Lateral Reach & Side Stretch
         const beat = Math.sin(syncT * 1.4);
         const breathY = Math.abs(Math.sin(syncT * 1.4)) * 0.02;
         groupRef.current.position.y = basePosY + breathY;
@@ -565,10 +616,7 @@ export function HydroProjectPersonMesh({
         if (headRef.current) headRef.current.rotation.set(-0.05, beat * 0.12, beat * 0.08);
         if (leftArmRef.current) leftArmRef.current.rotation.set(-2.2 + beat * 0.35, 0.15, -0.35 + beat * 0.35);
         if (rightArmRef.current) rightArmRef.current.rotation.set(-2.2 + beat * 0.35, -0.15, 0.35 + beat * 0.35);
-        if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
-        if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
       } else if (stretchPhase < 15.0) {
-        // Move 2: Coordinated Shoulder Circles & Overhead Extension with Calf Raises
         const beat = Math.sin(syncT * 1.8);
         const calfRaise = Math.max(0, beat) * 0.045;
         groupRef.current.position.y = basePosY + calfRaise;
@@ -577,20 +625,14 @@ export function HydroProjectPersonMesh({
         const armArc = -1.3 + beat * 1.1;
         if (leftArmRef.current) leftArmRef.current.rotation.set(armArc, 0.12, -0.25);
         if (rightArmRef.current) rightArmRef.current.rotation.set(armArc, -0.12, 0.25);
-        if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
-        if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
       } else if (stretchPhase < 22.5) {
-        // Move 3: Chest Expansion & Gentle Torso Rotation
         const twist = Math.sin(syncT * 1.5);
         groupRef.current.position.y = basePosY;
         if (torsoRef.current) torsoRef.current.rotation.set(0, twist * 0.32, 0);
         if (headRef.current) headRef.current.rotation.set(0, twist * 0.40, 0);
         if (leftArmRef.current) leftArmRef.current.rotation.set(-1.45, 0.35 + twist * 0.3, -0.4);
         if (rightArmRef.current) rightArmRef.current.rotation.set(-1.45, -0.35 + twist * 0.3, 0.4);
-        if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
-        if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
       } else {
-        // Move 4: Gentle Rhythmic Knee Dips & Breathing Calisthenics
         const dip = Math.sin(syncT * 1.2);
         const dipDepth = -Math.max(0, dip) * 0.06;
         groupRef.current.position.y = basePosY + dipDepth;
@@ -598,15 +640,13 @@ export function HydroProjectPersonMesh({
         if (headRef.current) headRef.current.rotation.set(0, 0, 0);
         if (leftArmRef.current) leftArmRef.current.rotation.set(-1.1, 0.15, -Math.abs(dip) * 0.4);
         if (rightArmRef.current) rightArmRef.current.rotation.set(-1.1, -0.15, Math.abs(dip) * 0.4);
-        if (leftLegRef.current) leftLegRef.current.rotation.set(Math.max(0, dip) * 0.15, 0, 0);
-        if (rightLegRef.current) rightLegRef.current.rotation.set(Math.max(0, dip) * 0.15, 0, 0);
       }
       return;
     }
 
     // ═══ POSE 3: PODIUM SPEAKER ORATOR GESTURING ═══
     if (currentPose === "SPEAKING") {
-      const speechT = t * 2.2 + shiftOffset;
+      const speechT = t * 2.2;
       const gesture = Math.sin(speechT) * 0.28;
       const headTurn = Math.sin(speechT * 0.5) * 0.22;
       const headNod = Math.sin(speechT * 0.9) * 0.06;
@@ -618,9 +658,365 @@ export function HydroProjectPersonMesh({
       return;
     }
 
-    // ═══ POSE 4: DEFAULT NATURAL IDLE & WEIGHT-SHIFTING ═══
-    const breath = Math.sin(t * 1.6 + shiftOffset) * 0.015;
-    const weightShift = Math.sin(t * 0.4 + shiftOffset) * 0.03;
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 🛠️ DYNAMIC FUNCTIONAL JOB ROUTINE KINEMATICS & PROPS ANIMATION
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // 1. GEODETIC SURVEYOR (Johnny Farong-ey)
+    if (activeRoutine === "SURVEYOR") {
+      const cycle = t % 16.0;
+      if (cycle < 5.5) {
+        // Phase 1: Looking into optical eyepiece & adjusting fine tangent screw
+        const tweak = Math.sin(t * 4.0) * 0.08;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.18, -0.05, 0);
+        if (headRef.current) headRef.current.rotation.set(0.24, -0.04, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tweak, -0.3, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.65, 0.2, 0);
+        if (laserBeamRef.current) laserBeamRef.current.visible = true;
+      } else if (cycle < 9.5) {
+        // Phase 2: Writing EDM measurements into yellow field logbook
+        const scribble = Math.sin(t * 8.0) * 0.05;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.38, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + scribble, -0.3, 0.15);
+        if (laserBeamRef.current) laserBeamRef.current.visible = false;
+      } else if (cycle < 13.5) {
+        // Phase 3: Waving left hand high to signal rodman across mountain slope
+        const wave = Math.sin(t * 3.5) * 0.45;
+        if (torsoRef.current) torsoRef.current.rotation.set(-0.04, wave * 0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(-0.15, wave * 0.15, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-2.4, 0.2, wave);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(0.04, 0, 0.06);
+        if (laserBeamRef.current) laserBeamRef.current.visible = false;
+      } else {
+        // Phase 4: Checking digital touchscreen on total station
+        if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(0.25, 0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.1, -0.15, 0.2);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.5, 0.2, 0);
+        if (laserBeamRef.current) laserBeamRef.current.visible = true;
+      }
+      return;
+    }
+
+    // 2. ENGINEERING GEOLOGIST (Amor Floresca Jr.)
+    if (activeRoutine === "GEOLOGIST") {
+      const cycle = t % 18.0;
+      if (cycle < 6.5) {
+        // Phase 1: Crouched tapping rock joint with geological hammer
+        const hammerStrike = Math.sin(t * 5.5);
+        groupRef.current.position.y = position[1] - 0.25;
+        if (leftLegRef.current) leftLegRef.current.rotation.set(0.45, 0, 0);
+        if (rightLegRef.current) rightLegRef.current.rotation.set(0.35, 0, 0);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.35, 0.15, 0);
+        if (headRef.current) headRef.current.rotation.set(0.45, -0.1, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.35 + hammerStrike * 0.35, -0.2, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.7, 0.35, 0);
+      } else if (cycle < 12.0) {
+        // Phase 2: Measuring rock discontinuity strike/dip with Clar compass
+        groupRef.current.position.y = position[1] - 0.15;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0.2, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0.25, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2, 0.4, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85, -0.2, 0.1);
+      } else {
+        // Phase 3: Standing up, logging RMR rock mass parameters on tablet
+        const tap = Math.sin(t * 4.0) * 0.04;
+        groupRef.current.position.y = position[1];
+        if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
+        if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.3, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tap, -0.25, 0.15);
+      }
+      return;
+    }
+
+    // 3. TUNNEL QC ENGINEER (Engr. Jairuz Batac)
+    if (activeRoutine === "TUNNEL_QC") {
+      const cycle = t % 16.0;
+      if (cycle < 6.5) {
+        // Phase 1: Aiming laser meter up at tunnel arch crown
+        const scan = Math.sin(t * 1.8) * 0.08;
+        if (torsoRef.current) torsoRef.current.rotation.set(-0.12, scan * 0.5, 0);
+        if (headRef.current) headRef.current.rotation.set(-0.35 + scan, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.75 + scan, -0.15, -0.08);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.25, 0.1);
+        if (laserBeamRef.current) laserBeamRef.current.visible = true;
+      } else if (cycle < 11.5) {
+        // Phase 2: Logging rock bolt pull-out test data on rugged tablet
+        const typeMotion = Math.sin(t * 6.0) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + typeMotion, -0.3, 0.15);
+        if (laserBeamRef.current) laserBeamRef.current.visible = false;
+      } else {
+        // Phase 3: Lateral inspection patrol along portal bench
+        const step = Math.sin(t * 2.0);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.04, step * 0.15, 0);
+        if (headRef.current) headRef.current.rotation.set(0.1, step * 0.2, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85, -0.2, 0);
+        if (laserBeamRef.current) laserBeamRef.current.visible = false;
+      }
+      return;
+    }
+
+    // 4. TUNNEL & UNDERGROUND FOREMEN (Richard Pinasen & Rudy Marcos)
+    if (activeRoutine === "TUNNEL_FOREMAN") {
+      const cycle = t % 14.0;
+      if (cycle < 5.0) {
+        // Phase 1: Directing mucking cycles with two-handed marshalling sweep signals
+        const sweep = Math.sin(t * 3.0) * 0.35;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.05, sweep * 0.2, 0);
+        if (headRef.current) headRef.current.rotation.set(-0.08, sweep * 0.3, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.8 + sweep, 0.3, -0.4);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.8 - sweep, -0.3, 0.4);
+      } else if (cycle < 9.5) {
+        // Phase 2: Inspecting steel arch rib alignment with spirit level
+        if (torsoRef.current) torsoRef.current.rotation.set(0.15, -0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(0.28, -0.15, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.25, 0.3, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.7, -0.2, 0.1);
+      } else {
+        // Phase 3: Radioing tunnel heading blast advance status
+        const nod = Math.sin(t * 2.5) * 0.08;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.02, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(nod, 0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65, -0.25, -0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.25, 0.05);
+      }
+      return;
+    }
+
+    // 5. JUMBO DRILL RIG OPERATOR (Benjamin Fomeg-as)
+    if (activeRoutine === "JUMBO_OPERATOR") {
+      const leverL = Math.sin(t * 2.2) * 0.25;
+      const leverR = Math.cos(t * 2.2) * 0.25;
+      const tremor = Math.sin(t * 12.0) * 0.006;
+      groupRef.current.position.y = position[1] + tremor;
+      if (torsoRef.current) torsoRef.current.rotation.set(0.18, tremor * 3.0, 0);
+      if (headRef.current) headRef.current.rotation.set(0.12, 0, 0);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15 + leverL, 0.15, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15 + leverR, -0.15, 0);
+      return;
+    }
+
+    // 6. MECHANICAL SUPERINTENDENT (Eugenio Hanopol)
+    if (activeRoutine === "MECHANICAL_SUPT") {
+      const cycle = t % 16.0;
+      if (cycle < 6.0) {
+        // Leaning over turbine pit railing inspecting shaft coupling runout
+        const test = Math.sin(t * 3.0) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.22, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.35 + test, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.3, 0.1);
+      } else if (cycle < 11.0) {
+        // Reviewing vibration FFT harmonics on tablet
+        const tap = Math.sin(t * 5.0) * 0.03;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tap, -0.3, 0.15);
+      } else {
+        // Inspecting hydraulic governor valve
+        if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0.15, 0);
+        if (headRef.current) headRef.current.rotation.set(0.22, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.95, -0.3, 0.2);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.6, 0.2, 0);
+      }
+      return;
+    }
+
+    // 7. ELECTRICAL SUPERINTENDENT & SUPERVISOR (Eduardo De Francia & Josue Abellera)
+    if (activeRoutine === "ELECTRICAL_SUPT" || activeRoutine === "ELECTRICAL_SUPERVISOR") {
+      const cycle = t % 15.0;
+      if (cycle < 6.0) {
+        // Aiming thermal IR gun at 69kV porcelain bushings & CT/PT
+        const scan = Math.sin(t * 1.5) * 0.1;
+        if (torsoRef.current) torsoRef.current.rotation.set(-0.1, scan * 0.5, 0);
+        if (headRef.current) headRef.current.rotation.set(-0.35, scan, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65 + scan, -0.2, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.25, 0.1);
+      } else if (cycle < 10.5) {
+        // Probing IPB busduct terminals with multimeter test leads
+        const probe = Math.sin(t * 3.5) * 0.05;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.15, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.3, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2 + probe, 0.25, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.2 - probe, -0.25, 0);
+      } else {
+        // Two-way radio check reporting clearance
+        const nod = Math.sin(t * 2.5) * 0.08;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.02, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(nod, 0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65, -0.25, -0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.25, 0.05);
+      }
+      return;
+    }
+
+    // 8. TECHNICAL ENGINEERING HEAD (Engr. Noel Lavapie)
+    if (activeRoutine === "TECHNICAL_HEAD") {
+      const cycle = t % 16.0;
+      if (cycle < 7.0) {
+        // Leaning over blueprint drafting table measuring invert elevation with scale ruler
+        const rulerMotion = Math.sin(t * 2.5) * 0.12;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.42, rulerMotion * 0.5, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.3 + rulerMotion, -0.25, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.1, 0.35, 0);
+      } else if (cycle < 12.0) {
+        // Calculating rebar bar-bending schedules on binder
+        const write = Math.sin(t * 6.0) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.18, 0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0.15, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + write, -0.3, 0.15);
+      } else {
+        // Pointing at CAD detail
+        if (torsoRef.current) torsoRef.current.rotation.set(0.15, -0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(0.25, -0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.45, -0.15, 0.2);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.7, 0.2, 0);
+      }
+      return;
+    }
+
+    // 9. AUTOCAD OPERATOR (Elbert Figuracion)
+    if (activeRoutine === "CAD_OPERATOR") {
+      const mouse = Math.sin(t * 4.5) * 0.08;
+      const type = Math.sin(t * 9.0) * 0.04;
+      const screenGlance = Math.sin(t * 1.2) * 0.22;
+      if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
+      if (headRef.current) headRef.current.rotation.set(0.18, screenGlance, 0);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.25 + type, 0.3, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + mouse, -0.3, 0);
+      return;
+    }
+
+    // 10. DOCUMENT CONTROLLER (Jayson Aggabao)
+    if (activeRoutine === "DOC_CONTROLLER") {
+      const stampCycle = t % 10.0;
+      if (stampCycle < 4.0) {
+        // Lifting blue rubber stamp high and stamping down with crisp force
+        const stampImpact = Math.sin(t * 4.0);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.18, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.0 + Math.max(0, stampImpact) * 0.7, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0);
+      } else {
+        // Sorting transmittal binders in archive rack
+        const sort = Math.sin(t * 2.5) * 0.15;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, sort * 0.5, 0);
+        if (headRef.current) headRef.current.rotation.set(0.2, sort * 0.8, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.05 + sort, 0.3, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.05 - sort, -0.3, 0);
+      }
+      return;
+    }
+
+    // 11. QUANTITY SURVEYOR (Cristine Joy Almazan)
+    if (activeRoutine === "QUANTITY_SURVEYOR") {
+      const wheelRoll = Math.sin(t * 3.0) * 0.14;
+      if (torsoRef.current) torsoRef.current.rotation.set(0.22, 0, 0);
+      if (headRef.current) headRef.current.rotation.set(0.38, wheelRoll * 0.4, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.3 + wheelRoll, -0.25, 0.1);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0);
+      return;
+    }
+
+    // 12. JR QA/QC ENGINEER (Jhon Charles Jayme)
+    if (activeRoutine === "JR_QAQC_ENGR") {
+      const slumpCycle = t % 16.0;
+      if (slumpCycle < 6.5) {
+        // Tamping fresh concrete in slump cone (25 strokes with steel rod)
+        const tamping = Math.sin(t * 8.0) * 0.25;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.42, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tamping, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.35, 0);
+      } else if (slumpCycle < 11.0) {
+        // Lifting slump cone upward
+        const lift = Math.min(1.0, (slumpCycle - 6.5) / 2.0);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.25 - lift * 0.15, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.38, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2 + lift * 0.4, 0.3, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.2 + lift * 0.4, -0.3, 0);
+      } else {
+        // Measuring slump mm with steel rule and logging ticket
+        const write = Math.sin(t * 5.0) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + write, -0.3, 0.15);
+      }
+      return;
+    }
+
+    // 13. EXECUTIVE MANAGEMENT (PM Romeo Sese & Deputy PM Nathaniel Principe)
+    if (activeRoutine === "EXECUTIVE_PM") {
+      const cycle = t % 18.0;
+      if (cycle < 8.0) {
+        // Reviewing interactive project milestone dashboard on iPad
+        const tap = Math.sin(t * 3.5) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.3, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tap, -0.25, 0.15);
+      } else if (cycle < 14.0) {
+        // Pointing across valley towards powerhouse and spillway
+        const pan = Math.sin(t * 1.5) * 0.15;
+        if (torsoRef.current) torsoRef.current.rotation.set(-0.04, pan, 0);
+        if (headRef.current) headRef.current.rotation.set(-0.12, pan * 1.5, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.6 + pan, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.8, 0.25, 0.05);
+      } else {
+        // Discussing milestones
+        const nod = Math.sin(t * 2.5) * 0.06;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.04, 0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(nod, 0.2, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.9, 0.25, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.9, -0.25, 0);
+      }
+      return;
+    }
+
+    // 14. CIVIL SUPERVISOR & CIVIL STRUCTURES FOREMAN (Jaime Caño & Anthony Rosales)
+    if (activeRoutine === "CIVIL_SUPERVISOR" || activeRoutine === "CIVIL_FOREMAN") {
+      const cycle = t % 14.0;
+      if (cycle < 5.5) {
+        // Guiding concrete transit mixer chute with arm signals
+        const guide = Math.sin(t * 3.0) * 0.3;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.05, guide * 0.2, 0);
+        if (headRef.current) headRef.current.rotation.set(-0.05, guide * 0.3, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.6 + guide, 0.3, -0.2);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.6 - guide, -0.3, 0.2);
+      } else if (cycle < 9.5) {
+        // Checking formwork tie-rod torque with heavy wrench
+        const ratchet = Math.sin(t * 4.5);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.2, -0.1, 0);
+        if (headRef.current) headRef.current.rotation.set(0.32, -0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.35 + ratchet * 0.2, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.3, 0);
+      } else {
+        // Checking rebar clearance spacing with cover gauge on clipboard
+        const write = Math.sin(t * 5.0) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + write, -0.3, 0.15);
+      }
+      return;
+    }
+
+    // DEFAULT NATURAL IDLE & WEIGHT-SHIFTING
+    const breath = Math.sin(t * 1.6) * 0.015;
+    const weightShift = Math.sin(t * 0.4) * 0.03;
     if (torsoRef.current) torsoRef.current.rotation.set(0, weightShift * 0.5, weightShift * 0.3);
     if (headRef.current) headRef.current.rotation.set(breath * 0.15, weightShift * 0.8, 0);
     if (leftArmRef.current) leftArmRef.current.rotation.set(0.04, 0, -0.06 + breath * 0.05);
@@ -631,128 +1027,51 @@ export function HydroProjectPersonMesh({
 
   const isCrowd = pose === "TOOLBOX_CROWD";
 
-  if (isCrowd) {
-    return (
-      <group
-        ref={groupRef}
-        position={position}
-        rotation={rotation}
-        scale={bodyScale}
-      >
-        {/* 🧍 OPTIMIZED HIGH-PERFORMANCE WORKFORCE TORSO WITH HI-VIS VEST & 3M BANDS */}
-        <group ref={torsoRef} position={[0, 0.85, 0]}>
-          <mesh position={[0, 0.25, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
-            <boxGeometry args={[0.38, 0.46, 0.22]} />
-          </mesh>
-          {/* Reflective Bands (Consolidated clean bands) */}
-          <mesh position={[0, 0.25, 0.115]}>
-            <boxGeometry args={[0.36, 0.28, 0.01]} />
-            <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
-          </mesh>
-          <mesh position={[0, 0.25, -0.115]}>
-            <boxGeometry args={[0.36, 0.28, 0.01]} />
-            <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
-          </mesh>
-
-          {/* 🗣️ HEAD & SAFETY HARD HAT */}
-          <group ref={headRef} position={[0, 0.58, 0]}>
-            {/* Cranium & Jaw */}
-            <mesh material={skinMat}>
-              <boxGeometry args={[0.22, 0.24, 0.22]} />
-            </mesh>
-            {/* Hard Hat Dome */}
-            <mesh position={[0, 0.13, 0]} material={customHardhatMat || MAT_WORKER_HARDHAT_WHITE}>
-              <boxGeometry args={[0.26, 0.11, 0.28]} />
-            </mesh>
-            {/* Hard Hat Visor Brim */}
-            <mesh position={[0, 0.09, 0.06]} material={customHardhatMat || MAT_WORKER_HARDHAT_WHITE}>
-              <boxGeometry args={[0.28, 0.02, 0.18]} />
-            </mesh>
-            {/* SCIC Safety Crest Logo */}
-            <mesh position={[0, 0.14, 0.142]} material={MAT_SIGNBOARD_TEAL}>
-              <boxGeometry args={[0.075, 0.04, 0.005]} />
-            </mesh>
-            {/* Eyes & Mustache */}
-            <mesh position={[-0.045, 0.02, 0.112]} material={MAT_HAIR_BLACK}>
-              <boxGeometry args={[0.03, 0.015, 0.006]} />
-            </mesh>
-            <mesh position={[0.045, 0.02, 0.112]} material={MAT_HAIR_BLACK}>
-              <boxGeometry args={[0.03, 0.015, 0.006]} />
-            </mesh>
-            <mesh position={[0, -0.04, 0.114]} material={MAT_MUSTACHE_BLACK}>
-              <boxGeometry args={[0.08, 0.02, 0.01]} />
-            </mesh>
-          </group>
-
-          {/* 🦾 ARMS & WORK GLOVES */}
-          <group ref={leftArmRef} position={[-0.24, 0.40, 0]}>
-            <mesh position={[0, -0.22, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
-              <boxGeometry args={[0.10, 0.42, 0.10]} />
-            </mesh>
-            <mesh position={[0, -0.46, 0]} material={MAT_YELLOW_SAFETY}>
-              <boxGeometry args={[0.085, 0.09, 0.085]} />
-            </mesh>
-          </group>
-
-          <group ref={rightArmRef} position={[0.24, 0.40, 0]}>
-            <mesh position={[0, -0.22, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
-              <boxGeometry args={[0.10, 0.42, 0.10]} />
-            </mesh>
-            <mesh position={[0, -0.46, 0]} material={MAT_YELLOW_SAFETY}>
-              <boxGeometry args={[0.085, 0.09, 0.085]} />
-            </mesh>
-          </group>
-        </group>
-
-        {/* 🥾 LEGS & WORK BOOTS */}
-        <group ref={leftLegRef} position={[-0.10, 0.85, 0]}>
-          <mesh position={[0, -0.42, 0]} material={pantsMat}>
-            <boxGeometry args={[0.14, 0.78, 0.14]} />
-          </mesh>
-          <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
-            <boxGeometry args={[0.14, 0.12, 0.22]} />
-          </mesh>
-        </group>
-
-        <group ref={rightLegRef} position={[0.10, 0.85, 0]}>
-          <mesh position={[0, -0.42, 0]} material={pantsMat}>
-            <boxGeometry args={[0.14, 0.78, 0.14]} />
-          </mesh>
-          <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
-            <boxGeometry args={[0.14, 0.12, 0.22]} />
-          </mesh>
-        </group>
-      </group>
-    );
-  }
-
   return (
     <group
       ref={groupRef}
       position={position}
       rotation={rotation}
       scale={bodyScale}
+      onClick={(e) => {
+        if (onSelectPerson && personnelId) {
+          e.stopPropagation();
+          onSelectPerson(personnelId);
+        }
+      }}
+      onPointerOver={(e) => {
+        if (onSelectPerson && personnelId) {
+          e.stopPropagation();
+          document.body.style.cursor = "pointer";
+        }
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "auto";
+      }}
     >
-      {/* 🧍 TORSO & CHEST (WITH DOLE/SCIC SAFETY PPE HI-VIS VEST & RETROREFLECTIVE BANDS) */}
+      {/* 🎯 INVISIBLE RAYCAST COLLIDER FOR EFFORTLESS SELECTION CLICKS */}
+      <mesh position={[0, 0.9, 0]} visible={false}>
+        <cylinderGeometry args={[0.5, 0.5, 1.9, 12]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
+      {/* 🧍 TORSO & CHEST WITH HI-VIS SAFETY VEST & RETROREFLECTIVE BANDS */}
       <group ref={torsoRef} position={[0, 0.85, 0]}>
         <mesh position={[0, 0.25, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
           <boxGeometry args={[0.38, 0.46, 0.22]} />
         </mesh>
 
-        {/* 🦺 ANSI/ISEA CLASS 2 RETROREFLECTIVE HIGH-VISIBILITY SAFETY HARNESS STRIPES */}
+        {/* 🦺 ANSI/ISEA CLASS 2 RETROREFLECTIVE STRIPES */}
         {hasVest && (
           <>
-            {/* Front Horizontal Reflective Chest Band (50mm 3M Silver Microprismatic) */}
             <mesh position={[0, 0.35, 0.115]}>
               <boxGeometry args={[0.36, 0.04, 0.01]} />
               <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
             </mesh>
-            {/* Front Horizontal Reflective Waist Band */}
             <mesh position={[0, 0.15, 0.115]}>
               <boxGeometry args={[0.36, 0.04, 0.01]} />
               <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
             </mesh>
-            {/* Rear Horizontal Reflective Bands */}
             <mesh position={[0, 0.35, -0.115]}>
               <boxGeometry args={[0.36, 0.04, 0.01]} />
               <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
@@ -761,28 +1080,16 @@ export function HydroProjectPersonMesh({
               <boxGeometry args={[0.36, 0.04, 0.01]} />
               <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
             </mesh>
-            {/* Vertical Shoulder Over-the-Top Reflective Bands */}
-            <mesh position={[-0.11, 0.26, 0]}>
-              <boxGeometry args={[0.035, 0.45, 0.23]} />
-              <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
-            </mesh>
-            <mesh position={[0.11, 0.26, 0]}>
-              <boxGeometry args={[0.035, 0.45, 0.23]} />
-              <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
-            </mesh>
-
-            {/* 🪪 DOLE / SCIC LAMINATED SECURITY ID BADGE (Left Chest Pocket) */}
+            {/* Laminated ID Badge */}
             <group position={[-0.11, 0.28, 0.12]}>
               <mesh>
                 <boxGeometry args={[0.06, 0.08, 0.01]} />
                 <meshStandardMaterial color="#F8FAFC" roughness={0.3} />
               </mesh>
-              {/* Photo Area */}
               <mesh position={[0, 0.015, 0.006]}>
                 <boxGeometry args={[0.04, 0.035, 0.002]} />
                 <meshStandardMaterial color="#0F172A" roughness={0.5} />
               </mesh>
-              {/* Safety Clearance Teal / Green Hologram Bar */}
               <mesh position={[0, -0.025, 0.006]}>
                 <boxGeometry args={[0.05, 0.012, 0.002]} />
                 <meshStandardMaterial color="#0D9488" roughness={0.3} metalness={0.6} />
@@ -791,19 +1098,14 @@ export function HydroProjectPersonMesh({
           </>
         )}
 
-        {/* 🗣️ HIGH-DETAIL SCULPTED FILIPINO HEAD & ANATOMICAL FACIAL FEATURES */}
+        {/* 🗣️ HEAD & SAFETY HARD HAT */}
         <group ref={headRef} position={[0, 0.58, 0]}>
-          {/* Main Cranium */}
           <mesh material={skinMat}>
             <boxGeometry args={[0.22, 0.22, 0.22]} />
           </mesh>
-
-          {/* Tapered Filipino Jaw & Chin */}
           <mesh position={[0, -0.11, 0.02]} material={skinMat}>
             <boxGeometry args={[0.16, 0.08, 0.16]} />
           </mesh>
-
-          {/* Anatomical Ears */}
           <mesh position={[-0.115, 0.01, -0.01]} material={skinMat}>
             <boxGeometry args={[0.015, 0.065, 0.038]} />
           </mesh>
@@ -811,173 +1113,68 @@ export function HydroProjectPersonMesh({
             <boxGeometry args={[0.015, 0.065, 0.038]} />
           </mesh>
 
-          {/* ⛑️ HIGH-IMPACT POLYCARBONATE INDUSTRIAL SAFETY HARD HAT (DOLE/SCIC SPEC) */}
+          {/* Hard Hat */}
           {hasHardhat && (
             <group position={[0, 0.13, 0]}>
-              {/* Main Hard Hat Dome Shell */}
               <mesh material={customHardhatMat || MAT_WORKER_HARDHAT_WHITE}>
                 <boxGeometry args={[0.26, 0.11, 0.28]} />
               </mesh>
-              {/* Front Visor Sun & Impact Brim */}
               <mesh position={[0, -0.04, 0.06]} material={customHardhatMat || MAT_WORKER_HARDHAT_WHITE}>
                 <boxGeometry args={[0.28, 0.02, 0.18]} />
               </mesh>
-              {/* Top Central Structural Reinforcing Spine Ridge */}
-              <mesh position={[0, 0.065, 0]} material={customHardhatMat || MAT_WORKER_HARDHAT_WHITE}>
-                <boxGeometry args={[0.045, 0.03, 0.25]} />
-              </mesh>
-              {/* Front Center SCIC Company / Safety Logo Crest Badge */}
               <mesh position={[0, 0.01, 0.142]} material={MAT_SIGNBOARD_TEAL}>
                 <boxGeometry args={[0.075, 0.04, 0.005]} />
               </mesh>
-              {/* 3M Silver Reflective Safety Wrap Strip Around Hard Hat Perimeter */}
-              <mesh position={[0, -0.025, 0]}>
-                <boxGeometry args={[0.265, 0.015, 0.285]} />
-                <meshStandardMaterial color="#FFFFFF" roughness={0.2} metalness={0.9} emissive="#FFFFFF" emissiveIntensity={0.4} />
-              </mesh>
             </group>
           )}
 
-          {/* 💇 AUTHENTIC FILIPINO HAIRSTYLES (WHEN HARD HAT IS OFF OR VISIBLE FRINGE) */}
+          {/* Hair */}
           {hairStyle === "WOMAN_PONYTAIL" && (
             <group position={[0, 0.08, -0.02]}>
-              {/* Top Hair Volume */}
               <mesh material={hairMat}>
                 <boxGeometry args={[0.23, 0.09, 0.23]} />
               </mesh>
-              {/* Side Bangs */}
-              <mesh position={[-0.10, -0.06, 0.06]} material={hairMat}>
-                <boxGeometry args={[0.03, 0.12, 0.06]} />
-              </mesh>
-              <mesh position={[0.10, -0.06, 0.06]} material={hairMat}>
-                <boxGeometry args={[0.03, 0.12, 0.06]} />
-              </mesh>
-              {/* Rear Ponytail Extension */}
               <mesh position={[0, -0.04, -0.16]} rotation={[0.4, 0, 0]} material={hairMat}>
                 <cylinderGeometry args={[0.035, 0.02, 0.22, 8]} />
               </mesh>
-              {/* Hair Tie Band */}
-              <mesh position={[0, 0.03, -0.13]} rotation={[Math.PI / 2, 0, 0]} material={MAT_HAIR_TIE_PINK}>
-                <torusGeometry args={[0.035, 0.01, 8, 16]} />
-              </mesh>
             </group>
           )}
-
-          {hairStyle === "POMPADOUR" && (
-            <group position={[0, 0.12, 0]}>
-              <mesh material={hairMat}>
-                <boxGeometry args={[0.23, 0.07, 0.24]} />
-              </mesh>
-              <mesh position={[0, 0.03, 0.04]} material={hairMat}>
-                <boxGeometry args={[0.18, 0.04, 0.12]} />
-              </mesh>
-            </group>
-          )}
-
-          {hairStyle === "CHEF_BANDANA" && (
-            <group position={[0, 0.08, 0]}>
-              <mesh material={MAT_ID_BADGE_WHITE}>
-                <boxGeometry args={[0.24, 0.06, 0.24]} />
-              </mesh>
-              <mesh position={[0, 0.03, -0.13]} material={MAT_ID_BADGE_WHITE}>
-                <boxGeometry args={[0.06, 0.10, 0.02]} />
-              </mesh>
-            </group>
-          )}
-
           {!hasHardhat && hairStyle === "SHORT" && (
             <mesh position={[0, 0.11, -0.01]} material={hairMat}>
               <boxGeometry args={[0.23, 0.06, 0.23]} />
             </mesh>
           )}
 
-          {/* 👁️ SCULPTED FILIPINO EYES, SCLERA, DARK BROWN IRIS & PUPIL */}
+          {/* Eyes */}
           <group ref={eyeOpenRef} position={[0, 0.035, 0.112]}>
-            {/* Left Eye Whites (Sclera) */}
             <mesh position={[-0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
               <boxGeometry args={[0.038, 0.020, 0.005]} />
             </mesh>
-            {/* Left Dark Brown Iris */}
             <mesh position={[-0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
               <boxGeometry args={[0.022, 0.018, 0.003]} />
             </mesh>
-            {/* Left Black Center Pupil */}
-            <mesh position={[-0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
-              <boxGeometry args={[0.012, 0.012, 0.002]} />
-            </mesh>
-
-            {/* Right Eye Whites (Sclera) */}
             <mesh position={[0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
               <boxGeometry args={[0.038, 0.020, 0.005]} />
             </mesh>
-            {/* Right Dark Brown Iris */}
             <mesh position={[0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
               <boxGeometry args={[0.022, 0.018, 0.003]} />
             </mesh>
-            {/* Right Black Center Pupil */}
-            <mesh position={[0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
-              <boxGeometry args={[0.012, 0.012, 0.002]} />
-            </mesh>
           </group>
 
-          {/* Closed Eyes during Prayer */}
-          <group ref={eyeClosedRef} position={[0, 0.035, 0.115]} visible={false}>
-            <mesh position={[-0.052, 0, 0]} material={hairColor === "SALT_PEPPER" ? MAT_FACE_EYEBROW_GREY : MAT_FACE_EYEBROW}>
-              <boxGeometry args={[0.038, 0.006, 0.005]} />
-            </mesh>
-            <mesh position={[0.052, 0, 0]} material={hairColor === "SALT_PEPPER" ? MAT_FACE_EYEBROW_GREY : MAT_FACE_EYEBROW}>
-              <boxGeometry args={[0.038, 0.006, 0.005]} />
-            </mesh>
-          </group>
+          {/* Eyebrows */}
+          <mesh position={[-0.052, 0.06, 0.113]} material={MAT_FACE_EYEBROW}>
+            <boxGeometry args={[0.042, 0.012, 0.004]} />
+          </mesh>
+          <mesh position={[0.052, 0.06, 0.113]} material={MAT_FACE_EYEBROW}>
+            <boxGeometry args={[0.042, 0.012, 0.004]} />
+          </mesh>
 
-          {/* Distinct Arched Eyebrows */}
-          <group position={[0, 0.065, 0.115]}>
-            <mesh position={[-0.052, 0, 0]} rotation={[0, 0, 0.05]} material={hairColor === "SALT_PEPPER" ? MAT_FACE_EYEBROW_GREY : MAT_FACE_EYEBROW}>
-              <boxGeometry args={[0.045, 0.008, 0.006]} />
-            </mesh>
-            <mesh position={[0.052, 0, 0]} rotation={[0, 0, -0.05]} material={hairColor === "SALT_PEPPER" ? MAT_FACE_EYEBROW_GREY : MAT_FACE_EYEBROW}>
-              <boxGeometry args={[0.045, 0.008, 0.006]} />
-            </mesh>
-          </group>
-
-          {/* 👃 SCULPTED FILIPINO NOSE (BRIDGE & FLARED NOSTRIL WINGS) */}
-          <group position={[0, 0.005, 0.122]}>
-            {/* Nasal Bridge */}
-            <mesh position={[0, 0.015, 0]} material={skinMat}>
-              <boxGeometry args={[0.026, 0.045, 0.022]} />
-            </mesh>
-            {/* Rounded Nasal Tip */}
-            <mesh position={[0, -0.015, 0.006]} material={skinMat}>
-              <sphereGeometry args={[0.018, 6, 6]} />
-            </mesh>
-            {/* Left & Right Nostril Flares */}
-            <mesh position={[-0.020, -0.018, 0.002]} material={skinMat}>
-              <boxGeometry args={[0.014, 0.014, 0.015]} />
-            </mesh>
-            <mesh position={[0.020, -0.018, 0.002]} material={skinMat}>
-              <boxGeometry args={[0.014, 0.014, 0.015]} />
-            </mesh>
-          </group>
-
-          {/* 👄 SCULPTED CONTOURED LIPS & MOUTH */}
-          <group position={[0, -0.055, 0.116]}>
-            {/* Upper Lip with Cupid's Bow */}
-            <mesh ref={mouthRef} material={gender === "FEMALE" ? MAT_FACE_LIPS_FEMALE : MAT_FACE_LIPS_MALE}>
-              <boxGeometry args={[0.055, 0.012, 0.010]} />
-            </mesh>
-            {/* Lower Lip */}
-            <mesh position={[0, -0.012, -0.001]} material={gender === "FEMALE" ? MAT_FACE_LIPS_FEMALE : MAT_FACE_LIPS_MALE}>
-              <boxGeometry args={[0.048, 0.014, 0.010]} />
-            </mesh>
-          </group>
-
-          {/* 👨‍🦰 FILIPINO FACIAL HAIR (MUSTACHE, GOATEE, BEARD, STUBBLE) */}
-          {(facialHair === "MUSTACHE" || (!facialHair && role?.includes("Foreman"))) && (
-            <mesh position={[0, -0.040, 0.126]} material={hairColor === "SALT_PEPPER" ? MAT_MUSTACHE_SALT_PEPPER : MAT_MUSTACHE_BLACK}>
-              <boxGeometry args={[0.095, 0.020, 0.014]} />
+          {/* Facial Hair */}
+          {facialHair === "MUSTACHE" && (
+            <mesh position={[0, -0.04, 0.114]} material={MAT_MUSTACHE_BLACK}>
+              <boxGeometry args={[0.08, 0.02, 0.01]} />
             </mesh>
           )}
-
           {facialHair === "GOATEE" && (
             <group position={[0, -0.085, 0.105]}>
               <mesh position={[0, 0.045, 0.02]} material={MAT_MUSTACHE_BLACK}>
@@ -989,68 +1186,74 @@ export function HydroProjectPersonMesh({
             </group>
           )}
 
-          {(hasBeard || facialHair === "BEARD") && (
-            <mesh position={[0, -0.08, 0.06]} material={hairMat}>
-              <boxGeometry args={[0.18, 0.08, 0.14]} />
-            </mesh>
-          )}
-
-          {facialHair === "STUBBLE" && (
-            <mesh position={[0, -0.07, 0.06]} material={MAT_STUBBLE_SHADOW}>
-              <boxGeometry args={[0.19, 0.09, 0.15]} />
-            </mesh>
-          )}
-
-          {/* 🥽 UV-RATED INDUSTRIAL SAFETY EYEWEAR / GLASSES */}
+          {/* Safety Glasses */}
           {hasGlasses && (
             <group position={[0, 0.035, 0.125]}>
               <mesh position={[-0.052, 0, 0]} material={MAT_STEEL_DARK}>
                 <boxGeometry args={[0.048, 0.032, 0.008]} />
               </mesh>
-              <mesh position={[-0.052, 0, 0.003]} material={MAT_SAFETY_GLASSES_LENS}>
-                <boxGeometry args={[0.042, 0.026, 0.004]} />
-              </mesh>
               <mesh position={[0.052, 0, 0]} material={MAT_STEEL_DARK}>
                 <boxGeometry args={[0.048, 0.032, 0.008]} />
-              </mesh>
-              <mesh position={[0.052, 0, 0.003]} material={MAT_SAFETY_GLASSES_LENS}>
-                <boxGeometry args={[0.042, 0.026, 0.004]} />
-              </mesh>
-              <mesh position={[0, 0.008, 0]} material={MAT_STEEL_DARK}>
-                <boxGeometry args={[0.035, 0.008, 0.008]} />
               </mesh>
             </group>
           )}
         </group>
 
-        {/* 🤲 CLASPED PRAYING HANDS (Active during Prayer Phase) */}
+        {/* 🤲 CLASPED PRAYING HANDS */}
         <group ref={prayingHandsRef} position={[0, 0.18, 0.22]} visible={false}>
           <mesh material={skinMat}>
             <boxGeometry args={[0.08, 0.09, 0.07]} />
           </mesh>
         </group>
 
-        {/* 🦾 LEFT ARM & CUT-RESISTANT SAFETY GRIP GLOVES */}
+        {/* 🦾 LEFT ARM */}
         <group ref={leftArmRef} position={[-0.24, 0.40, 0]}>
           <mesh position={[0, -0.22, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
             <boxGeometry args={[0.10, 0.42, 0.10]} />
           </mesh>
-          {/* Heavy-Duty Safety Work Glove */}
           <mesh position={[0, -0.46, 0]} material={MAT_YELLOW_SAFETY}>
             <boxGeometry args={[0.085, 0.09, 0.085]} />
           </mesh>
+          {/* Handheld Props */}
+          {(accessory === "CLIPBOARD" || activeRoutine === "QUANTITY_SURVEYOR" || activeRoutine === "CIVIL_4S_SUPERVISOR") && (
+            <group position={[0, -0.52, 0.12]}>
+              <mesh material={MAT_WOOD_HANDLE}>
+                <boxGeometry args={[0.22, 0.32, 0.015]} />
+              </mesh>
+              <mesh position={[0, 0, 0.01]} material={MAT_WHITE_PAINT}>
+                <boxGeometry args={[0.19, 0.28, 0.005]} />
+              </mesh>
+            </group>
+          )}
+          {(accessory === "TABLET" || activeRoutine === "EXECUTIVE_PM" || activeRoutine === "IT_SPECIALIST" || activeRoutine === "MECHANICAL_SUPT") && (
+            <group position={[0, -0.52, 0.12]}>
+              <mesh material={MAT_PHONE_BODY}>
+                <boxGeometry args={[0.24, 0.18, 0.015]} />
+              </mesh>
+              <mesh position={[0, 0, 0.01]} material={MAT_PHONE_SCREEN_GLOW}>
+                <boxGeometry args={[0.22, 0.16, 0.005]} />
+              </mesh>
+            </group>
+          )}
+          {(accessory === "BINDER" || activeRoutine === "TECHNICAL_HEAD" || activeRoutine === "ELECTRICAL_FOREMAN") && (
+            <group position={[0, -0.52, 0.12]}>
+              <mesh material={MAT_SIGNBOARD_TEAL}>
+                <boxGeometry args={[0.25, 0.32, 0.05]} />
+              </mesh>
+            </group>
+          )}
         </group>
 
-        {/* 🦾 RIGHT ARM & CUT-RESISTANT SAFETY GRIP GLOVES */}
+        {/* 🦾 RIGHT ARM */}
         <group ref={rightArmRef} position={[0.24, 0.40, 0]}>
           <mesh position={[0, -0.22, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
             <boxGeometry args={[0.10, 0.42, 0.10]} />
           </mesh>
-          {/* Heavy-Duty Safety Work Glove */}
           <mesh position={[0, -0.46, 0]} material={MAT_YELLOW_SAFETY}>
             <boxGeometry args={[0.085, 0.09, 0.085]} />
           </mesh>
-          {/* Handheld Microphone for Orator / Speakers */}
+
+          {/* Right Hand Tool Props */}
           {accessory === "MIC" && (
             <group position={[0, -0.52, 0.05]}>
               <mesh material={MAT_STEEL_DARK}>
@@ -1062,49 +1265,170 @@ export function HydroProjectPersonMesh({
               </mesh>
             </group>
           )}
+
+          {(accessory === "RADIO" || activeRoutine === "TUNNEL_FOREMAN" || activeRoutine === "ELECTRICAL_SUPT") && (
+            <group position={[0, -0.52, 0.08]}>
+              <mesh material={MAT_STEEL_DARK}>
+                <boxGeometry args={[0.05, 0.13, 0.035]} />
+              </mesh>
+              <mesh position={[-0.015, 0.10, 0]} material={MAT_STEEL_DARK}>
+                <cylinderGeometry args={[0.004, 0.004, 0.14, 6]} />
+              </mesh>
+            </group>
+          )}
+
+          {activeRoutine === "GEOLOGIST" && (
+            <group position={[0, -0.55, 0.1]}>
+              <mesh material={MAT_STEEL_FRAME}>
+                <cylinderGeometry args={[0.015, 0.015, 0.35, 6]} />
+              </mesh>
+              <mesh position={[0, 0.18, 0.04]} material={MAT_STEEL_DARK}>
+                <boxGeometry args={[0.04, 0.06, 0.18]} />
+              </mesh>
+            </group>
+          )}
+
+          {activeRoutine === "CIVIL_FOREMAN" && (
+            <group position={[0, -0.55, 0.1]}>
+              <mesh material={MAT_CHROME}>
+                <cylinderGeometry args={[0.018, 0.018, 0.45, 8]} />
+              </mesh>
+              <mesh position={[0, 0.22, 0.03]} material={MAT_STEEL_DARK}>
+                <cylinderGeometry args={[0.03, 0.03, 0.08, 8]} />
+              </mesh>
+            </group>
+          )}
+
+          {activeRoutine === "TUNNEL_QC" && (
+            <group position={[0, -0.52, 0.08]}>
+              <mesh material={MAT_YELLOW_SAFETY}>
+                <boxGeometry args={[0.055, 0.12, 0.04]} />
+              </mesh>
+              <mesh position={[0, 0.07, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+                <cylinderGeometry args={[0.012, 0.012, 0.02, 8]} />
+              </mesh>
+            </group>
+          )}
         </group>
       </group>
 
-      {/* 🥾 LEFT LEG & REINFORCED STEEL-TOE SAFETY WORK BOOT */}
+      {/* 🥾 LEGS & SAFETY BOOTS */}
       <group ref={leftLegRef} position={[-0.10, 0.85, 0]}>
         <mesh position={[0, -0.42, 0]} material={pantsMat}>
           <boxGeometry args={[0.14, 0.78, 0.14]} />
         </mesh>
-        {/* Leather Safety Boot Body */}
         <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
           <boxGeometry args={[0.14, 0.12, 0.22]} />
         </mesh>
-        {/* Reinforced Steel Toe Cap */}
-        <mesh position={[0, -0.83, 0.12]} material={MAT_STEEL_FRAME}>
-          <boxGeometry args={[0.135, 0.11, 0.04]} />
-        </mesh>
-        {/* Yellow Safety Sole Welt Edge */}
-        <mesh position={[0, -0.885, 0.03]} material={MAT_YELLOW_SAFETY}>
-          <boxGeometry args={[0.145, 0.015, 0.225]} />
-        </mesh>
       </group>
 
-      {/* 🥾 RIGHT LEG & REINFORCED STEEL-TOE SAFETY WORK BOOT */}
       <group ref={rightLegRef} position={[0.10, 0.85, 0]}>
         <mesh position={[0, -0.42, 0]} material={pantsMat}>
           <boxGeometry args={[0.14, 0.78, 0.14]} />
         </mesh>
-        {/* Leather Safety Boot Body */}
         <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
           <boxGeometry args={[0.14, 0.12, 0.22]} />
         </mesh>
-        {/* Reinforced Steel Toe Cap */}
-        <mesh position={[0, -0.83, 0.12]} material={MAT_STEEL_FRAME}>
-          <boxGeometry args={[0.135, 0.11, 0.04]} />
-        </mesh>
-        {/* Yellow Safety Sole Welt Edge */}
-        <mesh position={[0, -0.885, 0.03]} material={MAT_YELLOW_SAFETY}>
-          <boxGeometry args={[0.145, 0.015, 0.225]} />
-        </mesh>
       </group>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          🔧 ROLE-SPECIFIC 3D INDUSTRIAL WORKPLACE PROPS & EQUIPMENT SETS
+         ═══════════════════════════════════════════════════════════════════════ */}
+
+      {/* A. LEICA GEODETIC TOTAL STATION ON ALUMINIUM SURVEYOR TRIPOD (Johnny Farong-ey) */}
+      {activeRoutine === "SURVEYOR" && (
+        <group position={[0, 0, 0.75]}>
+          {/* Tripod Legs */}
+          {[-0.25, 0.25].map((xOff, i) => (
+            <mesh key={`leg-${i}`} position={[xOff, 0.65, -0.15]} rotation={[0.15, 0, xOff > 0 ? -0.25 : 0.25]} material={MAT_YELLOW_SAFETY}>
+              <cylinderGeometry args={[0.025, 0.025, 1.35, 6]} />
+            </mesh>
+          ))}
+          <mesh position={[0, 0.65, 0.35]} rotation={[-0.3, 0, 0]} material={MAT_YELLOW_SAFETY}>
+            <cylinderGeometry args={[0.025, 0.025, 1.35, 6]} />
+          </mesh>
+          {/* Tribrach Mounting Plate */}
+          <mesh position={[0, 1.32, 0]} material={MAT_STEEL_DARK}>
+            <cylinderGeometry args={[0.14, 0.14, 0.05, 8]} />
+          </mesh>
+          {/* Leica Total Station Body */}
+          <mesh position={[0, 1.50, 0]} material={MAT_SIGNBOARD_TEAL}>
+            <boxGeometry args={[0.18, 0.28, 0.18]} />
+          </mesh>
+          {/* Optical Sighting Telescope */}
+          <mesh position={[0, 1.55, 0]} rotation={[Math.PI / 2, 0, 0]} material={MAT_STEEL_DARK}>
+            <cylinderGeometry args={[0.035, 0.035, 0.28, 12]} />
+          </mesh>
+          {/* Touchscreen Display */}
+          <mesh position={[0, 1.48, -0.095]} material={MAT_PHONE_SCREEN_GLOW}>
+            <planeGeometry args={[0.12, 0.10]} />
+          </mesh>
+          {/* Pulsating EDM Laser Beam */}
+          <mesh ref={laserBeamRef} position={[0, 1.55, 6.0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.006, 0.006, 12.0, 6]} />
+            <meshBasicMaterial color="#EF4444" transparent opacity={0.8} />
+          </mesh>
+        </group>
+      )}
+
+      {/* B. CONCRETE SLUMP TESTING PAD & TAMPING ROD (Jhon Charles Jayme) */}
+      {activeRoutine === "JR_QAQC_ENGR" && (
+        <group position={[0, 0, 0.65]}>
+          {/* Heavy Steel Slump Plate */}
+          <mesh position={[0, 0.02, 0]} material={MAT_FOOD_STAINLESS_COUNTER}>
+            <boxGeometry args={[0.65, 0.04, 0.65]} />
+          </mesh>
+          {/* Slump Cone Frustum */}
+          <mesh position={[0, 0.18, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+            <cylinderGeometry args={[0.10, 0.18, 0.30, 16, 1, true]} />
+          </mesh>
+          {/* Steel Tamping Rod */}
+          <mesh position={[0.22, 0.25, 0]} rotation={[0, 0, 0.1]} material={MAT_CHROME}>
+            <cylinderGeometry args={[0.012, 0.012, 0.60, 8]} />
+          </mesh>
+        </group>
+      )}
+
+      {/* C. ENGINEERING BLUEPRINT DRAFTING TABLE (Engr. Noel Lavapie) */}
+      {activeRoutine === "TECHNICAL_HEAD" && (
+        <group position={[0, 0, 0.65]}>
+          {/* Drafting Table Stand */}
+          <mesh position={[0, 0.45, 0]} material={MAT_STEEL_DARK}>
+            <boxGeometry args={[1.2, 0.9, 0.6]} />
+          </mesh>
+          {/* Angled White Drafting Board */}
+          <mesh position={[0, 0.92, 0]} rotation={[0.25, 0, 0]} material={MAT_WHITE_PAINT}>
+            <boxGeometry args={[1.4, 0.04, 0.9]} />
+          </mesh>
+          {/* A1 Blueprint Sheet */}
+          <mesh position={[0, 0.95, 0]} rotation={[0.25, 0, 0]} material={MAT_PHONE_SCREEN_GLOW}>
+            <planeGeometry args={[1.18, 0.75]} />
+          </mesh>
+        </group>
+      )}
+
+      {/* D. CADD DUAL-MONITOR WORKSTATION (Elbert Figuracion) */}
+      {activeRoutine === "CAD_OPERATOR" && (
+        <group position={[0, 0, 0.65]}>
+          <mesh position={[0, 0.45, 0]} material={MAT_STEEL_DARK}>
+            <boxGeometry args={[1.3, 0.9, 0.6]} />
+          </mesh>
+          {/* Left 2D Plan Monitor */}
+          <mesh position={[-0.32, 1.15, 0]} rotation={[0, 0.15, 0]} material={MAT_PHONE_SCREEN_GLOW}>
+            <boxGeometry args={[0.48, 0.32, 0.03]} />
+          </mesh>
+          {/* Right 3D Model Monitor */}
+          <mesh position={[0.32, 1.15, 0]} rotation={[0, -0.15, 0]} material={MAT_PHONE_SCREEN_GLOW}>
+            <boxGeometry args={[0.48, 0.32, 0.03]} />
+          </mesh>
+        </group>
+      )}
     </group>
   );
 }
+
+
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    2. TUESDAY MORNING SAFETY TOOLBOX MEETING DIRECTOR & WORKFORCE FORMATION
@@ -3348,11 +3672,11 @@ export function AnimatedSiteEntities({
         accessory="CLIPBOARD"
       />
 
-      {/* 🏗️ Foreman III - Civil Structures (Anthony B. Rosales) at Penstock Anchor Block #3 */}
+      {/* 🏗️ Foreman III - Civil Structures (Anthony B. Rosales) on concrete Lower Penstock Anchor Block TB-04 slab */}
       <HydroProjectPersonMesh
         personnelId="FOREMAN_ANTHONY_ROSALES"
         onSelectPerson={onSelectPerson}
-        position={[-4.0, 4.5, -8.0]}
+        position={[-4.0, 4.0, -7.5]}
         rotation={[0, Math.PI / 6, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
@@ -3361,14 +3685,14 @@ export function AnimatedSiteEntities({
         hasVest
         vestColor="#EA580C"
         pantsStyle="JEANS"
-        accessory="RADIO"
+        accessory="TORQUE_WRENCH"
       />
 
-      {/* 📐 Surveyor III - Lead Geodetic Surveyor (Johnny P. Farong-ey) at Penstock Ridge Sighting Station */}
+      {/* 📐 Surveyor III - Lead Geodetic Surveyor (Johnny P. Farong-ey) at Mountain Ridge Sighting Station */}
       <HydroProjectPersonMesh
         personnelId="SURVEYOR_JOHNNY_FARONGEY"
         onSelectPerson={onSelectPerson}
-        position={[18.0, 14.5, -26.0]}
+        position={[14.0, sampleTerrainY(14.0, -22.0), -22.0]}
         rotation={[0, -Math.PI / 2, 0]}
         skinTone="BRONZE"
         hasHardhat
@@ -3376,14 +3700,14 @@ export function AnimatedSiteEntities({
         hasVest
         vestColor="#EA580C"
         pantsStyle="KHAKI"
-        accessory="CLIPBOARD"
+        accessory="TOTAL_STATION"
       />
 
-      {/* 🪨 Geological Mapper & Engineering Geologist (Amor Teofilo Floresca Jr.) at Mountain Slope Rock Face */}
+      {/* 🪨 Geological Mapper & Engineering Geologist (Amor Teofilo Floresca Jr.) at Mountain Slope Rock Face Cut */}
       <HydroProjectPersonMesh
         personnelId="GEO_AMOR_FLORESCA"
         onSelectPerson={onSelectPerson}
-        position={[6.0, 10.5, -20.0]}
+        position={[3.0, sampleTerrainY(3.0, -18.0), -18.0]}
         rotation={[0, Math.PI / 4, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
@@ -3392,14 +3716,14 @@ export function AnimatedSiteEntities({
         hasVest
         vestColor="#EA580C"
         pantsStyle="JEANS"
-        accessory="CLIPBOARD"
+        accessory="HAMMER"
       />
 
-      {/* 🔬 QC Engineer II - Tunnel & Geotechnical (Engr. Jairuz O. Batac) at Headrace Tunnel Portal */}
+      {/* 🔬 QC Engineer II - Tunnel & Geotechnical (Engr. Jairuz O. Batac) on Headrace Tunnel Portal Foundation Bench */}
       <HydroProjectPersonMesh
         personnelId="QC_JAIRUZ_BATAC"
         onSelectPerson={onSelectPerson}
-        position={[-6.0, 20.2, -32.0]}
+        position={[-6.0, 17.50, -27.5]}
         rotation={[0, Math.PI / 2, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
@@ -3415,7 +3739,7 @@ export function AnimatedSiteEntities({
       <HydroProjectPersonMesh
         personnelId="TUNNEL_RICHARD_PINASEN"
         onSelectPerson={onSelectPerson}
-        position={[-8.5, 20.2, -30.0]}
+        position={[-8.2, 17.50, -27.0]}
         rotation={[0, Math.PI / 4, 0]}
         skinTone="DEEP"
         hairStyle="SHORT"
@@ -3431,7 +3755,7 @@ export function AnimatedSiteEntities({
       <HydroProjectPersonMesh
         personnelId="TUNNEL_RUDY_MARCOS"
         onSelectPerson={onSelectPerson}
-        position={[-10.0, 20.2, -24.0]}
+        position={[-10.0, 17.50, -25.5]}
         rotation={[0, 0, 0]}
         skinTone="BRONZE"
         hairStyle="SHORT"
@@ -3448,7 +3772,7 @@ export function AnimatedSiteEntities({
       <HydroProjectPersonMesh
         personnelId="WORKER_BENJAMIN_FOMEGAS"
         onSelectPerson={onSelectPerson}
-        position={[-4.5, 20.2, -34.0]}
+        position={[-4.2, 17.50, -28.5]}
         rotation={[0, -Math.PI / 3, 0]}
         skinTone="DEEP"
         hairStyle="SHORT"
@@ -3480,7 +3804,7 @@ export function AnimatedSiteEntities({
       <HydroProjectPersonMesh
         personnelId="EQUIP_HOWELL_SAMSON"
         onSelectPerson={onSelectPerson}
-        position={[94, y2, -96]}
+        position={[90, y2, -96]}
         rotation={[0, Math.PI, 0]}
         hardhatColor="#EAB308"
         hasVest

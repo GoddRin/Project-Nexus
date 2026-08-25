@@ -261,6 +261,3 @@ export const MAT_STREETLIGHT_HEAD = new THREE.MeshStandardMaterial({ color: "#33
 export const MAT_STREETLIGHT_LENS = new THREE.MeshStandardMaterial({ color: "#FEF08A", emissive: new THREE.Color("#FDE047"), emissiveIntensity: 1.5, roughness: 0.1 });
 export const MAT_TRANSFORMER_CAN = new THREE.MeshStandardMaterial({ color: "#64748B", roughness: 0.45, metalness: 0.40 });
 export const MAT_CONDUIT_METALLIC = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.30, metalness: 0.80 });
-
-
-
