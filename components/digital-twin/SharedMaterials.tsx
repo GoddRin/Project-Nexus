@@ -44,7 +44,8 @@ export const MAT_STEEL_FRAME = new THREE.MeshStandardMaterial({ color: "#475569"
 export const MAT_STEEL_RAILING = new THREE.MeshStandardMaterial({ color: "#64748B", roughness: 0.3, metalness: 0.8 });
 export const MAT_STEEL_BLUE = new THREE.MeshStandardMaterial({ color: "#1E3A5F", roughness: 0.35, metalness: 0.7 });
 export const MAT_STEEL_FIN = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.25, metalness: 0.85 });
-export const MAT_FOOD_STAINLESS_TRAY = new THREE.MeshStandardMaterial({ color: "#CBD5E1", roughness: 0.15, metalness: 0.9 });
+export const MAT_FOOD_STAINLESS_TRAY = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.55, metalness: 0.40 });
+export const MAT_FOOD_STAINLESS_COUNTER = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.65, metalness: 0.35 });
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 🏠 ROOFING

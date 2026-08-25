@@ -1053,6 +1053,7 @@ interface PowerhouseBlockoutProps {
   isXRay?: boolean;
   onSelectPerson?: (id: string) => void;
   onSelectPreset?: (preset: CameraPresetKey) => void;
+  effectiveTime?: AtmosphereTimeMode;
 }
 
 function PowerhouseBlockout({
@@ -1064,6 +1065,7 @@ function PowerhouseBlockout({
   isXRay = false,
   onSelectPerson,
   onSelectPreset,
+  effectiveTime = "MORNING",
 }: PowerhouseBlockoutProps) {
   // Load real GLTF model geometry named meshes
   const gltf = useGLTF("/models/tumauini_powerhouse.glb") as unknown as GLTFResult;
@@ -1278,7 +1280,7 @@ function PowerhouseBlockout({
       <PerimeterFence />
 
       {/* --- TEMFACIL (MAIN TEMPORARY FACILITY & BARRACKS COMPOUND) --- */}
-      <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} activePreset={activePreset} />
+      <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} activePreset={activePreset} timeMode={effectiveTime} />
 
       {/* ═══ 🏷️ TEMFACIL COMPOUND 3D HOLOGRAPHIC ROTATING BEACON & HUD LABEL ═══ */}
       <FacilityHolographicBeaconLabel
@@ -1813,6 +1815,7 @@ function PlantSceneInner({
         isXRay={isXRay}
         onSelectPerson={onSelectPerson}
         onSelectPreset={onSelectPreset}
+        effectiveTime={effectiveTime}
       />
 
       {/* --- SUPERCAR SHOWCASE (Ferrari 458 Italia) --- */}
