@@ -850,28 +850,34 @@ export function MountainTerrain() {
       }
 
       // 2. Powerhouse Facility Compound Base Yard (level civil foundation at Y = 0.05m)
-      const dxPH = Math.max(-28.0 - x, 0, x - 42.0);
-      const dzPH = Math.max(-18.0 - z, 0, z - 15.0);
+      const dxPH = Math.max(-32.0 - x, 0, x - 44.0);
+      const dzPH = Math.max(-24.0 - z, 0, z - 18.0);
       const distPH = Math.hypot(dxPH, dzPH);
 
       if (distPH === 0) {
         positions[i + 1] = 0.05;
         // Clean neutral compacted civil ground / crushed aggregate tone (eliminates weird green grid & blotches)
-        terrainColors[i] = 0.28;
-        terrainColors[i + 1] = 0.27;
-        terrainColors[i + 2] = 0.25;
+        terrainColors[i] = 0.29;
+        terrainColors[i + 1] = 0.28;
+        terrainColors[i + 2] = 0.26;
         continue;
-      } else if (distPH < 16.0 && z > -18.0) {
-        const t = distPH / 16.0;
+      } else if (distPH < 22.0) {
+        const t = distPH / 22.0;
         const smoothT = t * t * (3.0 - 2.0 * t);
         const origY = Math.max(0.05, y);
         positions[i + 1] = 0.05 * (1.0 - smoothT) + origY * smoothT;
 
-        const cCivilR = 0.28, cCivilG = 0.27, cCivilB = 0.25;
-        const cForestR = 0.14, cForestG = 0.23, cForestB = 0.11;
-        terrainColors[i] = THREE.MathUtils.lerp(cCivilR, cForestR, smoothT);
-        terrainColors[i + 1] = THREE.MathUtils.lerp(cCivilG, cForestG, smoothT);
-        terrainColors[i + 2] = THREE.MathUtils.lerp(cCivilB, cForestB, smoothT);
+        const cCivilR = 0.29, cCivilG = 0.28, cCivilB = 0.26;
+        const cForestR = 0.16, cForestG = 0.25, cForestB = 0.13;
+        const cSoilR = 0.28, cSoilG = 0.23, cSoilB = 0.17;
+        const mixSoil = (Math.sin(x * 0.15 + z * 0.12) * 0.5 + 0.5);
+        const cTargetR = THREE.MathUtils.lerp(cForestR, cSoilR, mixSoil * 0.6);
+        const cTargetG = THREE.MathUtils.lerp(cForestG, cSoilG, mixSoil * 0.6);
+        const cTargetB = THREE.MathUtils.lerp(cForestB, cSoilB, mixSoil * 0.6);
+
+        terrainColors[i] = THREE.MathUtils.lerp(cCivilR, cTargetR, smoothT);
+        terrainColors[i + 1] = THREE.MathUtils.lerp(cCivilG, cTargetG, smoothT);
+        terrainColors[i + 2] = THREE.MathUtils.lerp(cCivilB, cTargetB, smoothT);
         continue;
       }
 
@@ -895,8 +901,8 @@ export function MountainTerrain() {
         positions[i + 1] = 14.0 * (1.0 - smoothT) + origY * smoothT;
 
         // Rich tropical forest green & mountain soil colors on the slope behind and beside TEMFACIL
-        const cGreenR = 0.14, cGreenG = 0.23, cGreenB = 0.11; // Dark forest green
-        const cSoilR = 0.26, cSoilG = 0.21, cSoilB = 0.15;  // Mountain earth soil
+        const cGreenR = 0.16, cGreenG = 0.25, cGreenB = 0.13; // Sierra Madre lush green
+        const cSoilR = 0.28, cSoilG = 0.23, cSoilB = 0.17;  // Mountain earth soil
 
         const mixSoil = (Math.sin(x * 0.12) * 0.35 + 0.35) * (1.0 - t * 0.4);
         terrainColors[i] = THREE.MathUtils.lerp(cGreenR, cSoilR, mixSoil);
@@ -1280,22 +1286,23 @@ export function MeanderingRiverSystem() {
 
       const isConfluenceZone = x >= -16.0 && x <= 16.0;
 
-      const ySouth = isConfluenceZone
-        ? Math.max(0.35, sampleTerrainY(x, zSouth) + 0.38)
-        : sampleTerrainY(x, zSouth) + 0.45;
-      const yNorth = sampleTerrainY(x, zNorth) + 0.45;
+      const yWater = sampleTerrainY(x, zCenter) + 0.15;
+      const ySouth = isConfluenceZone ? Math.max(0.20, sampleTerrainY(x, zSouth) + 0.15) : yWater;
+      const yNorth = yWater;
 
-      const yBedSouth = isConfluenceZone ? -1.2 : sampleTerrainY(x, zSouth) + 0.1;
-      const yBedNorth = sampleTerrainY(x, zNorth) + 0.1;
-      const zBedSouth = isConfluenceZone ? zSouth + 2.0 : zSouth - 3.0;
+      // Depressed riverbed channel inside water ribbon (0.8m inside shoreline, 0.85m under water)
+      const yBedSouth = isConfluenceZone ? -1.35 : ySouth - 0.85;
+      const yBedNorth = yNorth - 0.85;
+      const zBedSouth = zSouth + 0.8;
+      const zBedNorth = zNorth - 0.8;
 
       // River Water Surface Vertices
       riverPositions.push(x, ySouth, zSouth);
       riverPositions.push(x, yNorth, zNorth);
 
-      // River Bed Channel Vertices (depressed below concrete apron at confluence)
-      bedPositions.push(x - 2, yBedSouth, zBedSouth);
-      bedPositions.push(x + 2, yBedNorth, zNorth + 3);
+      // River Bed Channel Vertices
+      bedPositions.push(x, yBedSouth, zBedSouth);
+      bedPositions.push(x, yBedNorth, zBedNorth);
 
       uvs.push(u * 10.0, 0);
       uvs.push(u * 10.0, 1);
@@ -1471,11 +1478,6 @@ export function TailraceFloodwall() {
         </group>
       ))}
 
-      {/* Heavy Substructure Footing Apron connecting to Powerhouse Substructure */}
-      <mesh position={[0, 0.2, 7.5]} receiveShadow material={MAT_CONCRETE_DARK}>
-        <boxGeometry args={[18.7, 0.5, 3.0]} />
-      </mesh>
-
       {/* Continuous OSHA Safety Yellow Crest Handrails on Training Walls */}
       {[-9.35, 9.35].map((xR, sideIdx) => (
         <group key={`tw-crest-rails-${sideIdx}`} position={[xR, 0, 0]}>
@@ -1521,158 +1523,83 @@ export function TailraceFloodwall() {
    - Central vertical-lift gate at the tailrace-river confluence.
    ═══════════════════════════════════════════════════════════ */
 
-/** Single unified floodwall along the riverbank on one side of the tailrace */
+/** Single unified floodwall following the natural riverbank curve on one side of the tailrace */
 function UnifiedFloodwall({ side }: { side: "west" | "east" }) {
   const isWest = side === "west";
+  const xMin = isWest ? -55.0 : 8.8;
+  const xMax = isWest ? -8.8 : 55.0;
+  const NUM_SEGS = 8;
+  const dx = (xMax - xMin) / NUM_SEGS;
 
-  // Always order endpoints from West-most (-X) to East-most (+X) for uniform world-space normals
-  const xStart = isWest ? -55.0 : 8.8;
-  const xEnd = isWest ? -8.8 : 55.0;
-
-  // Calculate riverbank Z at both endpoints
-  const zStart = getRiverBankZ(xStart) - 0.8;
-  const zEnd = getRiverBankZ(xEnd) - 0.8;
-
-  // Wall geometry: single straight line from West to East
-  const xMid = (xStart + xEnd) * 0.5;
-  const zMid = (zStart + zEnd) * 0.5;
-  const wallLength = Math.hypot(xEnd - xStart, zEnd - zStart);
-  const wallAngle = Math.atan2(zEnd - zStart, xEnd - xStart);
-
-  // Sample terrain along wall path for proper vertical anchoring
-  const { yMin, yMax } = useMemo(() => {
-    let minY = Infinity, maxY = -Infinity;
-    for (let i = 0; i <= 12; i++) {
-      const t = i / 12;
-      const x = xStart + (xEnd - xStart) * t;
-      const z = zStart + (zEnd - zStart) * t;
-      const y = sampleTerrainY(x, z);
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
+  const segments = useMemo(() => {
+    const segs = [];
+    for (let i = 0; i < NUM_SEGS; i++) {
+      const x0 = xMin + i * dx;
+      const x1 = x0 + dx;
+      const z0 = getRiverBankZ(x0) - 0.6;
+      const z1 = getRiverBankZ(x1) - 0.6;
+      const xMid = (x0 + x1) * 0.5;
+      const zMid = (z0 + z1) * 0.5;
+      const len = Math.hypot(x1 - x0, z1 - z0);
+      const angle = Math.atan2(z1 - z0, x1 - x0);
+      const yGround = sampleTerrainY(xMid, zMid);
+      const crestElev = Math.max(5.8, yGround + 3.6);
+      const wallBase = yGround - 1.2;
+      const wallH = crestElev - wallBase;
+      const yCenter = (crestElev + wallBase) * 0.5;
+      segs.push({
+        xMid,
+        zMid,
+        len,
+        angle,
+        wallH,
+        yCenter,
+        crestElev,
+        yGround,
+      });
     }
-    return { yMin: minY, yMax: maxY };
-  }, [xStart, xEnd, zStart, zEnd]);
-
-  // Wall dimensions: massive, imposing flood defense
-  const wallBase = yMin - 2.0;       // Foundation 2m below grade
-  const crestElev = yMax + 6.5;      // Crest 6.5m above highest ground
-  const wallHeight = crestElev - wallBase;
-  const wallThickness = 1.8;         // 1.8m thick reinforced concrete
-  const yCenter = (crestElev + wallBase) * 0.5;
-
-  // Buttress positions (every ~10m along wall length, on land side = away from river)
-  const buttressSpacing = 10.0;
-  const numButtresses = Math.floor(wallLength / buttressSpacing) + 1;
-
-  // Land-side offset for buttresses (toward powerhouse, away from river)
-  const landDirZ = -1; // Buttresses face toward powerhouse (negative Z)
+    return segs;
+  }, [xMin, xMax, dx]);
 
   return (
-    <group position={[xMid, 0, zMid]} rotation={[0, -wallAngle, 0]}>
-      {/* ─── A. Main Monolithic Concrete Wall Body ─── */}
-      <mesh
-        position={[0, yCenter, 0]}
-        castShadow
-        receiveShadow
-        material={MAT_CONCRETE_PRIMARY}
-      >
-        <boxGeometry args={[wallLength + 0.5, wallHeight, wallThickness]} />
-      </mesh>
+    <group>
+      {segments.map((seg, idx) => (
+        <group key={`fw-seg-${side}-${idx}`} position={[seg.xMid, 0, seg.zMid]} rotation={[0, -seg.angle, 0]}>
+          {/* Main Monolithic Reinforced Concrete Wall Body */}
+          <mesh position={[0, seg.yCenter, 0]} castShadow receiveShadow material={MAT_CONCRETE_PRIMARY}>
+            <boxGeometry args={[seg.len + 0.15, seg.wallH, 1.4]} />
+          </mesh>
 
-      {/* ─── B. Waterline Staining / Wet Splash Band (river side, lower 2.5m) ─── */}
-      <mesh
-        position={[0, yMin + 1.0, 0.05]}
-        material={MAT_CONCRETE_DARK}
-      >
-        <boxGeometry args={[wallLength + 0.55, 2.5, wallThickness + 0.06]} />
-      </mesh>
+          {/* Stained lower waterline band on river face */}
+          <mesh position={[0, seg.yGround + 0.35, 0.02]} material={MAT_CONCRETE_DARK}>
+            <boxGeometry args={[seg.len + 0.16, 1.4, 1.44]} />
+          </mesh>
 
-      {/* ─── C. Structural Buttress Piers (land side) ─── */}
-      {Array.from({ length: numButtresses }, (_, idx) => {
-        const localX = -wallLength * 0.5 + idx * buttressSpacing;
-        const buttressH = wallHeight - 1.0;
-        return (
-          <group key={`buttress-${side}-${idx}`} position={[localX, wallBase + buttressH * 0.5 + 0.5, landDirZ * (wallThickness * 0.5 + 0.9)]}>
-            {/* Buttress stem */}
-            <mesh castShadow receiveShadow material={MAT_CONCRETE_LIGHT}>
-              <boxGeometry args={[1.2, buttressH, 1.8]} />
+          {/* Coping Cap */}
+          <mesh position={[0, seg.crestElev + 0.1, 0]} castShadow material={MAT_CONCRETE_HEADER}>
+            <boxGeometry args={[seg.len + 0.18, 0.22, 1.7]} />
+          </mesh>
+
+          {/* Top Handrail (Safety Yellow) */}
+          <mesh position={[0, seg.crestElev + 0.85, -0.45]} material={MAT_YELLOW_SAFETY}>
+            <boxGeometry args={[seg.len + 0.05, 0.05, 0.05]} />
+          </mesh>
+          {/* Mid Handrail */}
+          <mesh position={[0, seg.crestElev + 0.45, -0.45]} material={MAT_STEEL_RAILING}>
+            <boxGeometry args={[seg.len + 0.05, 0.04, 0.04]} />
+          </mesh>
+          {/* Vertical Rail Posts */}
+          {[-seg.len * 0.35, 0, seg.len * 0.35].map((pX, pIdx) => (
+            <mesh key={`p-${pIdx}`} position={[pX, seg.crestElev + 0.45, -0.45]} material={MAT_STEEL_RAILING}>
+              <boxGeometry args={[0.04, 0.9, 0.04]} />
             </mesh>
-            {/* Buttress haunch */}
-            <mesh position={[0, buttressH * 0.35, landDirZ * -0.4]} material={MAT_CONCRETE_HEADER}>
-              <boxGeometry args={[1.0, buttressH * 0.3, 1.0]} />
-            </mesh>
-          </group>
-        );
-      })}
-
-      {/* ─── D. Drainage Weepholes (river side, staggered) ─── */}
-      {Array.from({ length: numButtresses }, (_, idx) => {
-        const localX = -wallLength * 0.5 + idx * buttressSpacing;
-        return (
-          <group key={`weep-${side}-${idx}`}>
-            {[0, 1].map((row) => (
-              <mesh
-                key={`weep-pipe-${side}-${idx}-${row}`}
-                position={[
-                  localX + (row === 1 ? buttressSpacing * 0.5 : 0),
-                  yMin + 1.6 + row * 2.2,
-                  wallThickness * 0.5 + 0.02,
-                ]}
-                rotation={[Math.PI / 2, 0, 0]}
-                material={MAT_STEEL_DARK}
-              >
-                <cylinderGeometry args={[0.06, 0.06, 0.2, 8]} />
-              </mesh>
-            ))}
-          </group>
-        );
-      })}
-
-      {/* ─── E. Coping Cap (continuous top cap with drip edge) ─── */}
-      <mesh
-        position={[0, crestElev + 0.15, 0]}
-        castShadow
-        material={MAT_CONCRETE_HEADER}
-      >
-        <boxGeometry args={[wallLength + 0.8, 0.3, wallThickness + 0.5]} />
-      </mesh>
-
-      {/* ─── F. Safety Handrail System along crest ─── */}
-      <group position={[0, crestElev + 0.3, landDirZ * 0.5]}>
-        {/* Top rail (yellow) */}
-        <mesh position={[0, 1.05, 0]} material={MAT_YELLOW_SAFETY}>
-          <boxGeometry args={[wallLength + 0.5, 0.05, 0.05]} />
-        </mesh>
-        {/* Mid rail */}
-        <mesh position={[0, 0.55, 0]} material={MAT_STEEL_RAILING}>
-          <boxGeometry args={[wallLength + 0.5, 0.04, 0.04]} />
-        </mesh>
-        {/* Vertical posts */}
-        {Array.from({ length: Math.ceil(wallLength / 3) + 1 }, (_, i) => {
-          const px = -wallLength * 0.5 + i * 3.0;
-          if (px > wallLength * 0.5 + 0.5) return null;
-          return (
-            <mesh key={`rail-post-${side}-${i}`} position={[px, 0.55, 0]} material={MAT_STEEL_RAILING}>
-              <boxGeometry args={[0.04, 1.1, 0.04]} />
-            </mesh>
-          );
-        })}
-      </group>
-
-      {/* ─── G. Wall End Pilasters (flared ends for architectural finish) ─── */}
-      {[-wallLength * 0.5 - 0.2, wallLength * 0.5 + 0.2].map((endX, i) => (
-        <mesh
-          key={`pilaster-${side}-${i}`}
-          position={[endX, yCenter, 0]}
-          castShadow
-          material={MAT_CONCRETE_HEADER}
-        >
-          <boxGeometry args={[0.8, wallHeight + 0.2, wallThickness + 0.4]} />
-        </mesh>
+          ))}
+        </group>
       ))}
     </group>
   );
 }
+
 
 
 /** Heavy rounded bullnose concrete piers at the confluence corners (X = ±8.8m) */

@@ -22,7 +22,6 @@ import {
   OrbitControls,
   PerspectiveCamera,
   Environment,
-  Grid,
   Html,
   shaderMaterial,
   useGLTF,
@@ -1804,19 +1803,6 @@ function PlantSceneInner({
 
       {/* 🌧️ TYPHOON STORM: Rain Streaks */}
       {isStormActive && <RainParticles count={180} />}
-
-      <Grid
-        position={[0, 0.01, 0]}
-        args={[350, 350]}
-        cellColor="#4A5A4A"
-        sectionColor="#5A6A5A"
-        cellThickness={0.8}
-        sectionThickness={1.2}
-        fadeDistance={200}
-        sectionSize={10}
-        cellSize={2}
-        infiniteGrid
-      />
 
       <PowerhouseBlockout
         activePreset={activePreset}
