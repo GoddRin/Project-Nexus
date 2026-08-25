@@ -82,6 +82,16 @@ import {
   MAT_SOAP_SUDS,
   MAT_THERMOS_FLASK,
   MAT_COFFEE_MUG,
+  MAT_RAW_PORK_BELLY,
+  MAT_RAW_PORK_FAT,
+  MAT_SAYOTE_GREEN,
+  MAT_KALABASA_ORANGE,
+  MAT_KALABASA_SKIN,
+  MAT_ONION_RED,
+  MAT_GARLIC_CLOVE,
+  MAT_GINGER_ROOT,
+  MAT_CLEAVER_BLADE,
+  MAT_WOOD_HANDLE,
 } from "./SharedMaterials";
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -3692,6 +3702,204 @@ function TabletopTransistorRadio({ position = [0, 0, 0], rotation = [0, 0, 0] }:
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// 🗣️ AUTHENTIC HIGH-DETAIL SCULPTED FILIPINO CHARACTER HEAD (ZERO FACELESS WORKERS)
+// ═══════════════════════════════════════════════════════════════════════════
+interface FilipinoCharacterHeadProps {
+  skinTone?: "LIGHT" | "MEDIUM" | "BRONZE" | "TAN" | "DEEP";
+  headwear?: "NONE" | "CHEF_TOQUE" | "HARDHAT_YELLOW" | "HARDHAT_WHITE" | "HARDHAT_ROYAL" | "HARDHAT_GREEN" | "HARDHAT_ORANGE" | "BANDANA";
+  hasMustache?: boolean;
+}
+
+function FilipinoCharacterHead({
+  skinTone = "MEDIUM",
+  headwear = "NONE",
+  hasMustache = false,
+}: FilipinoCharacterHeadProps) {
+  const skinMat =
+    skinTone === "LIGHT"
+      ? MAT_SKIN_LIGHT
+      : skinTone === "BRONZE"
+      ? MAT_SKIN_BRONZE
+      : skinTone === "DEEP"
+      ? MAT_SKIN_DEEP
+      : MAT_SKIN_MEDIUM;
+
+  const hardhatMat =
+    headwear === "HARDHAT_YELLOW"
+      ? MAT_WORKER_HARDHAT_YELLOW
+      : headwear === "HARDHAT_WHITE"
+      ? MAT_WORKER_HARDHAT_WHITE
+      : headwear === "HARDHAT_ROYAL"
+      ? MAT_WORKER_VEST_ROYAL
+      : headwear === "HARDHAT_GREEN"
+      ? MAT_WORKER_VEST_GREEN
+      : headwear === "HARDHAT_ORANGE"
+      ? MAT_WORKER_VEST_ORANGE
+      : null;
+
+  return (
+    <group position={[0, 0, 0]}>
+      {/* 1. Main Cranium */}
+      <mesh material={skinMat}>
+        <boxGeometry args={[0.22, 0.22, 0.22]} />
+      </mesh>
+
+      {/* 2. Tapered Jaw / Chin */}
+      <mesh position={[0, -0.11, 0.02]} material={skinMat}>
+        <boxGeometry args={[0.16, 0.08, 0.16]} />
+      </mesh>
+
+      {/* 3. Left and Right Ears */}
+      <mesh position={[-0.115, 0.01, -0.01]} material={skinMat}>
+        <boxGeometry args={[0.015, 0.065, 0.038]} />
+      </mesh>
+      <mesh position={[0.115, 0.01, -0.01]} material={skinMat}>
+        <boxGeometry args={[0.015, 0.065, 0.038]} />
+      </mesh>
+
+      {/* 4. Almond Filipino Eyes (Sclera + Iris + Pupil + Specular Catchlight) */}
+      <group position={[0, 0.035, 0.112]}>
+        {/* Left Eye */}
+        <mesh position={[-0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
+          <boxGeometry args={[0.038, 0.020, 0.005]} />
+        </mesh>
+        <mesh position={[-0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
+          <boxGeometry args={[0.022, 0.018, 0.003]} />
+        </mesh>
+        <mesh position={[-0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
+          <boxGeometry args={[0.012, 0.012, 0.002]} />
+        </mesh>
+        <mesh position={[-0.048, 0.004, 0.006]} material={MAT_FACE_EYE_WHITE}>
+          <boxGeometry args={[0.004, 0.004, 0.002]} />
+        </mesh>
+
+        {/* Right Eye */}
+        <mesh position={[0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
+          <boxGeometry args={[0.038, 0.020, 0.005]} />
+        </mesh>
+        <mesh position={[0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
+          <boxGeometry args={[0.022, 0.018, 0.003]} />
+        </mesh>
+        <mesh position={[0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
+          <boxGeometry args={[0.012, 0.012, 0.002]} />
+        </mesh>
+        <mesh position={[0.056, 0.004, 0.006]} material={MAT_FACE_EYE_WHITE}>
+          <boxGeometry args={[0.004, 0.004, 0.002]} />
+        </mesh>
+      </group>
+
+      {/* 5. Arched Dark Eyebrows */}
+      <group position={[0, 0.065, 0.115]}>
+        <mesh position={[-0.052, 0, 0]} rotation={[0, 0, 0.05]} material={MAT_FACE_EYEBROW}>
+          <boxGeometry args={[0.045, 0.008, 0.006]} />
+        </mesh>
+        <mesh position={[0.052, 0, 0]} rotation={[0, 0, -0.05]} material={MAT_FACE_EYEBROW}>
+          <boxGeometry args={[0.045, 0.008, 0.006]} />
+        </mesh>
+      </group>
+
+      {/* 6. Sculpted 3D Filipino Nose */}
+      <group position={[0, 0.005, 0.122]}>
+        <mesh position={[0, 0.015, 0]} material={skinMat}>
+          <boxGeometry args={[0.026, 0.045, 0.022]} />
+        </mesh>
+        <mesh position={[0, -0.015, 0.006]} material={skinMat}>
+          <sphereGeometry args={[0.018, 6, 6]} />
+        </mesh>
+        <mesh position={[-0.020, -0.018, 0.002]} material={skinMat}>
+          <boxGeometry args={[0.014, 0.014, 0.015]} />
+        </mesh>
+        <mesh position={[0.020, -0.018, 0.002]} material={skinMat}>
+          <boxGeometry args={[0.014, 0.014, 0.015]} />
+        </mesh>
+      </group>
+
+      {/* 7. Contoured Natural Lips */}
+      <group position={[0, -0.055, 0.116]}>
+        <mesh material={MAT_FACE_LIPS}>
+          <boxGeometry args={[0.055, 0.012, 0.010]} />
+        </mesh>
+        <mesh position={[0, -0.012, -0.001]} material={MAT_FACE_LIPS}>
+          <boxGeometry args={[0.048, 0.014, 0.010]} />
+        </mesh>
+      </group>
+
+      {/* 8. Optional Filipino Mustache */}
+      {hasMustache && (
+        <mesh position={[0, -0.040, 0.126]} material={MAT_MUSTACHE_BLACK}>
+          <boxGeometry args={[0.095, 0.020, 0.014]} />
+        </mesh>
+      )}
+
+      {/* 9. Hair / Headwear */}
+      {headwear === "NONE" && (
+        <group position={[0, 0.08, -0.01]}>
+          {/* Top Hair Volume */}
+          <mesh material={MAT_HAIR_BLACK}>
+            <sphereGeometry args={[0.124, 12, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+          {/* Back & Side Hair Taper */}
+          <mesh position={[0, -0.04, -0.05]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.224, 0.12, 0.12]} />
+          </mesh>
+          {/* Sideburns */}
+          <mesh position={[-0.112, -0.05, 0.02]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.008, 0.08, 0.04]} />
+          </mesh>
+          <mesh position={[0.112, -0.05, 0.02]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.008, 0.08, 0.04]} />
+          </mesh>
+        </group>
+      )}
+
+      {headwear === "CHEF_TOQUE" && (
+        <group position={[0, 0.09, 0]}>
+          {/* White Headband */}
+          <mesh material={MAT_WHITE_PAINT}>
+            <boxGeometry args={[0.24, 0.07, 0.24]} />
+          </mesh>
+          {/* Pleated Top Hat Cylinder */}
+          <mesh position={[0, 0.07, 0]} material={MAT_WHITE_PAINT}>
+            <cylinderGeometry args={[0.14, 0.11, 0.14, 14]} />
+          </mesh>
+          {/* Hair peeking at back */}
+          <mesh position={[0, -0.04, -0.10]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.20, 0.06, 0.04]} />
+          </mesh>
+        </group>
+      )}
+
+      {hardhatMat && (
+        <group position={[0, 0.09, 0]}>
+          {/* Hard Hat Dome */}
+          <mesh material={hardhatMat}>
+            <sphereGeometry args={[0.132, 14, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+          </mesh>
+          {/* Front Sun Visor Brim */}
+          <mesh position={[0, 0.01, 0.10]} rotation={[0.12, 0, 0]} material={hardhatMat}>
+            <boxGeometry args={[0.24, 0.025, 0.08]} />
+          </mesh>
+          {/* Center Crown Ridge */}
+          <mesh position={[0, 0.08, 0]} material={hardhatMat}>
+            <boxGeometry args={[0.04, 0.04, 0.24]} />
+          </mesh>
+          {/* Hair peeking at back & sides */}
+          <mesh position={[0, -0.04, -0.08]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.20, 0.06, 0.06]} />
+          </mesh>
+          <mesh position={[-0.112, -0.04, 0.02]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.008, 0.06, 0.04]} />
+          </mesh>
+          <mesh position={[0.112, -0.04, 0.02]} material={MAT_HAIR_BLACK}>
+            <boxGeometry args={[0.008, 0.06, 0.04]} />
+          </mesh>
+        </group>
+      )}
+    </group>
+  );
+}
+
 // ─── 1. KUYA JUN: SITTING ON MONOBLOC STOOL BROWSING SMARTPHONE ───
 function NighttimeSmartphoneWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
   const headRef = useRef<THREE.Group>(null);
@@ -3779,30 +3987,7 @@ function NighttimeSmartphoneWorker({ position = [0, 0, 0], rotation = [0, 0, 0] 
 
           {/* Head & Natural Hair */}
           <group ref={headRef} position={[0, 0.48, 0.02]}>
-            <mesh material={MAT_SKIN_MEDIUM}>
-              <boxGeometry args={[0.20, 0.20, 0.20]} />
-            </mesh>
-            <mesh position={[0, -0.09, 0.02]} material={MAT_SKIN_MEDIUM}>
-              <boxGeometry args={[0.14, 0.07, 0.14]} />
-            </mesh>
-            {/* Natural Messy Filipino Hair */}
-            <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
-              <sphereGeometry args={[0.122, 12, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-            </mesh>
-            {/* Eyes looking down at screen */}
-            <mesh position={[-0.045, 0.01, 0.102]} material={MAT_FACE_EYE_IRIS}>
-              <boxGeometry args={[0.02, 0.016, 0.005]} />
-            </mesh>
-            <mesh position={[0.045, 0.01, 0.102]} material={MAT_FACE_EYE_IRIS}>
-              <boxGeometry args={[0.02, 0.016, 0.005]} />
-            </mesh>
-            {/* Nose & Lips */}
-            <mesh position={[0, -0.02, 0.11]} material={MAT_SKIN_MEDIUM}>
-              <boxGeometry args={[0.025, 0.04, 0.02]} />
-            </mesh>
-            <mesh position={[0, -0.06, 0.104]} material={MAT_FACE_LIPS}>
-              <boxGeometry args={[0.04, 0.01, 0.008]} />
-            </mesh>
+            <FilipinoCharacterHead skinTone="MEDIUM" headwear="NONE" />
           </group>
 
           {/* Left Arm holding phone */}
@@ -3910,24 +4095,7 @@ function NighttimeSmokingWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: 
 
         {/* Head & Features */}
         <group ref={headRef} position={[0, 0.50, 0.02]}>
-          <mesh material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.21, 0.21, 0.21]} />
-          </mesh>
-          <mesh position={[0, -0.09, 0.02]} material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.15, 0.07, 0.15]} />
-          </mesh>
-          <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.124, 12, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
-          <mesh position={[-0.048, 0.01, 0.108]} material={MAT_FACE_EYE_IRIS}>
-            <boxGeometry args={[0.02, 0.016, 0.005]} />
-          </mesh>
-          <mesh position={[0.048, 0.01, 0.108]} material={MAT_FACE_EYE_IRIS}>
-            <boxGeometry args={[0.02, 0.016, 0.005]} />
-          </mesh>
-          <mesh position={[0, -0.035, 0.118]} material={MAT_MUSTACHE_BLACK}>
-            <boxGeometry args={[0.08, 0.018, 0.012]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="BRONZE" headwear="NONE" hasMustache={true} />
         </group>
 
         {/* Left Arm casually resting on breezeway half-wall */}
@@ -4059,12 +4227,7 @@ function NighttimeKwuntuhanDuo({ position = [0, 0, 0], rotation = [0, 0, 0] }: {
           <boxGeometry args={[0.34, 0.44, 0.20]} />
         </mesh>
         <group ref={head1Ref} position={[0, 0.98, 0]}>
-          <mesh material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="BRONZE" headwear="NONE" hasMustache={true} />
         </group>
         <group ref={arm1Ref} position={[0.19, 0.68, 0]}>
           <mesh position={[0, -0.16, 0]} material={MAT_SKIN_BRONZE}>
@@ -4092,12 +4255,7 @@ function NighttimeKwuntuhanDuo({ position = [0, 0, 0], rotation = [0, 0, 0] }: {
           <boxGeometry args={[0.34, 0.44, 0.20]} />
         </mesh>
         <group ref={head2Ref} position={[0, 0.98, 0]}>
-          <mesh material={MAT_SKIN_MEDIUM}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="MEDIUM" headwear="NONE" hasMustache={true} />
         </group>
         <group ref={arm2Ref} position={[-0.19, 0.68, 0]}>
           <mesh position={[0, -0.16, 0]} material={MAT_SKIN_MEDIUM}>
@@ -4182,12 +4340,7 @@ function MorningBreakfastWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: 
           <boxGeometry args={[0.30, 0.04, 0.01]} />
         </mesh>
         <group ref={headRef} position={[0, 0.98, 0]}>
-          <mesh material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="BRONZE" headwear="NONE" />
         </group>
         <group ref={armRef} position={[0.19, 0.68, 0]}>
           <mesh position={[0, -0.16, 0]} material={MAT_SKIN_BRONZE}>
@@ -4237,12 +4390,7 @@ function MorningWaterRefillWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }
         </mesh>
         {/* Head & Blue Safety Helmet */}
         <group position={[0, 0.50, 0.02]} rotation={[0.2, 0, 0]}>
-          <mesh material={MAT_SKIN_MEDIUM}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.10, 0]} material={MAT_WORKER_VEST_ROYAL}>
-            <sphereGeometry args={[0.124, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="MEDIUM" headwear="HARDHAT_ROYAL" />
         </group>
         {/* Arms Holding Jug Handle */}
         <group ref={armRef} position={[0.20, 0.20, 0]}>
@@ -4277,12 +4425,7 @@ function MorningBaonWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { pos
         </mesh>
         {/* Head & Helmet */}
         <group position={[0, 0.50, 0.02]}>
-          <mesh material={MAT_SKIN_LIGHT}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.10, 0]} material={MAT_WORKER_HARDHAT_WHITE}>
-            <sphereGeometry args={[0.124, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="LIGHT" headwear="HARDHAT_WHITE" />
         </group>
         {/* Arms Holding Stainless Baon Carrier */}
         <group position={[0.20, 0.18, 0]} rotation={[-0.5, 0, 0]}>
@@ -4385,12 +4528,7 @@ function DaytimeLunchWorkerDuo({ position = [0, 0, 0], rotation = [0, 0, 0] }: {
           <boxGeometry args={[0.34, 0.44, 0.20]} />
         </mesh>
         <group ref={head1Ref} position={[0, 0.98, 0]}>
-          <mesh material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="BRONZE" headwear="NONE" hasMustache={true} />
         </group>
         <group ref={arm1Ref} position={[0.19, 0.68, 0]}>
           <mesh position={[0, -0.16, 0]} material={MAT_SKIN_BRONZE}>
@@ -4417,12 +4555,7 @@ function DaytimeLunchWorkerDuo({ position = [0, 0, 0], rotation = [0, 0, 0] }: {
           <boxGeometry args={[0.34, 0.44, 0.20]} />
         </mesh>
         <group ref={head2Ref} position={[0, 0.98, 0]}>
-          <mesh material={MAT_SKIN_MEDIUM}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="MEDIUM" headwear="NONE" />
         </group>
         <group ref={arm2Ref} position={[-0.19, 0.68, 0]}>
           <mesh position={[0, -0.16, 0]} material={MAT_SKIN_MEDIUM}>
@@ -4465,12 +4598,7 @@ function DaytimeTrayWashWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: {
           <boxGeometry args={[0.36, 0.48, 0.22]} />
         </mesh>
         <group position={[0, 0.48, 0.04]} rotation={[0.25, 0, 0]}>
-          <mesh material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="BRONZE" headwear="NONE" />
         </group>
         <group ref={armRef} position={[0.20, 0.20, 0]}>
           <mesh position={[0, -0.18, 0.1]} material={MAT_SKIN_BRONZE}>
@@ -4502,22 +4630,17 @@ function DaytimePantryPorter({ position = [0, 0, 0], rotation = [0, 0, 0] }: { p
           <boxGeometry args={[0.36, 0.48, 0.22]} />
         </mesh>
         <group position={[0, 0.50, 0.02]}>
-          <mesh material={MAT_SKIN_MEDIUM}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.10, 0]} material={MAT_WORKER_HARDHAT_YELLOW}>
-            <sphereGeometry args={[0.124, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="MEDIUM" headwear="HARDHAT_GREEN" />
         </group>
         {/* Arms Carrying Wooden Crate of Cabbages & Squash */}
         <group position={[0, 0.12, 0.24]}>
           <mesh material={MAT_BAMBOO_TIMBER}>
             <boxGeometry args={[0.38, 0.18, 0.34]} />
           </mesh>
-          <mesh position={[-0.08, 0.06, 0]} material={MAT_SQUASH_KALABASA}>
+          <mesh position={[-0.08, 0.06, 0]} material={MAT_KALABASA_ORANGE}>
             <sphereGeometry args={[0.06, 8, 8]} />
           </mesh>
-          <mesh position={[0.08, 0.06, 0]} material={MAT_SILING_HABA}>
+          <mesh position={[0.08, 0.06, 0]} material={MAT_SAYOTE_GREEN}>
             <sphereGeometry args={[0.05, 8, 8]} />
           </mesh>
         </group>
@@ -4594,12 +4717,7 @@ function NighttimeLaundryWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: 
           <boxGeometry args={[0.36, 0.48, 0.22]} />
         </mesh>
         <group position={[0, 0.48, 0.04]} rotation={[0.32, 0, 0]}>
-          <mesh material={MAT_SKIN_MEDIUM}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.08, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="MEDIUM" headwear="NONE" />
         </group>
         <group ref={leftArmRef} position={[-0.22, 0.18, 0]}>
           <mesh position={[0, -0.18, 0]} material={MAT_SKIN_MEDIUM}>
@@ -4655,12 +4773,7 @@ function NighttimeLoungingWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }:
           <boxGeometry args={[0.34, 0.46, 0.20]} />
         </mesh>
         <group position={[0, 0.68, -0.08]} rotation={[-0.18, 0, 0]}>
-          <mesh material={MAT_SKIN_BRONZE}>
-            <boxGeometry args={[0.20, 0.20, 0.20]} />
-          </mesh>
-          <mesh position={[0, 0.07, -0.01]} material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.12, 10, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
+          <FilipinoCharacterHead skinTone="BRONZE" headwear="NONE" />
         </group>
         <group ref={armRef} position={[0.20, 0.45, -0.04]}>
           <mesh position={[0.14, -0.08, 0]} material={MAT_SKIN_BRONZE}>
@@ -4673,8 +4786,8 @@ function NighttimeLoungingWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }:
 }
 
 // ─── DYNAMIC MULTI-ROUTINE ANIMATED FILIPINO KITCHEN CHEF / COOK ───
+// ─── DYNAMIC MULTI-ROUTINE ANIMATED FILIPINO KITCHEN CHEF / COOK ───
 function AnimatedBarracksChef({
-
   name,
   shirtColor,
   routineType,
@@ -4705,87 +4818,87 @@ function AnimatedBarracksChef({
     if (frameTickRef.current % 2 !== 0) return;
     const t = clock.getElapsedTime();
 
-    let targetX = -1.15;
+    let targetX = -0.88;
     let targetZ = -0.8;
     let rotY = Math.PI / 2;
     let isWalking = false;
-    let task = "STIRRING";
+    let task = "STIR_WOK";
 
-    // ═══ ROUTINE 1: MANG CARDO (WEST WOK MASTER) ═══
+    // ═══ ROUTINE 1: MANG CARDO (WEST WOK MASTER — CHICKEN & PORK ADOBO) ═══
     if (routineType === "WEST_HEAD_CHEF") {
-      const cycle = t % 30.0;
-      targetX = -1.15;
+      const cycle = t % 32.0;
+      targetX = -0.88;
 
-      if (cycle < 8.0) {
+      if (cycle < 10.0) {
         // Phase 1: Stirring Adobo Wok at Z = -0.8
         targetZ = -0.8;
         rotY = Math.PI / 2;
         task = "STIR_WOK";
-      } else if (cycle < 12.0) {
-        // Phase 2: Walking to spice/condiment rack at Z = 2.4
-        const p = (cycle - 8.0) / 4.0;
-        targetZ = THREE.MathUtils.lerp(-0.8, 2.4, p);
-        rotY = 0; // facing south
-        isWalking = true;
-        task = "WALKING";
-      } else if (cycle < 16.0) {
-        // Phase 3: Grabbing Datu Puti Soy Sauce & Cane Vinegar
-        targetZ = 2.4;
-        rotY = Math.PI / 2;
-        task = "GRAB_SEASONING";
-      } else if (cycle < 20.0) {
-        // Phase 4: Walking back to Wok
-        const p = (cycle - 16.0) / 4.0;
-        targetZ = THREE.MathUtils.lerp(2.4, -0.8, p);
-        rotY = Math.PI; // facing north
-        isWalking = true;
-        task = "WALKING";
-      } else if (cycle < 25.0) {
-        // Phase 5: Pouring Soy Sauce & Vinegar into the Simmering Adobo
+      } else if (cycle < 15.0) {
+        // Phase 2: Seasoning with Datu Puti Soy Sauce & Cane Vinegar
         targetZ = -0.8;
         rotY = Math.PI / 2;
         task = "POUR_SEASONING";
-      } else {
-        // Phase 6: Tasting the savory sauce with the sandok
+      } else if (cycle < 20.0) {
+        // Phase 3: Tasting savory sauce with wooden sandok
         targetZ = -0.8;
         rotY = Math.PI / 2;
         task = "TASTE_TEST";
+      } else if (cycle < 24.0) {
+        // Phase 4: Walking to check steamed rice caldero at Z = -4.0
+        const p = (cycle - 20.0) / 4.0;
+        targetZ = THREE.MathUtils.lerp(-0.8, -4.0, p);
+        rotY = Math.PI; // facing north
+        isWalking = true;
+        task = "WALKING";
+      } else if (cycle < 28.0) {
+        // Phase 5: Checking fluffy steamed rice
+        targetZ = -4.0;
+        rotY = Math.PI / 2;
+        task = "STIR_WOK";
+      } else {
+        // Phase 6: Walking back to main Adobo wok station
+        const p = (cycle - 28.0) / 4.0;
+        targetZ = THREE.MathUtils.lerp(-4.0, -0.8, p);
+        rotY = 0; // facing south
+        isWalking = true;
+        task = "WALKING";
       }
     }
 
-    // ═══ ROUTINE 2: KUYA BEN (WEST MEAT BUTCHER & WASH MASTER) ═══
+    // ═══ ROUTINE 2: KUYA BEN (WEST MEAT BUTCHER & SAYOTE PREP MASTER) ═══
     else if (routineType === "WEST_MEAT_BUTCHER") {
-      const cycle = (t + 5.0) % 28.0;
-      targetX = -1.15;
+      const cycle = (t + 5.0) % 30.0;
+      targetX = -0.88;
 
-      if (cycle < 9.0) {
-        // Phase 1: Chopping Pork Belly / Chicken on Heavy Tree Trunk Board at Z = 4.8
-        targetZ = 4.8;
+      if (cycle < 12.0) {
+        // Phase 1: Rhythmic Chopping of Fresh Pork Belly (Liempo) & Sayote on Acacia Board at Z = 3.6
+        targetZ = 3.6;
         rotY = Math.PI / 2;
         task = "CHOP_MEAT";
-      } else if (cycle < 13.0) {
-        // Phase 2: Walking to wash sink at Z = 7.2
-        const p = (cycle - 9.0) / 4.0;
-        targetZ = THREE.MathUtils.lerp(4.8, 7.2, p);
+      } else if (cycle < 16.0) {
+        // Phase 2: Walking to double washing sink at Z = 7.0
+        const p = (cycle - 12.0) / 4.0;
+        targetZ = THREE.MathUtils.lerp(3.6, 7.0, p);
         rotY = 0;
         isWalking = true;
         task = "WALKING";
-      } else if (cycle < 18.0) {
+      } else if (cycle < 21.0) {
         // Phase 3: Washing chopped meats under running water tap
-        targetZ = 7.2;
+        targetZ = 7.0;
         rotY = Math.PI / 2;
         task = "WASH_MEAT";
-      } else if (cycle < 23.0) {
+      } else if (cycle < 26.0) {
         // Phase 4: Walking to Sinigang caldero at Z = 0.9
-        const p = (cycle - 18.0) / 5.0;
-        targetZ = THREE.MathUtils.lerp(7.2, 0.9, p);
+        const p = (cycle - 21.0) / 5.0;
+        targetZ = THREE.MathUtils.lerp(7.0, 0.9, p);
         rotY = Math.PI;
         isWalking = true;
         task = "WALKING";
       } else {
-        // Phase 5: Loading meat into boiling caldero & walking back to chopping station
-        const p = (cycle - 23.0) / 5.0;
-        targetZ = THREE.MathUtils.lerp(0.9, 4.8, p);
+        // Phase 5: Loading meat into caldero & walking back to chopping station
+        const p = (cycle - 26.0) / 4.0;
+        targetZ = THREE.MathUtils.lerp(0.9, 3.6, p);
         rotY = 0;
         isWalking = true;
         task = "WALKING";
@@ -4795,29 +4908,29 @@ function AnimatedBarracksChef({
     // ═══ ROUTINE 3: MANG NOLI (EAST VEGGIE & SOUP MASTER) ═══
     else if (routineType === "EAST_VEGGIE_SOUP") {
       const cycle = (t + 11.0) % 26.0;
-      targetX = 1.15;
+      targetX = 0.88;
 
       if (cycle < 8.0) {
-        // Phase 1: Slicing Kalabasa Squash & String Beans at Z = 4.8
-        targetZ = 4.8;
+        // Phase 1: Slicing Kalabasa Squash & String Beans at Z = 3.6
+        targetZ = 3.6;
         rotY = -Math.PI / 2;
         task = "CHOP_VEGGIE";
       } else if (cycle < 12.0) {
-        // Phase 2: Walking to wash sink at Z = 7.2
+        // Phase 2: Walking to wash sink at Z = 7.0
         const p = (cycle - 8.0) / 4.0;
-        targetZ = THREE.MathUtils.lerp(4.8, 7.2, p);
+        targetZ = THREE.MathUtils.lerp(3.6, 7.0, p);
         rotY = 0;
         isWalking = true;
         task = "WALKING";
       } else if (cycle < 17.0) {
         // Phase 3: Washing Kangkong & Sitaw at Sink
-        targetZ = 7.2;
+        targetZ = 7.0;
         rotY = -Math.PI / 2;
         task = "WASH_GREENS";
       } else if (cycle < 22.0) {
         // Phase 4: Walking to Ginataang Kalabasa pan at Z = -0.8
         const p = (cycle - 17.0) / 5.0;
-        targetZ = THREE.MathUtils.lerp(7.2, -0.8, p);
+        targetZ = THREE.MathUtils.lerp(7.0, -0.8, p);
         rotY = Math.PI;
         isWalking = true;
         task = "WALKING";
@@ -4832,10 +4945,10 @@ function AnimatedBarracksChef({
     // ═══ ROUTINE 4: KUYA JOMAR (EAST RICE & SINANGAG SPECIALIST) ═══
     else if (routineType === "EAST_RICE_LOGISTICS") {
       const cycle = (t + 17.0) % 32.0;
-      targetX = 1.15;
+      targetX = 0.88;
 
       if (cycle < 7.0) {
-        // Phase 1: Scooping raw rice from 50kg Sinandomeng sack at Z = -9.2
+        // Phase 1: Scooping raw rice from 50kg Sinandomeng sack at Z = -8.8
         targetZ = -8.8;
         rotY = Math.PI;
         task = "SCOOP_RICE";
@@ -4872,21 +4985,21 @@ function AnimatedBarracksChef({
       if (cycle < 10.0) {
         // Walking in from east walkway with enamel tin mug
         const p = cycle / 10.0;
-        targetX = THREE.MathUtils.lerp(2.2, 1.15, p);
+        targetX = THREE.MathUtils.lerp(2.2, 0.88, p);
         targetZ = -0.8;
         rotY = -Math.PI / 2;
         isWalking = true;
         task = "WALKING";
       } else if (cycle < 20.0) {
         // Tasting adobo sample with thumbs-up
-        targetX = 1.15;
+        targetX = 0.88;
         targetZ = -0.8;
         rotY = -Math.PI / 2;
         task = "TASTE_EAT";
       } else {
         // Walking back
         const p = (cycle - 20.0) / 8.0;
-        targetX = THREE.MathUtils.lerp(1.15, 2.2, p);
+        targetX = THREE.MathUtils.lerp(0.88, 2.2, p);
         targetZ = -0.8;
         rotY = Math.PI / 2;
         isWalking = true;
@@ -4924,20 +5037,20 @@ function AnimatedBarracksChef({
       if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
 
       if (task === "STIR_WOK" || task === "STIR_SOUP" || task === "STIR_FRIED_RICE") {
-        const stir = Math.sin(t * 4.2);
-        const stirCos = Math.cos(t * 4.2);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85 + stir * 0.18, stirCos * 0.22, -0.15);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.15, 0);
-        if (torsoRef.current) torsoRef.current.rotation.set(0.06, stir * 0.08, 0);
-        if (headRef.current) headRef.current.rotation.set(0.24, 0, 0);
+        const stir = Math.sin(t * 3.8);
+        const stirCos = Math.cos(t * 3.8);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85 + stir * 0.16, stirCos * 0.20, -0.12);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.72, 0.25, 0.08); // holding wok handle
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, stir * 0.06, 0);
+        if (headRef.current) headRef.current.rotation.set(0.26, 0, 0);
 
         if (sandokRef.current) sandokRef.current.visible = true;
         if (cleaverRef.current) cleaverRef.current.visible = false;
         if (bottleRef.current) bottleRef.current.visible = false;
       } else if (task === "CHOP_MEAT" || task === "CHOP_VEGGIE") {
-        const chop = Math.sin(t * 9.0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.1 + Math.max(0, chop) * 0.45, 0.1, -0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.35, 0.1); // Left hand holding item
+        const chopArc = Math.sin(t * 8.0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.95 + chopArc * 0.38, 0.05, -0.05);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.82, 0.28, 0.05); // Left hand firmly holding meat slab
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
 
@@ -4945,29 +5058,29 @@ function AnimatedBarracksChef({
         if (sandokRef.current) sandokRef.current.visible = false;
         if (bottleRef.current) bottleRef.current.visible = false;
       } else if (task === "POUR_SEASONING") {
-        const pour = Math.sin(t * 2.0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.3, -0.4, 0.5 + pour * 0.15);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.9, 0.2, -0.2);
-        if (torsoRef.current) torsoRef.current.rotation.set(0.08, -0.1, 0);
-        if (headRef.current) headRef.current.rotation.set(0.28, -0.1, 0);
+        const pour = Math.sin(t * 2.5);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25, -0.35, 0.55 + pour * 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.20, 0);
+        if (torsoRef.current) torsoRef.current.rotation.set(0.08, -0.08, 0);
+        if (headRef.current) headRef.current.rotation.set(0.28, -0.08, 0);
 
         if (bottleRef.current) bottleRef.current.visible = true;
         if (sandokRef.current) sandokRef.current.visible = false;
         if (cleaverRef.current) cleaverRef.current.visible = false;
       } else if (task === "TASTE_TEST" || task === "TASTE_EAT") {
-        const sip = Math.sin(t * 1.8);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.55 + Math.max(0, sip) * 0.25, -0.15, -0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.4, 0.1, 0);
+        const sip = Math.sin(t * 1.5);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.48 + sip * 0.15, -0.15, -0.05);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.10, 0);
         if (torsoRef.current) torsoRef.current.rotation.set(0.02, 0, 0);
-        if (headRef.current) headRef.current.rotation.set(-0.10 + Math.sin(t * 3.0) * 0.08, 0, 0); // Nodding
+        if (headRef.current) headRef.current.rotation.set(-0.08 + Math.sin(t * 3.0) * 0.10, 0, 0); // Approving nod
 
-        if (sandokRef.current) sandokRef.current.visible = false;
+        if (sandokRef.current) sandokRef.current.visible = true;
         if (cleaverRef.current) cleaverRef.current.visible = false;
         if (bottleRef.current) bottleRef.current.visible = false;
       } else if (task === "WASH_MEAT" || task === "WASH_GREENS") {
-        const scrub = Math.sin(t * 5.0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.95 + scrub * 0.12, 0.15, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.95 - scrub * 0.12, -0.15, 0);
+        const scrub = Math.sin(t * 4.5);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85 + scrub * 0.12, 0.15, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85 - scrub * 0.12, -0.15, 0);
         if (torsoRef.current) torsoRef.current.rotation.set(0.14, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
 
@@ -4983,8 +5096,6 @@ function AnimatedBarracksChef({
       }
     }
   });
-
-  const skinMat = name === "Mang Cardo" ? MAT_SKIN_BRONZE : MAT_SKIN_MEDIUM;
 
   return (
     <group
@@ -5021,102 +5132,11 @@ function AnimatedBarracksChef({
 
         {/* 🗣️ HIGH-DETAIL SCULPTED FILIPINO HEAD & FACIAL FEATURES */}
         <group ref={headRef} position={[0, 0.60, 0]}>
-          {/* Main Cranium */}
-          <mesh material={skinMat}>
-            <boxGeometry args={[0.22, 0.22, 0.22]} />
-          </mesh>
-          {/* Tapered Filipino Chin / Jaw */}
-          <mesh position={[0, -0.11, 0.02]} material={skinMat}>
-            <boxGeometry args={[0.16, 0.08, 0.16]} />
-          </mesh>
-          {/* Ears */}
-          <mesh position={[-0.115, 0.01, -0.01]} material={skinMat}>
-            <boxGeometry args={[0.015, 0.065, 0.038]} />
-          </mesh>
-          <mesh position={[0.115, 0.01, -0.01]} material={skinMat}>
-            <boxGeometry args={[0.015, 0.065, 0.038]} />
-          </mesh>
-
-          {/* Chef Toque Bandana Wrap */}
-          <group position={[0, 0.09, 0]}>
-            <mesh>
-              <boxGeometry args={[0.24, 0.07, 0.24]} />
-              <meshStandardMaterial color="#FFFFFF" roughness={0.6} />
-            </mesh>
-            <mesh position={[0, 0.06, 0]}>
-              <cylinderGeometry args={[0.13, 0.11, 0.12, 12]} />
-              <meshStandardMaterial color="#FFFFFF" roughness={0.7} />
-            </mesh>
-          </group>
-
-          {/* 👁️ Dark Brown Filipino Eyes */}
-          <group position={[0, 0.035, 0.112]}>
-            {/* Left Eye */}
-            <mesh position={[-0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
-              <boxGeometry args={[0.038, 0.020, 0.005]} />
-            </mesh>
-            <mesh position={[-0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
-              <boxGeometry args={[0.022, 0.018, 0.003]} />
-            </mesh>
-            <mesh position={[-0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
-              <boxGeometry args={[0.012, 0.012, 0.002]} />
-            </mesh>
-
-            {/* Right Eye */}
-            <mesh position={[0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
-              <boxGeometry args={[0.038, 0.020, 0.005]} />
-            </mesh>
-            <mesh position={[0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
-              <boxGeometry args={[0.022, 0.018, 0.003]} />
-            </mesh>
-            <mesh position={[0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
-              <boxGeometry args={[0.012, 0.012, 0.002]} />
-            </mesh>
-          </group>
-
-          {/* Arched Eyebrows */}
-          <group position={[0, 0.065, 0.115]}>
-            <mesh position={[-0.052, 0, 0]} material={MAT_FACE_EYEBROW}>
-              <boxGeometry args={[0.045, 0.008, 0.006]} />
-            </mesh>
-            <mesh position={[0.052, 0, 0]} material={MAT_FACE_EYEBROW}>
-              <boxGeometry args={[0.045, 0.008, 0.006]} />
-            </mesh>
-          </group>
-
-          {/* 👃 Sculpted Nose */}
-          <group position={[0, 0.005, 0.122]}>
-            <mesh position={[0, 0.015, 0]} material={skinMat}>
-              <boxGeometry args={[0.026, 0.045, 0.022]} />
-            </mesh>
-            <mesh position={[0, -0.015, 0.006]} material={skinMat}>
-              <sphereGeometry args={[0.018, 6, 6]} />
-            </mesh>
-            <mesh position={[-0.020, -0.018, 0.002]} material={skinMat}>
-              <boxGeometry args={[0.014, 0.014, 0.015]} />
-            </mesh>
-            <mesh position={[0.020, -0.018, 0.002]} material={skinMat}>
-              <boxGeometry args={[0.014, 0.014, 0.015]} />
-            </mesh>
-          </group>
-
-          {/* 👄 Contoured Lips */}
-          <group position={[0, -0.055, 0.116]}>
-            <mesh material={MAT_FACE_LIPS}>
-              <boxGeometry args={[0.055, 0.012, 0.010]} />
-            </mesh>
-            <mesh position={[0, -0.012, -0.001]} material={MAT_FACE_LIPS}>
-              <boxGeometry args={[0.048, 0.014, 0.010]} />
-            </mesh>
-          </group>
-
-          {/* 👨‍🦰 Distinct Filipino Mustache (Mang Cardo) */}
-          {name === "Mang Cardo" && (
-            <mesh position={[0, -0.040, 0.126]}>
-              <boxGeometry args={[0.095, 0.020, 0.014]} />
-              <meshStandardMaterial color="#1C1917" roughness={0.9} />
-            </mesh>
-          )}
+          <FilipinoCharacterHead
+            skinTone={name === "Mang Cardo" ? "BRONZE" : "MEDIUM"}
+            headwear="CHEF_TOQUE"
+            hasMustache={name === "Mang Cardo"}
+          />
         </group>
 
         {/* Left Arm */}
@@ -5132,18 +5152,24 @@ function AnimatedBarracksChef({
             <boxGeometry args={[0.095, 0.42, 0.095]} />
           </mesh>
 
-          {/* Heavy Steel Cleaver */}
-          <group ref={cleaverRef} position={[0, -0.42, 0.08]} visible={false}>
-            <mesh position={[0, 0, 0.06]} material={MAT_WOOD_CHOPPING}>
-              <cylinderGeometry args={[0.015, 0.015, 0.14, 6]} />
+          {/* Heavy Steel Filipino Meat Cleaver */}
+          <group ref={cleaverRef} position={[0, -0.28, 0.12]} visible={false}>
+            {/* Wooden Riveted Handle */}
+            <mesh position={[0, 0.06, -0.04]} rotation={[0.4, 0, 0]} material={MAT_WOOD_HANDLE}>
+              <cylinderGeometry args={[0.016, 0.016, 0.14, 8]} />
             </mesh>
-            <mesh position={[0, 0.06, 0.16]} material={MAT_CLEAVER_STEEL}>
-              <boxGeometry args={[0.008, 0.12, 0.18]} />
+            {/* Brass / Steel Rivets on handle */}
+            <mesh position={[0, 0.06, -0.04]} material={MAT_CHROME}>
+              <cylinderGeometry args={[0.018, 0.018, 0.04, 6]} />
+            </mesh>
+            {/* Wide Gleaming Heavy Steel Cleaver Blade */}
+            <mesh position={[0, -0.02, 0.08]} material={MAT_CLEAVER_BLADE}>
+              <boxGeometry args={[0.008, 0.15, 0.22]} />
             </mesh>
           </group>
 
           {/* Datu Puti Soy Sauce & Vinegar Bottle */}
-          <group ref={bottleRef} position={[0, -0.42, 0.08]} visible={false}>
+          <group ref={bottleRef} position={[0, -0.28, 0.10]} visible={false}>
             <mesh position={[0, -0.02, 0.06]} material={MAT_DATU_PUTI_YELLOW}>
               <cylinderGeometry args={[0.032, 0.032, 0.18, 10]} />
             </mesh>
@@ -5153,12 +5179,12 @@ function AnimatedBarracksChef({
           </group>
 
           {/* Wooden Cooking Sandok / Ladle */}
-          <group ref={sandokRef} position={[0, -0.42, 0.08]}>
+          <group ref={sandokRef} position={[0, -0.28, 0.10]}>
             <mesh position={[0, 0, 0.14]} rotation={[0.4, 0, 0]} material={MAT_WOOD_CHOPPING}>
               <boxGeometry args={[0.02, 0.015, 0.36]} />
             </mesh>
             <mesh position={[0, -0.04, 0.30]} material={MAT_WOOD_CHOPPING}>
-              <sphereGeometry args={[0.04, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+              <sphereGeometry args={[0.045, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
             </mesh>
           </group>
         </group>
@@ -6248,29 +6274,84 @@ function TemfacilWorkerBarracksCompound({
             </group>
           </group>
 
-          {/* West 3: Food Prep & Hardwood Sangkalang Chopping Block (Z = 4.8) */}
-          <group position={[-0.46, 0.98, 4.8]}>
-            {/* Thick Round End-Grain Hardwood Chopping Block (Sangkalang) */}
+          {/* West 3: Food Prep & Hardwood Sangkalang Chopping Block (Z = 3.6) */}
+          <group position={[-0.48, 0.98, 3.6]}>
+            {/* Thick Round End-Grain Philippine Hardwood Chopping Block (Sangkalang Bilog) */}
             <mesh position={[0, 0.05, 0]} castShadow material={MAT_WOOD_CHOPPING}>
-              <cylinderGeometry args={[0.20, 0.20, 0.08, 16]} />
+              <cylinderGeometry args={[0.26, 0.26, 0.10, 24]} />
             </mesh>
-            {/* Chopped Raw Chicken & Pork Cubes on the Board */}
-            {[-0.05, 0.03, 0.06].map((x, i) => (
-              <mesh key={`raw-meat-${i}`} position={[x, 0.10, (i % 2 === 0 ? 0.03 : -0.04)]} material={MAT_CHICKEN_MEAT}>
-                <boxGeometry args={[0.035, 0.025, 0.035]} />
+
+            {/* Fresh Raw Pork Belly Slab (Liempo) with Pink Meat and White Fat Rind */}
+            <group position={[-0.04, 0.11, 0.02]}>
+              <mesh position={[0, 0.015, 0]} material={MAT_RAW_PORK_FAT}>
+                <boxGeometry args={[0.16, 0.015, 0.10]} />
               </mesh>
+              <mesh position={[0, -0.01, 0]} material={MAT_RAW_PORK_BELLY}>
+                <boxGeometry args={[0.16, 0.025, 0.10]} />
+              </mesh>
+            </group>
+
+            {/* Diced Raw Pork Cubes being chopped */}
+            {[-0.08, -0.02, 0.04].map((x, i) => (
+              <group key={`pork-cube-${i}`} position={[x, 0.11, -0.05]}>
+                <mesh position={[0, 0.008, 0]} material={MAT_RAW_PORK_FAT}>
+                  <boxGeometry args={[0.035, 0.012, 0.035]} />
+                </mesh>
+                <mesh position={[0, -0.008, 0]} material={MAT_RAW_PORK_BELLY}>
+                  <boxGeometry args={[0.035, 0.018, 0.035]} />
+                </mesh>
+              </group>
             ))}
-            {/* Sliced Red Onions (Sibuyas) & Garlic Heads */}
-            <mesh position={[-0.06, 0.10, -0.06]} material={MAT_DATU_PUTI_RED}>
-              <sphereGeometry args={[0.022, 6, 6]} />
+
+            {/* Fresh Sayote Chayote (Whole & Sliced Half) */}
+            <group position={[0.08, 0.12, 0.04]}>
+              <mesh material={MAT_SAYOTE_GREEN}>
+                <sphereGeometry args={[0.045, 10, 10]} />
+              </mesh>
+              <mesh position={[0, 0.03, 0]} material={MAT_SAYOTE_GREEN}>
+                <cylinderGeometry args={[0.02, 0.04, 0.04, 8]} />
+              </mesh>
+            </group>
+
+            {/* Sliced Sayote Wedge */}
+            <mesh position={[0.06, 0.11, -0.04]} material={MAT_SAYOTE_GREEN}>
+              <boxGeometry args={[0.04, 0.025, 0.05]} />
             </mesh>
-            <mesh position={[0.08, 0.10, 0.06]} material={MAT_GARLIC_RICE_TOASTED}>
-              <sphereGeometry args={[0.018, 6, 6]} />
+
+            {/* Kalabasa Squash Wedge with Dark Green Rind & Orange Flesh */}
+            <group position={[-0.10, 0.12, 0.06]}>
+              <mesh material={MAT_KALABASA_ORANGE}>
+                <boxGeometry args={[0.06, 0.035, 0.05]} />
+              </mesh>
+              <mesh position={[0, 0.02, 0]} material={MAT_KALABASA_SKIN}>
+                <boxGeometry args={[0.062, 0.008, 0.052]} />
+              </mesh>
+            </group>
+
+            {/* Red Onions (Sibuyas Tagalog) & Peeled Garlic Cloves */}
+            <mesh position={[-0.08, 0.11, -0.09]} material={MAT_ONION_RED}>
+              <sphereGeometry args={[0.024, 8, 8]} />
             </mesh>
-            {/* Stainless Meat Prep Tray */}
-            <mesh position={[0.18, 0.02, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
-              <boxGeometry args={[0.16, 0.02, 0.32]} />
+            <mesh position={[0.02, 0.11, -0.09]} material={MAT_GARLIC_CLOVE}>
+              <sphereGeometry args={[0.016, 6, 6]} />
             </mesh>
+            <mesh position={[0.05, 0.11, -0.08]} material={MAT_GINGER_ROOT}>
+              <boxGeometry args={[0.035, 0.018, 0.025]} />
+            </mesh>
+
+            {/* Large Stainless Steel Catch Prep Bandeha Tray */}
+            <group position={[0.22, 0.02, 0]}>
+              <mesh material={MAT_FOOD_STAINLESS_TRAY}>
+                <boxGeometry args={[0.20, 0.03, 0.40]} />
+              </mesh>
+              {/* Prepped ingredients inside tray */}
+              <mesh position={[0, 0.025, -0.08]} material={MAT_RAW_PORK_BELLY}>
+                <boxGeometry args={[0.16, 0.02, 0.16]} />
+              </mesh>
+              <mesh position={[0, 0.025, 0.08]} material={MAT_SAYOTE_GREEN}>
+                <boxGeometry args={[0.16, 0.02, 0.14]} />
+              </mesh>
+            </group>
           </group>
 
           {/* West 4: Stainless Double Washing Sink with Running Water (Z = 7.2) */}

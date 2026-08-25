@@ -227,5 +227,17 @@ export const MAT_SOAP_SUDS = new THREE.MeshStandardMaterial({ color: "#FFFFFF", 
 export const MAT_THERMOS_FLASK = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.3, metalness: 0.7 });
 export const MAT_COFFEE_MUG = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.4, metalness: 0.1 });
 
+// 🥩 FRESH FILIPINO KITCHEN INGREDIENTS & CLEAVER
+export const MAT_RAW_PORK_BELLY = new THREE.MeshStandardMaterial({ color: "#F43F5E", roughness: 0.45, metalness: 0.05 });
+export const MAT_RAW_PORK_FAT = new THREE.MeshStandardMaterial({ color: "#FFF1F2", roughness: 0.40, metalness: 0.05 });
+export const MAT_SAYOTE_GREEN = new THREE.MeshStandardMaterial({ color: "#84CC16", roughness: 0.50, metalness: 0.02 });
+export const MAT_KALABASA_ORANGE = new THREE.MeshStandardMaterial({ color: "#EA580C", roughness: 0.55, metalness: 0.02 });
+export const MAT_KALABASA_SKIN = new THREE.MeshStandardMaterial({ color: "#15803D", roughness: 0.60, metalness: 0.02 });
+export const MAT_ONION_RED = new THREE.MeshStandardMaterial({ color: "#9D174D", roughness: 0.40, metalness: 0.05 });
+export const MAT_GARLIC_CLOVE = new THREE.MeshStandardMaterial({ color: "#FEF9C3", roughness: 0.50, metalness: 0.0 });
+export const MAT_GINGER_ROOT = new THREE.MeshStandardMaterial({ color: "#D97706", roughness: 0.65, metalness: 0.0 });
+export const MAT_CLEAVER_BLADE = new THREE.MeshStandardMaterial({ color: "#E2E8F0", roughness: 0.15, metalness: 0.95 });
+export const MAT_WOOD_HANDLE = new THREE.MeshStandardMaterial({ color: "#78350F", roughness: 0.70, metalness: 0.05 });
+
 
 
