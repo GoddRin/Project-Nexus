@@ -98,6 +98,7 @@ import {
   ROAD_CONSTANTS,
   getRoadTransform,
   getSplineTransform,
+  getSiteSurfaceY,
 } from "./uphillRoadConfig";
 import { FILIPINO_PERSONNEL_REGISTRY } from "./personnelData";
 import { FilipinoCharacterHead } from "./TemfacilFacility";
@@ -3170,9 +3171,9 @@ function AutonomousSiteTrafficSystem({
       });
 
       // 6. Compute 3D Transform, Pitch & Orientation with Active Hard Wall Collision Resolution
-      const dCenter = getSplineTransform(veh.spline, veh.u, 0, 0.08);
-      const dAhead = getSplineTransform(veh.spline, veh.u + 0.012, 0, 0.08);
-      const dBehind = getSplineTransform(veh.spline, veh.u - 0.012, 0, 0.08);
+      const dCenter = getSplineTransform(veh.spline, veh.u, 0, 0.04);
+      const dAhead = getSplineTransform(veh.spline, veh.u + 0.012, 0, 0.04);
+      const dBehind = getSplineTransform(veh.spline, veh.u - 0.012, 0, 0.04);
 
       // Active Hard Wall Collision Avoidance & Exterior Boundary Push-Out
       const safeTransform = resolveBuildingCollisions(dCenter.point, dCenter.tangent, 2.2);
@@ -3849,15 +3850,15 @@ export function AnimatedSiteEntities({
       />
 
       {/* ═══ 4. EXECUTIVE SITE OFFICE PARKING STALLS ═══ */}
-      <group position={[77, sampleTerrainY(77, -95), -95]} rotation={[0, 0, 0]}>
+      <group position={[77, getSiteSurfaceY(77, -95) + 0.02, -95]} rotation={[0, 0, 0]}>
         <SCICSitePickupTruck bodyColor="#1E293B" headlightsOn={false} />
       </group>
 
       {/* ═══ 5. DESIGNATED MOTORCYCLE PARKING BAYS ═══ */}
-      <group position={[108, sampleTerrainY(108, -56), -56]}>
+      <group position={[108, getSiteSurfaceY(108, -56) + 0.02, -56]}>
         <PhilippineSiteMotorcycle color="#EA580C" kickstandUp={false} />
       </group>
-      <group position={[112, sampleTerrainY(112, -56), -56]}>
+      <group position={[112, getSiteSurfaceY(112, -56) + 0.02, -56]}>
         <PhilippineSiteMotorcycle color="#0284C7" kickstandUp={false} />
       </group>
 

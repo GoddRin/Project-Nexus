@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { sampleTerrainY } from "./AnimatedSiteEntities";
+import { getSiteSurfaceY } from "./uphillRoadConfig";
 
 // ═══ HIGH-PERFORMANCE SHARED MODULE-SCOPE BUFFERGEOMETRIES ═══
 const GEO_UNIT_BOX = new THREE.BoxGeometry(1, 1, 1);
@@ -326,8 +327,8 @@ export function SupercarEntity({
       const currentPt = circuitSpline.getPointAt(u);
       const tangent = circuitSpline.getTangentAt(u).normalize();
 
-      const terrainY = sampleTerrainY(currentPt.x, currentPt.z);
-      const targetY = Math.max(currentPt.y, terrainY + 0.05);
+      const surfaceY = getSiteSurfaceY(currentPt.x, currentPt.z);
+      const targetY = Math.max(currentPt.y, surfaceY + 0.05);
 
       rootRef.current.position.set(currentPt.x, targetY, currentPt.z);
 
