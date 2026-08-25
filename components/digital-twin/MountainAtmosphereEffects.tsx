@@ -55,7 +55,7 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
       {/* ─── ☀️ AFTERNOON EFFECTS ─── */}
       {isAfternoon && (
         <>
-          <CumulusMountainClouds />
+          <DistantMountainRidgeClouds />
           <SwitchyardHeatShimmer />
           <HighAltitudeRaptor />
         </>
@@ -256,41 +256,57 @@ function MountainSwallowFlock() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. CUMULUS MOUNTAIN CLOUDS (Afternoon 3D Drifting Cloud Formations)
+// 4. DISTANT SIERRA MADRE RIDGE CLOUD BANKS (High-Altitude Soft Mountain Fluff)
 // ─────────────────────────────────────────────────────────────────────────────
-function CumulusMountainClouds() {
+function DistantMountainRidgeClouds() {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    const t = clock.getElapsedTime() * 0.35;
-    groupRef.current.position.x = (t * 4.0) % 500 - 250;
+    const t = clock.getElapsedTime() * 0.08;
+    // Gentle mountain ridge drift
+    groupRef.current.position.x = Math.sin(t * 0.4) * 12.0;
   });
 
-  const cloudClusters = useMemo(() => {
+  const ridgePuffs = useMemo(() => {
     return [
-      { pos: [-120, 110, -180] as [number, number, number], scale: 28 },
-      { pos: [-40, 125, -220] as [number, number, number], scale: 35 },
-      { pos: [60, 115, -190] as [number, number, number], scale: 32 },
-      { pos: [160, 105, -230] as [number, number, number], scale: 40 },
+      // Far eastern Sierra Madre mountain ridge banks (Z: -380 to -520, Y: 160 to 220)
+      { pos: [-160, 180, -420] as [number, number, number], scale: [120, 32, 60] as [number, number, number], rot: 0.1 },
+      { pos: [-60, 195, -480] as [number, number, number], scale: [140, 38, 70] as [number, number, number], rot: -0.15 },
+      { pos: [80, 190, -450] as [number, number, number], scale: [150, 36, 65] as [number, number, number], rot: 0.08 },
+      { pos: [220, 175, -410] as [number, number, number], scale: [130, 30, 55] as [number, number, number], rot: -0.05 },
+      // High-altitude mountain crest fluff
+      { pos: [-240, 210, -510] as [number, number, number], scale: [160, 42, 75] as [number, number, number], rot: 0.2 },
+      { pos: [140, 220, -540] as [number, number, number], scale: [170, 45, 80] as [number, number, number], rot: -0.12 },
     ];
   }, []);
 
   return (
     <group ref={groupRef}>
-      {cloudClusters.map((c, idx) => (
-        <group key={`cloud-${idx}`} position={c.pos}>
+      {ridgePuffs.map((p, idx) => (
+        <group key={`ridge-cloud-${idx}`} position={p.pos} rotation={[0, p.rot, 0]}>
+          {/* Main soft billowy body */}
           <mesh position={[0, 0, 0]}>
-            <sphereGeometry args={[c.scale * 0.7, 12, 10]} />
-            <meshStandardMaterial color="#FFFFFF" roughness={0.9} transparent opacity={0.88} />
+            <sphereGeometry args={[1, 16, 12]} />
+            <meshStandardMaterial
+              color="#F8FAFC"
+              roughness={0.95}
+              metalness={0.0}
+              transparent
+              opacity={0.38}
+              depthWrite={false}
+            />
           </mesh>
-          <mesh position={[-c.scale * 0.45, -c.scale * 0.1, c.scale * 0.2]}>
-            <sphereGeometry args={[c.scale * 0.55, 10, 8]} />
-            <meshStandardMaterial color="#F8FAFC" roughness={0.9} transparent opacity={0.85} />
-          </mesh>
-          <mesh position={[c.scale * 0.5, -c.scale * 0.15, -c.scale * 0.1]}>
-            <sphereGeometry args={[c.scale * 0.6, 10, 8]} />
-            <meshStandardMaterial color="#F8FAFC" roughness={0.9} transparent opacity={0.85} />
+          {/* Soft shadow base for convective cumulus look */}
+          <mesh position={[0, -0.25, 0]} scale={[p.scale[0] * 0.95, p.scale[1] * 0.35, p.scale[2] * 0.95]}>
+            <sphereGeometry args={[1, 12, 8]} />
+            <meshStandardMaterial
+              color="#94A3B8"
+              roughness={1.0}
+              transparent
+              opacity={0.22}
+              depthWrite={false}
+            />
           </mesh>
         </group>
       ))}
