@@ -95,6 +95,9 @@ import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDe
 import { getEquipmentByLocation } from "@/app/(dashboard)/dashboard/sitemap/actions";
 import type { PagasaSignalData } from "@/lib/weather/pagasa";
 import { isWithinPAR } from "@/lib/weather/gdacs";
+import { RealisticSkyAtmosphere, type AtmosphereTimeMode } from "./RealisticSkyAtmosphere";
+import { MountainAtmosphereEffects } from "./MountainAtmosphereEffects";
+import { SiteAudioControls } from "./SiteAudioControls";
 import { cn } from "@/lib/utils";
 
 /**
@@ -781,7 +784,7 @@ function getFormattedPHTime(): string {
   }).format(now);
 }
 
-function getAutomaticPHTimeMode(): "MORNING" | "AFTERNOON" | "NIGHT" {
+function getAutomaticPHTimeMode(): AtmosphereTimeMode {
   const now = new Date();
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Manila",
@@ -789,12 +792,13 @@ function getAutomaticPHTimeMode(): "MORNING" | "AFTERNOON" | "NIGHT" {
     hour12: false,
   });
   const hour = parseInt(formatter.format(now), 10);
-  if (hour >= 6 && hour < 12) return "MORNING";
-  if (hour >= 12 && hour < 18) return "AFTERNOON";
+  if (hour >= 5 && hour < 11) return "MORNING";
+  if (hour >= 11 && hour < 17) return "AFTERNOON";
+  if (hour >= 17 && hour < 19) return "SUNSET";
   return "NIGHT";
 }
 
-function PhilippineTimeChip({ effectiveTime }: { effectiveTime: "MORNING" | "AFTERNOON" | "NIGHT" }) {
+function PhilippineTimeChip({ effectiveTime }: { effectiveTime: AtmosphereTimeMode }) {
   const [phTimeStr, setPhTimeStr] = useState<string>("");
 
   useEffect(() => {
@@ -806,17 +810,31 @@ function PhilippineTimeChip({ effectiveTime }: { effectiveTime: "MORNING" | "AFT
   }, []);
 
   return (
-    <div className="rounded-lg border border-amber-500/40 bg-black/85 text-amber-300 px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-1.5 shrink-0">
+    <div className={cn(
+      "rounded-lg border px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-1.5 shrink-0 transition-all",
+      effectiveTime === "MORNING" && "border-amber-500/40 bg-black/85 text-amber-300",
+      effectiveTime === "AFTERNOON" && "border-sky-500/40 bg-black/85 text-sky-300",
+      effectiveTime === "SUNSET" && "border-orange-500/50 bg-black/85 text-orange-300",
+      effectiveTime === "NIGHT" && "border-indigo-500/40 bg-black/85 text-indigo-300"
+    )}>
       {effectiveTime === "MORNING" ? (
         <SunMedium className="h-3 w-3 text-amber-400 animate-spin-slow" />
       ) : effectiveTime === "AFTERNOON" ? (
-        <Sun className="h-3 w-3 text-amber-300" />
+        <Sun className="h-3 w-3 text-sky-300" />
+      ) : effectiveTime === "SUNSET" ? (
+        <Sunset className="h-3 w-3 text-orange-400 animate-pulse" />
       ) : (
-        <Moon className="h-3 w-3 text-cyan-300" />
+        <Moon className="h-3 w-3 text-indigo-300" />
       )}
       <span className="font-semibold text-white/90">PHT:</span>
       <span className="font-bold tracking-wider">{phTimeStr || "--:--:--"}</span>
-      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+      <span className={cn(
+        "text-[9px] font-bold px-1.5 py-0.5 rounded border",
+        effectiveTime === "MORNING" && "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        effectiveTime === "AFTERNOON" && "bg-sky-500/20 text-sky-300 border-sky-500/30",
+        effectiveTime === "SUNSET" && "bg-orange-500/20 text-orange-300 border-orange-500/30",
+        effectiveTime === "NIGHT" && "bg-indigo-500/20 text-indigo-300 border-indigo-500/30"
+      )}>
         {effectiveTime}
       </span>
     </div>
@@ -1858,7 +1876,7 @@ function PlantSceneInner({
   flowIntensity = 0.85,
   isXRay = false,
   isStormActive = false,
-  effectiveTime = "AFTERNOON",
+  effectiveTime = "MORNING",
   isFreeNav = false,
   onUserInteract,
   resetToken = 0,
@@ -1874,7 +1892,7 @@ function PlantSceneInner({
   flowIntensity?: number;
   isXRay?: boolean;
   isStormActive?: boolean;
-  effectiveTime?: "MORNING" | "AFTERNOON" | "NIGHT";
+  effectiveTime?: AtmosphereTimeMode;
   isFreeNav?: boolean;
   onUserInteract: () => void;
   resetToken?: number;
@@ -1886,60 +1904,65 @@ function PlantSceneInner({
   const isNight = effectiveTime === "NIGHT";
   const isMorning = effectiveTime === "MORNING";
   const isAfternoon = effectiveTime === "AFTERNOON";
+  const isSunset = effectiveTime === "SUNSET";
 
   const ambientColor = isStormActive
     ? "#8899aa"
     : isNight
-    ? "#0F172A"
+    ? "#0B132B"
+    : isSunset
+    ? "#FF8A65"
     : isMorning
-    ? "#F5EFE6"
+    ? "#FFF1D0"
     : "#F1F5F9";
 
   const ambientIntensity = isStormActive
     ? 0.45
     : isNight
     ? 0.28
+    : isSunset
+    ? 0.65
     : isMorning
-    ? 0.7
-    : 0.78;
+    ? 0.72
+    : 0.8;
 
   const hemiTopColor = isStormActive
     ? "#5a7090"
     : isNight
-    ? "#0F172A"
+    ? "#1E293B"
+    : isSunset
+    ? "#8E24AA"
     : isMorning
-    ? "#93C5FD"
-    : "#7DD3FC";
+    ? "#60A5FA"
+    : "#38BDF8";
 
   const hemiGroundColor = isStormActive
     ? "#5A6050"
     : isNight
     ? "#020617"
+    : isSunset
+    ? "#2A1B28"
     : isMorning
-    ? "#4B5563"
-    : "#374151";
+    ? "#3B4830"
+    : "#2C3E25";
 
   const sunLightParams = isNight
-    ? { pos: [-60, 80, -40] as [number, number, number], color: "#93C5FD", intensity: 0.8 }
+    ? { pos: [-50, 75, -45] as [number, number, number], color: "#93C5FD", intensity: 0.75 }
+    : isSunset
+    ? { pos: [-110, 24, -55] as [number, number, number], color: "#FF7043", intensity: 2.1 }
     : isMorning
-    ? { pos: [90, 55, 60] as [number, number, number], color: "#FFE8C2", intensity: 2.1 }
-    : { pos: [50, 75, 35] as [number, number, number], color: "#FFF8EE", intensity: 2.2 };
+    ? { pos: [110, 48, 65] as [number, number, number], color: "#FFE2A0", intensity: 2.3 }
+    : { pos: [35, 88, 30] as [number, number, number], color: "#FFFDF0", intensity: 2.4 };
 
   const fogArgs: [string, number, number] = isStormActive
-    ? ["#1a2535", 40, 180]
+    ? ["#182230", 40, 200]
     : isNight
-    ? ["#050B14", 80, 300]
+    ? ["#050B14", 90, 380]
+    : isSunset
+    ? ["#FF8A65", 140, 480]
     : isMorning
-    ? ["#E6F0FA", 140, 400]
-    : ["#D9E8F5", 160, 420];
-
-  const bgColor = isStormActive
-    ? "#111822"
-    : isNight
-    ? "#050B14"
-    : isMorning
-    ? "#1C2E3D"
-    : "#1e2d3d";
+    ? ["#FED7AA", 180, 520]
+    : ["#E0F2FE", 200, 580];
 
   return (
     <>
@@ -1954,10 +1977,10 @@ function PlantSceneInner({
         isGtaModeActive={isGtaModeActive}
       />
 
-      {/* Scene Background — Dynamic Tropical Mountain Setting */}
-      <color attach="background" args={[bgColor]} />
+      {/* 🏔️ Realistic Sierra Madre Atmospheric Sky Dome (Rayleigh/Mie Scattering) */}
+      <RealisticSkyAtmosphere timeMode={effectiveTime} isStormActive={isStormActive} />
 
-      {/* PBR Lighting Rig — Dynamic Time of Day (Morning / Afternoon / Night) */}
+      {/* PBR Lighting Rig — Dynamic Time of Day (Morning / Afternoon / Sunset / Night) */}
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
       <hemisphereLight intensity={isNight ? 0.35 : 0.55} color={hemiTopColor} groundColor={hemiGroundColor} />
       <Environment preset="apartment" environmentIntensity={isStormActive ? 0.25 : isNight ? 0.12 : 0.38} />
@@ -1981,33 +2004,25 @@ function PlantSceneInner({
       {/* Cool Sky Fill Light */}
       <directionalLight
         position={[-40, 45, -30]}
-        intensity={isStormActive ? 0.3 : isNight ? 0.15 : 0.45}
-        color={isStormActive ? "#6688aa" : isNight ? "#1E293B" : "#B0D4FF"}
+        intensity={isStormActive ? 0.3 : isNight ? 0.15 : isSunset ? 0.35 : 0.45}
+        color={isStormActive ? "#6688aa" : isNight ? "#1E293B" : isSunset ? "#8E24AA" : "#B0D4FF"}
       />
 
       {/* Warm Ground Bounce */}
       <directionalLight
         position={[0, -15, 0]}
-        intensity={isStormActive ? 0.15 : isNight ? 0.08 : 0.2}
-        color="#DEB887"
+        intensity={isStormActive ? 0.15 : isNight ? 0.08 : 0.22}
+        color={isSunset ? "#FF7043" : isMorning ? "#FED7AA" : "#DEB887"}
       />
 
-      {/* Atmospheric Fog */}
+      {/* Atmospheric Fog Harmonized with Horizon */}
       <fog attach="fog" args={fogArgs} />
 
-      {/* 🌅 MORNING EFFECTS: Soaring Bird Flock in V-Formation */}
-      {!isStormActive && isMorning && <MorningBirdFlock />}
-
-      {/* 🌙 NIGHT EFFECTS: Starry Sky, Fireflies & Site Floodlights */}
-      {!isStormActive && isNight && <NightStarrySky count={250} />}
-      {!isStormActive && isNight && <NightFireflies count={60} />}
-      {!isStormActive && isNight && <NightSiteFloodlights />}
-
-      {/* ☀️ AFTERNOON EFFECTS: Ambient Dust Motes in Clear Rural Atmosphere */}
-      {!isStormActive && isAfternoon && <DustParticles count={25} />}
+      {/* 🌲 Sierra Madre Mountain Biophysical & Particle Effects Engine */}
+      <MountainAtmosphereEffects timeMode={effectiveTime} isStormActive={isStormActive} />
 
       {/* 🌧️ TYPHOON STORM: Rain Streaks */}
-      {isStormActive && <RainParticles count={150} />}
+      {isStormActive && <RainParticles count={180} />}
 
       <Grid
         position={[0, 0.01, 0]}
@@ -2524,8 +2539,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   const [isLocomotionLabOpen, setIsLocomotionLabOpen] = useState<boolean>(false);
 
   // Time-of-day visual mode (initialized dynamically from live Philippine Time)
-  type TimeMode = "MORNING" | "AFTERNOON" | "NIGHT";
-  const [timeMode, setTimeMode] = useState<TimeMode>(getAutomaticPHTimeMode);
+  const [timeMode, setTimeMode] = useState<AtmosphereTimeMode>(getAutomaticPHTimeMode);
 
   // Filipino Personnel Dossier & Workforce modal state
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState<boolean>(false);
@@ -2697,6 +2711,9 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
         <div className="pointer-events-auto flex flex-wrap items-center gap-2 flex-1 min-w-0 pr-2">
           {/* 🇵🇭 Real-Time Philippine Time & Time-of-Day Status Chip */}
           <PhilippineTimeChip effectiveTime={timeMode} />
+
+          {/* 🔊 Sierra Madre Soundscape & Audio Controls */}
+          <SiteAudioControls timeMode={timeMode} isStormActive={isStormActive} />
 
           {/* Environmental Weather Status Chip */}
           <div
@@ -2942,16 +2959,17 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
 
                 {/* Time of Day Cycle Buttons */}
                 <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1">
-                  <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider">Atmosphere Time</span>
-                  <div className="grid grid-cols-3 gap-1">
+                  <span className="font-mono text-[9px] text-text-muted uppercase tracking-wider">Atmosphere Time (Sierra Madre)</span>
+                  <div className="grid grid-cols-2 gap-1">
                     <Button
                       variant={timeMode === "MORNING" ? "default" : "outline"}
                       size="sm"
                       className={cn(
-                        "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                        "font-mono text-[10px] h-6 px-1.5 justify-center transition-all",
                         timeMode === "MORNING" && "border-amber-400/80 bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40"
                       )}
                       onClick={() => setTimeMode("MORNING")}
+                      title="Morning Dawn & Valley Mist (05:00 - 11:00)"
                     >
                       <SunMedium className="h-3 w-3 mr-1 text-amber-400" />
                       Morning
@@ -2960,22 +2978,37 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
                       variant={timeMode === "AFTERNOON" ? "default" : "outline"}
                       size="sm"
                       className={cn(
-                        "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                        "font-mono text-[10px] h-6 px-1.5 justify-center transition-all",
                         timeMode === "AFTERNOON" && "border-sky-400/80 bg-sky-500/20 text-sky-300 ring-1 ring-sky-400/40"
                       )}
                       onClick={() => setTimeMode("AFTERNOON")}
+                      title="Tropical Midday & Cumulus Clouds (11:00 - 17:00)"
                     >
-                      <Sun className="h-3 w-3 mr-1 text-amber-300" />
+                      <Sun className="h-3 w-3 mr-1 text-sky-300" />
                       Day
+                    </Button>
+                    <Button
+                      variant={timeMode === "SUNSET" ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "font-mono text-[10px] h-6 px-1.5 justify-center transition-all",
+                        timeMode === "SUNSET" && "border-orange-400/80 bg-orange-500/20 text-orange-300 ring-1 ring-orange-400/40"
+                      )}
+                      onClick={() => setTimeMode("SUNSET")}
+                      title="Alpenglow Sunset & Twilight (17:00 - 19:00)"
+                    >
+                      <Sunset className="h-3 w-3 mr-1 text-orange-400" />
+                      Sunset
                     </Button>
                     <Button
                       variant={timeMode === "NIGHT" ? "default" : "outline"}
                       size="sm"
                       className={cn(
-                        "font-mono text-[10px] h-6 px-1 justify-center transition-all",
+                        "font-mono text-[10px] h-6 px-1.5 justify-center transition-all",
                         timeMode === "NIGHT" && "border-indigo-400/80 bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/40"
                       )}
                       onClick={() => setTimeMode("NIGHT")}
+                      title="Starry Night & Fireflies (19:00 - 05:00)"
                     >
                       <Moon className="h-3 w-3 mr-1 text-indigo-300" />
                       Night
