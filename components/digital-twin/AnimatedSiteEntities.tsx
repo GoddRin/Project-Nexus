@@ -1110,11 +1110,17 @@ export function HydroProjectPersonMesh({
    2. TUESDAY MORNING SAFETY TOOLBOX MEETING DIRECTOR & WORKFORCE FORMATION
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export function CourtToolboxMeetingDirector() {
+export function CourtToolboxMeetingDirector({
+  onSelectPerson,
+}: {
+  onSelectPerson?: (id: string) => void;
+}) {
   return (
     <group>
       {/* ── KEY HEADS, SUPERVISORS & ENGINEERS (ON STAGE WITH WHITE HARD HATS) ── */}
       <HydroProjectPersonMesh
+        personnelId="ESH_ALFREDO_ARIZ"
+        onSelectPerson={onSelectPerson}
         speakerType="SAFETY_HEAD"
         role="SAFETY_HEAD"
         skinTone="BRONZE"
@@ -1129,6 +1135,8 @@ export function CourtToolboxMeetingDirector() {
       />
 
       <HydroProjectPersonMesh
+        personnelId="HR_ROVIGAIL_ABELLAR"
+        onSelectPerson={onSelectPerson}
         speakerType="HR_HEAD"
         role="HR_OFFICER"
         gender="FEMALE"
@@ -1144,6 +1152,8 @@ export function CourtToolboxMeetingDirector() {
       />
 
       <HydroProjectPersonMesh
+        personnelId="PM_ROMEO_SESE"
+        onSelectPerson={onSelectPerson}
         speakerType="PROJECT_MANAGER"
         role="PROJECT_MANAGER"
         skinTone="LIGHT"
@@ -1160,6 +1170,8 @@ export function CourtToolboxMeetingDirector() {
       {/* ═══ LEFT FORMATION LINE (X = 123.5) - SITE NURSE & PLANNING ENGINEER ═══ */}
       {/* Site Nurse */}
       <HydroProjectPersonMesh
+        personnelId="NURSE_RUSSELLE_ALCANTARA"
+        onSelectPerson={onSelectPerson}
         position={[123.5, 14.10, -81.0]}
         rotation={[0, Math.PI, 0]}
         gender="FEMALE"
@@ -1178,6 +1190,8 @@ export function CourtToolboxMeetingDirector() {
 
       {/* Planning Engineer Head */}
       <HydroProjectPersonMesh
+        personnelId="PLANNING_MAY_PARALLAG"
+        onSelectPerson={onSelectPerson}
         position={[123.5, 14.10, -76.5]}
         rotation={[0, Math.PI, 0]}
         gender="MALE"
@@ -2023,7 +2037,7 @@ export function AnimatedSecurityGateOfficer({
       position={[4.4, 0, 0.8]}
       onClick={(e) => {
         e.stopPropagation();
-        if (onSelectPerson) onSelectPerson("SG_ROBERTO_DIZON");
+        if (onSelectPerson) onSelectPerson("SEC_RONALD_MALTO");
       }}
     >
       {/* ── SG Roberto "Bert" Dizon Realistic Filipino Security Guard Anatomy ── */}
@@ -2959,10 +2973,10 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
     if (frameTickRef.current % 2 !== 0) return;
     const t = clock.getElapsedTime();
 
-    // 50-second continuous structural QA/QC inspection routine along dry elevated West Walkway
+    // 50-second continuous structural QA/QC inspection routine along dry concrete apron walkway
     const cycle = t % 50.0;
     const walkwayX = -10.8;
-    const walkwayY = 5.72;
+    const walkwayY = 0.55; // Solidly grounded on the concrete apron floor next to floodwall
 
     let targetX = walkwayX;
     let targetZ = 7.5;
@@ -2972,7 +2986,7 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
     let task = "WALKING";
 
     if (cycle < 12.0) {
-      // Phase 1: Walking south along elevated floodwall inspection walkway
+      // Phase 1: Walking south along floodwall inspection walkway
       const p = cycle / 12.0;
       targetZ = THREE.MathUtils.lerp(7.5, 16.5, p);
       rotY = 0; // facing south
@@ -3230,19 +3244,38 @@ export function AnimatedSiteEntities({
 
   return (
     <group>
-      {/* ═══ 1. HIGH-PRECISION CIVIL CONSTRUCTION WORKFORCE (HEPP SITE CREWS) ═══ */}
-      {/* 👷 Tailrace Civil QA/QC Quality Engineer (Engr. Jimmy M. Aquino) on dry elevated walkway */}
+      {/* ═══ 1. HIGH-PRECISION POWERHOUSE, DAM & TUNNEL FIELD WORKFORCE ═══ */}
+      {/* 👷 Tailrace Civil QA/QC Quality Engineer (Engr. Jimmy M. Aquino) on dry concrete apron floor */}
       <TailraceCivilQCEngineer onSelectPerson={onSelectPerson} />
 
-      {/* Electrical Superintendent (Eduardo De Francia) on dry switchyard platform */}
+      {/* ⚡ Superintendent I - Mechanical (Eugenio D. Hanopol) at Powerhouse Turbine Bay TU-01 */}
+      <HydroProjectPersonMesh
+        personnelId="SUPT_EUGENIO_HANOPOL"
+        onSelectPerson={onSelectPerson}
+        position={[-2.0, 0.55, 0.0]}
+        rotation={[0, 0, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasGlasses={false}
+        facialHair="MUSTACHE"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="TABLET"
+      />
+
+      {/* ⚡ Electrical Superintendent (Eduardo G. De Francia) on dry switchyard platform */}
       <HydroProjectPersonMesh
         personnelId="SUPT_EDUARDO_DEFRANCIA"
         onSelectPerson={onSelectPerson}
-        position={[18, 1.20, -6]}
+        position={[18.0, 0.55, -6.0]}
         rotation={[0, Math.PI / 4, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
         hasGlasses={false}
+        facialHair="MUSTACHE"
         hasHardhat
         hardhatColor="#FFFFFF"
         hasVest
@@ -3250,11 +3283,44 @@ export function AnimatedSiteEntities({
         pantsStyle="JEANS"
         accessory="RADIO"
       />
-      {/* Civil Works Supervisor (Foreman Jaime Caño Jr.) on dry powerhouse entrance apron */}
+
+      {/* ⚡ Supervisor III - Electrical Works (Josue A. Abellera) at Powerhouse IPB Busduct Yard */}
+      <HydroProjectPersonMesh
+        personnelId="ELEC_JOSUE_ABELLERA"
+        onSelectPerson={onSelectPerson}
+        position={[12.0, 0.55, 2.0]}
+        rotation={[0, -Math.PI / 2, 0]}
+        skinTone="BRONZE"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#0284C7"
+        hasVest
+        vestColor="#0284C7"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* ⚡ Foreman I - Electrical (Warlito D. De Francia) at Powerhouse Control Cubicle Bay */}
+      <HydroProjectPersonMesh
+        personnelId="FOREMAN_WARLITO_DEFRANCIA"
+        onSelectPerson={onSelectPerson}
+        position={[4.0, 6.2, -2.0]}
+        rotation={[0, Math.PI, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#0284C7"
+        hasVest
+        vestColor="#0284C7"
+        pantsStyle="JEANS"
+        accessory="BINDER"
+      />
+
+      {/* 🏗️ Supervisor III - Civil Works (Jaime B. Caño Jr.) at Powerhouse Apron */}
       <HydroProjectPersonMesh
         personnelId="CIVIL_JAIME_CANO"
         onSelectPerson={onSelectPerson}
-        position={[8, 0.80, -12]}
+        position={[8.0, 0.55, -12.0]}
         rotation={[0, -Math.PI / 3, 0]}
         skinTone="BRONZE"
         hasHardhat
@@ -3263,6 +3329,136 @@ export function AnimatedSiteEntities({
         vestColor="#EA580C"
         pantsStyle="JEANS"
         accessory="CLIPBOARD"
+      />
+
+      {/* 🏗️ Supervisor III - Civil Works & 4S (Henry V. Estrada) at Spillway Outfall Bank */}
+      <HydroProjectPersonMesh
+        personnelId="CIVIL_HENRY_ESTRADA"
+        onSelectPerson={onSelectPerson}
+        position={[-14.0, 0.55, 22.0]}
+        rotation={[0, Math.PI / 3, 0]}
+        skinTone="BRONZE"
+        hairStyle="SHORT"
+        facialHair="MUSTACHE"
+        hasHardhat
+        hardhatColor="#16A34A"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* 🏗️ Foreman III - Civil Structures (Anthony B. Rosales) at Penstock Anchor Block #3 */}
+      <HydroProjectPersonMesh
+        personnelId="FOREMAN_ANTHONY_ROSALES"
+        onSelectPerson={onSelectPerson}
+        position={[-4.0, 4.5, -8.0]}
+        rotation={[0, Math.PI / 6, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#16A34A"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="RADIO"
+      />
+
+      {/* 📐 Surveyor III - Lead Geodetic Surveyor (Johnny P. Farong-ey) at Penstock Ridge Sighting Station */}
+      <HydroProjectPersonMesh
+        personnelId="SURVEYOR_JOHNNY_FARONGEY"
+        onSelectPerson={onSelectPerson}
+        position={[18.0, 14.5, -26.0]}
+        rotation={[0, -Math.PI / 2, 0]}
+        skinTone="BRONZE"
+        hasHardhat
+        hardhatColor="#EAB308"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="KHAKI"
+        accessory="CLIPBOARD"
+      />
+
+      {/* 🪨 Geological Mapper & Engineering Geologist (Amor Teofilo Floresca Jr.) at Mountain Slope Rock Face */}
+      <HydroProjectPersonMesh
+        personnelId="GEO_AMOR_FLORESCA"
+        onSelectPerson={onSelectPerson}
+        position={[6.0, 10.5, -20.0]}
+        rotation={[0, Math.PI / 4, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* 🔬 QC Engineer II - Tunnel & Geotechnical (Engr. Jairuz O. Batac) at Headrace Tunnel Portal */}
+      <HydroProjectPersonMesh
+        personnelId="QC_JAIRUZ_BATAC"
+        onSelectPerson={onSelectPerson}
+        position={[-6.0, 20.2, -32.0]}
+        rotation={[0, Math.PI / 2, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="TABLET"
+      />
+
+      {/* 🚇 Foreman III - Head Tunneling & Underground Works (Richard A. Pinasen) at Tunnel Portal Heading */}
+      <HydroProjectPersonMesh
+        personnelId="TUNNEL_RICHARD_PINASEN"
+        onSelectPerson={onSelectPerson}
+        position={[-8.5, 20.2, -30.0]}
+        rotation={[0, Math.PI / 4, 0]}
+        skinTone="DEEP"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#16A34A"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="RADIO"
+      />
+
+      {/* 🚇 Foreman III - Underground Tunneling Excavation (Rudy C. Marcos) at Adit Laydown Staging */}
+      <HydroProjectPersonMesh
+        personnelId="TUNNEL_RUDY_MARCOS"
+        onSelectPerson={onSelectPerson}
+        position={[-10.0, 20.2, -24.0]}
+        rotation={[0, 0, 0]}
+        skinTone="BRONZE"
+        hairStyle="SHORT"
+        facialHair="MUSTACHE"
+        hasHardhat
+        hardhatColor="#16A34A"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* ⛏️ Tunnel Worker III - Lead Jumbo Drill Specialist (Benjamin C. Fomeg-as) at Rig Service Staging */}
+      <HydroProjectPersonMesh
+        personnelId="WORKER_BENJAMIN_FOMEGAS"
+        onSelectPerson={onSelectPerson}
+        position={[-4.5, 20.2, -34.0]}
+        rotation={[0, -Math.PI / 3, 0]}
+        skinTone="DEEP"
+        hairStyle="SHORT"
+        facialHair="STUBBLE"
+        hasHardhat
+        hardhatColor="#16A34A"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="NONE"
       />
 
       {/* ═══ 2. STRUCTURAL SLAB ROOF REBAR & SURVEY TEAMS (Z = -110m) ═══ */}
@@ -3277,20 +3473,6 @@ export function AnimatedSiteEntities({
         hasVest
         vestColor="#EA580C"
         pantsStyle="JEANS"
-      />
-      {/* Survey Engineer / Staff (White Hard Hat) */}
-      <HydroProjectPersonMesh
-        personnelId="SURVEYOR_JOHNNY_FARONGEY"
-        onSelectPerson={onSelectPerson}
-        position={[78, y1, -112]}
-        rotation={[0, -Math.PI / 2, 0]}
-        skinTone="BRONZE"
-        hasHardhat
-        hardhatColor="#EAB308"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="KHAKI"
-        accessory="CLIPBOARD"
       />
 
       {/* ═══ 3. TEMFACIL COMPOUND DISPATCH WORKERS (Z = -96m) ═══ */}
@@ -3356,10 +3538,11 @@ export function AnimatedSiteEntities({
       </group>
 
       {/* ═══ 6. AUTONOMOUS SITE TRAFFIC & WORKFORCE FLOW ═══ */}
-      <AutonomousSiteTrafficSystem gateAngle={currentGateAngle} onGateAngleChange={setCurrentGateAngle} />
+      <AutonomousSiteTrafficSystem gateAngle={currentGateAngle} onGateAngleChange={setCurrentGateAngle} onSelectPerson={onSelectPerson} />
 
       {/* ═══ 7. TUESDAY SAFETY TOOLBOX MEETING DIRECTOR & WORKFORCE FORMATION ═══ */}
-      <CourtToolboxMeetingDirector />
+      <CourtToolboxMeetingDirector onSelectPerson={onSelectPerson} />
     </group>
   );
 }
+

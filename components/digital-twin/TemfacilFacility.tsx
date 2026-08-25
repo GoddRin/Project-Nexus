@@ -5,6 +5,7 @@ import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { AtmosphereTimeMode } from "./RealisticSkyAtmosphere";
+import { HydroProjectPersonMesh } from "./AnimatedSiteEntities";
 import {
   MAT_GRANITE_BASE,
   MAT_CONCRETE_HEADER,
@@ -561,6 +562,196 @@ export function TemfacilFacility({
           <coneGeometry args={[0.25, 0.7, 10]} />
         </mesh>
       ))}
+
+      {/* ═══ 9. TEMFACIL RESIDENT WORKFORCE & TECHNICAL HEADQUARTERS STAFF ═══ */}
+      <TemfacilHeadquartersWorkforce onSelectPerson={onSelectPerson} />
+    </group>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🏢 TEMFACIL HEADQUARTERS RESIDENT WORKFORCE & TECHNICAL STAFF
+// ═══════════════════════════════════════════════════════════════════════════
+function TemfacilHeadquartersWorkforce({
+  onSelectPerson,
+}: {
+  onSelectPerson?: (id: string) => void;
+}) {
+  return (
+    <group>
+      {/* ─── 1. EXECUTIVE & TECHNICAL MANAGEMENT ─── */}
+      {/* Deputy Project Manager (Nathaniel P. Principe) on Main Office Executive Veranda */}
+      <HydroProjectPersonMesh
+        personnelId="DEPUTY_NATHANIEL_PRINCIPE"
+        onSelectPerson={onSelectPerson}
+        position={[-4.0, 0.1, -0.8]}
+        rotation={[0, 0, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#0F766E"
+        pantsStyle="CHARCOAL_OFFICE"
+        accessory="CLIPBOARD"
+      />
+
+      {/* Lead Technical Engineering Head (Engr. Noel G. Lavapie) in Engineering Office */}
+      <HydroProjectPersonMesh
+        personnelId="ENGR_NOEL_LAVAPIE"
+        onSelectPerson={onSelectPerson}
+        position={[22.5, 0.1, 18.5]}
+        rotation={[0, -Math.PI / 2, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasGlasses
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="CHARCOAL_OFFICE"
+        accessory="BINDER"
+      />
+
+      {/* AutoCAD Operator (Elbert Figuracion) at CADD Workstation */}
+      <HydroProjectPersonMesh
+        personnelId="CAD_ELBERT_FIGURACION"
+        onSelectPerson={onSelectPerson}
+        position={[24.2, 0.1, 21.0]}
+        rotation={[0, Math.PI, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasGlasses
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="TABLET"
+      />
+
+      {/* Document Controller (Jayson Z. Aggabao) in Archive Room */}
+      <HydroProjectPersonMesh
+        personnelId="DOC_JAYSON_AGGABAO"
+        onSelectPerson={onSelectPerson}
+        position={[21.0, 0.1, 22.0]}
+        rotation={[0, Math.PI / 2, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        facialHair="STUBBLE"
+        hasGlasses
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#0284C7"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* Quantity Surveyor (Cristine Joy Almazan) in Commercial Office */}
+      <HydroProjectPersonMesh
+        personnelId="QS_CRISTINE_ALMAZAN"
+        onSelectPerson={onSelectPerson}
+        position={[-6.2, 0.1, -14.0]}
+        rotation={[0, Math.PI / 2, 0]}
+        gender="FEMALE"
+        skinTone="LIGHT"
+        hairStyle="WOMAN_PONYTAIL"
+        hairColor="BLACK"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="CHARCOAL_OFFICE"
+        accessory="CLIPBOARD"
+      />
+
+      {/* ─── 2. QUALITY ASSURANCE & TESTING LAB ─── */}
+      {/* Jr. QA/QC Engineer (Jhon Charles C. Jayme) at Materials Testing Lab */}
+      <HydroProjectPersonMesh
+        personnelId="QC_JHON_JAYME"
+        onSelectPerson={onSelectPerson}
+        position={[23.0, 0.1, 24.5]}
+        rotation={[0, 0, 0]}
+        skinTone="LIGHT"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* ─── 3. HR, ADMINISTRATION & IT OPERATIONS ─── */}
+      {/* HR Admin (Joshua) at HR Office Counter */}
+      <HydroProjectPersonMesh
+        personnelId="HR_JOSHUA_ADMIN"
+        onSelectPerson={onSelectPerson}
+        position={[-2.5, 0.1, -8.0]}
+        rotation={[0, -Math.PI / 2, 0]}
+        skinTone="LIGHT"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#0284C7"
+        pantsStyle="CHARCOAL_OFFICE"
+        accessory="BINDER"
+      />
+
+      {/* HR Assistant (Randy Gamboa) on Timekeeping Walkway */}
+      <HydroProjectPersonMesh
+        personnelId="HR_RANDY_GAMBOA"
+        onSelectPerson={onSelectPerson}
+        position={[4.0, 0.1, 0.0]}
+        rotation={[0, Math.PI / 3, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        facialHair="GOATEE"
+        hasGlasses
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#0284C7"
+        pantsStyle="JEANS"
+        accessory="CLIPBOARD"
+      />
+
+      {/* IT Support Specialist (Harrold Salva) at Server Room */}
+      <HydroProjectPersonMesh
+        personnelId="IT_MARC_SALVA"
+        onSelectPerson={onSelectPerson}
+        position={[-7.5, 0.1, -6.5]}
+        rotation={[0, Math.PI / 4, 0]}
+        skinTone="LIGHT"
+        hairStyle="SHORT"
+        hasGlasses
+        hasHardhat
+        hardhatColor="#0284C7"
+        hasVest
+        vestColor="#0284C7"
+        pantsStyle="JEANS"
+        accessory="TABLET"
+      />
+
+      {/* ─── 4. LOGISTICS & WAREHOUSE ─── */}
+      {/* Warehouse Area Lead (Vincent Dickenson Andallo) at Central Warehouse */}
+      <HydroProjectPersonMesh
+        personnelId="WAREHOUSE_VINCENT_ANDALLO"
+        onSelectPerson={onSelectPerson}
+        position={[-28.0, 0.9, -5.0]}
+        rotation={[0, Math.PI / 2, 0]}
+        skinTone="BRONZE"
+        hairStyle="SHORT"
+        facialHair="GOATEE"
+        hasHardhat
+        hardhatColor="#0284C7"
+        hasVest
+        vestColor="#EAB308"
+        pantsStyle="JEANS"
+        accessory="TABLET"
+      />
     </group>
   );
 }
