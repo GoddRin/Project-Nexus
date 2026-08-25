@@ -1,35 +1,30 @@
 "use client";
 
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { AtmosphereTimeMode } from "./RealisticSkyAtmosphere";
+import { MAT_GLASS_CLEAR, MAT_GLASS_BLUE } from "./SharedMaterials";
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * SIERRA MADRE MOUNTAIN ATMOSPHERE & BIOPHYSICAL EFFECTS ENGINE
  * 
- * High-Fidelity Environmental Phenomena & Night Illumination Rig:
  * - 🌅 Morning:
  *     - Natural golden mountain sunlight & soft planar river surface mist
  *     - Turbine draft-tube cold water aeration steam
  *     - Flocks of mountain swallows & white egrets
  * - ☀️ Afternoon:
- *     - Distant high-altitude mountain ridge clouds & trade wind drift
+ *     - Majestic 3D Puffy Sierra Madre Cumulus Cloud Formations (Organic Multi-Puff Banks)
  *     - Subtle switchyard heat shimmer & soaring Philippine Eagle
  * - 🌇 Sunset:
- *     - Clean alpenglow horizon & western grazing shadows (no light cones)
+ *     - Clean alpenglow horizon & western mountain grazing shadows
  * - 🌙 Night:
  *     - 480+ Bioluminescent Forest Fireflies distributed across all 5 forest sectors
- *     - Powerhouse Generator Hall Mezzanine & Turbine Windows (Cyan-White Industrial Glow)
- *     - Powerhouse Draft-Tube Outfall Aquatic Illumination
- *     - TEMFACIL Admin Headquarters & Staff Office Warm 3000K Golden Window Glows
- *     - Barracks 1, 2, & 3 Quarters Warm Residential Room Windows
- *     - Food Mess Hall & Canteen Open-Air Dining Illumination
- *     - Guardhouse Security Workstation Glow & Porch Downlight
+ *     - Real building windows & houses illuminated from inside the structures
  *     - Vehicle Headlights casting realistic forward spot beams on roads + Red Taillights
  *     - Security Guards & Technicians with Dynamic Tactical Search Flashlights
- *     - Surge Tank Red Aviation Safety Strobe & Switchyard Floodlights
+ *     - Surge Tank Red Aviation Safety Strobe & Industrial Switchyard Lights
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -44,6 +39,30 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
   const isNight = (timeMode === "NIGHT" || timeMode === "SUNSET") && !isStormActive;
   const isDeepNight = timeMode === "NIGHT" && !isStormActive;
 
+  // ─── DYNAMIC BUILDING WINDOW EMISSIVE CONTROLLER ───
+  // Illuminates windows directly on all houses, barracks, offices, and powerhouse from inside
+  useEffect(() => {
+    if (isDeepNight) {
+      // Warm 3000K golden interior lighting for houses, barracks, offices
+      MAT_GLASS_CLEAR.emissive.set("#FEF08A");
+      MAT_GLASS_CLEAR.emissiveIntensity = 3.2;
+      // Cyan-white industrial illumination for Powerhouse Turbine Hall
+      MAT_GLASS_BLUE.emissive.set("#7DD3FC");
+      MAT_GLASS_BLUE.emissiveIntensity = 3.5;
+    } else if (timeMode === "SUNSET") {
+      MAT_GLASS_CLEAR.emissive.set("#FED7AA");
+      MAT_GLASS_CLEAR.emissiveIntensity = 1.4;
+      MAT_GLASS_BLUE.emissive.set("#38BDF8");
+      MAT_GLASS_BLUE.emissiveIntensity = 1.6;
+    } else {
+      // Daytime: Clear non-emissive natural glass
+      MAT_GLASS_CLEAR.emissive.set("#000000");
+      MAT_GLASS_CLEAR.emissiveIntensity = 0.0;
+      MAT_GLASS_BLUE.emissive.set("#000000");
+      MAT_GLASS_BLUE.emissiveIntensity = 0.0;
+    }
+  }, [timeMode, isDeepNight]);
+
   return (
     <group name="mountain-atmosphere-effects">
       {/* ─── 🌅 MORNING NATURAL EFFECTS ─── */}
@@ -55,10 +74,10 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
         </>
       )}
 
-      {/* ─── ☀️ AFTERNOON EFFECTS ─── */}
+      {/* ─── ☀️ AFTERNOON 3D PUFFY MOUNTAIN CUMULUS CLOUDS ─── */}
       {isAfternoon && (
         <>
-          <DistantMountainRidgeClouds />
+          <PhotorealisticMountainCumulus />
           <SwitchyardHeatShimmer />
           <HighAltitudeRaptor />
         </>
@@ -76,8 +95,7 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
       {isNight && (
         <>
           <SurgeTankAviationStrobe />
-          <PowerhouseNightIllumination isSunset={timeMode === "SUNSET"} />
-          <TemfacilBuildingNightWindows isSunset={timeMode === "SUNSET"} />
+          <BuildingInteriorRoomLights isSunset={timeMode === "SUNSET"} />
           <VehicleNightLights isSunset={timeMode === "SUNSET"} />
           <GuardFlashlights isSunset={timeMode === "SUNSET"} />
           <IndustrialFacilityNightLighting isSunset={timeMode === "SUNSET"} />
@@ -88,7 +106,7 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. NATURAL RIVER SURFACE MIST (Soft planar water-surface fog)
+// 1. NATURAL RIVER SURFACE MIST
 // ─────────────────────────────────────────────────────────────────────────────
 function NaturalRiverSurfaceMist() {
   const mistRef = useRef<THREE.Group>(null);
@@ -231,37 +249,106 @@ function MountainSwallowFlock() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. DISTANT SIERRA MADRE RIDGE CLOUD BANKS
+// 4. 3D PUFFY SIERRA MADRE MOUNTAIN CUMULUS CLOUDS (Organic Multi-Puff Banks)
 // ─────────────────────────────────────────────────────────────────────────────
-function DistantMountainRidgeClouds() {
+function PhotorealisticMountainCumulus() {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    const t = clock.getElapsedTime() * 0.08;
-    groupRef.current.position.x = Math.sin(t * 0.4) * 12.0;
+    const t = clock.getElapsedTime() * 0.12;
+    // Slow majestic trade wind drift across the mountain horizon
+    groupRef.current.position.x = ((t * 2.8) % 450) - 225;
   });
 
-  const ridgePuffs = useMemo(() => {
+  // 4 Organic Cumulus Cloud Formations composed of overlapping soft rounded puffs
+  const cloudBanks = useMemo(() => {
     return [
-      { pos: [-160, 180, -420] as [number, number, number], scale: [120, 32, 60] as [number, number, number], rot: 0.1 },
-      { pos: [-60, 195, -480] as [number, number, number], scale: [140, 38, 70] as [number, number, number], rot: -0.15 },
-      { pos: [80, 190, -450] as [number, number, number], scale: [150, 36, 65] as [number, number, number], rot: 0.08 },
-      { pos: [220, 175, -410] as [number, number, number], scale: [130, 30, 55] as [number, number, number], rot: -0.05 },
+      {
+        basePos: [-130, 160, -280] as [number, number, number],
+        puffs: [
+          { offset: [0, 6, 0], r: 18 },
+          { offset: [-14, 0, 4], r: 15 },
+          { offset: [14, 2, -2], r: 16 },
+          { offset: [-25, -4, 2], r: 13 },
+          { offset: [26, -3, 3], r: 14 },
+          { offset: [0, -6, 0], r: 20 },
+          { offset: [-10, 8, -4], r: 14 },
+          { offset: [8, 9, 2], r: 15 },
+        ],
+      },
+      {
+        basePos: [-30, 185, -340] as [number, number, number],
+        puffs: [
+          { offset: [0, 8, 0], r: 24 },
+          { offset: [-18, 2, 5], r: 19 },
+          { offset: [18, 3, -4], r: 20 },
+          { offset: [-34, -4, 2], r: 16 },
+          { offset: [35, -5, 1], r: 17 },
+          { offset: [0, -7, 0], r: 26 },
+          { offset: [-12, 12, -3], r: 17 },
+          { offset: [14, 11, 4], r: 18 },
+          { offset: [-6, 16, 0], r: 14 },
+        ],
+      },
+      {
+        basePos: [85, 170, -300] as [number, number, number],
+        puffs: [
+          { offset: [0, 7, 0], r: 20 },
+          { offset: [-16, 1, 3], r: 16 },
+          { offset: [17, 3, -3], r: 17 },
+          { offset: [-28, -5, 0], r: 14 },
+          { offset: [29, -4, 2], r: 15 },
+          { offset: [0, -6, 0], r: 22 },
+          { offset: [-8, 11, -2], r: 15 },
+          { offset: [10, 10, 3], r: 16 },
+        ],
+      },
+      {
+        basePos: [195, 155, -260] as [number, number, number],
+        puffs: [
+          { offset: [0, 5, 0], r: 17 },
+          { offset: [-13, 0, 3], r: 14 },
+          { offset: [15, 2, -2], r: 15 },
+          { offset: [-24, -4, 1], r: 12 },
+          { offset: [25, -3, 2], r: 13 },
+          { offset: [0, -5, 0], r: 19 },
+          { offset: [2, 9, -1], r: 13 },
+        ],
+      },
     ];
   }, []);
 
   return (
     <group ref={groupRef}>
-      {ridgePuffs.map((p, idx) => (
-        <group key={`ridge-cloud-${idx}`} position={p.pos} rotation={[0, p.rot, 0]}>
-          <mesh position={[0, 0, 0]} scale={p.scale}>
-            <sphereGeometry args={[1, 16, 12]} />
-            <meshStandardMaterial color="#F8FAFC" roughness={0.95} transparent opacity={0.32} depthWrite={false} />
-          </mesh>
-          <mesh position={[0, -0.25, 0]} scale={[p.scale[0] * 0.95, p.scale[1] * 0.35, p.scale[2] * 0.95]}>
-            <sphereGeometry args={[1, 12, 8]} />
-            <meshStandardMaterial color="#94A3B8" roughness={1.0} transparent opacity={0.18} depthWrite={false} />
+      {cloudBanks.map((bank, bankIdx) => (
+        <group key={`cumulus-bank-${bankIdx}`} position={bank.basePos}>
+          {bank.puffs.map((puff, puffIdx) => (
+            <mesh
+              key={`puff-${bankIdx}-${puffIdx}`}
+              position={[puff.offset[0], puff.offset[1], puff.offset[2]]}
+            >
+              <sphereGeometry args={[puff.r, 16, 12]} />
+              <meshStandardMaterial
+                color="#FFFFFF"
+                roughness={0.98}
+                metalness={0.0}
+                transparent
+                opacity={0.90}
+                depthWrite={false}
+              />
+            </mesh>
+          ))}
+          {/* Flat convective shadow base */}
+          <mesh position={[0, -10, 0]} scale={[1.4, 0.25, 1.2]}>
+            <sphereGeometry args={[22, 14, 10]} />
+            <meshStandardMaterial
+              color="#94A3B8"
+              roughness={1.0}
+              transparent
+              opacity={0.35}
+              depthWrite={false}
+            />
           </mesh>
         </group>
       ))}
@@ -355,135 +442,46 @@ function HighAltitudeRaptor() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7. POWERHOUSE NIGHT ILLUMINATION & LUMINOUS GENERATOR HALL WINDOWS
+// 7. BUILDING INTERIOR ROOM LIGHTS (Placed INSIDE structures, no outside floating cards)
 // ─────────────────────────────────────────────────────────────────────────────
-function PowerhouseNightIllumination({ isSunset = false }: { isSunset?: boolean }) {
+function BuildingInteriorRoomLights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.45 : 1.0;
 
   return (
-    <group name="powerhouse-night-illumination">
-      {/* ═══ 1. Front Facade Upper Mezzanine Windows (4 Cyan-White Luminous Panes) ═══ */}
-      {[-6, -2, 2, 6].map((x, i) => (
-        <group key={`ph-front-win-${i}`} position={[x, 8.5, 7.04]}>
-          <mesh>
-            <planeGeometry args={[1.9, 2.1]} />
-            <meshBasicMaterial color="#BAE6FD" toneMapped={false} />
-          </mesh>
-          <pointLight color="#38BDF8" intensity={18.0 * intensityMult} distance={22} decay={2} position={[0, 0, 0.4]} />
-        </group>
-      ))}
+    <group name="building-interior-lights">
+      {/* ═══ Inside Powerhouse Generator Hall ([0, 8.5, 0]) ═══ */}
+      <pointLight position={[0, 8.5, 0]} color="#E0F2FE" intensity={45.0 * intensityMult} distance={35} decay={2} />
+      <pointLight position={[-6, 8.5, 0]} color="#BAE6FD" intensity={30.0 * intensityMult} distance={28} decay={2} />
+      <pointLight position={[6, 8.5, 0]} color="#BAE6FD" intensity={30.0 * intensityMult} distance={28} decay={2} />
 
-      {/* ═══ 2. Back Facade Windows (3 Cyan-White Luminous Panes) ═══ */}
-      {[-5, 0, 5].map((x, i) => (
-        <group key={`ph-back-win-${i}`} position={[x, 8.5, -7.04]} rotation={[0, Math.PI, 0]}>
-          <mesh>
-            <planeGeometry args={[1.4, 1.6]} />
-            <meshBasicMaterial color="#BAE6FD" toneMapped={false} />
-          </mesh>
-          <pointLight color="#38BDF8" intensity={15.0 * intensityMult} distance={18} decay={2} position={[0, 0, 0.4]} />
-        </group>
-      ))}
+      {/* ═══ Inside TEMFACIL Staff House & Women's Quarters ([130, 16.0, -107]) ═══ */}
+      <pointLight position={[130, 16.0, -107]} color="#FEF08A" intensity={32.0 * intensityMult} distance={25} decay={2} />
 
-      {/* ═══ 3. Lower Draft Tube Portals (Cold Aquatic Turbine Outfall Glow) ═══ */}
-      <group position={[-3.6, 2.2, 6.75]}>
-        <pointLight color="#0284C7" intensity={25.0 * intensityMult} distance={25} decay={2} position={[0, 0, 1.2]} />
-      </group>
-      <group position={[3.6, 2.2, 6.75]}>
-        <pointLight color="#0284C7" intensity={25.0 * intensityMult} distance={25} decay={2} position={[0, 0, 1.2]} />
-      </group>
+      {/* ═══ Inside TEMFACIL Staff Office & Planning Head Bay ([118, 16.5, -95]) ═══ */}
+      <pointLight position={[118, 16.5, -95]} color="#FFFBEB" intensity={35.0 * intensityMult} distance={28} decay={2} />
 
-      {/* ═══ 4. Powerhouse Roof Gantry & Exterior Wall Pack Lights ═══ */}
-      <pointLight position={[0, 11.5, 7.2]} color="#FFFBEB" intensity={32.0 * intensityMult} distance={38} decay={2} />
-      <pointLight position={[0, 11.5, -7.2]} color="#FFFBEB" intensity={28.0 * intensityMult} distance={35} decay={2} />
-      <pointLight position={[-10.2, 6.5, 0]} color="#FDE047" intensity={20.0 * intensityMult} distance={28} decay={2} />
-      <pointLight position={[10.2, 6.5, 0]} color="#FDE047" intensity={20.0 * intensityMult} distance={28} decay={2} />
+      {/* ═══ Inside Barracks 1, 2, & 3 Quarters ([146, 16.0, -87]) ═══ */}
+      <pointLight position={[146, 16.0, -87]} color="#FED7AA" intensity={30.0 * intensityMult} distance={24} decay={2} />
+      <pointLight position={[146, 19.5, -87]} color="#FED7AA" intensity={26.0 * intensityMult} distance={24} decay={2} />
+
+      {/* ═══ Inside Food Canteen & Kitchen ([96, 16.0, -97]) ═══ */}
+      <pointLight position={[96, 16.0, -97]} color="#FDE047" intensity={38.0 * intensityMult} distance={30} decay={2} />
+
+      {/* ═══ Inside Guardhouse Booth ([80, 15.5, -60]) ═══ */}
+      <pointLight position={[80, 15.5, -60]} color="#FFFBEB" intensity={22.0 * intensityMult} distance={18} decay={2} />
     </group>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. TEMFACIL FACILITY & HOUSES NIGHT LUMINOUS WINDOWS & PORCH LIGHTS
-// ─────────────────────────────────────────────────────────────────────────────
-function TemfacilBuildingNightWindows({ isSunset = false }: { isSunset?: boolean }) {
-  const intensityMult = isSunset ? 0.45 : 1.0;
-
-  return (
-    <group name="temfacil-building-night-windows" position={[118, 14.0, -95]}>
-      {/* ═══ 1. Main Administrative Office & Engineering Bay ([9, 0, -16] base) ═══ */}
-      {/* Front Facade Windows */}
-      {[-8, -4, 4, 8].map((xOff, i) => (
-        <group key={`admin-front-win-${i}`} position={[xOff, 2.4, 6.02]}>
-          <mesh>
-            <planeGeometry args={[1.8, 1.4]} />
-            <meshBasicMaterial color="#FEF08A" toneMapped={false} />
-          </mesh>
-          <pointLight color="#FCD34D" intensity={14.0 * intensityMult} distance={18} decay={2} position={[0, 0, 0.4]} />
-        </group>
-      ))}
-      {/* Main Entrance Porch Light */}
-      <pointLight position={[0, 3.8, 6.8]} color="#FFFBEB" intensity={28.0 * intensityMult} distance={28} decay={2} />
-
-      {/* ═══ 2. Barracks 1, 2, & 3 Quarters (Residential Warm Amber Room Windows) ═══ */}
-      {/* Barracks 1 (East Wing: [28, 0, 8]) */}
-      {[-6, -2, 2, 6].map((xOff, i) => (
-        <group key={`b1-win-${i}`} position={[28 + xOff, 2.2, 13.8]}>
-          <mesh>
-            <planeGeometry args={[1.5, 1.2]} />
-            <meshBasicMaterial color="#FED7AA" toneMapped={false} />
-          </mesh>
-          <pointLight color="#F59E0B" intensity={12.0 * intensityMult} distance={16} decay={2} position={[0, 0, 0.4]} />
-        </group>
-      ))}
-      {/* Barracks 2 (East Wing Upper Floor: [28, 4.2, 8]) */}
-      {[-6, -2, 2, 6].map((xOff, i) => (
-        <group key={`b2-win-${i}`} position={[28 + xOff, 5.8, 13.8]}>
-          <mesh>
-            <planeGeometry args={[1.5, 1.2]} />
-            <meshBasicMaterial color="#FEF08A" toneMapped={false} />
-          </mesh>
-        </group>
-      ))}
-      {/* Barracks Balcony Corridor Lights */}
-      <pointLight position={[28, 3.2, 8]} color="#FDE68A" intensity={24.0 * intensityMult} distance={28} decay={2} />
-      <pointLight position={[28, 6.8, 8]} color="#FDE68A" intensity={24.0 * intensityMult} distance={28} decay={2} />
-
-      {/* ═══ 3. Food Canteen & Mess Hall ([ -22, 0, -2 ] with Open Dining) ═══ */}
-      <pointLight position={[-22, 3.6, -2]} color="#FDE047" intensity={35.0 * intensityMult} distance={38} decay={2} />
-      <pointLight position={[-22, 3.6, 6]} color="#FDE047" intensity={30.0 * intensityMult} distance={35} decay={2} />
-
-      {/* ═══ 4. Logistics Warehouse & Heavy Equipment Bay ([-28, 0, -24]) ═══ */}
-      {/* High-Bay Industrial Overhead Lighting spilling through open roll-up doors */}
-      <pointLight position={[-28, 5.5, -24]} color="#E0F2FE" intensity={40.0 * intensityMult} distance={45} decay={2} />
-
-      {/* ═══ 5. Security Guardhouse Gate Booth ([-38, 0, 35]) ═══ */}
-      {/* Interior Monitor Glow */}
-      <mesh position={[-38, 1.8, 35.1]}>
-        <planeGeometry args={[1.4, 0.9]} />
-        <meshBasicMaterial color="#38BDF8" toneMapped={false} />
-      </mesh>
-      {/* Guardhouse Exterior Gate Spotlight */}
-      <spotLight
-        position={[-38, 4.2, 36]}
-        target-position={[-38, 0, 48]}
-        color="#FFFBEB"
-        intensity={36.0 * intensityMult}
-        angle={0.55}
-        penumbra={0.5}
-        distance={32}
-      />
-    </group>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 9. VEHICLE ACTIVE HEADLIGHTS & TAILLIGHTS
+// 8. VEHICLE ACTIVE HEADLIGHTS & TAILLIGHTS
 // ─────────────────────────────────────────────────────────────────────────────
 function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.5 : 1.0;
 
   return (
     <group name="vehicle-night-lights">
-      {/* ─── 1. Red Dump Truck (Near Guardhouse Gate: [70, 14.5, -58]) ─── */}
+      {/* ─── 1. Red Dump Truck (Access Road: [70, 14.5, -58]) ─── */}
       <group position={[70, 14.5, -58]} rotation={[0, -0.4, 0]}>
         <spotLight
           position={[-0.9, 1.1, 3.2]}
@@ -503,23 +501,13 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
           penumbra={0.65}
           distance={48}
         />
-        {/* Glowing Headlight Lenses */}
         <mesh position={[-0.9, 1.1, 3.1]}>
-          <sphereGeometry args={[0.26, 12, 12]} />
+          <sphereGeometry args={[0.26, 10, 10]} />
           <meshBasicMaterial color="#FFFBEB" toneMapped={false} />
         </mesh>
         <mesh position={[0.9, 1.1, 3.1]}>
-          <sphereGeometry args={[0.26, 12, 12]} />
+          <sphereGeometry args={[0.26, 10, 10]} />
           <meshBasicMaterial color="#FFFBEB" toneMapped={false} />
-        </mesh>
-        {/* Rear Red Taillights */}
-        <mesh position={[-0.85, 0.9, -3.6]}>
-          <boxGeometry args={[0.22, 0.18, 0.08]} />
-          <meshBasicMaterial color="#EF4444" toneMapped={false} />
-        </mesh>
-        <mesh position={[0.85, 0.9, -3.6]}>
-          <boxGeometry args={[0.22, 0.18, 0.08]} />
-          <meshBasicMaterial color="#EF4444" toneMapped={false} />
         </mesh>
         <pointLight position={[0, 1.0, -3.8]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
       </group>
@@ -622,7 +610,7 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10. SECURITY GUARDS & PERSONNEL TACTICAL FLASHLIGHTS
+// 9. SECURITY GUARDS & PERSONNEL TACTICAL FLASHLIGHTS
 // ─────────────────────────────────────────────────────────────────────────────
 function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.45 : 1.0;
@@ -712,7 +700,7 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 11. 480+ BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Across All 5 Sectors)
+// 10. 480+ BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Across All 5 Sectors)
 // ─────────────────────────────────────────────────────────────────────────────
 function BioluminescentForestFireflies({ count = 480 }: { count?: number }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
@@ -805,7 +793,7 @@ function BioluminescentForestFireflies({ count = 480 }: { count?: number }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 12. CELESTIAL SHOOTING STARS
+// 11. CELESTIAL SHOOTING STARS
 // ─────────────────────────────────────────────────────────────────────────────
 function CelestialShootingStars() {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -838,7 +826,7 @@ function CelestialShootingStars() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 13. SURGE TANK AVIATION STROBE BEACON
+// 12. SURGE TANK AVIATION STROBE BEACON
 // ─────────────────────────────────────────────────────────────────────────────
 function SurgeTankAviationStrobe() {
   const beaconRef = useRef<THREE.PointLight>(null);
@@ -870,7 +858,7 @@ function SurgeTankAviationStrobe() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 14. INDUSTRIAL FACILITY PERIMETER & BASKETBALL COURT FLOODLIGHTS
+// 13. INDUSTRIAL FACILITY PERIMETER & DECK LIGHTING
 // ─────────────────────────────────────────────────────────────────────────────
 function IndustrialFacilityNightLighting({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.45 : 1.0;
@@ -878,36 +866,16 @@ function IndustrialFacilityNightLighting({ isSunset = false }: { isSunset?: bool
   return (
     <group name="industrial-night-lighting">
       {/* ─── 69kV Switchyard Gantry Floodlights ─── */}
-      <pointLight position={[55, 18.0, 10]} color="#E0F2FE" intensity={42.0 * intensityMult} distance={95} decay={2} />
-      <pointLight position={[75, 18.0, 20]} color="#E0F2FE" intensity={38.0 * intensityMult} distance={90} decay={2} />
+      <pointLight position={[55, 18.0, 10]} color="#E0F2FE" intensity={38.0 * intensityMult} distance={95} decay={2} />
+      <pointLight position={[75, 18.0, 20]} color="#E0F2FE" intensity={34.0 * intensityMult} distance={90} decay={2} />
       
       {/* ─── Powerhouse Apron & Gantry Crane Deck ─── */}
-      <pointLight position={[18, 30.0, 22]} color="#F8FAFC" intensity={45.0 * intensityMult} distance={110} decay={2} />
-      <pointLight position={[-12, 14.0, 24]} color="#F8FAFC" intensity={35.0 * intensityMult} distance={85} decay={2} />
-
-      {/* ─── Basketball Court 4-Corner Floodlight Poles (Full Court Illumination) ─── */}
-      <spotLight
-        position={[104, 22.0, -112]}
-        target-position={[115, 14.0, -103]}
-        color="#FFFBEB"
-        intensity={36.0 * intensityMult}
-        angle={0.68}
-        penumbra={0.4}
-        distance={52}
-      />
-      <spotLight
-        position={[126, 22.0, -94]}
-        target-position={[115, 14.0, -103]}
-        color="#FFFBEB"
-        intensity={36.0 * intensityMult}
-        angle={0.68}
-        penumbra={0.4}
-        distance={52}
-      />
+      <pointLight position={[18, 30.0, 22]} color="#F8FAFC" intensity={40.0 * intensityMult} distance={110} decay={2} />
+      <pointLight position={[-12, 14.0, 24]} color="#F8FAFC" intensity={30.0 * intensityMult} distance={85} decay={2} />
 
       {/* ─── Penstock Stairs Safety Lights ─── */}
-      <pointLight position={[-35, 42.0, -50]} color="#F59E0B" intensity={22.0 * intensityMult} distance={65} decay={2} />
-      <pointLight position={[-25, 24.0, -32]} color="#F59E0B" intensity={22.0 * intensityMult} distance={60} decay={2} />
+      <pointLight position={[-35, 42.0, -50]} color="#F59E0B" intensity={20.0 * intensityMult} distance={65} decay={2} />
+      <pointLight position={[-25, 24.0, -32]} color="#F59E0B" intensity={20.0 * intensityMult} distance={60} decay={2} />
     </group>
   );
 }

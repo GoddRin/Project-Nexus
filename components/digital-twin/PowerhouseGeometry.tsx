@@ -399,9 +399,8 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
             {bMat(METAL.frame)}
           </mesh>
           {/* Glass pane */}
-          <mesh position={[x, 8.5, 7.02]}>
+          <mesh position={[x, 8.5, 7.02]} material={MAT_GLASS_BLUE}>
             <boxGeometry args={[1.9, 2.1, 0.06]} />
-            {bMat("#6B8DAB")}
           </mesh>
         </group>
       ))}
@@ -413,9 +412,8 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
             <boxGeometry args={[1.8, 2.0, 0.12]} />
             {bMat(METAL.frame)}
           </mesh>
-          <mesh position={[x, 8.5, -7.02]}>
+          <mesh position={[x, 8.5, -7.02]} material={MAT_GLASS_BLUE}>
             <boxGeometry args={[1.4, 1.6, 0.06]} />
-            {bMat("#6B8DAB")}
           </mesh>
         </group>
       ))}

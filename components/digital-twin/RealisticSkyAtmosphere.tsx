@@ -6,15 +6,14 @@ import * as THREE from "three";
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * REALISTIC SIERRA MADRE SKY & PROCEDURAL CLOUDS ATMOSPHERE SHADER
+ * REALISTIC SIERRA MADRE SKY & ATMOSPHERE DOME SHADER
  * 
- * Physically-inspired atmospheric scattering with procedural Fractal
- * Brownian Motion (fBm) cloud canopy covering:
- * - 🌅 Morning: Soft golden-amber dawn horizon, luminous sky & wispy morning stratus
- * - ☀️ Afternoon: High-altitude azure sky with magnificent billowy mountain cumulus clouds
+ * Physically-inspired atmospheric Rayleigh & Mie scattering covering:
+ * - 🌅 Morning: Soft golden-amber dawn horizon, luminous cerulean sky & morning sun
+ * - ☀️ Afternoon: Crisp high-altitude tropical mountain azure blue with intense sun disk
  * - 🌇 Sunset: Fiery Alpenglow (crimson/orange -> magenta -> twilight indigo)
- * - 🌙 Night: Midnight deep celestial dome with twinkling stars & moon glow
- * - 🌧️ Storm: Heavy dark slate overcast storm canopy
+ * - 🌙 Night: Midnight deep space dome with twinkling stars & lunar glow
+ * - 🌧️ Storm: Heavy dark slate overcast canopy
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -40,8 +39,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
         sunPos: new THREE.Vector3(0.3, 0.5, 0.4).normalize(),
         sunSize: 0.01,
         ambientGlow: 0.1,
-        cloudCoverage: 0.85,
-        cloudDensity: 0.95,
       };
     }
 
@@ -55,8 +52,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
           sunPos: new THREE.Vector3(0.7, 0.35, 0.6).normalize(), // Low Eastern sunrise
           sunSize: 0.045,
           ambientGlow: 0.65,
-          cloudCoverage: 0.32,
-          cloudDensity: 0.55,
         };
       case "AFTERNOON":
         return {
@@ -67,8 +62,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
           sunPos: new THREE.Vector3(0.25, 0.88, 0.38).normalize(), // High solar zenith
           sunSize: 0.055,
           ambientGlow: 0.85,
-          cloudCoverage: 0.48,                // Rich billowy cumulus cloud cover
-          cloudDensity: 0.78,
         };
       case "SUNSET":
         return {
@@ -79,8 +72,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
           sunPos: new THREE.Vector3(-0.75, 0.18, -0.64).normalize(), // Low Western ridge sunset
           sunSize: 0.065,
           ambientGlow: 0.55,
-          cloudCoverage: 0.38,
-          cloudDensity: 0.65,
         };
       case "NIGHT":
       default:
@@ -92,8 +83,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
           sunPos: new THREE.Vector3(-0.4, 0.6, -0.6).normalize(), // Moonlight vector
           sunSize: 0.035,
           ambientGlow: 0.15,
-          cloudCoverage: 0.18,
-          cloudDensity: 0.30,
         };
     }
   }, [timeMode, isStormActive]);
@@ -108,8 +97,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
       uSunPos: { value: new THREE.Vector3(0.25, 0.88, 0.38).normalize() },
       uSunSize: { value: 0.055 },
       uAmbientGlow: { value: 0.85 },
-      uCloudCoverage: { value: 0.48 },
-      uCloudDensity: { value: 0.78 },
       uIsNight: { value: 0.0 },
     };
   }, []);
@@ -127,8 +114,6 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
     u.uSunPos.value.lerp(targetColors.sunPos, lerpSpeed);
     u.uSunSize.value = THREE.MathUtils.lerp(u.uSunSize.value, targetColors.sunSize, lerpSpeed);
     u.uAmbientGlow.value = THREE.MathUtils.lerp(u.uAmbientGlow.value, targetColors.ambientGlow, lerpSpeed);
-    u.uCloudCoverage.value = THREE.MathUtils.lerp(u.uCloudCoverage.value, targetColors.cloudCoverage, lerpSpeed);
-    u.uCloudDensity.value = THREE.MathUtils.lerp(u.uCloudDensity.value, targetColors.cloudDensity, lerpSpeed);
     u.uIsNight.value = THREE.MathUtils.lerp(u.uIsNight.value, timeMode === "NIGHT" ? 1.0 : 0.0, lerpSpeed);
   });
 
@@ -161,40 +146,10 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
           uniform vec3 uSunPos;
           uniform float uSunSize;
           uniform float uAmbientGlow;
-          uniform float uCloudCoverage;
-          uniform float uCloudDensity;
           uniform float uIsNight;
 
           varying vec3 vWorldPos;
           varying vec3 vNormal;
-
-          // 2D Hash & Value Noise for Fractal Brownian Motion Clouds
-          float hash(vec2 p) {
-            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-          }
-
-          float noise(vec2 p) {
-            vec2 i = floor(p);
-            vec2 f = fract(p);
-            vec2 u = f * f * (3.0 - 2.0 * f);
-            return mix(
-              mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
-              mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
-              u.y
-            );
-          }
-
-          float fbm(vec2 p) {
-            float v = 0.0;
-            float a = 0.5;
-            mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
-            for (int i = 0; i < 5; i++) {
-              v += a * noise(p);
-              p = rot * p * 2.02 + vec2(17.3);
-              a *= 0.5;
-            }
-            return v;
-          }
 
           void main() {
             vec3 dir = normalize(vNormal);
@@ -217,50 +172,7 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
             float sunHalo = pow(sunDot, 16.0) * uAmbientGlow;
             float sunCorona = pow(sunDot, 4.0) * uAmbientGlow * 0.45;
 
-            vec3 baseSky = skyGradient + uSunColor * (sunDisk * 2.5 + sunHalo * 0.9 + sunCorona * 0.4);
-
-            // 3. Realistic Fractal Mountain Cumulus Cloud Layer
-            vec3 finalColor = baseSky;
-
-            if (h > 0.04 && uCloudCoverage > 0.05) {
-              // Project spherical direction onto a curved cloud ceiling
-              float denom = max(h + 0.12, 0.08);
-              vec2 cloudCoord = (dir.xz / denom) * 2.2;
-              // Slow majestic tropical trade wind drift
-              vec2 windDrift = vec2(uTime * 0.006, uTime * 0.003);
-              vec2 uv = cloudCoord + windDrift;
-
-              // Multi-octave cloud density
-              float rawFbm = fbm(uv);
-              float rawFbmDetail = fbm(uv * 2.5 - windDrift * 0.5);
-              float combinedNoise = mix(rawFbm, rawFbmDetail, 0.35);
-
-              // Cloud coverage thresholding & billowy cumulus curve
-              float threshold = 1.0 - uCloudCoverage;
-              float cloudAlpha = smoothstep(threshold, threshold + 0.32, combinedNoise);
-
-              // Horizon fade to seamlessly blend with mountain mist
-              float horizonFade = smoothstep(0.04, 0.18, h) * (1.0 - smoothstep(0.75, 0.98, h));
-              cloudAlpha *= horizonFade * uCloudDensity;
-
-              if (cloudAlpha > 0.001) {
-                // Directional sun lighting on clouds (silver lining & underside shadow)
-                float sunScatter = pow(sunDot, 2.5);
-                vec3 sunlitCloudColor = mix(vec3(0.98, 0.98, 1.0), uSunColor * 1.25, sunScatter * 0.7);
-                // Underside cloud shadow matches atmospheric blue/indigo ambient
-                vec3 shadowCloudColor = mix(uMiddleColor * 0.75, vec3(0.55, 0.65, 0.78), 0.5);
-                
-                // Height gradient inside cloud (bright puff tops, soft shadowed bases)
-                float cloudHeightGrad = smoothstep(threshold, threshold + 0.28, combinedNoise);
-                vec3 cloudRgb = mix(shadowCloudColor, sunlitCloudColor, cloudHeightGrad);
-
-                // Silver lining rim highlight when facing towards the sun
-                cloudRgb += uSunColor * pow(sunDot, 5.0) * 0.6 * (1.0 - cloudHeightGrad);
-
-                // Alpha blend cloud canopy over base sky
-                finalColor = mix(finalColor, cloudRgb, cloudAlpha * (1.0 - uIsNight * 0.5));
-              }
-            }
+            vec3 finalColor = skyGradient + uSunColor * (sunDisk * 2.5 + sunHalo * 0.9 + sunCorona * 0.4);
 
             gl_FragColor = vec4(finalColor, 1.0);
           }
