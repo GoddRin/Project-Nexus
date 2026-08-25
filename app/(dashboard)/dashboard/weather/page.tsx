@@ -30,6 +30,11 @@ export default async function WeatherPage() {
 
   const { current, daily, hourly } = weather;
   const currentRecommendation = getWeatherInfo(current.weather_code);
+  const todayRec = daily?.weather_code?.length > 0 ? getWeatherInfo(daily.weather_code[0]) : currentRecommendation;
+  const todayPrecipMax = daily?.precipitation_probability_max?.length > 0 ? daily.precipitation_probability_max[0] : 0;
+  const hasAfternoonHazard = todayRec.intent === "suspend" && currentRecommendation.intent === "favorable";
+
+  const effectiveIntent = hasAfternoonHazard ? "caution" : currentRecommendation.intent;
   const CurrentIcon = currentRecommendation.icon;
 
   const intentStyles = {
@@ -49,15 +54,15 @@ export default async function WeatherPage() {
         {/* Current Conditions Expanded */}
         <div className={cn(
           "glass-card p-6 relative overflow-hidden border-t-2 lg:col-span-1 flex flex-col justify-between",
-          currentRecommendation.intent === "favorable" && "border-t-flow-teal shadow-[inset_0_30px_30px_-30px_rgba(31,182,166,0.15)]",
-          currentRecommendation.intent === "caution" && "border-t-signal-amber shadow-[inset_0_30px_30px_-30px_rgba(232,163,61,0.15)]",
-          currentRecommendation.intent === "suspend" && "border-t-signal-red shadow-[inset_0_30px_30px_-30px_rgba(214,72,63,0.15)]"
+          effectiveIntent === "favorable" && "border-t-flow-teal shadow-[inset_0_30px_30px_-30px_rgba(31,182,166,0.15)]",
+          effectiveIntent === "caution" && "border-t-signal-amber shadow-[inset_0_30px_30px_-30px_rgba(232,163,61,0.15)]",
+          effectiveIntent === "suspend" && "border-t-signal-red shadow-[inset_0_30px_30px_-30px_rgba(214,72,63,0.15)]"
         )}>
           <div>
             <h2 className="text-lg font-semibold tracking-wide text-text-primary mb-6">Current Conditions</h2>
             <div className="flex items-center gap-6 mb-8">
               <CurrentIcon className={cn(
-                "h-16 w-16 drop-shadow-lg",
+                "h-16 w-16 drop-shadow-lg shrink-0",
                 currentRecommendation.intent === "favorable" && "text-flow-teal",
                 currentRecommendation.intent === "caution" && "text-signal-amber",
                 currentRecommendation.intent === "suspend" && "text-signal-red"
@@ -96,14 +101,28 @@ export default async function WeatherPage() {
             </div>
           </div>
 
-          <div className="mt-8 rounded-lg dark:bg-white/[0.03] bg-black/[0.03] p-4 ring-1 ring-border-hairline">
-            <p className="text-xs font-medium text-text-muted mb-2 uppercase tracking-wider font-mono">Site Recommendation</p>
-            <div className={cn(
-              "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-semibold ring-1",
-              intentStyles[currentRecommendation.intent]
-            )}>
-              {currentRecommendation.label}
-            </div>
+          <div className="mt-8 rounded-lg dark:bg-white/[0.03] bg-black/[0.03] p-4 ring-1 ring-border-hairline space-y-2">
+            <p className="text-xs font-medium text-text-muted uppercase tracking-wider font-mono">Site Operational Recommendation</p>
+            {hasAfternoonHazard ? (
+              <div className="space-y-1.5">
+                <div className={cn(
+                  "inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ring-1",
+                  intentStyles.caution
+                )}>
+                  Favorable Morning • Afternoon {todayRec.conditionLabel} Alert
+                </div>
+                <p className="text-[11px] text-text-muted leading-relaxed">
+                  Proceed with scheduled morning operations. Secure crane, scaffolding, and concrete pouring prior to {todayPrecipMax}% rain peak in afternoon.
+                </p>
+              </div>
+            ) : (
+              <div className={cn(
+                "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-semibold ring-1",
+                intentStyles[currentRecommendation.intent]
+              )}>
+                {currentRecommendation.label}
+              </div>
+            )}
           </div>
         </div>
 

@@ -250,7 +250,7 @@ async function fetchWeatherFromWttr(): Promise<WeatherData | null> {
 
 export async function fetchWeather(): Promise<WeatherData | null> {
   const url =
-    "https://api.open-meteo.com/v1/forecast?latitude=16.9833&longitude=122.0833&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Asia%2FManila&forecast_days=7";
+    "https://api.open-meteo.com/v1/forecast?latitude=17.318823&longitude=121.974925&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Asia%2FManila&forecast_days=7";
 
   try {
     const res = await fetch(url, { cache: "no-store" });
@@ -283,7 +283,7 @@ export async function fetchHistoricalWeather(): Promise<HistoricalWeatherData | 
   const startDate = format(start);
   const endDate = format(end);
 
-  const url = `https://archive-api.open-meteo.com/v1/archive?latitude=16.9833&longitude=122.0833&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code&timezone=Asia%2FManila`;
+  const url = `https://archive-api.open-meteo.com/v1/archive?latitude=17.318823&longitude=121.974925&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code&timezone=Asia%2FManila`;
 
   try {
     const res = await fetch(url, { next: { revalidate: 86400 } });

@@ -263,8 +263,9 @@ export function HistoricalWeatherCharts({ data }: Props) {
       </div>
 
       {/* Attribution */}
-      <div className="text-right">
-        <p className="text-xs text-text-muted font-mono">Data source: Open-Meteo Archive API (ERA5)</p>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted font-mono pt-2 border-t border-border-hairline/60">
+        <span>Station Domain: Tumauini HEPP River Basin (17.32°N, 121.97°E • Elevation: ~94m)</span>
+        <span>Data source: Open-Meteo Archive API (ERA5 Global Reanalysis)</span>
       </div>
     </div>
   );
