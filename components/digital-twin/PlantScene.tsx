@@ -1373,14 +1373,50 @@ function CameraController({
     []
   );
 
-  // Wheel listener directly on canvas DOM element: instantly unlocks Free Nav & cancels preset lerping
+  // Direct Smooth Zoom-to-Cursor & Dynamic Target Dolly handler
   useEffect(() => {
     const domElement = gl.domElement;
-    const handleWheel = () => {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const handleWheel = (e: WheelEvent) => {
+      // Prevent default browser scroll and unlock free navigation
+      e.preventDefault();
       isAnimatingRef.current = false;
       focusTargetRef.current = null;
       focusCamPosRef.current = null;
       onUserInteract();
+
+      if (!controlsRef.current) return;
+
+      // 1. Raycast from current mouse cursor into 3D world
+      const rect = domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      const hit = intersects.find((h) => h.distance > 0.1 && h.point.y > -50);
+
+      // Determine zoom direction vector
+      const forwardDir = new THREE.Vector3();
+      if (hit && e.deltaY < 0) {
+        // When zooming in, fly directly toward the 3D surface/object under the cursor!
+        forwardDir.subVectors(hit.point, camera.position).normalize();
+      } else {
+        camera.getWorldDirection(forwardDir);
+      }
+
+      // Calculate dynamic step distance with guaranteed minimum step so zooming never stalls
+      const currentDist = camera.position.distanceTo(controlsRef.current.target);
+      const stepMagnitude = Math.max(currentDist * 0.16, 2.8);
+      const zoomStep = e.deltaY < 0 ? stepMagnitude : -stepMagnitude * 1.15;
+
+      // Move both camera position and orbit target together along zoom vector
+      const moveVec = forwardDir.clone().multiplyScalar(zoomStep);
+      camera.position.add(moveVec);
+      controlsRef.current.target.add(moveVec);
+      controlsRef.current.update();
     };
 
     const handlePointerDown = () => {
@@ -1390,13 +1426,13 @@ function CameraController({
       onUserInteract();
     };
 
-    domElement.addEventListener("wheel", handleWheel, { passive: true });
+    domElement.addEventListener("wheel", handleWheel, { passive: false });
     domElement.addEventListener("pointerdown", handlePointerDown, { passive: true });
     return () => {
       domElement.removeEventListener("wheel", handleWheel);
       domElement.removeEventListener("pointerdown", handlePointerDown);
     };
-  }, [gl, onUserInteract]);
+  }, [gl, camera, scene, onUserInteract]);
 
   // Step Zoom handler for HUD Zoom + and Zoom - buttons
   useEffect(() => {
@@ -1409,16 +1445,16 @@ function CameraController({
       onUserInteract();
 
       const deltaY = customEvent.detail?.deltaY ?? 1;
-      const zoomFactor = deltaY < 0 ? 0.68 : 1.45; // deltaY < 0 is Zoom In, deltaY > 0 is Zoom Out
-      const offset = new THREE.Vector3().subVectors(camera.position, controlsRef.current.target);
-      offset.multiplyScalar(zoomFactor);
+      const forwardDir = new THREE.Vector3();
+      camera.getWorldDirection(forwardDir);
 
-      // Unrestricted distance clamp between 0.1m and 3500m
-      const len = offset.length();
-      if (len < 0.1) offset.setLength(0.1);
-      if (len > 3500) offset.setLength(3500);
+      const currentDist = camera.position.distanceTo(controlsRef.current.target);
+      const stepMagnitude = Math.max(currentDist * 0.25, 4.5);
+      const zoomStep = deltaY < 0 ? stepMagnitude : -stepMagnitude;
 
-      camera.position.addVectors(controlsRef.current.target, offset);
+      const moveVec = forwardDir.clone().multiplyScalar(zoomStep);
+      camera.position.add(moveVec);
+      controlsRef.current.target.add(moveVec);
       controlsRef.current.update();
     };
 
@@ -1523,7 +1559,7 @@ function CameraController({
       right.crossVectors(forward, state.camera.up).normalize();
 
       const clampedDelta = Math.min(delta, 0.08);
-      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 115 : 50) * clampedDelta;
+      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 120 : 55) * clampedDelta;
       const move = new THREE.Vector3();
 
       if (keys["KeyW"] || keys["ArrowUp"]) move.addScaledVector(forward, moveSpeed);
@@ -1581,11 +1617,11 @@ function CameraController({
       enableDamping
       dampingFactor={0.16}
       rotateSpeed={1.2}
-      zoomSpeed={3.2}
-      panSpeed={2.2}
+      zoomSpeed={1.0}
+      panSpeed={2.5}
       screenSpacePanning={true}
-      minDistance={0.05}
-      maxDistance={4000}
+      minDistance={0.01}
+      maxDistance={5000}
       minPolarAngle={0.0001}
       maxPolarAngle={Math.PI * 0.58}
       onStart={() => {
