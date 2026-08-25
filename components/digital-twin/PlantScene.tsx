@@ -1409,14 +1409,14 @@ function CameraController({
       onUserInteract();
 
       const deltaY = customEvent.detail?.deltaY ?? 1;
-      const zoomFactor = deltaY < 0 ? 0.75 : 1.35; // deltaY < 0 is Zoom In, deltaY > 0 is Zoom Out
+      const zoomFactor = deltaY < 0 ? 0.68 : 1.45; // deltaY < 0 is Zoom In, deltaY > 0 is Zoom Out
       const offset = new THREE.Vector3().subVectors(camera.position, controlsRef.current.target);
       offset.multiplyScalar(zoomFactor);
 
-      // Clamp distance between 1.5m and 850m
+      // Unrestricted distance clamp between 0.1m and 3500m
       const len = offset.length();
-      if (len < 1.5) offset.setLength(1.5);
-      if (len > 850) offset.setLength(850);
+      if (len < 0.1) offset.setLength(0.1);
+      if (len > 3500) offset.setLength(3500);
 
       camera.position.addVectors(controlsRef.current.target, offset);
       controlsRef.current.update();
@@ -1459,7 +1459,7 @@ function CameraController({
 
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children, true);
-      const validHit = intersects.find((hit) => hit.distance > 0.3 && hit.point.y > -20);
+      const validHit = intersects.find((hit) => hit.distance > 0.1 && hit.point.y > -50);
 
       if (validHit && controlsRef.current) {
         const hitPoint = validHit.point;
@@ -1469,14 +1469,14 @@ function CameraController({
         const currentOffset = new THREE.Vector3().subVectors(camera.position, controlsRef.current.target);
         let dist = currentOffset.length();
         if (dist > 75) {
-          currentOffset.normalize().multiplyScalar(42);
-        } else if (dist < 8) {
-          currentOffset.normalize().multiplyScalar(12);
+          currentOffset.normalize().multiplyScalar(38);
+        } else if (dist < 5) {
+          currentOffset.normalize().multiplyScalar(8);
         }
         // Ensure camera stays above ground
         const targetCamPos = hitPoint.clone().add(currentOffset);
-        if (targetCamPos.y < hitPoint.y + 3) {
-          targetCamPos.y = hitPoint.y + 6;
+        if (targetCamPos.y < hitPoint.y + 2) {
+          targetCamPos.y = hitPoint.y + 4;
         }
         focusCamPosRef.current = targetCamPos;
 
@@ -1522,7 +1522,8 @@ function CameraController({
       const right = new THREE.Vector3();
       right.crossVectors(forward, state.camera.up).normalize();
 
-      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 55 : 24) * delta;
+      const clampedDelta = Math.min(delta, 0.08);
+      const moveSpeed = (keys["ShiftLeft"] || keys["ShiftRight"] ? 115 : 50) * clampedDelta;
       const move = new THREE.Vector3();
 
       if (keys["KeyW"] || keys["ArrowUp"]) move.addScaledVector(forward, moveSpeed);
@@ -1578,15 +1579,15 @@ function CameraController({
       makeDefault
       enabled={!isGtaModeActive}
       enableDamping
-      dampingFactor={0.08}
-      rotateSpeed={1.0}
-      zoomSpeed={2.2}
-      panSpeed={1.4}
+      dampingFactor={0.16}
+      rotateSpeed={1.2}
+      zoomSpeed={3.2}
+      panSpeed={2.2}
       screenSpacePanning={true}
-      minDistance={0.8}
-      maxDistance={1200}
-      minPolarAngle={0.01}
-      maxPolarAngle={Math.PI / 2 + 0.08}
+      minDistance={0.05}
+      maxDistance={4000}
+      minPolarAngle={0.0001}
+      maxPolarAngle={Math.PI * 0.58}
       onStart={() => {
         isAnimatingRef.current = false;
         focusTargetRef.current = null;
@@ -1712,7 +1713,7 @@ function PlantSceneInner({
     <>
       {/* Dynamically adjust tone mapping exposure for storm legibility */}
       <StormExposureControl isStormActive={isStormActive} />
-      <PerspectiveCamera makeDefault position={[75, 120, 160]} fov={45} near={0.5} far={2000} />
+      <PerspectiveCamera makeDefault position={[75, 120, 160]} fov={45} near={0.1} far={5000} />
       <CameraController
         activePreset={activePreset}
         isFreeNav={isFreeNav}

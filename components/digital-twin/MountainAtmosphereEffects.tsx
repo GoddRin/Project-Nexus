@@ -254,6 +254,34 @@ function MountainSwallowFlock() {
 function PhotorealisticMountainCumulus() {
   const groupRef = useRef<THREE.Group>(null);
 
+  const puffGeometry = useMemo(() => new THREE.SphereGeometry(1, 14, 10), []);
+  const baseGeometry = useMemo(() => new THREE.SphereGeometry(1, 12, 8), []);
+
+  const puffMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#FFFFFF",
+        roughness: 0.98,
+        metalness: 0.0,
+        transparent: true,
+        opacity: 0.90,
+        depthWrite: false,
+      }),
+    []
+  );
+
+  const baseMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#94A3B8",
+        roughness: 1.0,
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+      }),
+    []
+  );
+
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime() * 0.12;
@@ -267,53 +295,53 @@ function PhotorealisticMountainCumulus() {
       {
         basePos: [-130, 105, -280] as [number, number, number],
         puffs: [
-          { offset: [0, 6, 0], r: 18 },
-          { offset: [-14, 0, 4], r: 15 },
-          { offset: [14, 2, -2], r: 16 },
-          { offset: [-25, -4, 2], r: 13 },
-          { offset: [26, -3, 3], r: 14 },
-          { offset: [0, -6, 0], r: 20 },
-          { offset: [-10, 8, -4], r: 14 },
-          { offset: [8, 9, 2], r: 15 },
+          { offset: [0, 6, 0] as [number, number, number], r: 18 },
+          { offset: [-14, 0, 4] as [number, number, number], r: 15 },
+          { offset: [14, 2, -2] as [number, number, number], r: 16 },
+          { offset: [-25, -4, 2] as [number, number, number], r: 13 },
+          { offset: [26, -3, 3] as [number, number, number], r: 14 },
+          { offset: [0, -6, 0] as [number, number, number], r: 20 },
+          { offset: [-10, 8, -4] as [number, number, number], r: 14 },
+          { offset: [8, 9, 2] as [number, number, number], r: 15 },
         ],
       },
       {
         basePos: [-30, 120, -340] as [number, number, number],
         puffs: [
-          { offset: [0, 8, 0], r: 24 },
-          { offset: [-18, 2, 5], r: 19 },
-          { offset: [18, 3, -4], r: 20 },
-          { offset: [-34, -4, 2], r: 16 },
-          { offset: [35, -5, 1], r: 17 },
-          { offset: [0, -7, 0], r: 26 },
-          { offset: [-12, 12, -3], r: 17 },
-          { offset: [14, 11, 4], r: 18 },
-          { offset: [-6, 16, 0], r: 14 },
+          { offset: [0, 8, 0] as [number, number, number], r: 24 },
+          { offset: [-18, 2, 5] as [number, number, number], r: 19 },
+          { offset: [18, 3, -4] as [number, number, number], r: 20 },
+          { offset: [-34, -4, 2] as [number, number, number], r: 16 },
+          { offset: [35, -5, 1] as [number, number, number], r: 17 },
+          { offset: [0, -7, 0] as [number, number, number], r: 26 },
+          { offset: [-12, 12, -3] as [number, number, number], r: 17 },
+          { offset: [14, 11, 4] as [number, number, number], r: 18 },
+          { offset: [-6, 16, 0] as [number, number, number], r: 14 },
         ],
       },
       {
         basePos: [85, 112, -300] as [number, number, number],
         puffs: [
-          { offset: [0, 7, 0], r: 20 },
-          { offset: [-16, 1, 3], r: 16 },
-          { offset: [17, 3, -3], r: 17 },
-          { offset: [-28, -5, 0], r: 14 },
-          { offset: [29, -4, 2], r: 15 },
-          { offset: [0, -6, 0], r: 22 },
-          { offset: [-8, 11, -2], r: 15 },
-          { offset: [10, 10, 3], r: 16 },
+          { offset: [0, 7, 0] as [number, number, number], r: 20 },
+          { offset: [-16, 1, 3] as [number, number, number], r: 16 },
+          { offset: [17, 3, -3] as [number, number, number], r: 17 },
+          { offset: [-28, -5, 0] as [number, number, number], r: 14 },
+          { offset: [29, -4, 2] as [number, number, number], r: 15 },
+          { offset: [0, -6, 0] as [number, number, number], r: 22 },
+          { offset: [-8, 11, -2] as [number, number, number], r: 15 },
+          { offset: [10, 10, 3] as [number, number, number], r: 16 },
         ],
       },
       {
         basePos: [195, 102, -260] as [number, number, number],
         puffs: [
-          { offset: [0, 5, 0], r: 17 },
-          { offset: [-13, 0, 3], r: 14 },
-          { offset: [15, 2, -2], r: 15 },
-          { offset: [-24, -4, 1], r: 12 },
-          { offset: [25, -3, 2], r: 13 },
-          { offset: [0, -5, 0], r: 19 },
-          { offset: [2, 9, -1], r: 13 },
+          { offset: [0, 5, 0] as [number, number, number], r: 17 },
+          { offset: [-13, 0, 3] as [number, number, number], r: 14 },
+          { offset: [15, 2, -2] as [number, number, number], r: 15 },
+          { offset: [-24, -4, 1] as [number, number, number], r: 12 },
+          { offset: [25, -3, 2] as [number, number, number], r: 13 },
+          { offset: [0, -5, 0] as [number, number, number], r: 19 },
+          { offset: [2, 9, -1] as [number, number, number], r: 13 },
         ],
       },
     ];
@@ -326,30 +354,19 @@ function PhotorealisticMountainCumulus() {
           {bank.puffs.map((puff, puffIdx) => (
             <mesh
               key={`puff-${bankIdx}-${puffIdx}`}
-              position={[puff.offset[0], puff.offset[1], puff.offset[2]]}
-            >
-              <sphereGeometry args={[puff.r, 16, 12]} />
-              <meshStandardMaterial
-                color="#FFFFFF"
-                roughness={0.98}
-                metalness={0.0}
-                transparent
-                opacity={0.90}
-                depthWrite={false}
-              />
-            </mesh>
+              position={puff.offset}
+              scale={puff.r}
+              geometry={puffGeometry}
+              material={puffMaterial}
+            />
           ))}
           {/* Flat convective shadow base */}
-          <mesh position={[0, -10, 0]} scale={[1.4, 0.25, 1.2]}>
-            <sphereGeometry args={[22, 14, 10]} />
-            <meshStandardMaterial
-              color="#94A3B8"
-              roughness={1.0}
-              transparent
-              opacity={0.35}
-              depthWrite={false}
-            />
-          </mesh>
+          <mesh
+            position={[0, -10, 0]}
+            scale={[30.8, 5.5, 26.4]}
+            geometry={baseGeometry}
+            material={baseMaterial}
+          />
         </group>
       ))}
     </group>
