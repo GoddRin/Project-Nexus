@@ -184,16 +184,16 @@ export function FacilityHolographicBeaconLabel({
         />
       </mesh>
 
-      {/* ═══ 2. VERTICAL VOLUMETRIC LASER LOCATOR BEAM ═══ */}
+      {/* ═══ 2. DELICATE HOLOGRAPHIC TETHER LINE ═══ */}
       <mesh
         ref={beamRef}
         position={[0, groundY + actualBeamHeight / 2, 0]}
       >
-        <cylinderGeometry args={[0.1, 0.45, actualBeamHeight, 16, 1, true]} />
+        <cylinderGeometry args={[0.02, 0.02, actualBeamHeight, 8, 1, true]} />
         <meshBasicMaterial
           color={colors.threeColor}
           transparent
-          opacity={0.28}
+          opacity={0.08}
           side={THREE.DoubleSide}
           blending={THREE.AdditiveBlending}
         />
