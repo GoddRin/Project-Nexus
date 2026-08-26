@@ -197,7 +197,7 @@ export function LocomotionLaboratoryModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
       <div className="relative w-full max-w-7xl h-[90vh] bg-slate-950 border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-3.5 bg-slate-900/90 border-b border-white/10">

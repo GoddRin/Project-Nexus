@@ -2510,6 +2510,9 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
     return (11.3 * flowIntensity * (commissionPct / 100)).toFixed(1);
   }, [flowIntensity, commissionPct]);
 
+  const isAnyModalOpen = isPersonnelModalOpen || isSupercarConfigOpen || isLocomotionLabOpen || Boolean(selectedEquipment);
+  const effectiveHideSiteLabels = hideSiteLabels || isAnyModalOpen;
+
   return (
     <div className="relative h-full w-full bg-[var(--bg-base,#0B1013)] overflow-hidden">
       <Suspense fallback={<PlantSceneLoading />}>
@@ -2547,7 +2550,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             onSelectPreset={handleSelectPreset}
             focusedPersonnelId={focusedPersonnelId}
             onDismissPersonnelBeacon={() => setFocusedPersonnelId(null)}
-            hideSiteLabels={hideSiteLabels}
+            hideSiteLabels={effectiveHideSiteLabels}
           />
         </Canvas>
       </Suspense>
