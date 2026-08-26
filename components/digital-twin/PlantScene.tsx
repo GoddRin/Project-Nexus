@@ -91,6 +91,8 @@ import { LocomotionLaboratoryModal } from "./LocomotionLaboratoryModal";
 import { FacilityHolographicBeaconLabel } from "./FacilityHolographicBeaconLabel";
 import { SupercarConfiguratorOverlay } from "./SupercarConfiguratorOverlay";
 import { PersonnelProfileModal } from "./PersonnelProfileModal";
+import { getPersonnelLocationTarget } from "./personnelLocations";
+import { PersonnelLocatorBeacon } from "./PersonnelLocatorBeacon";
 import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDetailDrawer";
 import { getEquipmentByLocation } from "@/app/(dashboard)/dashboard/sitemap/actions";
 import type { PagasaSignalData } from "@/lib/weather/pagasa";
@@ -1471,6 +1473,21 @@ function CameraController({
     return () => window.removeEventListener("plant-scene-step-zoom", handleStepZoom);
   }, [camera, onUserInteract]);
 
+  // Smooth Direct Fly-To & Teleport target handler for personnel locator
+  useEffect(() => {
+    const handleFocusTarget = (e: Event) => {
+      const customEvent = e as CustomEvent<{ pos: [number, number, number]; target: [number, number, number] }>;
+      if (!controlsRef.current || !customEvent.detail) return;
+      focusTargetRef.current = new THREE.Vector3(...customEvent.detail.target);
+      focusCamPosRef.current = new THREE.Vector3(...customEvent.detail.pos);
+      isAnimatingRef.current = false;
+      onUserInteract();
+    };
+
+    window.addEventListener("plant-scene-focus-target", handleFocusTarget);
+    return () => window.removeEventListener("plant-scene-focus-target", handleFocusTarget);
+  }, [onUserInteract]);
+
   // Keyboard Pan Controls (WASD / Arrow keys / Space / Q / Shift)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1674,6 +1691,8 @@ function PlantSceneInner({
   isGtaModeActive = false,
   onSelectPerson,
   onSelectPreset,
+  focusedPersonnelId,
+  onDismissPersonnelBeacon,
 }: {
   activePreset: CameraPresetKey;
   equipments: EquipmentWithLocation[];
@@ -1690,6 +1709,8 @@ function PlantSceneInner({
   isGtaModeActive?: boolean;
   onSelectPerson?: (id: string) => void;
   onSelectPreset?: (preset: CameraPresetKey) => void;
+  focusedPersonnelId?: string | null;
+  onDismissPersonnelBeacon?: () => void;
 }) {
   const isNight = effectiveTime === "NIGHT";
   const isMorning = effectiveTime === "MORNING";
@@ -1825,6 +1846,14 @@ function PlantSceneInner({
         onSelectPreset={onSelectPreset}
         effectiveTime={effectiveTime}
       />
+
+      {/* 📍 3D Interactive Target Locator Beacon for Focused Personnel */}
+      {focusedPersonnelId && (
+        <PersonnelLocatorBeacon
+          personnelId={focusedPersonnelId}
+          onDismiss={onDismissPersonnelBeacon}
+        />
+      )}
 
       {/* --- SUPERCAR SHOWCASE (Ferrari 458 Italia) --- */}
       <SupercarEntity
@@ -2322,6 +2351,25 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   // Filipino Personnel Dossier & Workforce modal state
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState<boolean>(false);
   const [selectedPersonnelId, setSelectedPersonnelId] = useState<string | null>(null);
+  const [focusedPersonnelId, setFocusedPersonnelId] = useState<string | null>(null);
+
+  const handleLocatePersonnel = (id: string) => {
+    const loc = getPersonnelLocationTarget(id);
+    if (!loc) return;
+    setSelectedPersonnelId(id);
+    setFocusedPersonnelId(id);
+    setIsPersonnelModalOpen(false);
+    setIsFreeNav(true);
+    window.dispatchEvent(
+      new CustomEvent("plant-scene-focus-target", {
+        detail: {
+          pos: loc.camPos,
+          target: loc.target,
+          personnelId: id,
+        },
+      })
+    );
+  };
 
   // Supercar Showcase & Configurator state
   const [supercarCustomization, setSupercarCustomization] = useState<SupercarCustomization>({
@@ -2479,6 +2527,8 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
               setIsPersonnelModalOpen(true);
             }}
             onSelectPreset={handleSelectPreset}
+            focusedPersonnelId={focusedPersonnelId}
+            onDismissPersonnelBeacon={() => setFocusedPersonnelId(null)}
           />
         </Canvas>
       </Suspense>
@@ -2946,6 +2996,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           selectedPersonnelId={selectedPersonnelId}
           onClose={() => setIsPersonnelModalOpen(false)}
           onSelectPersonnel={(id) => setSelectedPersonnelId(id)}
+          onLocatePersonnel={handleLocatePersonnel}
         />
       )}
 
