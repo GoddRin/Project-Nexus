@@ -18,6 +18,7 @@ export interface FacilityHolographicBeaconProps {
   badges: Array<{ label: string; value: string; icon?: string }>;
   distanceFactor?: number;
   onClick?: () => void;
+  visible?: boolean;
 }
 
 /**
@@ -43,7 +44,10 @@ export function FacilityHolographicBeaconLabel({
   badges,
   distanceFactor = 65,
   onClick,
+  visible = true,
 }: FacilityHolographicBeaconProps) {
+  if (!visible) return null;
+
   const groupRef = useRef<THREE.Group>(null);
   const gyroRing1Ref = useRef<THREE.Mesh>(null);
   const gyroRing2Ref = useRef<THREE.Mesh>(null);

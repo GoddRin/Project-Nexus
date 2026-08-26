@@ -879,6 +879,7 @@ interface EquipmentMarkerProps {
   activePreset: CameraPresetKey;
   targetZone: string;
   leaderHeight?: number;
+  hideSiteLabels?: boolean;
 }
 
 function EquipmentMarker({
@@ -889,6 +890,7 @@ function EquipmentMarker({
   activePreset,
   targetZone,
   leaderHeight = 24,
+  hideSiteLabels = false,
 }: EquipmentMarkerProps) {
   const [hovered, setHovered] = useState(false);
   const capRef = useRef<THREE.Mesh>(null);
@@ -989,7 +991,7 @@ function EquipmentMarker({
         </mesh>
       )}
 
-      {isRelevantZone && (
+      {isRelevantZone && !hideSiteLabels && (
         <ClampedMarkerHtml
           capRef={capRef}
           preferredLeaderHeight={leaderHeight}
@@ -1061,6 +1063,7 @@ interface PowerhouseBlockoutProps {
   onSelectPerson?: (id: string) => void;
   onSelectPreset?: (preset: CameraPresetKey) => void;
   effectiveTime?: AtmosphereTimeMode;
+  hideSiteLabels?: boolean;
 }
 
 function PowerhouseBlockout({
@@ -1073,6 +1076,7 @@ function PowerhouseBlockout({
   onSelectPerson,
   onSelectPreset,
   effectiveTime = "MORNING",
+  hideSiteLabels = false,
 }: PowerhouseBlockoutProps) {
   // Load real GLTF model geometry named meshes
   const gltf = useGLTF("/models/tumauini_powerhouse.glb") as unknown as GLTFResult;
@@ -1178,10 +1182,11 @@ function PowerhouseBlockout({
           activePreset={activePreset}
           targetZone="INTAKE"
           leaderHeight={20}
+          hideSiteLabels={hideSiteLabels}
         />
       ))}
 
-      {activePreset === "overview" && (
+      {activePreset === "overview" && !hideSiteLabels && (
         <ZoneTelemetryLabel
           title="SURGE TANK & HEADRACE PORTAL"
           subtitle="EL. 271.46m • 16-LIFT CONCRETE SHAFT"
@@ -1202,10 +1207,11 @@ function PowerhouseBlockout({
           activePreset={activePreset}
           targetZone="PENSTOCK"
           leaderHeight={18}
+          hideSiteLabels={hideSiteLabels}
         />
       ))}
 
-      {activePreset === "overview" && (
+      {activePreset === "overview" && !hideSiteLabels && (
         <ZoneTelemetryLabel
           title="MAIN PENSTOCK CONDUIT"
           subtitle="11.3 MW FLOW"
@@ -1236,30 +1242,34 @@ function PowerhouseBlockout({
               activePreset={activePreset}
               targetZone="TURBINE_HALL"
               leaderHeight={leaderH}
+              hideSiteLabels={hideSiteLabels}
             />
           );
         })}
 
         {/* ═══ 🏷️ POWERHOUSE FACILITY 3D HOLOGRAPHIC ROTATING BEACON & HUD LABEL ═══ */}
-        <FacilityHolographicBeaconLabel
-          title="11.3 MW HYDROELECTRIC POWERHOUSE"
-          facilityCode="TUMAUINI-HEPP-01"
-          subtitle="Generator Hall • 2x Francis Hydro Turbines • 69kV Switchyard Substation"
-          elevation="EL. 0.5m MSL"
-          coordinates="17.0621° N, 121.8410° E"
-          themeColor="cyan"
-          position={[0, 28.5, 0]}
-          groundY={0.5}
-          beamHeight={28.0}
-          distanceFactor={65}
-          badges={[
-            { label: "CAPACITY", value: "11.3 MW", icon: "⚡" },
-            { label: "UNITS", value: "2x Francis", icon: "🌊" },
-            { label: "SPEED", value: "600 RPM", icon: "🔄" },
-            { label: "GRID", value: "69kV Online", icon: "🔋" },
-          ]}
-          onClick={() => onSelectPreset?.("turbine-hall")}
-        />
+        {!hideSiteLabels && (
+          <FacilityHolographicBeaconLabel
+            title="11.3 MW HYDROELECTRIC POWERHOUSE"
+            facilityCode="TUMAUINI-HEPP-01"
+            subtitle="Generator Hall • 2x Francis Hydro Turbines • 69kV Switchyard Substation"
+            elevation="EL. 0.5m MSL"
+            coordinates="17.0621° N, 121.8410° E"
+            themeColor="cyan"
+            position={[0, 28.5, 0]}
+            groundY={0.5}
+            beamHeight={28.0}
+            distanceFactor={65}
+            visible={!hideSiteLabels}
+            badges={[
+              { label: "CAPACITY", value: "11.3 MW", icon: "⚡" },
+              { label: "UNITS", value: "2x Francis", icon: "🌊" },
+              { label: "SPEED", value: "600 RPM", icon: "🔄" },
+              { label: "GRID", value: "69kV Online", icon: "🔋" },
+            ]}
+            onClick={() => onSelectPreset?.("turbine-hall")}
+          />
+        )}
       </group>
 
       {/* --- SWITCHYARD & SUBSTATION AREA (Right / East Elevated Platform) --- */}
@@ -1280,6 +1290,7 @@ function PowerhouseBlockout({
               activePreset={activePreset}
               targetZone="SWITCHYARD"
               leaderHeight={leaderH}
+              hideSiteLabels={hideSiteLabels}
             />
           );
         })}
@@ -1293,25 +1304,28 @@ function PowerhouseBlockout({
       <TemfacilFacility isXRay={isXRay} onSelectPerson={onSelectPerson} activePreset={activePreset} timeMode={effectiveTime} />
 
       {/* ═══ 🏷️ TEMFACIL COMPOUND 3D HOLOGRAPHIC ROTATING BEACON & HUD LABEL ═══ */}
-      <FacilityHolographicBeaconLabel
-        title="TEMFACIL SITE HEADQUARTERS"
-        facilityCode="SCIC-TEMFACIL-01"
-        subtitle="Administrative Complex • Engineering Bay • Logistics Depot & Barracks"
-        elevation="EL. 14.0m MSL"
-        coordinates="17.0654° N, 121.8471° E"
-        themeColor="amber"
-        position={[118, 38.5, -95]}
-        groundY={14.0}
-        beamHeight={24.5}
-        distanceFactor={65}
-        badges={[
-          { label: "PERSONNEL", value: "28 On-Duty", icon: "👥" },
-          { label: "FLEET", value: "4 Logistics", icon: "🚛" },
-          { label: "SECURITY", value: "Active Sentry", icon: "🛡️" },
-          { label: "STATUS", value: "Operational", icon: "🟢" },
-        ]}
-        onClick={() => onSelectPreset?.("temfacil")}
-      />
+      {!hideSiteLabels && (
+        <FacilityHolographicBeaconLabel
+          title="TEMFACIL SITE HEADQUARTERS"
+          facilityCode="SCIC-TEMFACIL-01"
+          subtitle="Administrative Complex • Engineering Bay • Logistics Depot & Barracks"
+          elevation="EL. 14.0m MSL"
+          coordinates="17.0654° N, 121.8471° E"
+          themeColor="amber"
+          position={[118, 38.5, -95]}
+          groundY={14.0}
+          beamHeight={24.5}
+          distanceFactor={65}
+          visible={!hideSiteLabels}
+          badges={[
+            { label: "PERSONNEL", value: "28 On-Duty", icon: "👥" },
+            { label: "FLEET", value: "4 Logistics", icon: "🚛" },
+            { label: "SECURITY", value: "Active Sentry", icon: "🛡️" },
+            { label: "STATUS", value: "Operational", icon: "🟢" },
+          ]}
+          onClick={() => onSelectPreset?.("temfacil")}
+        />
+      )}
     </group>
   );
 }
@@ -1693,6 +1707,7 @@ function PlantSceneInner({
   onSelectPreset,
   focusedPersonnelId,
   onDismissPersonnelBeacon,
+  hideSiteLabels = false,
 }: {
   activePreset: CameraPresetKey;
   equipments: EquipmentWithLocation[];
@@ -1711,6 +1726,7 @@ function PlantSceneInner({
   onSelectPreset?: (preset: CameraPresetKey) => void;
   focusedPersonnelId?: string | null;
   onDismissPersonnelBeacon?: () => void;
+  hideSiteLabels?: boolean;
 }) {
   const isNight = effectiveTime === "NIGHT";
   const isMorning = effectiveTime === "MORNING";
@@ -1845,10 +1861,11 @@ function PlantSceneInner({
         onSelectPerson={onSelectPerson}
         onSelectPreset={onSelectPreset}
         effectiveTime={effectiveTime}
+        hideSiteLabels={hideSiteLabels}
       />
 
       {/* 📍 3D Interactive Target Locator Beacon for Focused Personnel */}
-      {focusedPersonnelId && (
+      {focusedPersonnelId && !hideSiteLabels && (
         <PersonnelLocatorBeacon
           personnelId={focusedPersonnelId}
           onDismiss={onDismissPersonnelBeacon}
@@ -2352,6 +2369,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState<boolean>(false);
   const [selectedPersonnelId, setSelectedPersonnelId] = useState<string | null>(null);
   const [focusedPersonnelId, setFocusedPersonnelId] = useState<string | null>(null);
+  const [hideSiteLabels, setHideSiteLabels] = useState<boolean>(false);
 
   const handleLocatePersonnel = (id: string) => {
     const loc = getPersonnelLocationTarget(id);
@@ -2529,6 +2547,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             onSelectPreset={handleSelectPreset}
             focusedPersonnelId={focusedPersonnelId}
             onDismissPersonnelBeacon={() => setFocusedPersonnelId(null)}
+            hideSiteLabels={hideSiteLabels}
           />
         </Canvas>
       </Suspense>
@@ -2887,6 +2906,20 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
                   >
                     <Activity className="h-3.5 w-3.5 mr-1.5" />
                     X-Ray Wireframe {isXRay ? "ON" : "OFF"}
+                  </Button>
+
+                  <Button
+                    variant={hideSiteLabels ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start font-mono text-xs transition-all",
+                      hideSiteLabels && "bg-flow-teal/20 text-flow-teal border-flow-teal/50 ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => setHideSiteLabels(!hideSiteLabels)}
+                    title="Toggle 3D HUD floating labels and telemetry beacons"
+                  >
+                    <Layers className="h-3.5 w-3.5 mr-1.5" />
+                    3D HUD Labels: {hideSiteLabels ? "HIDDEN" : "VISIBLE"}
                   </Button>
 
                   {process.env.NODE_ENV !== "production" && (
