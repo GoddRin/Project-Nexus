@@ -153,7 +153,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hairStyle: "SHORT",
     facialHair: "NONE",
     hasGlasses: false,
-    avatarUrl: "/images/personnel/doc_jayson_aggabao.jpg",
+    avatarUrl: "/images/personnel/qc_jimmy_aquino.jpg",
     licenseNumber: "PRC Registered Civil Engineer #0079204",
     currentTask: "Performing pre-pour reinforcement inspections, slump testing & rebound hammer non-destructive testing",
     locationName: "Dam Spillway & Powerhouse Civil Structures Inspection Zone",
