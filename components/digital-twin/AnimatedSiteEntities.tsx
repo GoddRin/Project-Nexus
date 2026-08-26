@@ -102,6 +102,11 @@ import {
 } from "./uphillRoadConfig";
 import { FILIPINO_PERSONNEL_REGISTRY } from "./personnelData";
 import { FilipinoCharacterHead } from "./TemfacilFacility";
+import { registerLivePersonnelPosition, unregisterLivePersonnel } from "./personnelLocations";
+
+const scratchPersonWorldPos = new THREE.Vector3();
+const scratchJimmyWorldPos = new THREE.Vector3();
+const scratchSecWorldPos = new THREE.Vector3();
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TERRAIN HEIGHT SAMPLER & SPLINE UTILITIES
@@ -519,9 +524,23 @@ export function HydroProjectPersonMesh({
     return null;
   };
 
+  React.useEffect(() => {
+    return () => {
+      if (personnelId) {
+        unregisterLivePersonnel(personnelId);
+      }
+    };
+  }, [personnelId]);
+
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime() + shiftOffset;
+
+    // 0. Live world position registration for personnel locator & camera tracking
+    if (personnelId && groupRef.current) {
+      groupRef.current.getWorldPosition(scratchPersonWorldPos);
+      registerLivePersonnelPosition(personnelId, scratchPersonWorldPos, groupRef.current);
+    }
 
     // 1. Dynamic Speaker Motion on Stage
     const speakerState = speakerType ? getSpeakerTransform(clock.getElapsedTime()) : null;
@@ -2354,6 +2373,11 @@ export function AnimatedSecurityGateOfficer({
       const isInspecting = activePhase === "INSPECTING_UNDERCARRIAGE" || activePhase === "INSPECTING_CARGO_PROHIBITED";
       searchlightRef.current.intensity = isInspecting ? 2.5 : 0;
     }
+
+    if (guardGroupRef.current) {
+      guardGroupRef.current.getWorldPosition(scratchJimmyWorldPos);
+      registerLivePersonnelPosition("SEC_RONALD_MALTO", scratchJimmyWorldPos, guardGroupRef.current);
+    }
   });
 
   return (
@@ -2364,7 +2388,20 @@ export function AnimatedSecurityGateOfficer({
         e.stopPropagation();
         if (onSelectPerson) onSelectPerson("SEC_RONALD_MALTO");
       }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "auto";
+      }}
     >
+      {/* Invisible Raycast Collider for effortless click selection */}
+      <mesh position={[0, 0.95, 0]} visible={false}>
+        <cylinderGeometry args={[0.5, 0.5, 1.9, 12]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
+
       {/* ── SG Roberto "Bert" Dizon Realistic Filipino Security Guard Anatomy ── */}
       {/* Searchlight / UV Inspection Flashlight SpotLight */}
       <spotLight
@@ -3292,6 +3329,12 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
   const laserRef = useRef<THREE.Group>(null);
   const frameTickRef = useRef<number>(0);
 
+  React.useEffect(() => {
+    return () => {
+      unregisterLivePersonnel("QC_JIMMY_AQUINO");
+    };
+  }, []);
+
   useFrame(({ clock }) => {
     if (!rootRef.current) return;
     frameTickRef.current++;
@@ -3349,6 +3392,10 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
     // Update root position
     rootRef.current.position.set(targetX, targetY, targetZ);
     rootRef.current.rotation.y = rotY;
+
+    // Register live position for Engr. Jimmy
+    rootRef.current.getWorldPosition(scratchJimmyWorldPos);
+    registerLivePersonnelPosition("QC_JIMMY_AQUINO", scratchJimmyWorldPos, rootRef.current);
 
     // Biomechanical Kinematics
     if (isWalking) {
@@ -3442,7 +3489,19 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
           onSelectPerson("QC_JIMMY_AQUINO");
         }
       }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "auto";
+      }}
     >
+      {/* Invisible Raycast Collider for effortless click selection */}
+      <mesh position={[0, 0.95, 0]} visible={false}>
+        <cylinderGeometry args={[0.5, 0.5, 1.9, 12]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
       {/* Legs */}
       <group ref={leftLegRef} position={[-0.1, 0.74, 0]}>
         <mesh position={[0, -0.37, 0]} material={MAT_PANTS_JEANS}>
@@ -3563,9 +3622,9 @@ export function AnimatedSiteEntities({
 }) {
   const [currentGateAngle, setCurrentGateAngle] = useState<number>(0);
 
-  const y1 = useMemo(() => sampleTerrainY(76, -110) + 2.5, []);
-  const y2 = useMemo(() => sampleTerrainY(94, -96), []);
-  const y3 = useMemo(() => sampleTerrainY(96, -96), []);
+  const y1 = useMemo(() => getSiteSurfaceY(76, -110), []);
+  const y2 = useMemo(() => getSiteSurfaceY(90, -96), []);
+  const y3 = useMemo(() => getSiteSurfaceY(96, -96), []);
 
   return (
     <group>
@@ -3827,12 +3886,6 @@ export function AnimatedSiteEntities({
 
       {/* Field Inspection Supervisors along Main Access Road (White Hard Hats) */}
       <HydroProjectPersonMesh
-        position={[85, sampleTerrainY(85, -60), -60]}
-        rotation={[0, Math.PI / 3, 0]}
-        skinTone="BRONZE"
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
         vestColor="#0284C7"
         pantsStyle="JEANS"
         accessory="TABLET"

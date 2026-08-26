@@ -6,7 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import Image from "next/image";
 import { FILIPINO_PERSONNEL_REGISTRY } from "./personnelData";
-import { getPersonnelLocationTarget } from "./personnelLocations";
+import { getPersonnelLocationTarget, getLivePersonnelWorldPosition } from "./personnelLocations";
 
 const RING_GEO_1 = new THREE.RingGeometry(0.8, 1.0, 32);
 const RING_GEO_2 = new THREE.RingGeometry(1.4, 1.6, 32);
@@ -27,6 +27,17 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
+
+    // Dynamically lock locator beacon position to the live 3D coordinates of the moving person
+    const livePos = getLivePersonnelWorldPosition(personnelId);
+    if (groupRef.current) {
+      if (livePos) {
+        groupRef.current.position.set(livePos.x, livePos.y, livePos.z);
+      } else if (loc) {
+        groupRef.current.position.set(loc.target[0], loc.target[1], loc.target[2]);
+      }
+    }
+
     if (ring1Ref.current) {
       const s1 = 1.0 + Math.sin(t * 4.0) * 0.15;
       ring1Ref.current.scale.set(s1, s1, 1.0);
@@ -47,7 +58,7 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
   if (!loc || !person) return null;
 
   return (
-    <group ref={groupRef} position={[loc.target[0], loc.target[1] - 0.7, loc.target[2]]}>
+    <group ref={groupRef} position={[loc.target[0], loc.target[1], loc.target[2]]}>
       {/* ─── Ground Concentric Holographic Radar Rings ─── */}
       <mesh ref={ring1Ref} geometry={RING_GEO_1} rotation={[-Math.PI / 2, 0, 0]}>
         <meshBasicMaterial color="#06B6D4" transparent opacity={0.8} side={THREE.DoubleSide} />
