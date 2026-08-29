@@ -121,6 +121,7 @@ export const MAT_WORKER_HARDHAT_WHITE = new THREE.MeshStandardMaterial({ color: 
 export const MAT_SHIRT_LONG_GREEN = new THREE.MeshStandardMaterial({ color: "#15803D", roughness: 0.7, metalness: 0.0 });
 export const MAT_SHIRT_LIGHT_BLUE = new THREE.MeshStandardMaterial({ color: "#7DD3FC", roughness: 0.6, metalness: 0.0 });
 export const MAT_SHIRT_BLAZER_NAVY = new THREE.MeshStandardMaterial({ color: "#1E293B", roughness: 0.65, metalness: 0.05 });
+export const MAT_SHIRT_NAVY = new THREE.MeshStandardMaterial({ color: "#1E293B", roughness: 0.65, metalness: 0.05 });
 export const MAT_SHIRT_SLATE_ADMIN = new THREE.MeshStandardMaterial({ color: "#475569", roughness: 0.65, metalness: 0.0 });
 export const MAT_WORKER_VEST_BLUE = new THREE.MeshStandardMaterial({ color: "#0284C7", roughness: 0.5, metalness: 0.05 });
 
@@ -130,6 +131,9 @@ export const MAT_WORKER_HARDHAT_GREEN = new THREE.MeshStandardMaterial({ color: 
 export const MAT_WORKER_HARDHAT_BLUE = new THREE.MeshStandardMaterial({ color: "#0284C7", roughness: 0.4, metalness: 0.05 });
 export const MAT_WORKER_HARDHAT_RED = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.4, metalness: 0.05 });
 export const MAT_SKIN_TONE = new THREE.MeshStandardMaterial({ color: "#C68E65", roughness: 0.65, metalness: 0.0 });
+
+export const MAT_STEEL_CHROME = new THREE.MeshStandardMaterial({ color: "#E2E8F0", roughness: 0.20, metalness: 0.85 });
+export const MAT_PANTS_CARGO_DARK = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.8, metalness: 0.0 });
 
 export const MAT_SCRUBS_TEAL = new THREE.MeshStandardMaterial({ color: "#0D9488", roughness: 0.6, metalness: 0.0 });
 export const MAT_SHIRT_ROYAL_HR = new THREE.MeshStandardMaterial({ color: "#1D4ED8", roughness: 0.6, metalness: 0.0 });
@@ -261,3 +265,65 @@ export const MAT_STREETLIGHT_HEAD = new THREE.MeshStandardMaterial({ color: "#33
 export const MAT_STREETLIGHT_LENS = new THREE.MeshStandardMaterial({ color: "#FEF08A", emissive: new THREE.Color("#FDE047"), emissiveIntensity: 1.5, roughness: 0.1 });
 export const MAT_TRANSFORMER_CAN = new THREE.MeshStandardMaterial({ color: "#64748B", roughness: 0.45, metalness: 0.40 });
 export const MAT_CONDUIT_METALLIC = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.30, metalness: 0.80 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🏢 TEMFACIL MAIN SITE OFFICE INTERIOR PBR PALETTE
+// ═══════════════════════════════════════════════════════════════════════════
+export const MAT_STEEL_GREEN_TRUSS = new THREE.MeshStandardMaterial({ color: "#2D5A46", roughness: 0.55, metalness: 0.35 });
+export const MAT_CONDUIT_ORANGE = new THREE.MeshStandardMaterial({ color: "#EA580C", roughness: 0.45, metalness: 0.15 });
+export const MAT_LEATHER_BLACK_WORN = new THREE.MeshStandardMaterial({ color: "#1E1E20", roughness: 0.70, metalness: 0.08 });
+export const MAT_SOFA_WOOD_BASE = new THREE.MeshStandardMaterial({ color: "#5C3A21", roughness: 0.75, metalness: 0.02 });
+export const MAT_DESK_LAMINATE = new THREE.MeshStandardMaterial({ color: "#D1C7B7", roughness: 0.65, metalness: 0.02 });
+export const MAT_DESK_LEGS = new THREE.MeshStandardMaterial({ color: "#334155", roughness: 0.45, metalness: 0.65 });
+export const MAT_TABLE_DARK_BROWN = new THREE.MeshStandardMaterial({ color: "#3B2219", roughness: 0.65, metalness: 0.02 });
+export const MAT_CUBICLE_WALL_LOW = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.65, metalness: 0.02 });
+export const MAT_CUBICLE_WALL_TALL = new THREE.MeshStandardMaterial({ color: "#F1F5F9", roughness: 0.65, metalness: 0.02 });
+export const MAT_CUBICLE_ALUM_TRIM = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.35, metalness: 0.75 });
+export const MAT_MONOBLOC_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.45, metalness: 0.02 });
+export const MAT_MONOBLOC_TEAL = new THREE.MeshStandardMaterial({ color: "#0D9488", roughness: 0.45, metalness: 0.02 });
+export const MAT_FLUORESCENT_TUBE = new THREE.MeshStandardMaterial({ color: "#FFFFFF", emissive: new THREE.Color("#FEF9C3"), emissiveIntensity: 0.85, roughness: 0.3 });
+export const MAT_FLUORESCENT_BODY = new THREE.MeshStandardMaterial({ color: "#475569", roughness: 0.4, metalness: 0.7 });
+export const MAT_MONITOR_BEZEL = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.4, metalness: 0.6 });
+export const MAT_MONITOR_GLOW = new THREE.MeshStandardMaterial({ color: "#38BDF8", emissive: new THREE.Color("#0284C7"), emissiveIntensity: 0.7, roughness: 0.2 });
+export const MAT_WATER_COOLER_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.35, metalness: 0.05 });
+export const MAT_WATER_COOLER_MAT = new THREE.MeshStandardMaterial({ color: "#543824", roughness: 0.95, metalness: 0.0 });
+export const MAT_CARDBOARD_STACK = new THREE.MeshStandardMaterial({ color: "#B88E58", roughness: 0.90, metalness: 0.0 });
+export const MAT_WHITEBOARD_PANEL = new THREE.MeshStandardMaterial({ color: "#FFFFFF", roughness: 0.15, metalness: 0.05 });
+export const MAT_PAPER_DOCS = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.9, metalness: 0.0 });
+export const MAT_SIGN_DOC_CONTROLLER = new THREE.MeshStandardMaterial({ color: "#0D9488", roughness: 0.4, metalness: 0.1 });
+export const MAT_SIGN_ENG_DEPT = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.3, metalness: 0.2 });
+export const MAT_SIGN_PED = new THREE.MeshStandardMaterial({ color: "#15803D", roughness: 0.4, metalness: 0.1 });
+export const MAT_PICTURE_FRAME = new THREE.MeshStandardMaterial({ color: "#1E293B", roughness: 0.4, metalness: 0.5 });
+export const MAT_CERTIFICATE_PAPER = new THREE.MeshStandardMaterial({ color: "#FEF9C3", roughness: 0.8, metalness: 0.0 });
+export const MAT_ROOF_INSULATION_FOIL = new THREE.MeshStandardMaterial({ color: "#94A3B8", roughness: 0.55, metalness: 0.45 });
+export const MAT_MINI_FAN_PINK = new THREE.MeshStandardMaterial({ color: "#F472B6", roughness: 0.35, metalness: 0.10 });
+export const MAT_WIRE_FAN_BLACK = new THREE.MeshStandardMaterial({ color: "#1E293B", roughness: 0.40, metalness: 0.60 });
+
+// East Wing Specific Materials
+export const MAT_SPINE_BOARD_RED = new THREE.MeshStandardMaterial({ color: "#DC2626", roughness: 0.35, metalness: 0.10 });
+export const MAT_CLOTH_GREEN_TABLE = new THREE.MeshStandardMaterial({ color: "#166534", roughness: 0.85, metalness: 0.0 });
+export const MAT_CABINET_DARK_WOOD = new THREE.MeshStandardMaterial({ color: "#3B2219", roughness: 0.70, metalness: 0.02 });
+export const MAT_ELECTRICAL_PANEL_BLACK = new THREE.MeshStandardMaterial({ color: "#18181B", roughness: 0.40, metalness: 0.60 });
+export const MAT_AC_UNIT_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.30, metalness: 0.05 });
+export const MAT_CURTAIN_FABRIC_LEAF = new THREE.MeshStandardMaterial({ color: "#15803D", roughness: 0.85, metalness: 0.0 });
+export const MAT_CURTAIN_FABRIC_MAROON = new THREE.MeshStandardMaterial({ color: "#7F1D1D", roughness: 0.85, metalness: 0.0 });
+export const MAT_CURTAIN_ORANGE_FLORAL = new THREE.MeshStandardMaterial({ color: "#D97706", roughness: 0.85, metalness: 0.0 });
+export const MAT_RUBBER_BOOTS_BLACK = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.80, metalness: 0.05 });
+export const MAT_PAINT_BUCKET_WHITE = new THREE.MeshStandardMaterial({ color: "#E2E8F0", roughness: 0.40, metalness: 0.10 });
+export const MAT_DOOR_WHITE_FLUSH = new THREE.MeshStandardMaterial({ color: "#EDEAE3", roughness: 0.60, metalness: 0.02 });
+export const MAT_DOORKNOB_CHROME = new THREE.MeshStandardMaterial({ color: "#CBD5E1", roughness: 0.20, metalness: 0.90 });
+
+// Kitchen & Comfort Rooms (West Exit Wing) Materials
+export const MAT_CEMENT_PLASTER_RAW = new THREE.MeshStandardMaterial({ color: "#8C8880", roughness: 0.95, metalness: 0.02 });
+export const MAT_PORCELAIN_WHITE = new THREE.MeshStandardMaterial({ color: "#F8FAFC", roughness: 0.15, metalness: 0.05 });
+export const MAT_STAINLESS_SINK = new THREE.MeshStandardMaterial({ color: "#CBD5E1", roughness: 0.25, metalness: 0.85 });
+export const MAT_COFFEE_MAKER_BLACK = new THREE.MeshStandardMaterial({ color: "#18181B", roughness: 0.45, metalness: 0.30 });
+export const MAT_GLASS_BOTTLE_GREEN = new THREE.MeshStandardMaterial({ color: "#4D7C0F", roughness: 0.15, metalness: 0.10, transparent: true, opacity: 0.85 });
+export const MAT_PAIL_UTILITY_GREEN = new THREE.MeshStandardMaterial({ color: "#15803D", roughness: 0.50, metalness: 0.05 });
+
+// Document Controller & Office Equipment Materials
+export const MAT_BINDER_BLUE = new THREE.MeshStandardMaterial({ color: "#1D4ED8", roughness: 0.55, metalness: 0.05 });
+export const MAT_BINDER_GREEN = new THREE.MeshStandardMaterial({ color: "#15803D", roughness: 0.55, metalness: 0.05 });
+export const MAT_PRINTER_BLACK = new THREE.MeshStandardMaterial({ color: "#18181B", roughness: 0.40, metalness: 0.30 });
+export const MAT_FAN_WHITE = new THREE.MeshStandardMaterial({ color: "#F1F5F9", roughness: 0.30, metalness: 0.10 });
+

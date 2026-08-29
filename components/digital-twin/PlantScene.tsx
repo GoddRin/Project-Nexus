@@ -91,7 +91,10 @@ import { LocomotionLaboratoryModal } from "./LocomotionLaboratoryModal";
 import { FacilityHolographicBeaconLabel } from "./FacilityHolographicBeaconLabel";
 import { SupercarConfiguratorOverlay } from "./SupercarConfiguratorOverlay";
 import { PersonnelProfileModal } from "./PersonnelProfileModal";
+import { PersonnelInfoCard } from "./PersonnelInfoCard";
 import { getPersonnelLocationTarget } from "./personnelLocations";
+
+
 import { PersonnelLocatorBeacon } from "./PersonnelLocatorBeacon";
 import { EquipmentDetailDrawer, type EquipmentWithLocation } from "./EquipmentDetailDrawer";
 import { getEquipmentByLocation } from "@/app/(dashboard)/dashboard/sitemap/actions";
@@ -113,7 +116,18 @@ export type CameraPresetKey =
   | "temfacil"
   | "temfacil-guardhouse"
   | "temfacil-barracks"
-  | "temfacil-office";
+  | "temfacil-office"
+  | "temfacil-office-interior"
+  | "temfacil-office-zone1"
+  | "temfacil-office-zone2"
+  | "temfacil-office-zone3"
+  | "temfacil-office-zone4"
+  | "temfacil-office-zone4b"
+  | "temfacil-office-zone5a"
+  | "temfacil-office-zone5b"
+  | "temfacil-office-zone5c"
+  | "temfacil-office-zone5d"
+  | "temfacil-office-zone6";
 
 /**
  * Flow Teal CSS color token value: #1FB6A6 (rgb(31, 182, 166))
@@ -1149,7 +1163,7 @@ function PowerhouseBlockout({
       <ForestVegetation />
 
       {/* --- HIGH-DENSITY MOUNTAIN FOREST WILDLIFE ECOSYSTEM --- */}
-      <ForestWildlife />
+      <ForestWildlife onSelectPerson={onSelectPerson} />
 
       {/* --- LIVE ANIMATED SITE WORKERS, ENGINEERS & NAVIGATING VEHICLES --- */}
       <AnimatedSiteEntities onSelectPerson={onSelectPerson} />
@@ -1393,6 +1407,50 @@ function CameraController({
       "temfacil-office": {
         pos: new THREE.Vector3(118, 18, -78),
         target: new THREE.Vector3(118, 15.5, -95),
+      },
+      "temfacil-office-interior": {
+        pos: new THREE.Vector3(114.8, 15.6, -98.0),
+        target: new THREE.Vector3(114.0, 15.4, -109.0),
+      },
+      "temfacil-office-zone1": {
+        pos: new THREE.Vector3(114.8, 15.6, -98.0),
+        target: new THREE.Vector3(114.0, 15.4, -109.0),
+      },
+      "temfacil-office-zone2": {
+        pos: new THREE.Vector3(113.8, 15.6, -102.2),
+        target: new THREE.Vector3(110.2, 14.9, -99.3),
+      },
+      "temfacil-office-zone3": {
+        pos: new THREE.Vector3(113.5, 15.6, -102.2),
+        target: new THREE.Vector3(110.0, 15.0, -105.5),
+      },
+      "temfacil-office-zone4": {
+        pos: new THREE.Vector3(112.5, 15.55, -113.15),
+        target: new THREE.Vector3(107.5, 15.35, -114.10),
+      },
+      "temfacil-office-zone4b": {
+        pos: new THREE.Vector3(112.5, 15.55, -116.20),
+        target: new THREE.Vector3(108.5, 15.30, -116.60),
+      },
+      "temfacil-office-zone5a": {
+        pos: new THREE.Vector3(116.0, 15.5, -97.5),
+        target: new THREE.Vector3(118.0, 15.1, -99.5),
+      },
+      "temfacil-office-zone5b": {
+        pos: new THREE.Vector3(116.0, 15.5, -101.8),
+        target: new THREE.Vector3(118.2, 15.1, -103.5),
+      },
+      "temfacil-office-zone5c": {
+        pos: new THREE.Vector3(116.0, 15.5, -105.8),
+        target: new THREE.Vector3(118.2, 15.1, -107.0),
+      },
+      "temfacil-office-zone5d": {
+        pos: new THREE.Vector3(116.0, 15.5, -109.8),
+        target: new THREE.Vector3(118.2, 15.1, -111.0),
+      },
+      "temfacil-office-zone6": {
+        pos: new THREE.Vector3(115.2, 15.6, -113.8),
+        target: new THREE.Vector3(117.8, 15.2, -115.8),
       },
     }),
     []
@@ -2368,8 +2426,10 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   // Filipino Personnel Dossier & Workforce modal state
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState<boolean>(false);
   const [selectedPersonnelId, setSelectedPersonnelId] = useState<string | null>(null);
+  const [activePersonnelCardId, setActivePersonnelCardId] = useState<string | null>(null);
   const [focusedPersonnelId, setFocusedPersonnelId] = useState<string | null>(null);
   const [hideSiteLabels, setHideSiteLabels] = useState<boolean>(false);
+
 
   const handleLocatePersonnel = (id: string) => {
     const loc = getPersonnelLocationTarget(id);
@@ -2545,8 +2605,9 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             isGtaModeActive={isGtaModeActive}
             onSelectPerson={(id) => {
               setSelectedPersonnelId(id);
-              setIsPersonnelModalOpen(true);
+              setActivePersonnelCardId(id);
             }}
+
             onSelectPreset={handleSelectPreset}
             focusedPersonnelId={focusedPersonnelId}
             onDismissPersonnelBeacon={() => setFocusedPersonnelId(null)}
@@ -2800,10 +2861,143 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
                       activePreset === "temfacil-office" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
                     )}
                     onClick={() => handleSelectPreset("temfacil-office")}
-                    title="Engineering Staff Office"
+                    title="Engineering Staff Office Exterior"
                   >
                     <Building2 className="h-3 w-3 mr-1.5 shrink-0 text-teal-400" />
                     <span className="truncate">Staff Office</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-interior" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all col-span-2",
+                      activePreset === "temfacil-office-interior" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-interior")}
+                    title="Main Site Office 4-Zone Interior Walkthrough"
+                  >
+                    <Layers className="h-3 w-3 mr-1.5 shrink-0 text-emerald-400" />
+                    <span className="truncate">Office Walkthrough</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone1" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone1" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone1")}
+                    title="Zone 1: Entrance Corridor & Lounge"
+                  >
+                    <span className="truncate">Z1: Corridor</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone2" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone2" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone2")}
+                    title="Zone 2: Document Controller Cubicle"
+                  >
+                    <span className="truncate">Z2: Doc Ctrl</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone3" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone3" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone3")}
+                    title="Zone 3: Engineering / Project Control Department"
+                  >
+                    <span className="truncate">Z3: Engineering</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone4" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone4" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone4")}
+                    title="Zone 4A: Staff Kitchen & Pantry Room"
+                  >
+                    <span className="truncate">Z4A: Kitchen</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone4b" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone4b" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone4b")}
+                    title="Zone 4B: Staff Comfort Rooms (Restrooms / CR)"
+                  >
+                    <span className="truncate">Z4B: Restrooms</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone5a" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone5a" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone5a")}
+                    title="Zone 5A: HR Office"
+                  >
+                    <span className="truncate">Z5A: HR</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone5b" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone5b" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone5b")}
+                    title="Zone 5B: Accounting / Treasury Office"
+                  >
+                    <span className="truncate">Z5B: Treasury</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone5c" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone5c" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone5c")}
+                    title="Zone 5C: Admin Office"
+                  >
+                    <span className="truncate">Z5C: Admin</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone5d" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone5d" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone5d")}
+                    title="Zone 5D: ESH / Medical Clinic"
+                  >
+                    <span className="truncate">Z5D: Clinic</span>
+                  </Button>
+                  <Button
+                    variant={activePreset === "temfacil-office-zone6" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[10px] h-6 px-1.5 justify-start transition-all",
+                      activePreset === "temfacil-office-zone6" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-office-zone6")}
+                    title="Zone 6: Plants & Equipment Department (PED)"
+                  >
+                    <span className="truncate">Z6: PED Dept</span>
                   </Button>
                 </div>
 
@@ -3026,8 +3220,26 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
 
       {/* ─── OVERLAY MODALS ─── */}
 
+      {/* Interactive 3D Personnel HUD Info Card */}
+      {activePersonnelCardId && !isPersonnelModalOpen && (
+        <PersonnelInfoCard
+          personnelId={activePersonnelCardId}
+          onClose={() => setActivePersonnelCardId(null)}
+          onLocate={(id) => {
+            handleLocatePersonnel(id);
+            setActivePersonnelCardId(null);
+          }}
+          onOpenDossier={(id) => {
+            setSelectedPersonnelId(id);
+            setActivePersonnelCardId(null);
+            setIsPersonnelModalOpen(true);
+          }}
+        />
+      )}
+
       {/* Filipino Personnel Profile Dossier Modal */}
       {isPersonnelModalOpen && (
+
         <PersonnelProfileModal
           selectedPersonnelId={selectedPersonnelId}
           onClose={() => setIsPersonnelModalOpen(false)}

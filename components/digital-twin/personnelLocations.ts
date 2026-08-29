@@ -52,7 +52,11 @@ export function getPersonnelZoneName(id: string): string {
       return "TEMFACIL AutoCAD 3D Drafting Station";
     case "DOC_JAYSON_AGGABAO":
       return "TEMFACIL Document Control Command Center";
+    case "QS_JOHN_RICK_HERNAEZ":
+      return "TEMFACIL Quantity Surveying & Cost Control Office (Lead QS)";
     case "QS_CRISTINE_ALMAZAN":
+      return "TEMFACIL Quantity Surveying & Cost Control Office (Junior QS)";
+
       return "TEMFACIL Quantity Surveying & Cost Control Office";
     case "PLANNING_MAY_PARALLAG":
       return "TEMFACIL Project Planning & Scheduling Office";
@@ -98,6 +102,10 @@ export function getPersonnelZoneName(id: string): string {
       return "TEMFACIL Central Motorpool & Heavy Equipment Yard";
     case "WAREHOUSE_VINCENT_ANDALLO":
       return "TEMFACIL Central Materials Warehouse & Laydown Yard";
+    case "DOG_BRUNSON_CHUCHU":
+      return "Central Warehouse Dirt Access Ramp & TEMFACIL Yard";
+    case "MECH_ANDREW_SILVA":
+      return "TEMFACIL Mechanical Engineering Workstation (Rear Wall)";
     case "SUPT_EUGENIO_HANOPOL":
       return "Powerhouse Turbine Hall Bay TU-01 (EL. 180.00m)";
     case "SUPT_EDUARDO_DEFRANCIA":
@@ -141,58 +149,69 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
 
     case "DEPUTY_NATHANIEL_PRINCIPE":
-      // TemfacilFacility [118, 14, -95] + [-4.0, 0.1, -0.8]
+      // TemfacilFacility [118, 14, -95] + [-2.5, 0.1, 0.5] -> Main Office Executive Veranda
       return {
         id,
-        target: [114.0, 14.10, -95.8],
-        camPos: [114.0, 16.5, -90.0],
+        target: [115.5, 14.10, -94.5],
+        camPos: [115.5, 16.2, -89.0],
         zoneName: zone,
       };
 
     // ─── 2. TECHNICAL & PROJECT ENGINEERING WING ───
     case "ENGR_NOEL_LAVAPIE":
-      // TemfacilFacility [118, 14, -95] + [22.5, 0.1, 18.5]
       return {
         id,
-        target: [140.5, 14.10, -76.5],
-        camPos: [140.5, 16.5, -71.5],
+        target: [112.95, 14.85, -104.28],
+        camPos: [114.80, 16.00, -101.50],
         zoneName: zone,
       };
 
+
+
+
+
+
+
     case "CAD_ELBERT_FIGURACION":
-      // TemfacilFacility [118, 14, -95] + [24.2, 0.1, 21.0]
       return {
         id,
-        target: [142.2, 14.10, -74.0],
-        camPos: [142.2, 16.5, -69.0],
+        target: [115.50, 14.85, -107.62],
+        camPos: [117.10, 15.65, -105.82],
         zoneName: zone,
       };
 
     case "DOC_JAYSON_AGGABAO":
-      // TemfacilFacility [118, 14, -95] + [21.0, 0.1, 22.0]
       return {
         id,
-        target: [139.0, 14.10, -73.0],
-        camPos: [139.0, 16.5, -68.0],
+        target: [114.20, 14.85, -99.15],
+        camPos: [116.00, 15.65, -100.95],
+        zoneName: zone,
+      };
+
+    case "QS_JOHN_RICK_HERNAEZ":
+      return {
+        id,
+        target: [112.02, 14.85, -108.80],
+        camPos: [110.20, 16.00, -108.80],
         zoneName: zone,
       };
 
     case "QS_CRISTINE_ALMAZAN":
-      // TemfacilFacility [118, 14, -95] + [-6.2, 0.1, -14.0]
       return {
         id,
-        target: [111.8, 14.10, -109.0],
-        camPos: [111.8, 16.5, -104.0],
+        target: [112.80, 14.85, -110.12],
+        camPos: [112.80, 16.00, -107.50],
         zoneName: zone,
       };
 
     case "PLANNING_MAY_PARALLAG":
       return {
         id,
-        target: [123.5, 14.10, -76.5],
-        camPos: [123.5, 16.5, -71.5],
+        target: [113.58, 14.85, -108.80],
+        camPos: [115.38, 15.65, -107.20],
         zoneName: zone,
       };
+
 
     // ─── 3. QA/QC & MATERIALS TESTING ───
     case "ENGR_ELGINE_MANGCUPANG":
@@ -239,15 +258,14 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
     }
 
-    case "GEO_AMOR_FLORESCA": {
-      const gY = sampleTerrainY(3.0, -18.0);
+    case "GEO_AMOR_FLORESCA":
       return {
         id,
-        target: [3.0, gY + 0.8, -18.0],
-        camPos: [3.0, gY + 3.0, -12.0],
+        target: [114.84, 14.85, -108.80],
+        camPos: [116.64, 15.65, -107.00],
         zoneName: zone,
       };
-    }
+
 
     // ─── 5. CIVIL STRUCTURES & UNDERGROUND TUNNELING ───
     case "CIVIL_JAIME_CANO":
@@ -302,8 +320,8 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
     case "ESH_ALFREDO_ARIZ":
       return {
         id,
-        target: [126.0, 14.10, -82.5],
-        camPos: [126.0, 16.5, -76.5],
+        target: [128.0, 14.10, -84.5],
+        camPos: [128.0, 16.5, -78.5],
         zoneName: zone,
       };
 
@@ -327,8 +345,8 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
     case "HR_ROVIGAIL_ABELLAR":
       return {
         id,
-        target: [126.0, 14.10, -82.5],
-        camPos: [126.0, 16.5, -76.5],
+        target: [123.0, 14.10, -74.5],
+        camPos: [123.0, 16.5, -68.5],
         zoneName: zone,
       };
 
@@ -351,11 +369,10 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
 
     case "IT_MARC_SALVA":
-      // TemfacilFacility [118, 14, -95] + [-7.5, 0.1, -6.5]
       return {
         id,
-        target: [110.5, 14.10, -101.5],
-        camPos: [110.5, 16.5, -95.5],
+        target: [115.90, 14.85, -111.48],
+        camPos: [117.70, 15.65, -109.68],
         zoneName: zone,
       };
 
@@ -377,14 +394,32 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
         zoneName: zone,
       };
 
+    case "DOG_BRUNSON_CHUCHU":
+      return {
+        id,
+        target: [90.0, 14.35, -96.0],
+        camPos: [90.0, 16.5, -90.0],
+        zoneName: zone,
+      };
+
     // ─── 9. MECHANICAL & ELECTRICAL WORKS ───
+    case "MECH_ANDREW_SILVA":
+      return {
+        id,
+        target: [113.90, 14.85, -111.48],
+        camPos: [113.90, 16.00, -108.80],
+        zoneName: zone,
+      };
+
     case "SUPT_EUGENIO_HANOPOL":
       return {
         id,
-        target: [-2.0, 0.55, 0.0],
-        camPos: [-2.0, 3.2, 6.0],
+        target: [112.10, 14.85, -111.52],
+        camPos: [112.10, 15.75, -109.80],
         zoneName: zone,
       };
+
+
 
     case "SUPT_EDUARDO_DEFRANCIA":
       return {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, ImageOverlay, useMap, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, useMap, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Eye, EyeOff } from "lucide-react";
@@ -246,56 +246,27 @@ function createPastPointIcon() {
   });
 }
 
-export interface PanahonStation {
-  site_id: string;
-  site_name: string;
-  lat: number;
-  lon: number;
-  value?: string | number | null;
-  parameter?: string;
-  readable_parameter?: string;
-  readable_unit?: string;
-  observed_at?: string;
-  icon?: string;
-  desc?: string;
-}
-
-export interface PanahonLightning {
-  lat: number;
-  lon: number;
-  amplitude: number;
-  observed_at: string;
-  readable_parameter: string;
-}
-
 interface TyphoonMapProps {
   storms: Storm[];
   lastUpdated?: string | Date;
-  panahonSynop?: PanahonStation[];
-  panahonAws?: PanahonStation[];
-  panahonLightning?: PanahonLightning[];
-  panahonRiverBasin?: PanahonStation[];
-  panahonOverlayUrl?: string | null;
-  panahonOverlayBounds?: [[number, number], [number, number]];
-  panahonSourceStatus?: "live" | "cached" | "unavailable";
 }
 
-// Map controller — intelligent centering for PAR & NWPAC systems
-function MapRecenter({ storms }: { storms: Storm[] }) {
+// Map controller — ensures default view frames the entire PAR domain
+function MapInitializer({ storms }: { storms: Storm[] }) {
   const map = useMap();
 
   useEffect(() => {
     try {
       if (!map || !map.getContainer()) return;
-      const hasFarEastStorm = storms.some((s) => s.lng > 135);
-      const hasFarWestStorm = storms.some((s) => s.lng < 114);
+      const hasFarEastStorm = storms.some((s) => s.lng > 138);
+      const hasFarWestStorm = storms.some((s) => s.lng < 112);
 
       if (hasFarEastStorm || hasFarWestStorm) {
-        // Wide Western Pacific view
-        map.setView([16.0, 128.0], 4);
+        // Wide Western Pacific view when storms are in distant approaches
+        map.setView([15.0, 128.0], 4.0);
       } else {
-        // Standard Philippines PAR view
-        map.setView([13.0, 122.0], 5);
+        // Default clean framing of the entire Philippine Area of Responsibility (PAR)
+        map.setView([14.8, 124.8], 4.6);
       }
     } catch {
       // Ignore transient setView errors during unmount/Fast Refresh
@@ -308,13 +279,6 @@ function MapRecenter({ storms }: { storms: Storm[] }) {
 export default function TyphoonMap({
   storms,
   lastUpdated,
-  panahonSynop = [],
-  panahonAws = [],
-  panahonLightning = [],
-  panahonRiverBasin = [],
-  panahonOverlayUrl,
-  panahonOverlayBounds = [[-10, 90], [31.8, 160]],
-  panahonSourceStatus = "live",
 }: TyphoonMapProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [showParBoundary, setShowParBoundary] = useState(true);
@@ -341,64 +305,6 @@ export default function TyphoonMap({
         delete (container as any)._leaflet_id;
       }
     };
-  }, []);
-
-  // Station Icons
-  const synopIcon = useMemo(() => {
-    if (typeof window === "undefined") return undefined;
-    return L.divIcon({
-      className: "panahon-synop-pin",
-      html: `<div class="w-3 h-3 rounded-full bg-sky-500 border border-white shadow-md"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    });
-  }, []);
-
-  const awsIcon = useMemo(() => {
-    if (typeof window === "undefined") return undefined;
-    return L.divIcon({
-      className: "panahon-aws-pin",
-      html: `<div class="w-3 h-3 rounded-full bg-emerald-400 border border-white shadow-md"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    });
-  }, []);
-
-  // Dynamic Time-Decayed Lightning Strike Icon Factory
-  const getLightningIcon = useMemo(() => {
-    const iconCache: Record<string, L.DivIcon> = {};
-    return (ageMinutes: number) => {
-      let opacity = 1.0;
-      let colorClass = "bg-amber-400 text-slate-900 border-white animate-pulse shadow-amber-400/50";
-      if (ageMinutes > 60) {
-        opacity = 0.3;
-        colorClass = "bg-amber-700/60 text-slate-300 border-slate-500";
-      } else if (ageMinutes > 30) {
-        opacity = 0.6;
-        colorClass = "bg-amber-500/80 text-slate-900 border-amber-200";
-      }
-
-      const key = `${opacity}-${colorClass}`;
-      if (!iconCache[key]) {
-        iconCache[key] = L.divIcon({
-          className: "panahon-lightning-pin",
-          html: `<div style="opacity: ${opacity};" class="flex items-center justify-center w-4 h-4 rounded-full border text-[9px] font-bold shadow-lg ${colorClass}">⚡</div>`,
-          iconSize: [16, 16],
-          iconAnchor: [8, 8],
-        });
-      }
-      return iconCache[key];
-    };
-  }, []);
-
-  const riverIcon = useMemo(() => {
-    if (typeof window === "undefined") return undefined;
-    return L.divIcon({
-      className: "panahon-river-pin",
-      html: `<div class="w-3 h-3 rounded-full bg-cyan-400 border border-white shadow-md"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    });
   }, []);
 
   // Custom DivIcon for Tumauini HEPP Site Pin
@@ -484,13 +390,17 @@ export default function TyphoonMap({
   return (
     <div ref={mapContainerRef} className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner">
       <MapContainer
-        center={[13.0, 122.0]}
-        zoom={5}
+        center={[14.8, 124.8]}
+        zoom={4.6}
+        zoomSnap={0.1}
+        minZoom={3.5}
+        maxZoom={12}
         scrollWheelZoom={false}
         className="w-full h-full"
         style={{ background: "#0B1418" }}
         attributionControl={false}
       >
+        <MapInitializer storms={relevantStorms} />
         {/* Premium Satellite Base Layer */}
         <TileLayer
           attribution='&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -542,93 +452,6 @@ export default function TyphoonMap({
             </Popup>
           </Polygon>
         )}
-
-        {/* PANaHON Image Overlay (Radar / Satellite) */}
-        {panahonOverlayUrl && (
-          <ImageOverlay
-            url={panahonOverlayUrl}
-            bounds={panahonOverlayBounds}
-            opacity={0.68}
-          />
-        )}
-
-        {/* PANaHON Lightning Strike Markers (with Time-Decay & Valid LatLng check) */}
-        {panahonLightning.map((strike, idx) => {
-          const lat = parseFloat(strike.lat as any);
-          const lon = parseFloat(strike.lon as any);
-          if (isNaN(lat) || isNaN(lon) || !isFinite(lat) || !isFinite(lon)) return null;
-
-          const obsTime = strike.observed_at ? Date.parse(strike.observed_at) : Date.now();
-          const ageMinutes = Math.max(0, Math.round((Date.now() - obsTime) / 60000));
-          if (ageMinutes > 120) return null; // hide strikes older than 2 hours
-          const icon = getLightningIcon(ageMinutes);
-          return (
-            <Marker
-              key={`lightning-${lat}-${lon}-${idx}`}
-              position={[lat, lon]}
-              icon={icon}
-            >
-              <Popup>
-                <div className="p-1.5 text-slate-900 font-sans text-xs">
-                  <div className="flex items-center gap-1 font-bold text-amber-500">
-                    <span>⚡ Lightning Strike</span>
-                  </div>
-                  <p className="mt-0.5">Type: <span className="font-semibold">{strike.readable_parameter || "Strike"}</span></p>
-                  <p>Amplitude: <span className="font-semibold font-mono">{strike.amplitude} kA</span></p>
-                  <p className="text-[10px] text-slate-400 font-mono">Observed: {strike.observed_at || "Recent"}</p>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-
-        {/* PANaHON SYNOP Weather Station Markers (Valid LatLng Check) */}
-        {synopIcon &&
-          panahonSynop
-            .filter((s) => !isNaN(s.lat) && !isNaN(s.lon) && isFinite(s.lat) && isFinite(s.lon))
-            .map((s) => (
-              <Marker key={`synop-${s.site_id}-${s.lat}-${s.lon}`} position={[s.lat, s.lon]} icon={synopIcon}>
-                <Popup>
-                  <div className="p-1.5 text-slate-900 font-sans text-xs">
-                    <h4 className="font-bold text-sky-600">{s.site_name}</h4>
-                    <p className="text-slate-600">{s.desc || "Synoptic Station"}</p>
-                    <p className="text-[10px] font-mono text-slate-400">PAGASA SYNOP #{s.site_id}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-
-        {/* PANaHON AWS Weather Station Markers (Valid LatLng Check) */}
-        {awsIcon &&
-          panahonAws
-            .filter((s) => !isNaN(s.lat) && !isNaN(s.lon) && isFinite(s.lat) && isFinite(s.lon))
-            .map((s) => (
-              <Marker key={`aws-${s.site_id}-${s.lat}-${s.lon}`} position={[s.lat, s.lon]} icon={awsIcon}>
-                <Popup>
-                  <div className="p-1.5 text-slate-900 font-sans text-xs">
-                    <h4 className="font-bold text-emerald-600">{s.site_name}</h4>
-                    <p className="text-slate-700">Rainfall: <span className="font-semibold">{s.value !== null ? `${s.value} mm` : "0.0 mm"}</span></p>
-                    <p className="text-[10px] font-mono text-slate-400">AWS Station #{s.site_id}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-
-        {/* PANaHON River Basin Hydrological Gauge Markers (Valid LatLng Check) */}
-        {riverIcon &&
-          panahonRiverBasin
-            .filter((s) => !isNaN(s.lat) && !isNaN(s.lon) && isFinite(s.lat) && isFinite(s.lon))
-            .map((s) => (
-              <Marker key={`river-${s.site_id}-${s.lat}-${s.lon}`} position={[s.lat, s.lon]} icon={riverIcon}>
-                <Popup>
-                  <div className="p-1.5 text-slate-900 font-sans text-xs">
-                    <h4 className="font-bold text-cyan-600">{s.site_name}</h4>
-                    <p className="text-slate-700">Water Level: <span className="font-semibold">{s.value !== null ? `${s.value} m` : "Normal Flow"}</span></p>
-                    <p className="text-[10px] font-mono text-slate-400">River Basin Sensor #{s.site_id}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
 
         {/* Site Pin */}
         {siteIcon && (
@@ -893,9 +716,6 @@ export default function TyphoonMap({
             </div>
           );
         })}
-
-        {/* Dynamic map view centered on PAR / Active Storms */}
-        <MapRecenter storms={relevantStorms} />
       </MapContainer>
 
       {/* Status Badge Overlay — Top Left (above zoom buttons) */}

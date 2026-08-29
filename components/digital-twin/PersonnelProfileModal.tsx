@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { FILIPINO_PERSONNEL_REGISTRY, FilipinoPersonnel } from "./personnelData";
-import { MapPin, Navigation, Crosshair, Sparkles } from "lucide-react";
+import { MapPin, Navigation, Crosshair, Sparkles, Briefcase } from "lucide-react";
 
 interface PersonnelProfileModalProps {
   selectedPersonnelId?: string | null;
@@ -108,13 +108,13 @@ export function PersonnelProfileModal({
                     }}
                     className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
                   >
-                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-700 shrink-0">
+                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-700 shrink-0 bg-slate-900">
                       <Image
                         src={p.avatarUrl}
                         alt={p.name}
                         fill
+                        unoptimized
                         className="object-cover"
-                        sizes="40px"
                       />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -152,15 +152,15 @@ export function PersonnelProfileModal({
             {/* Clickable Profile Photo with hover badge */}
             <div
               onClick={() => handleLocate()}
-              className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-sky-500/40 hover:border-cyan-400 shadow-xl shrink-0 group cursor-pointer transition-all transform hover:scale-[1.02]"
+              className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-sky-500/40 hover:border-cyan-400 shadow-xl shrink-0 group cursor-pointer transition-all transform hover:scale-[1.02] bg-slate-900"
               title="Click to fly to this personnel in 3D Site Twin"
             >
               <Image
                 src={currentPerson.avatarUrl}
                 alt={currentPerson.name}
                 fill
+                unoptimized
                 className="object-cover"
-                sizes="128px"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
@@ -199,8 +199,19 @@ export function PersonnelProfileModal({
                 <span>⏱️ {currentPerson.yearsOfExp} Yrs Experience</span>
               </div>
 
+              {/* Short Description for Role in Company */}
+              <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5 text-left">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 mb-1">
+                  <Briefcase className="w-3 h-3 text-cyan-400" />
+                  <span>Company Role & Operational Responsibilities</span>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {currentPerson.roleDescription}
+                </p>
+              </div>
+
               {/* 🎯 Primary Direct Action CTA: Fly to Personnel in 3D */}
-              <div className="pt-2 flex justify-center sm:justify-start">
+              <div className="pt-1 flex justify-center sm:justify-start">
                 <button
                   onClick={() => handleLocate()}
                   className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600/30 via-teal-600/30 to-blue-600/30 hover:from-cyan-500/40 hover:via-teal-500/40 hover:to-blue-500/40 border border-cyan-400/60 hover:border-cyan-300 text-cyan-200 hover:text-white font-mono text-xs font-bold flex items-center justify-center gap-2.5 shadow-lg shadow-cyan-950/60 transition-all transform hover:scale-[1.02] active:scale-[0.98] group"
@@ -247,6 +258,7 @@ export function PersonnelProfileModal({
                 ⚡ {currentPerson.currentTask}
               </div>
             </div>
+
 
             {/* Interactive Assigned Workstation / Facility Location Card */}
             <div

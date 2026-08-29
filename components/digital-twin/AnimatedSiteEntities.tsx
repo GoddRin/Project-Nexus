@@ -368,7 +368,7 @@ export function HydroProjectPersonMesh({
     if (personnelId === "QC_JAIRUZ_BATAC") return "TUNNEL_QC";
     if (personnelId === "TUNNEL_RICHARD_PINASEN" || personnelId === "TUNNEL_RUDY_MARCOS") return "TUNNEL_FOREMAN";
     if (personnelId === "WORKER_BENJAMIN_FOMEGAS") return "JUMBO_OPERATOR";
-    if (personnelId === "SUPT_EUGENIO_HANOPOL") return "MECHANICAL_SUPT";
+    if (personnelId === "SUPT_EUGENIO_HANOPOL" || personnelId === "MECH_ANDREW_SILVA") return "MECHANICAL_SUPT";
     if (personnelId === "SUPT_EDUARDO_DEFRANCIA") return "ELECTRICAL_SUPT";
     if (personnelId === "ELEC_JOSUE_ABELLERA") return "ELECTRICAL_SUPERVISOR";
     if (personnelId === "FOREMAN_WARLITO_DEFRANCIA") return "ELECTRICAL_FOREMAN";
@@ -378,7 +378,7 @@ export function HydroProjectPersonMesh({
     if (personnelId === "ENGR_NOEL_LAVAPIE") return "TECHNICAL_HEAD";
     if (personnelId === "CAD_ELBERT_FIGURACION") return "CAD_OPERATOR";
     if (personnelId === "DOC_JAYSON_AGGABAO") return "DOC_CONTROLLER";
-    if (personnelId === "QS_CRISTINE_ALMAZAN") return "QUANTITY_SURVEYOR";
+    if (personnelId === "QS_CRISTINE_ALMAZAN" || personnelId === "QS_JOHN_RICK_HERNAEZ") return "QUANTITY_SURVEYOR";
     if (personnelId === "QC_JHON_JAYME") return "JR_QAQC_ENGR";
     if (personnelId === "DEPUTY_NATHANIEL_PRINCIPE" || personnelId === "PM_ROMEO_SESE") return "EXECUTIVE_PM";
     if (personnelId === "HR_JOSHUA_ADMIN" || personnelId === "HR_RANDY_GAMBOA") return "HR_ADMIN";
@@ -919,23 +919,35 @@ export function HydroProjectPersonMesh({
       return;
     }
 
-    // 10. DOCUMENT CONTROLLER (Jayson Aggabao)
-    if (activeRoutine === "DOC_CONTROLLER") {
-      const stampCycle = t % 10.0;
-      if (stampCycle < 4.0) {
-        // Lifting blue rubber stamp high and stamping down with crisp force
-        const stampImpact = Math.sin(t * 4.0);
-        if (torsoRef.current) torsoRef.current.rotation.set(0.18, 0, 0);
-        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.0 + Math.max(0, stampImpact) * 0.7, -0.2, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0);
+    // 10. DOCUMENT CONTROLLER (Jayson Aggabao) — Seated at Office Desk Working on Laptop & Documents
+    if (activeRoutine === "DOC_CONTROLLER" || currentPose === "SEATED") {
+      const workCycle = t % 14.0;
+      // Sitting legs pose (pre-shaped geometry)
+      if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+
+      if (workCycle < 7.0) {
+        // Typing on Lenovo Laptop keyboard & reviewing documents
+        const typingL = Math.sin(t * 7.0) * 0.04;
+        const typingR = Math.cos(t * 7.5) * 0.04;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.14, 0, 0);
+        if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.18 + typingL, 0.22, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.18 + typingR, -0.22, -0.1);
+      } else if (workCycle < 11.0) {
+        // Using optical mouse and inspecting document sheet
+        const mouseMove = Math.sin(t * 3.0) * 0.03;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.12, -0.05, 0);
+        if (headRef.current) headRef.current.rotation.set(0.28, -0.05, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.10, 0.30, 0.15);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.20 + mouseMove, -0.25, 0.05);
       } else {
-        // Sorting transmittal binders in archive rack
-        const sort = Math.sin(t * 2.5) * 0.15;
-        if (torsoRef.current) torsoRef.current.rotation.set(0.08, sort * 0.5, 0);
-        if (headRef.current) headRef.current.rotation.set(0.2, sort * 0.8, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.05 + sort, 0.3, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.05 - sort, -0.3, 0);
+        // Checking and turning document page
+        const pageTurn = Math.sin(t * 2.5) * 0.10;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.16, 0.06, 0);
+        if (headRef.current) headRef.current.rotation.set(0.36, 0.06, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.25 + pageTurn, 0.20, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15, -0.20, -0.1);
       }
       return;
     }
@@ -1041,8 +1053,10 @@ export function HydroProjectPersonMesh({
     if (headRef.current) headRef.current.rotation.set(breath * 0.15, weightShift * 0.8, 0);
     if (leftArmRef.current) leftArmRef.current.rotation.set(0.04, 0, -0.06 + breath * 0.05);
     if (rightArmRef.current) rightArmRef.current.rotation.set(0.04, 0, 0.06 - breath * 0.05);
-    if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
-    if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+    if (pose !== "SEATED") {
+      if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
+    }
   });
 
   const isCrowd = pose === "TOOLBOX_CROWD";
@@ -1076,7 +1090,7 @@ export function HydroProjectPersonMesh({
       </mesh>
 
       {/* 🧍 TORSO & CHEST WITH HI-VIS SAFETY VEST & RETROREFLECTIVE BANDS */}
-      <group ref={torsoRef} position={[0, 0.85, 0]}>
+      <group ref={torsoRef} position={[0, pose === "SEATED" ? 0.46 : 0.85, 0]}>
         <mesh position={[0, 0.25, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
           <boxGeometry args={[0.38, 0.46, 0.22]} />
         </mesh>
@@ -1166,30 +1180,34 @@ export function HydroProjectPersonMesh({
           )}
 
           {/* Eyes */}
-          <group ref={eyeOpenRef} position={[0, 0.035, 0.112]}>
-            <mesh position={[-0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
-              <boxGeometry args={[0.038, 0.020, 0.005]} />
+          <group ref={eyeOpenRef} position={[0, 0.02, 0.112]}>
+            <mesh position={[-0.05, 0, 0]}>
+              <planeGeometry args={[0.04, 0.025]} />
+              <meshBasicMaterial color="#0F172A" />
             </mesh>
-            <mesh position={[-0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
-              <boxGeometry args={[0.022, 0.018, 0.003]} />
+            <mesh position={[0.05, 0, 0]}>
+              <planeGeometry args={[0.04, 0.025]} />
+              <meshBasicMaterial color="#0F172A" />
             </mesh>
-            <mesh position={[0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
-              <boxGeometry args={[0.038, 0.020, 0.005]} />
+          </group>
+          <group ref={eyeClosedRef} position={[0, 0.02, 0.112]} visible={false}>
+            <mesh position={[-0.05, 0, 0]}>
+              <planeGeometry args={[0.04, 0.006]} />
+              <meshBasicMaterial color="#334155" />
             </mesh>
-            <mesh position={[0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
-              <boxGeometry args={[0.022, 0.018, 0.003]} />
+            <mesh position={[0.05, 0, 0]}>
+              <planeGeometry args={[0.04, 0.006]} />
+              <meshBasicMaterial color="#334155" />
             </mesh>
           </group>
 
-          {/* Eyebrows */}
-          <mesh position={[-0.052, 0.06, 0.113]} material={MAT_FACE_EYEBROW}>
-            <boxGeometry args={[0.042, 0.012, 0.004]} />
-          </mesh>
-          <mesh position={[0.052, 0.06, 0.113]} material={MAT_FACE_EYEBROW}>
-            <boxGeometry args={[0.042, 0.012, 0.004]} />
-          </mesh>
-
           {/* Facial Hair */}
+          {facialHair === "STUBBLE" && (
+            <mesh position={[0, -0.06, 0.112]}>
+              <planeGeometry args={[0.12, 0.05]} />
+              <meshBasicMaterial color="#1E293B" transparent opacity={0.6} />
+            </mesh>
+          )}
           {facialHair === "MUSTACHE" && (
             <mesh position={[0, -0.04, 0.114]} material={MAT_MUSTACHE_BLACK}>
               <boxGeometry args={[0.08, 0.02, 0.01]} />
@@ -1333,23 +1351,63 @@ export function HydroProjectPersonMesh({
       </group>
 
       {/* 🥾 LEGS & SAFETY BOOTS */}
-      <group ref={leftLegRef} position={[-0.10, 0.85, 0]}>
-        <mesh position={[0, -0.42, 0]} material={pantsMat}>
-          <boxGeometry args={[0.14, 0.78, 0.14]} />
-        </mesh>
-        <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.14, 0.12, 0.22]} />
-        </mesh>
-      </group>
+      {pose === "SEATED" ? (
+        /* Seated Leg Anatomy: Thighs forward, calves down, boots on floor */
+        <group position={[0, 0.46, 0]}>
+          {/* Left Seated Leg */}
+          <group ref={leftLegRef} position={[-0.10, 0, 0]}>
+            {/* Horizontal Upper Thigh */}
+            <mesh position={[0, 0.02, 0.18]} material={pantsMat}>
+              <boxGeometry args={[0.13, 0.12, 0.36]} />
+            </mesh>
+            {/* Vertical Lower Shin / Calf */}
+            <mesh position={[0, -0.20, 0.32]} material={pantsMat}>
+              <boxGeometry args={[0.12, 0.34, 0.12]} />
+            </mesh>
+            {/* Boot on Floor */}
+            <mesh position={[0, -0.39, 0.36]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.13, 0.08, 0.20]} />
+            </mesh>
+          </group>
 
-      <group ref={rightLegRef} position={[0.10, 0.85, 0]}>
-        <mesh position={[0, -0.42, 0]} material={pantsMat}>
-          <boxGeometry args={[0.14, 0.78, 0.14]} />
-        </mesh>
-        <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.14, 0.12, 0.22]} />
-        </mesh>
-      </group>
+          {/* Right Seated Leg */}
+          <group ref={rightLegRef} position={[0.10, 0, 0]}>
+            {/* Horizontal Upper Thigh */}
+            <mesh position={[0, 0.02, 0.18]} material={pantsMat}>
+              <boxGeometry args={[0.13, 0.12, 0.36]} />
+            </mesh>
+            {/* Vertical Lower Shin / Calf */}
+            <mesh position={[0, -0.20, 0.32]} material={pantsMat}>
+              <boxGeometry args={[0.12, 0.34, 0.12]} />
+            </mesh>
+            {/* Boot on Floor */}
+            <mesh position={[0, -0.39, 0.36]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.13, 0.08, 0.20]} />
+            </mesh>
+          </group>
+        </group>
+      ) : (
+        /* Standing / Walking Legs */
+        <>
+          <group ref={leftLegRef} position={[-0.10, 0.85, 0]}>
+            <mesh position={[0, -0.42, 0]} material={pantsMat}>
+              <boxGeometry args={[0.14, 0.78, 0.14]} />
+            </mesh>
+            <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.14, 0.12, 0.22]} />
+            </mesh>
+          </group>
+
+          <group ref={rightLegRef} position={[0.10, 0.85, 0]}>
+            <mesh position={[0, -0.42, 0]} material={pantsMat}>
+              <boxGeometry args={[0.14, 0.78, 0.14]} />
+            </mesh>
+            <mesh position={[0, -0.83, 0.03]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.14, 0.12, 0.22]} />
+            </mesh>
+          </group>
+        </>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════
           🔧 ROLE-SPECIFIC 3D INDUSTRIAL WORKPLACE PROPS & EQUIPMENT SETS
@@ -1532,14 +1590,14 @@ export function CourtToolboxMeetingDirector({
         pose="TOOLBOX_CROWD"
       />
 
-      {/* Planning Engineer Head */}
+      {/* Field Engineer in Attendance */}
       <HydroProjectPersonMesh
-        personnelId="PLANNING_MAY_PARALLAG"
         onSelectPerson={onSelectPerson}
         position={[123.5, 14.10, -76.5]}
         rotation={[0, Math.PI, 0]}
         gender="MALE"
         role="PLANNING_ENGINEER"
+
         skinTone="MEDIUM"
         hairStyle="SHORT"
         hairColor="BLACK"
@@ -3292,13 +3350,13 @@ function AutonomousSiteTrafficSystem({
         />
       </group>
 
-      {/* Pedestrian 3: Senior Surveyor walking downhill on shoulder */}
+      {/* Pedestrian 3: Surveyor Assistant walking downhill on shoulder */}
       <group ref={ped3Ref}>
         <HydroProjectPersonMesh
-          personnelId="SURVEYOR_JOHNNY_FARONGEY"
           onSelectPerson={onSelectPerson}
           isPatrolling={true}
           skinTone="BRONZE"
+
           facialHair="NONE"
           hasHardhat
           hardhatColor="#EAB308"
@@ -3615,6 +3673,119 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
    4. MAIN EXPORT: ANIMATED SITE ENTITIES & WORKFORCE LIFE SIMULATION
    ═══════════════════════════════════════════════════════════════════════════ */
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🏭 DYNAMIC WAREHOUSE & LAYDOWN YARD INSPECTION & LOGISTICS ROUTINES
+// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// 🏭 REALISTIC WAREHOUSE LOGISTICS RECEIVING DESK & WORKFORCE STATIONS
+// ═══════════════════════════════════════════════════════════════════════════
+function WarehouseDynamicOperations({
+  onSelectPerson,
+}: {
+  onSelectPerson?: (id: string) => void;
+}) {
+  return (
+    <group>
+      {/* 📋 WAREHOUSE RECEIVING LOGISTICS DESK & STAGING APPARATUS (Open Concrete Apron) */}
+      <group position={[89.5, 14.85, -96.3]} rotation={[0, 0, 0]}>
+        {/* Heavy-Duty Steel Frame Warehouse Desk */}
+        <mesh position={[0, 0.40, 0]}>
+          <boxGeometry args={[1.40, 0.05, 0.75]} />
+          <meshStandardMaterial color="#475569" roughness={0.6} metalness={0.4} />
+        </mesh>
+        {/* Steel Tubular Legs */}
+        {[-0.62, 0.62].map((lx, i) =>
+          [-0.30, 0.30].map((lz, j) => (
+            <mesh key={`wdesk-leg-${i}-${j}`} position={[lx, 0.19, lz]}>
+              <cylinderGeometry args={[0.025, 0.025, 0.38, 8]} />
+              <meshStandardMaterial color="#1E293B" roughness={0.3} metalness={0.8} />
+            </mesh>
+          ))
+        )}
+        {/* Rugged Industrial Panasonic Toughbook Laptop */}
+        <group position={[-0.32, 0.44, 0.05]} rotation={[0, 0.1, 0]}>
+          <mesh>
+            <boxGeometry args={[0.34, 0.02, 0.24]} />
+            <meshStandardMaterial color="#1E293B" roughness={0.3} metalness={0.7} />
+          </mesh>
+          <group position={[0, 0.01, -0.11]} rotation={[-0.3, 0, 0]}>
+            <mesh position={[0, 0.11, 0]}>
+              <boxGeometry args={[0.34, 0.22, 0.015]} />
+              <meshStandardMaterial color="#1E293B" roughness={0.3} metalness={0.7} />
+            </mesh>
+            <mesh position={[0, 0.11, 0.009]}>
+              <planeGeometry args={[0.31, 0.19]} />
+              <meshBasicMaterial color="#38BDF8" />
+            </mesh>
+          </group>
+        </group>
+        {/* Rebar Mill Test Certificates & Delivery Manifests */}
+        <mesh position={[0.22, 0.43, 0.02]} rotation={[0, -0.15, 0]}>
+          <boxGeometry args={[0.28, 0.015, 0.36]} />
+          <meshStandardMaterial color="#F8FAFC" roughness={0.9} />
+        </mesh>
+        {/* Industrial Handheld Barcode Scanner on Dock */}
+        <group position={[0.48, 0.45, -0.10]} rotation={[0, -0.3, 0]}>
+          <mesh>
+            <boxGeometry args={[0.08, 0.04, 0.14]} />
+            <meshStandardMaterial color="#F59E0B" roughness={0.4} />
+          </mesh>
+        </group>
+      </group>
+
+      {/* 📦 1. Warehouse Area Lead — Vincent Dickenson Andallo */}
+      {/* Positioned comfortably behind his receiving desk, reviewing manifests and inventory */}
+      <HydroProjectPersonMesh
+        personnelId="WAREHOUSE_VINCENT_ANDALLO"
+        onSelectPerson={onSelectPerson}
+        position={[89.5, 14.85, -97.0]}
+        rotation={[0, 0, 0]}
+        skinTone="BRONZE"
+        hairStyle="SHORT"
+        facialHair="GOATEE"
+        hasHardhat
+        hardhatColor="#0284C7"
+        hasVest
+        vestColor="#EAB308"
+        pantsStyle="JEANS"
+        accessory="TABLET"
+      />
+
+      {/* 🚜 2. Heavy Equipment & Fleet Supervisor — Howell Gene Samson */}
+      {/* Positioned safely near the generator telemetry readout, checking gauges & radio */}
+      <HydroProjectPersonMesh
+        personnelId="EQUIP_HOWELL_SAMSON"
+        onSelectPerson={onSelectPerson}
+        position={[86.0, 14.85, -96.5]}
+        rotation={[0, -Math.PI / 2, 0]}
+        skinTone="MEDIUM"
+        hairStyle="SHORT"
+        hasHardhat
+        hardhatColor="#EAB308"
+        hasVest
+        vestColor="#EA580C"
+        pantsStyle="JEANS"
+        accessory="RADIO"
+      />
+
+      {/* 📋 3. Warehouse Dispatch Lead / Materials Inspector */}
+      {/* Stationed at the arrival staging apron, logging incoming deliveries */}
+      <HydroProjectPersonMesh
+        position={[92.5, 14.85, -96.5]}
+        rotation={[0, 0.15, 0]}
+        skinTone="DEEP"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#0D9488"
+        pantsStyle="CARGO"
+        accessory="CLIPBOARD"
+      />
+    </group>
+  );
+}
+
 export function AnimatedSiteEntities({
   onSelectPerson,
 }: {
@@ -3632,9 +3803,8 @@ export function AnimatedSiteEntities({
       {/* 👷 Tailrace Civil QA/QC Quality Engineer (Engr. Jimmy M. Aquino) on dry concrete apron floor */}
       <TailraceCivilQCEngineer onSelectPerson={onSelectPerson} />
 
-      {/* ⚡ Superintendent I - Mechanical (Eugenio D. Hanopol) at Powerhouse Turbine Bay TU-01 */}
+      {/* ⚡ Powerhouse Mechanical Commissioning Engineer at Turbine Bay TU-01 */}
       <HydroProjectPersonMesh
-        personnelId="SUPT_EUGENIO_HANOPOL"
         onSelectPerson={onSelectPerson}
         position={[-2.0, 0.55, 0.0]}
         rotation={[0, 0, 0]}
@@ -3649,6 +3819,7 @@ export function AnimatedSiteEntities({
         pantsStyle="JEANS"
         accessory="TABLET"
       />
+
 
       {/* ⚡ Electrical Superintendent (Eduardo G. De Francia) on dry switchyard platform */}
       <HydroProjectPersonMesh
@@ -3763,9 +3934,8 @@ export function AnimatedSiteEntities({
         accessory="TOTAL_STATION"
       />
 
-      {/* 🪨 Geological Mapper & Engineering Geologist (Amor Teofilo Floresca Jr.) at Mountain Slope Rock Face Cut */}
+      {/* 🪨 Field Geological Assistant at Mountain Slope Rock Face Cut */}
       <HydroProjectPersonMesh
-        personnelId="GEO_AMOR_FLORESCA"
         onSelectPerson={onSelectPerson}
         position={[3.0, sampleTerrainY(3.0, -18.0), -18.0]}
         rotation={[0, Math.PI / 4, 0]}
@@ -3778,6 +3948,7 @@ export function AnimatedSiteEntities({
         pantsStyle="JEANS"
         accessory="HAMMER"
       />
+
 
       {/* 🔬 QC Engineer II - Tunnel & Geotechnical (Engr. Jairuz O. Batac) on Headrace Tunnel Portal Foundation Bench */}
       <HydroProjectPersonMesh
@@ -3859,47 +4030,9 @@ export function AnimatedSiteEntities({
         pantsStyle="JEANS"
       />
 
-      {/* ═══ 3. TEMFACIL COMPOUND DISPATCH WORKERS (Z = -96m) ═══ */}
-      {/* Heavy Equipment & Fleet Supervisor (Howell Gene Samson) */}
-      <HydroProjectPersonMesh
-        personnelId="EQUIP_HOWELL_SAMSON"
+      {/* ═══ 3. DYNAMIC WAREHOUSE & LAYDOWN YARD WORKFORCE ROUTINES ═══ */}
+      <WarehouseDynamicOperations
         onSelectPerson={onSelectPerson}
-        position={[90, y2, -96]}
-        rotation={[0, Math.PI, 0]}
-        hardhatColor="#EAB308"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="JEANS"
-      />
-      {/* Dispatch Lead / Warehouse Foreman (White Hard Hat) */}
-      <HydroProjectPersonMesh
-        position={[96, y3, -96]}
-        rotation={[0, 0, 0]}
-        skinTone="DEEP"
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#0D9488"
-        pantsStyle="CARGO"
-        accessory="RADIO"
-      />
-
-      {/* Field Inspection Supervisors along Main Access Road (White Hard Hats) */}
-      <HydroProjectPersonMesh
-        vestColor="#0284C7"
-        pantsStyle="JEANS"
-        accessory="TABLET"
-      />
-      <HydroProjectPersonMesh
-        position={[25, sampleTerrainY(25, 20), 20]}
-        rotation={[0, -Math.PI / 2, 0]}
-        skinTone="MEDIUM"
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="KHAKI"
-        accessory="CLIPBOARD"
       />
 
       {/* ═══ 4. EXECUTIVE SITE OFFICE PARKING STALLS ═══ */}

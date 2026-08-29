@@ -29,6 +29,7 @@ export interface FilipinoPersonnel {
   shift: string;
   yearsOfExp: number;
   originProvince: string;
+  roleDescription: string;
 }
 
 export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
@@ -53,6 +54,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 26,
     originProvince: "Pampanga, Philippines",
+    roleDescription: "Directs overall project execution, contractor operations, government compliance, and multi-disciplinary engineering across all sectors of the Tumauini HEPP facility.",
   },
   "DEPUTY_NATHANIEL_PRINCIPE": {
     id: "DEPUTY_NATHANIEL_PRINCIPE",
@@ -74,6 +76,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 22,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Oversees daily contractor coordination, field milestone progress, executive office reporting, and assists the Project Manager in site-wide operational control.",
   },
 
   // ─── 2. TECHNICAL, ENGINEERING & QUALITY ASSURANCE ───
@@ -92,12 +95,14 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hasGlasses: true,
     avatarUrl: "/images/personnel/engr_noel_lavapie_real.jpg",
     licenseNumber: "PRC Professional Civil Engineer #0038914",
-    currentTask: "Reviewing structural shop drawings, methodology statements & supervising technical engineering team",
-    locationName: "Main Technical & Project Engineering Office",
-    shift: "Day Shift (07:00 - 16:00)",
+    currentTask: "Checking project emails (Submittals & RFIs), monitoring engineering team (CADD/BIM & Planning), and reviewing penstock longitudinal drawings",
+    locationName: "Main Technical & Project Engineering Office (Lead Engineer Standing Station)",
+    shift: "Day Shift (07:00 - 16:00) • Active Oversight",
     yearsOfExp: 24,
     originProvince: "Batangas, Philippines",
+    roleDescription: "Directs technical engineering operations: performs continuous oversight of project planning (Engr. May Ann), cost estimation (Engr. Cristine), and 3D CADD/BIM modeling (Sir Elbert & Sir Amor). Actively processes client email endorsements, submittal packages, variation orders, and structural methodology statements.",
   },
+
   "ENGR_ELGINE_MANGCUPANG": {
     id: "ENGR_ELGINE_MANGCUPANG",
     name: "Engr. Elgine Mangcupang",
@@ -118,6 +123,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 12,
     originProvince: "Mindoro, Philippines",
+    roleDescription: "Heads the QA/QC engineering department, directing material compliance, structural inspection protocols, laboratory testing, and quality assurance certification.",
   },
   "QC_JAIRUZ_BATAC": {
     id: "QC_JAIRUZ_BATAC",
@@ -139,6 +145,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 8,
     originProvince: "Bulacan, Philippines",
+    roleDescription: "Inspects geotechnical stability, shotcrete application, rock bolt pullout resistance, and concrete lining quality in the headrace tunnel and surge tank works.",
   },
   "QC_JIMMY_AQUINO": {
     id: "QC_JIMMY_AQUINO",
@@ -160,6 +167,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 11,
     originProvince: "Samar, Philippines",
+    roleDescription: "Conducts civil structural inspections, slump testing, Schmidt rebound hammer NDT tests, and verifies concrete cure specifications on the tailrace, powerhouse, and spillway.",
   },
   "QC_JHON_JAYME": {
     id: "QC_JHON_JAYME",
@@ -181,6 +189,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 4,
     originProvince: "Caloocan, Philippines",
+    roleDescription: "Performs on-site batch plant sampling, concrete cylinder compressive strength tests, rebar tensile verifications, and aggregates sieve analysis at the testing lab.",
   },
   "PLANNING_MAY_PARALLAG": {
     id: "PLANNING_MAY_PARALLAG",
@@ -202,12 +211,35 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 6,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Develops and maintains the Primavera/MS Project Master Schedule, tracking critical path milestones, look-ahead programs, and physical work accomplishment.",
+  },
+  "QS_JOHN_RICK_HERNAEZ": {
+    id: "QS_JOHN_RICK_HERNAEZ",
+    name: "John Rick Hernaez",
+    nickname: "Sir John Rick",
+    role: "Quantity Surveyor (QS)",
+    department: "ENGINEERING",
+    skinTone: "MEDIUM",
+    gender: "MALE",
+    hardhatColor: "#FFFFFF",
+    vestColor: "#EA580C",
+    hairStyle: "SHORT",
+    facialHair: "NONE",
+    hasGlasses: false,
+    avatarUrl: "/images/personnel/qs_john_rick_hernaez.jpg",
+    licenseNumber: "PICQS Registered Quantity Surveyor",
+    currentTask: "Leading BOQ taking-off, interim progress payment valuations & variation order claims",
+    locationName: "Engineering Planning & Quantity Surveying Office (West Workstation)",
+    shift: "Day Shift (07:00 - 16:00)",
+    yearsOfExp: 10,
+    originProvince: "Isabela, Philippines",
+    roleDescription: "Leads the quantity surveying and cost control unit: responsible for detailed BOQ taking-off, material rebar/concrete reconciliation, contractor payment certifications, and variation order pricing.",
   },
   "QS_CRISTINE_ALMAZAN": {
     id: "QS_CRISTINE_ALMAZAN",
-    name: "Cristine Joy Almazan",
-    nickname: "Ma'am Cristine",
-    role: "Quantity Surveyor",
+    name: "Christine Joy Almazan",
+    nickname: "Ma'am Christine",
+    role: "Junior Quantity Surveyor (Junior QS)",
     department: "ENGINEERING",
     skinTone: "LIGHT",
     gender: "FEMALE",
@@ -217,14 +249,15 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     facialHair: "NONE",
     hasGlasses: false,
     avatarUrl: "/images/personnel/qs_cristine_almazan.jpg",
-    licenseNumber: "PICQS Registered Quantity Surveyor / Cost Engineer",
-    currentTask: "Preparing monthly progress billings, take-off evaluations & subcontractor claims verification",
-    locationName: "Engineering Commercial & Cost Control Office",
+    licenseNumber: "Junior Cost Engineer / Quantity Surveyor",
+    currentTask: "Preparing quantity take-offs (QTO), subcontractor progress billings & cost evaluation sheets",
+    locationName: "Engineering Planning & Quantity Surveying Office (Center Table Station)",
     shift: "Day Shift (07:00 - 16:00)",
-    yearsOfExp: 9,
+    yearsOfExp: 4,
     originProvince: "Tarlac, Philippines",
+    roleDescription: "Prepares detailed quantity take-offs (QTO), subcontractor progress billings, variation order evaluations, and cost estimation under Quantity Surveyor John Rick Hernaez.",
   },
-  "SURVEYOR_JOHNNY_FARONGEY": {
+    "SURVEYOR_JOHNNY_FARONGEY": {
     id: "SURVEYOR_JOHNNY_FARONGEY",
     name: "Johnny P. Farong-ey",
     nickname: "Chief Johnny",
@@ -244,6 +277,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 15,
     originProvince: "Baguio, Philippines",
+    roleDescription: "Leads geodetic control networks, topographic mapping, tunnel alignment laser sighting, penstock anchor layout, and high-precision deformation monitoring.",
   },
   "GEO_AMOR_FLORESCA": {
     id: "GEO_AMOR_FLORESCA",
@@ -258,14 +292,17 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hairStyle: "SHORT",
     facialHair: "NONE",
     hasGlasses: false,
-    avatarUrl: "/images/personnel/geo_amor_floresca_real.jpg",
+    avatarUrl: "/images/personnel/geo_amor_floresca.jpg",
     licenseNumber: "PRC Registered Geologist #0004289",
-    currentTask: "Conducting tunnel face 3D geological mapping, Rock Mass Rating (RMR/Q-system) logging & overbreak monitoring",
-    locationName: "Headrace Tunnel Face & Underground Geological Base",
+    currentTask: "Conducting geological 3D cross-section reviews, RMR structural mapping & slope stability evaluations",
+    locationName: "Main Technical & Project Engineering Office (Geological & Civil Station)",
+
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 11,
     originProvince: "Baguio, Philippines",
+    roleDescription: "Analyzes geological rock mass ratings (RMR/Q-system), joint patterns, fault zones, groundwater ingress, and slope stability across mountain cuts and tunnel headings.",
   },
+
   "DOC_JAYSON_AGGABAO": {
     id: "DOC_JAYSON_AGGABAO",
     name: "Jayson Z. Aggabao",
@@ -279,13 +316,14 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hairStyle: "SHORT",
     facialHair: "STUBBLE",
     hasGlasses: true,
-    avatarUrl: "/images/personnel/doc_jayson_aggabao_real.png",
+    avatarUrl: "/images/personnel/doc_jayson_aggabao.jpg",
     licenseNumber: "ISO 9001:2015 Quality Management Document Control Specialist",
     currentTask: "Archiving approved submittals, transmittals, RFI logs & managing project drawing register",
     locationName: "Main Technical & Project Engineering Office (Document Control)",
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 10,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Controls official engineering transmittals, manages approved-for-construction (AFC) drawings, vendor submittals, QA/QC documentation, and technical archives.",
   },
   "CAD_ELBERT_FIGURACION": {
     id: "CAD_ELBERT_FIGURACION",
@@ -300,13 +338,14 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hairStyle: "SHORT",
     facialHair: "NONE",
     hasGlasses: true,
-    avatarUrl: "/images/personnel/cad_elbert_figuracion_real.jpg",
+    avatarUrl: "/images/personnel/cad_elbert_figuracion.jpg",
     licenseNumber: "Autodesk Certified Professional (ACP) • CADD & Civil 3D Specialist",
     currentTask: "Drafting structural as-built revisions, penstock alignment detailing & updating civil CAD drawing submittals",
     locationName: "Main Technical & Project Engineering Office (CADD Workstation)",
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 12,
     originProvince: "Laguna, Philippines",
+    roleDescription: "Generates 2D/3D structural shop drawings, rebar detailing cross-sections, structural steel BIM models (Tekla/Revit), and finite element layouts in STAAD.Pro and AutoCAD.",
   },
 
   // ─── 3. CIVIL WORKS & SITE SUPERVISION ───
@@ -330,6 +369,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 17,
     originProvince: "Cagayan Valley, Philippines",
+    roleDescription: "Supervises civil structural execution, formwork installations, concrete pouring sequences, and heavy equipment allocation at the powerhouse and intake works.",
   },
   "CIVIL_HENRY_ESTRADA": {
     id: "CIVIL_HENRY_ESTRADA",
@@ -351,6 +391,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 18,
     originProvince: "Pangasinan, Philippines",
+    roleDescription: "Directs civil construction crews, concrete placement at the spillway outfall bank, and enforces 4S housekeeping and safe work staging standards.",
   },
   "TUNNEL_RICHARD_PINASEN": {
     id: "TUNNEL_RICHARD_PINASEN",
@@ -372,6 +413,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 15,
     originProvince: "Benguet (Cordillera), Philippines",
+    roleDescription: "Leads underground drill-and-blast crews, tunnel mucking cycles, heading ventilation, and steel rib installation along the headrace tunnel alignment.",
   },
   "TUNNEL_RUDY_MARCOS": {
     id: "TUNNEL_RUDY_MARCOS",
@@ -393,6 +435,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 16,
     originProvince: "Benguet, Philippines",
+    roleDescription: "Supervises underground excavation advances, perimeter charging, scaling operations, and muck disposal staging at the tunnel adit portal.",
   },
   "FOREMAN_ANTHONY_ROSALES": {
     id: "FOREMAN_ANTHONY_ROSALES",
@@ -414,6 +457,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 14,
     originProvince: "Batangas, Philippines",
+    roleDescription: "Directs rebar fabrication, formwork alignment, and high-strength concrete pours for penstock anchor blocks, thrust pedestals, and civil foundations.",
   },
   "WORKER_BENJAMIN_FOMEGAS": {
     id: "WORKER_BENJAMIN_FOMEGAS",
@@ -435,6 +479,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 13,
     originProvince: "Mountain Province (Cordillera), Philippines",
+    roleDescription: "Operates hydraulic jumbo drilling rigs, installs rock bolts, resin anchors, and applies fiber-reinforced shotcrete for underground rock support.",
   },
 
   // ─── 4. SAFETY, HEALTH & ENVIRONMENT (ESH) ───
@@ -458,6 +503,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 18,
     originProvince: "Apayao, Philippines",
+    roleDescription: "Directs site-wide safety policies, conducts hazard identification and risk assessments (HIRA), leads toolbox meetings, and ensures DOLE-OSHC compliance.",
   },
   "NURSE_RUSSELLE_ALCANTARA": {
     id: "NURSE_RUSSELLE_ALCANTARA",
@@ -479,6 +525,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 10,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Administers emergency medical response, occupational health surveillance, first aid station operations, vitals screening, and medical triage for all site personnel.",
   },
   "SEC_RONALD_MALTO": {
     id: "SEC_RONALD_MALTO",
@@ -500,6 +547,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 12,
     originProvince: "Pangasinan, Philippines",
+    roleDescription: "Controls site access security, manages visitor badges, conducts vehicle undercarriage inspections, and coordinates perimeter safety patrols.",
   },
 
   // ─── 5. ADMINISTRATION, HR & IT SYSTEMS ───
@@ -523,6 +571,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 8,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Manages workforce timekeeping, payroll administration, labor relations, employee onboarding, camp lodging logistics, and DOLE labor standards compliance.",
   },
   "HR_JOSHUA_ADMIN": {
     id: "HR_JOSHUA_ADMIN",
@@ -544,6 +593,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 6,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Handles employee records, gate pass authorizations, personnel clearance processing, daily attendance registers, and administrative office support.",
   },
   "HR_RANDY_GAMBOA": {
     id: "HR_RANDY_GAMBOA",
@@ -565,6 +615,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 5,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Coordinates field labor deployments, subcontractor headcount audits, worker ID issuance, and supports human resources daily administrative duties.",
   },
   "IT_MARC_SALVA": {
     id: "IT_MARC_SALVA",
@@ -586,6 +637,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 7,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Maintains site telemetry servers, microwave radio links, digital twin networks, biometric access systems, SCADA communications, and workstations.",
   },
 
   // ─── 6. LOGISTICS, WAREHOUSE & FLEET ───
@@ -609,6 +661,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 16,
     originProvince: "Pampanga, Philippines",
+    roleDescription: "Supervises heavy equipment fleet maintenance, diesel fuel distribution, preventative servicing schedules, and operator dispatch for excavators and haulers.",
   },
   "WAREHOUSE_VINCENT_ANDALLO": {
     id: "WAREHOUSE_VINCENT_ANDALLO",
@@ -630,9 +683,32 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 14,
     originProvince: "Isabela, Philippines",
+    roleDescription: "Oversees central warehouse inventory, manages rebar and cement stock receipts, issues spare parts, and tracks material logistics with barcode systems.",
   },
 
   // ─── 7. MECHANICAL & ELECTRICAL WORKS ───
+  "MECH_ANDREW_SILVA": {
+    id: "MECH_ANDREW_SILVA",
+    name: "Andrew Silva",
+    nickname: "Sir Andrew",
+    role: "Mechanical Supervisor",
+    department: "ENGINEERING",
+    skinTone: "MEDIUM",
+    gender: "MALE",
+    hardhatColor: "#FFFFFF",
+    vestColor: "#EA580C",
+    hairStyle: "SHORT",
+    facialHair: "NONE",
+    hasGlasses: false,
+    avatarUrl: "/images/personnel/mech_andrew_silva.jpg",
+    licenseNumber: "Registered Mechanical Engineer (RME) #0074129",
+    currentTask: "Supervising powerhouse turbine TU-01 scroll case installation, overhead crane load tests & penstock piping",
+    locationName: "Main Technical & Project Engineering Office (Rear Mechanical Station)",
+    shift: "Day Shift (07:00 - 16:00)",
+    yearsOfExp: 12,
+    originProvince: "Cavite, Philippines",
+    roleDescription: "Directs site mechanical operations and electromechanical equipment installation under Supt. Eugenio Hanopol. Supervises powerhouse turbine erection, overhead crane testing, penstock valve assemblies, and cooling water piping systems.",
+  },
   "SUPT_EUGENIO_HANOPOL": {
     id: "SUPT_EUGENIO_HANOPOL",
     name: "Eugenio D. Hanopol",
@@ -648,11 +724,13 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hasGlasses: false,
     avatarUrl: "/images/personnel/mech_eugenio_hanopol.jpg",
     licenseNumber: "PRC Professional Mechanical Engineer #0029410",
-    currentTask: "Overseeing powerhouse turbine runner assembly, penstock valve fitment & generator alignment",
-    locationName: "Powerhouse Mechanical Floor & Turbine Bay (EL. 180.00m)",
+    currentTask: "Reviewing mechanical P&ID diagrams, turbine layout submittals & coordinating powerhouse electro-mechanical installations",
+    locationName: "Main Technical & Project Engineering Office (Mechanical Superintendent Desk)",
     shift: "Day Shift (07:00 - 16:00)",
+
     yearsOfExp: 25,
     originProvince: "Pampanga, Philippines",
+    roleDescription: "Supervises Francis turbine assembly, governor installations, inlet valve alignment, cooling water piping, and mechanical commissioning at the powerhouse.",
   },
   "SUPT_EDUARDO_DEFRANCIA": {
     id: "SUPT_EDUARDO_DEFRANCIA",
@@ -674,6 +752,7 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 23,
     originProvince: "Pangasinan, Philippines",
+    roleDescription: "Directs 69kV switchyard installation, main GSU transformer testing, busduct erection, protection relays, and electrical interconnect systems.",
   },
   "ELEC_JOSUE_ABELLERA": {
     id: "ELEC_JOSUE_ABELLERA",
@@ -695,6 +774,31 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 16,
     originProvince: "La Union, Philippines",
+    roleDescription: "Supervises cable tray routing, high-voltage power cable pulling, termination testing, switchgear wiring, and grounding grid installations.",
+  },
+
+  // ─── 8. SITE CANINE SECURITY & MORALE SPECIALIST ───
+  "DOG_BRUNSON_CHUCHU": {
+    id: "DOG_BRUNSON_CHUCHU",
+    name: 'Brunson "Chuchu"',
+    nickname: "Chuchu / Sir Brunson",
+    role: "Site Mascot & Canine Security Patrol Specialist",
+    department: "CAMP_SERVICES",
+    skinTone: "BRONZE",
+    gender: "MALE",
+    hardhatColor: "#EA580C",
+    vestColor: "#EA580C",
+    hairStyle: "SHORT",
+    facialHair: "NONE",
+    hasGlasses: false,
+    avatarUrl: "/images/personnel/dog_brunson_chuchu.jpg",
+    licenseNumber: "BAI Anti-Rabies Cert #2026-0881 | Certified Good Boy NC-V",
+    currentTask: "Perimeter security patrol around Warehouse & laydown yard; boosting team morale across all engineering shifts",
+    locationName: "Central Warehouse Dirt Access Ramp & TEMFACIL Yard",
+    shift: "Full-Time 24/7 (All Shifts - Morale & Security Patrol)",
+    yearsOfExp: 3,
+    originProvince: "Isabela, Philippines (Tumauini Native)",
+    roleDescription: "Sta. Clara Tumauini HEPP's beloved loyal native Aspin canine. Responsible for site perimeter deterrence, escorting engineers along mountain access trails, welcoming supply trucks at the checkpoint, and maintaining peak crew morale.",
   },
   "FOREMAN_WARLITO_DEFRANCIA": {
     id: "FOREMAN_WARLITO_DEFRANCIA",
@@ -716,5 +820,6 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 14,
     originProvince: "Pangasinan, Philippines",
+    roleDescription: "Directs electrical crews in control panel termination, instrument wiring, conduit fitting, substation lighting, and auxiliary power distribution.",
   },
 };

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
+import React, { useRef, useMemo, useState } from "react";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { AtmosphereTimeMode } from "./RealisticSkyAtmosphere";
 import { HydroProjectPersonMesh } from "./AnimatedSiteEntities";
+import { TemfacilOfficeInterior } from "./TemfacilOfficeInterior";
 import {
   MAT_GRANITE_BASE,
   MAT_CONCRETE_HEADER,
@@ -124,6 +125,27 @@ export function TemfacilFacility({
   const isNight = timeMode === "NIGHT" || timeMode === "SUNSET";
   const isMorning = timeMode === "MORNING";
   const isDaytime = timeMode === "AFTERNOON";
+
+  // Granular Office Building LOD Proximity (Center: [114.0, 14.0, -107.0])
+  const { camera } = useThree();
+  const OFFICE_WORLD_CENTER = useMemo(() => new THREE.Vector3(114.0, 14.0, -107.0), []);
+  const [isNearOffice, setIsNearOffice] = useState(false);
+
+  useFrame(() => {
+    if (activePreset?.startsWith("temfacil-office")) {
+      if (!isNearOffice) setIsNearOffice(true);
+      return;
+    }
+    const distSq = camera.position.distanceToSquared(OFFICE_WORLD_CENTER);
+    // Strict 40m proximity threshold (40^2 = 1600)
+    const near = distSq < 1600;
+    if (near !== isNearOffice) {
+      setIsNearOffice(near);
+    }
+  });
+
+  const isOfficeInteriorVisible = !!(activePreset?.startsWith("temfacil-office") || isNearOffice);
+
   return (
     <group position={[118, 14.0, -95]} rotation={[0, 0, 0]}>
       {/* ═══ 0. UNIFIED HIGH-END INDUSTRIAL SITE FLOORING ═══ */}
@@ -204,32 +226,72 @@ export function TemfacilFacility({
 
       {/* ═══ 2. MAIN SITE OFFICE ═══ */}
       <group position={[-4, 0, -12]}>
-        {/* Main Office Building Body */}
-        <mesh position={[0, 2.2, 0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
-          <boxGeometry args={[12.5, 4.2, 22.0]} />
+        {/* Hollow Office Perimeter Walls (Allowing real interior visibility & walkthrough) */}
+        {/* Left longitudinal wall (X = -7.10, H = 4.2m) */}
+        <mesh position={[-7.10, 2.1, 0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[0.2, 4.2, 22.0]} />
+        </mesh>
+        {/* Right longitudinal wall (X = +7.10, H = 4.2m) */}
+        <mesh position={[7.10, 2.1, 0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[0.2, 4.2, 22.0]} />
+        </mesh>
+        {/* Front gable wall (Z = +11.0, seamlessly framing 3.4m entrance doorway & enclosed under roof) */}
+        <mesh position={[-4.40, 2.1, 11.0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[5.40, 4.2, 0.2]} />
+        </mesh>
+        <mesh position={[4.40, 2.1, 11.0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[5.40, 4.2, 0.2]} />
+        </mesh>
+        <mesh position={[0, 3.6, 11.0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[3.4, 1.2, 0.2]} />
+        </mesh>
+        {/* Sloped front gable wall fillers under roof pitch (zero roof protrusion) */}
+        <mesh position={[-3.60, 4.50, 11.0]} rotation={[0, 0, 0.12]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[7.2, 0.52, 0.2]} />
+        </mesh>
+        <mesh position={[3.60, 4.50, 11.0]} rotation={[0, 0, -0.12]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[7.2, 0.52, 0.2]} />
+        </mesh>
+
+        {/* Rear gable wall (Z = -11.0, seamlessly framing 3.2m rear exit doorway & enclosed under roof) */}
+        <mesh position={[-4.35, 2.1, -11.0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[5.50, 4.2, 0.2]} />
+        </mesh>
+        <mesh position={[4.35, 2.1, -11.0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[5.50, 4.2, 0.2]} />
+        </mesh>
+        <mesh position={[0, 3.5, -11.0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[3.2, 1.4, 0.2]} />
+        </mesh>
+        {/* Sloped rear gable wall fillers under roof pitch (zero roof protrusion) */}
+        <mesh position={[-3.60, 4.50, -11.0]} rotation={[0, 0, 0.12]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[7.2, 0.52, 0.2]} />
+        </mesh>
+        <mesh position={[3.60, 4.50, -11.0]} rotation={[0, 0, -0.12]} castShadow receiveShadow material={MAT_CONCRETE_SLAB_LIGHT}>
+          <boxGeometry args={[7.2, 0.52, 0.2]} />
         </mesh>
 
         {/* Structural Steel Columns Along Long Wall */}
         {[-9, -4.5, 0, 4.5, 9].map((zOff, i) => (
-          <mesh key={`off-col-${i}`} position={[6.35, 2.2, zOff]} material={MAT_STEEL_DARK}>
+          <mesh key={`off-col-${i}`} position={[7.20, 2.2, zOff]} material={MAT_STEEL_DARK}>
             <boxGeometry args={[0.15, 4.2, 0.35]} />
           </mesh>
         ))}
 
-        {/* Double-Pitched Corrugated Roof */}
-        <mesh position={[-3.2, 4.8, 0]} rotation={[0, 0, 0.12]} castShadow material={MAT_ROOF_CORRUGATED}>
-          <boxGeometry args={[6.8, 0.2, 22.6]} />
+        {/* Double-Pitched Corrugated Roof Shell */}
+        <mesh position={[-3.6, 4.9, 0]} rotation={[0, 0, 0.12]} castShadow material={MAT_ROOF_CORRUGATED}>
+          <boxGeometry args={[7.7, 0.2, 22.6]} />
         </mesh>
-        <mesh position={[3.2, 4.8, 0]} rotation={[0, 0, -0.12]} castShadow material={MAT_ROOF_CORRUGATED}>
-          <boxGeometry args={[6.8, 0.2, 22.6]} />
+        <mesh position={[3.6, 4.9, 0]} rotation={[0, 0, -0.12]} castShadow material={MAT_ROOF_CORRUGATED}>
+          <boxGeometry args={[7.7, 0.2, 22.6]} />
         </mesh>
-        <mesh position={[0, 5.38, 0]} castShadow material={MAT_ROOF_CAP}>
+        <mesh position={[0, 5.48, 0]} castShadow material={MAT_ROOF_CAP}>
           <boxGeometry args={[0.6, 0.15, 22.8]} />
         </mesh>
 
         {/* Windows Array Along Longitudinal Facade */}
         {[-8, -4, 0, 4, 8].map((zOff, i) => (
-          <group key={`off-win-${i}`} position={[6.32, 2.5, zOff]} rotation={[0, Math.PI / 2, 0]}>
+          <group key={`off-win-${i}`} position={[7.17, 2.5, zOff]} rotation={[0, Math.PI / 2, 0]}>
             <mesh material={MAT_GLASS_FRAME}>
               <boxGeometry args={[1.5, 1.5, 0.06]} />
             </mesh>
@@ -245,8 +307,13 @@ export function TemfacilFacility({
         {/* ═══ AUTOMATED BACK DOORWAY (FACING REAR GRASS LAWN & OPEN 7AM TO 5PM) ═══ */}
         <AnimatedOfficeBackDoor />
 
-        {/* ═══ PLANNING CONTROL HEAD DESK LUNCH SETUP (EATS INSIDE STAFF OFFICE EVERY LUNCH BREAK) ═══ */}
-        {isTemfacilFocused && <PlanningControlHeadOfficeLunch />}
+        {/* ═══ AUTHENTIC MAIN SITE OFFICE INTERIOR (GATED BY GRANULAR OFFICE PROXIMITY LOD) ═══ */}
+        <TemfacilOfficeInterior
+          isDetailVisible={isOfficeInteriorVisible}
+          activePreset={activePreset}
+          onSelectPerson={onSelectPerson}
+        />
+
       </group>
 
       {/* ═══ 3. UNIFIED SINGLE STAFF ACCOMMODATIONS (STAFF HOUSE - PROPORTIONAL TO KITCHEN) ═══ */}
@@ -584,8 +651,8 @@ function TemfacilHeadquartersWorkforce({
       <HydroProjectPersonMesh
         personnelId="DEPUTY_NATHANIEL_PRINCIPE"
         onSelectPerson={onSelectPerson}
-        position={[-4.0, 0.1, -0.8]}
-        rotation={[0, 0, 0]}
+        position={[-2.5, 0.1, 0.5]}
+        rotation={[0, -Math.PI / 4, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
         hasHardhat
@@ -596,75 +663,7 @@ function TemfacilHeadquartersWorkforce({
         accessory="CLIPBOARD"
       />
 
-      {/* Lead Technical Engineering Head (Engr. Noel G. Lavapie) in Engineering Office */}
-      <HydroProjectPersonMesh
-        personnelId="ENGR_NOEL_LAVAPIE"
-        onSelectPerson={onSelectPerson}
-        position={[22.5, 0.1, 18.5]}
-        rotation={[0, -Math.PI / 2, 0]}
-        skinTone="MEDIUM"
-        hairStyle="SHORT"
-        hasGlasses
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="CHARCOAL_OFFICE"
-        accessory="BINDER"
-      />
-
-      {/* AutoCAD Operator (Elbert Figuracion) at CADD Workstation */}
-      <HydroProjectPersonMesh
-        personnelId="CAD_ELBERT_FIGURACION"
-        onSelectPerson={onSelectPerson}
-        position={[24.2, 0.1, 21.0]}
-        rotation={[0, Math.PI, 0]}
-        skinTone="MEDIUM"
-        hairStyle="SHORT"
-        hasGlasses
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="JEANS"
-        accessory="TABLET"
-      />
-
-      {/* Document Controller (Jayson Z. Aggabao) in Archive Room */}
-      <HydroProjectPersonMesh
-        personnelId="DOC_JAYSON_AGGABAO"
-        onSelectPerson={onSelectPerson}
-        position={[21.0, 0.1, 22.0]}
-        rotation={[0, Math.PI / 2, 0]}
-        skinTone="MEDIUM"
-        hairStyle="SHORT"
-        facialHair="STUBBLE"
-        hasGlasses
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#0284C7"
-        pantsStyle="JEANS"
-        accessory="CLIPBOARD"
-      />
-
-      {/* Quantity Surveyor (Cristine Joy Almazan) in Commercial Office */}
-      <HydroProjectPersonMesh
-        personnelId="QS_CRISTINE_ALMAZAN"
-        onSelectPerson={onSelectPerson}
-        position={[-6.2, 0.1, -14.0]}
-        rotation={[0, Math.PI / 2, 0]}
-        gender="FEMALE"
-        skinTone="LIGHT"
-        hairStyle="WOMAN_PONYTAIL"
-        hairColor="BLACK"
-        hasHardhat
-        hardhatColor="#FFFFFF"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="CHARCOAL_OFFICE"
-        accessory="CLIPBOARD"
-      />
+      {/* Document Controller, Engineering & Project Control personnel are rendered with RealisticHumanoidMesh inside TemfacilOfficeInterior */}
 
       {/* ─── 2. QUALITY ASSURANCE & TESTING LAB ─── */}
       {/* Jr. QA/QC Engineer (Jhon Charles C. Jayme) at Materials Testing Lab */}
@@ -718,40 +717,11 @@ function TemfacilHeadquartersWorkforce({
         accessory="CLIPBOARD"
       />
 
-      {/* IT Support Specialist (Harrold Salva) at Server Room */}
-      <HydroProjectPersonMesh
-        personnelId="IT_MARC_SALVA"
-        onSelectPerson={onSelectPerson}
-        position={[-7.5, 0.1, -6.5]}
-        rotation={[0, Math.PI / 4, 0]}
-        skinTone="LIGHT"
-        hairStyle="SHORT"
-        hasGlasses
-        hasHardhat
-        hardhatColor="#0284C7"
-        hasVest
-        vestColor="#0284C7"
-        pantsStyle="JEANS"
-        accessory="TABLET"
-      />
+      {/* IT Support Specialist (Harrold Salva) is rendered at his dedicated workstation inside TemfacilOfficeInterior */}
 
       {/* ─── 4. LOGISTICS & WAREHOUSE ─── */}
-      {/* Warehouse Area Lead (Vincent Dickenson Andallo) at Central Warehouse */}
-      <HydroProjectPersonMesh
-        personnelId="WAREHOUSE_VINCENT_ANDALLO"
-        onSelectPerson={onSelectPerson}
-        position={[-28.0, 0.9, -5.0]}
-        rotation={[0, Math.PI / 2, 0]}
-        skinTone="BRONZE"
-        hairStyle="SHORT"
-        facialHair="GOATEE"
-        hasHardhat
-        hardhatColor="#0284C7"
-        hasVest
-        vestColor="#EAB308"
-        pantsStyle="JEANS"
-        accessory="TABLET"
-      />
+      {/* Note: Warehouse Area Lead (Vincent Dickenson Andallo) is dynamically animated with realistic barcode & rebar inspection routines in AnimatedSiteEntities */}
+
     </group>
   );
 }
@@ -1695,33 +1665,24 @@ function AnimatedOfficeEntranceDoor() {
   return (
     <group position={[0, 0, 11.0]}>
       {/* Subtle Warm Foyer Light */}
-      <pointLight position={[0, 2.2, -1.8]} color="#FEF08A" intensity={1.2} distance={4.5} />
-      <mesh position={[0, 0.05, -1.2]} material={MAT_PAVER_WALKWAY}>
-        <boxGeometry args={[4.5, 0.02, 2.4]} />
-      </mesh>
-      {/* Interior Reception Counter */}
-      <mesh position={[0, 1.1, -2.2]} material={MAT_STEEL_DARK}>
-        <boxGeometry args={[2.8, 1.1, 0.8]} />
-      </mesh>
-
       {/* Concrete Entry Step Threshold (Front Walkway) */}
       <mesh position={[0, 0.1, 0.9]} receiveShadow material={MAT_CONCRETE_SLAB}>
         <boxGeometry args={[12.2, 0.2, 1.8]} />
       </mesh>
 
       {/* Heavy Steel Main Front Door Surround Frame (Wide Open Portal Matching Photo 1 & 2) */}
-      <mesh position={[-1.55, 1.5, 0.02]} castShadow material={MAT_STEEL_DARK}>
+      <mesh position={[-1.70, 1.5, 0.02]} castShadow material={MAT_STEEL_DARK}>
         <boxGeometry args={[0.15, 3.0, 0.12]} />
       </mesh>
-      <mesh position={[1.55, 1.5, 0.02]} castShadow material={MAT_STEEL_DARK}>
+      <mesh position={[1.70, 1.5, 0.02]} castShadow material={MAT_STEEL_DARK}>
         <boxGeometry args={[0.15, 3.0, 0.12]} />
       </mesh>
       <mesh position={[0, 3.0, 0.02]} castShadow material={MAT_STEEL_DARK}>
-        <boxGeometry args={[3.25, 0.18, 0.12]} />
+        <boxGeometry args={[3.55, 0.18, 0.12]} />
       </mesh>
 
       {/* Inward-Swinging Double Office Doors (Recessed inside the foyer at Z = -0.4m, never blocking facade) */}
-      <group position={[-1.45, 1.45, -0.4]} rotation={[0, 1.35, 0]}>
+      <group position={[-1.60, 1.45, -0.4]} rotation={[0, 1.35, 0]}>
         <mesh material={MAT_GLASS_CLEAR}>
           <boxGeometry args={[1.4, 2.7, 0.04]} />
         </mesh>
@@ -1730,7 +1691,7 @@ function AnimatedOfficeEntranceDoor() {
         </mesh>
       </group>
 
-      <group position={[1.45, 1.45, -0.4]} rotation={[0, -1.35, 0]}>
+      <group position={[1.60, 1.45, -0.4]} rotation={[0, -1.35, 0]}>
         <mesh material={MAT_GLASS_CLEAR}>
           <boxGeometry args={[1.4, 2.7, 0.04]} />
         </mesh>
@@ -1740,14 +1701,14 @@ function AnimatedOfficeEntranceDoor() {
       </group>
 
       {/* ═══ 1. OFFICIAL "Tumauini HEPP OFFICE" HEADER SIGNAGE (PHOTO 2) ═══ */}
-      <group position={[0, 3.48, 0.08]}>
+      <group position={[0, 3.48, 0.12]}>
         {/* Backing plate frame */}
         <mesh castShadow material={MAT_STEEL_DARK}>
-          <boxGeometry args={[3.65, 0.82, 0.06]} />
+          <boxGeometry args={[3.85, 0.82, 0.05]} />
         </mesh>
         {/* Signboard canvas face with pure diffuse matte material (zero specular glare) */}
-        <mesh position={[0, 0, 0.035]}>
-          <planeGeometry args={[3.58, 0.76]} />
+        <mesh position={[0, 0, 0.03]}>
+          <planeGeometry args={[3.78, 0.76]} />
           <meshStandardMaterial
             map={heppOfficeHeaderTex || undefined}
             color={heppOfficeHeaderTex ? "#FFFFFF" : "#14532D"}
@@ -1758,15 +1719,15 @@ function AnimatedOfficeEntranceDoor() {
         </mesh>
       </group>
 
-      {/* ═══ 2. OFFICIAL "PROJECT ESH STATISTIC BOARD" ON LEFT FACADE (PHOTO 4) ═══ */}
-      <group position={[-3.7, 2.05, 0.06]}>
+      {/* ═══ 2. OFFICIAL "PROJECT ESH STATISTIC BOARD" ON WEST FACADE (ADJUSTED WESTWARD TO CLEAR DOOR) ═══ */}
+      <group position={[-4.55, 2.05, 0.12]}>
         {/* Dark Phenolic Plywood Frame backing */}
         <mesh castShadow material={MAT_STEEL_DARK}>
-          <boxGeometry args={[3.65, 2.35, 0.07]} />
+          <boxGeometry args={[3.55, 2.30, 0.05]} />
         </mesh>
-        {/* Board Canvas Graphic Face with matte diffuse finish */}
-        <mesh position={[0, 0, 0.04]}>
-          <planeGeometry args={[3.58, 2.28]} />
+        {/* Board Canvas Graphic Face with matte diffuse finish (Offset cleanly to eliminate z-fighting) */}
+        <mesh position={[0, 0, 0.03]}>
+          <planeGeometry args={[3.48, 2.22]} />
           <meshStandardMaterial
             map={eshStatisticBoardTex || undefined}
             color={eshStatisticBoardTex ? "#FFFFFF" : "#F8FAFC"}
@@ -1777,15 +1738,14 @@ function AnimatedOfficeEntranceDoor() {
         </mesh>
       </group>
 
-      {/* ═══ 3. OFFICIAL HEALTH & SAFETY POSTERS BULLETIN BOARD ON RIGHT FACADE (PHOTO 3 REFERENCE) ═══ */}
-      {/* Positioned between doorway and window (X = 1.72m to 4.18m) with exact 2400:1650 aspect ratio */}
-      <group position={[2.95, 2.05, 0.05]}>
+      {/* ═══ 3. OFFICIAL HEALTH & SAFETY BULLETIN BOARD ON EAST FACADE (UNBLOCKED & CRISP) ═══ */}
+      <group position={[4.05, 2.05, 0.12]}>
         {/* Frame backing */}
         <mesh castShadow material={MAT_STEEL_DARK}>
-          <boxGeometry args={[2.46, 1.72, 0.06]} />
+          <boxGeometry args={[2.46, 1.72, 0.05]} />
         </mesh>
         {/* Poster Canvas Graphic Face with matte diffuse finish */}
-        <mesh position={[0, 0, 0.035]}>
+        <mesh position={[0, 0, 0.03]}>
           <planeGeometry args={[2.40, 1.65]} />
           <meshStandardMaterial
             map={safetyBulletinBoardTex || undefined}
@@ -1798,8 +1758,7 @@ function AnimatedOfficeEntranceDoor() {
       </group>
 
       {/* ═══ 4. RED FABRIC AWNING OVER SEPARATE FAR-RIGHT WINDOW (PHOTO 1 REFERENCE) ═══ */}
-      {/* Centered at X = 5.25m flush against building front wall (X = 4.49m to 6.01m, cleanly within X = 6.25m corner) */}
-      <group position={[5.25, 2.15, 0.03]}>
+      <group position={[6.05, 2.15, 0.12]}>
         {/* Side window frame flush against the wall */}
         <mesh material={MAT_GLASS_FRAME}>
           <boxGeometry args={[1.42, 1.25, 0.04]} />
@@ -1834,7 +1793,6 @@ function AnimatedOfficeEntranceDoor() {
       </group>
 
       {/* ═══ 5. COLOR-CODED WASTE SORTING RECEPTACLES (PHOTO 1 REFERENCE) ═══ */}
-      {/* Placed neatly on the concrete entrance step threshold clear of the doorway frame */}
       <group position={[1.8, 0.35, 1.15]}>
         {/* Blue Receptacle (Paper / Biodegradable) */}
         <mesh castShadow position={[0, 0, 0]}>
@@ -1867,12 +1825,15 @@ function AnimatedOfficeEntranceDoor() {
         </mesh>
       </group>
 
-      {/* ═══ 6. EXPOSED ROOF PURLIN / RAFTER BEAMS UNDER GABLE EAVES (PHOTO 1) ═══ */}
-      {[-5.2, -3.9, -2.6, -1.3, 0, 1.3, 2.6, 3.9, 5.2].map((rx, idx) => (
-        <mesh key={`rafter-beam-${idx}`} position={[rx, 4.35, 0.4]} rotation={[0.08, 0, 0]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.12, 0.22, 1.1]} />
-        </mesh>
-      ))}
+      {/* ═══ 6. EXPOSED ROOF PURLIN / RAFTER BEAMS UNDER GABLE EAVES (FOLLOWING ROOF SLOPE) ═══ */}
+      {[-5.2, -3.9, -2.6, -1.3, 0, 1.3, 2.6, 3.9, 5.2].map((rx, idx) => {
+        const py = 4.85 - Math.abs(rx) * 0.09;
+        return (
+          <mesh key={`rafter-beam-${idx}`} position={[rx, py, 0.3]} rotation={[0.08, 0, 0]} material={MAT_STEEL_DARK}>
+            <boxGeometry args={[0.12, 0.18, 0.7]} />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
@@ -3909,7 +3870,6 @@ export interface FilipinoCharacterHeadProps {
 export function FilipinoCharacterHead({
   skinTone = "MEDIUM",
   headwear = "NONE",
-  hasMustache = false,
 }: FilipinoCharacterHeadProps) {
   const skinMat =
     skinTone === "LIGHT"
@@ -3935,166 +3895,29 @@ export function FilipinoCharacterHead({
 
   return (
     <group position={[0, 0, 0]}>
-      {/* 1. Main Cranium */}
+      {/* Unified Anatomical Head */}
       <mesh material={skinMat}>
-        <boxGeometry args={[0.22, 0.22, 0.22]} />
+        <sphereGeometry args={[0.12, 16, 14]} />
       </mesh>
 
-      {/* 2. Tapered Jaw / Chin */}
-      <mesh position={[0, -0.11, 0.02]} material={skinMat}>
-        <boxGeometry args={[0.16, 0.08, 0.16]} />
-      </mesh>
-
-      {/* 3. Left and Right Ears */}
-      <mesh position={[-0.115, 0.01, -0.01]} material={skinMat}>
-        <boxGeometry args={[0.015, 0.065, 0.038]} />
-      </mesh>
-      <mesh position={[0.115, 0.01, -0.01]} material={skinMat}>
-        <boxGeometry args={[0.015, 0.065, 0.038]} />
-      </mesh>
-
-      {/* 4. Almond Filipino Eyes (Sclera + Iris + Pupil + Specular Catchlight) */}
-      <group position={[0, 0.035, 0.112]}>
-        {/* Left Eye */}
-        <mesh position={[-0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
-          <boxGeometry args={[0.038, 0.020, 0.005]} />
-        </mesh>
-        <mesh position={[-0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
-          <boxGeometry args={[0.022, 0.018, 0.003]} />
-        </mesh>
-        <mesh position={[-0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
-          <boxGeometry args={[0.012, 0.012, 0.002]} />
-        </mesh>
-        <mesh position={[-0.048, 0.004, 0.006]} material={MAT_FACE_EYE_WHITE}>
-          <boxGeometry args={[0.004, 0.004, 0.002]} />
-        </mesh>
-
-        {/* Right Eye */}
-        <mesh position={[0.052, 0, 0]} material={MAT_FACE_EYE_WHITE}>
-          <boxGeometry args={[0.038, 0.020, 0.005]} />
-        </mesh>
-        <mesh position={[0.052, 0, 0.003]} material={MAT_FACE_EYE_IRIS}>
-          <boxGeometry args={[0.022, 0.018, 0.003]} />
-        </mesh>
-        <mesh position={[0.052, 0, 0.005]} material={MAT_FACE_EYE_PUPIL}>
-          <boxGeometry args={[0.012, 0.012, 0.002]} />
-        </mesh>
-        <mesh position={[0.056, 0.004, 0.006]} material={MAT_FACE_EYE_WHITE}>
-          <boxGeometry args={[0.004, 0.004, 0.002]} />
-        </mesh>
-      </group>
-
-      {/* 5. Arched Dark Eyebrows */}
-      <group position={[0, 0.065, 0.115]}>
-        <mesh position={[-0.052, 0, 0]} rotation={[0, 0, 0.05]} material={MAT_FACE_EYEBROW}>
-          <boxGeometry args={[0.045, 0.008, 0.006]} />
-        </mesh>
-        <mesh position={[0.052, 0, 0]} rotation={[0, 0, -0.05]} material={MAT_FACE_EYEBROW}>
-          <boxGeometry args={[0.045, 0.008, 0.006]} />
-        </mesh>
-      </group>
-
-      {/* 6. Sculpted 3D Filipino Nose */}
-      <group position={[0, 0.005, 0.122]}>
-        <mesh position={[0, 0.015, 0]} material={skinMat}>
-          <boxGeometry args={[0.026, 0.045, 0.022]} />
-        </mesh>
-        <mesh position={[0, -0.015, 0.006]} material={skinMat}>
-          <sphereGeometry args={[0.018, 6, 6]} />
-        </mesh>
-        <mesh position={[-0.020, -0.018, 0.002]} material={skinMat}>
-          <boxGeometry args={[0.014, 0.014, 0.015]} />
-        </mesh>
-        <mesh position={[0.020, -0.018, 0.002]} material={skinMat}>
-          <boxGeometry args={[0.014, 0.014, 0.015]} />
-        </mesh>
-      </group>
-
-      {/* 7. Contoured Natural Lips */}
-      <group position={[0, -0.055, 0.116]}>
-        <mesh material={MAT_FACE_LIPS}>
-          <boxGeometry args={[0.055, 0.012, 0.010]} />
-        </mesh>
-        <mesh position={[0, -0.012, -0.001]} material={MAT_FACE_LIPS}>
-          <boxGeometry args={[0.048, 0.014, 0.010]} />
-        </mesh>
-      </group>
-
-      {/* 8. Optional Filipino Mustache */}
-      {hasMustache && (
-        <mesh position={[0, -0.040, 0.126]} material={MAT_MUSTACHE_BLACK}>
-          <boxGeometry args={[0.095, 0.020, 0.014]} />
-        </mesh>
-      )}
-
-      {/* 9. Hair / Headwear */}
-      {headwear === "NONE" && (
-        <group position={[0, 0.08, -0.01]}>
-          {/* Top Hair Volume */}
-          <mesh material={MAT_HAIR_BLACK}>
-            <sphereGeometry args={[0.124, 12, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          </mesh>
-          {/* Back & Side Hair Taper */}
-          <mesh position={[0, -0.04, -0.05]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.224, 0.12, 0.12]} />
-          </mesh>
-          {/* Sideburns */}
-          <mesh position={[-0.112, -0.05, 0.02]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.008, 0.08, 0.04]} />
-          </mesh>
-          <mesh position={[0.112, -0.05, 0.02]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.008, 0.08, 0.04]} />
-          </mesh>
-        </group>
-      )}
-
-      {headwear === "CHEF_TOQUE" && (
-        <group position={[0, 0.09, 0]}>
-          {/* White Headband */}
-          <mesh material={MAT_WHITE_PAINT}>
-            <boxGeometry args={[0.24, 0.07, 0.24]} />
-          </mesh>
-          {/* Pleated Top Hat Cylinder */}
-          <mesh position={[0, 0.07, 0]} material={MAT_WHITE_PAINT}>
-            <cylinderGeometry args={[0.14, 0.11, 0.14, 14]} />
-          </mesh>
-          {/* Hair peeking at back */}
-          <mesh position={[0, -0.04, -0.10]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.20, 0.06, 0.04]} />
-          </mesh>
-        </group>
-      )}
-
-      {hardhatMat && (
-        <group position={[0, 0.09, 0]}>
-          {/* Hard Hat Dome */}
+      {/* Hair or Hardhat */}
+      {hardhatMat ? (
+        <group position={[0, 0.08, 0]}>
           <mesh material={hardhatMat}>
-            <sphereGeometry args={[0.132, 14, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
+            <sphereGeometry args={[0.145, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
           </mesh>
-          {/* Front Sun Visor Brim */}
-          <mesh position={[0, 0.01, 0.10]} rotation={[0.12, 0, 0]} material={hardhatMat}>
-            <boxGeometry args={[0.24, 0.025, 0.08]} />
-          </mesh>
-          {/* Center Crown Ridge */}
-          <mesh position={[0, 0.08, 0]} material={hardhatMat}>
-            <boxGeometry args={[0.04, 0.04, 0.24]} />
-          </mesh>
-          {/* Hair peeking at back & sides */}
-          <mesh position={[0, -0.04, -0.08]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.20, 0.06, 0.06]} />
-          </mesh>
-          <mesh position={[-0.112, -0.04, 0.02]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.008, 0.06, 0.04]} />
-          </mesh>
-          <mesh position={[0.112, -0.04, 0.02]} material={MAT_HAIR_BLACK}>
-            <boxGeometry args={[0.008, 0.06, 0.04]} />
+          <mesh position={[0, -0.02, 0]} material={hardhatMat}>
+            <cylinderGeometry args={[0.18, 0.18, 0.015, 14]} />
           </mesh>
         </group>
+      ) : (
+        <mesh position={[0, 0.04, -0.01]} material={MAT_HAIR_BLACK}>
+          <sphereGeometry args={[0.128, 14, 12, 0, Math.PI * 2, 0, Math.PI * 0.60]} />
+        </mesh>
       )}
     </group>
   );
 }
-
 // ─── 1. KUYA JUN: SITTING ON MONOBLOC STOOL BROWSING SMARTPHONE ───
 function NighttimeSmartphoneWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: { position?: [number, number, number]; rotation?: [number, number, number] }) {
   const headRef = useRef<THREE.Group>(null);

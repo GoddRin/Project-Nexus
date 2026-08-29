@@ -75,21 +75,33 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
       {/* ─── Floating 3D HTML Radar Badge ─── */}
       <Html position={[0, 2.8, 0]} center distanceFactor={25} className="pointer-events-auto select-none z-30">
         <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
-          <div className="relative flex items-center gap-2.5 bg-slate-950/90 border-2 border-cyan-400/80 shadow-2xl shadow-cyan-500/40 rounded-xl px-3 py-1.5 backdrop-blur-md text-white min-w-[210px]">
-            {/* Avatar thumbnail */}
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-cyan-400 shrink-0">
-              <Image src={person.avatarUrl} alt={person.name} fill className="object-cover" sizes="32px" />
+          <div
+            className="relative flex items-center gap-3 bg-slate-950/95 border-2 border-cyan-400 shadow-2xl shadow-cyan-500/50 rounded-2xl p-2 backdrop-blur-xl text-white min-w-[230px]"
+            style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
+          >
+            {/* High-definition Avatar thumbnail */}
+            <div className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-cyan-400 shadow-md shadow-cyan-500/30 shrink-0 bg-slate-900 ring-1 ring-cyan-300/40">
+              <Image
+                src={person.avatarUrl}
+                alt={person.name}
+                fill
+                unoptimized
+                priority
+                className="object-cover"
+                style={{ imageRendering: "auto" }}
+              />
+              <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-xl pointer-events-none" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 mb-0.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-[9px] font-mono uppercase font-bold text-cyan-300 tracking-wider">
+                <span className="text-[9.5px] font-mono uppercase font-bold text-cyan-300 tracking-wider">
                   TARGET LOCATED
                 </span>
               </div>
-              <div className="text-xs font-bold text-slate-100 truncate">{person.nickname}</div>
-              <div className="text-[10px] text-slate-300 truncate">{person.role}</div>
+              <div className="text-sm font-bold text-white truncate drop-shadow-sm">{person.nickname}</div>
+              <div className="text-[11px] font-medium text-cyan-100/80 truncate">{person.role}</div>
             </div>
 
             {onDismiss && (
@@ -98,7 +110,7 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
                   e.stopPropagation();
                   onDismiss();
                 }}
-                className="w-5 h-5 flex items-center justify-center rounded-full bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 text-[10px] ml-1 transition"
+                className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800/90 text-slate-300 hover:text-white hover:bg-cyan-600 hover:scale-105 border border-slate-700 hover:border-cyan-400 text-xs ml-1 transition"
                 title="Dismiss Locator"
               >
                 ✕
@@ -107,7 +119,7 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
           </div>
 
           {/* Pointer down triangle */}
-          <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-cyan-400/90 drop-shadow-md" />
+          <div className="w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[10px] border-t-cyan-400 drop-shadow-lg" />
         </div>
       </Html>
     </group>

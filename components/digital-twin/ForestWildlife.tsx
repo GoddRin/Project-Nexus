@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import gisTerrainData from "@/public/data/gis-terrain-mesh.json";
@@ -20,6 +20,7 @@ import {
   MAT_EAGLE_FEATHER,
   MAT_EAGLE_CREST,
 } from "./SharedMaterials";
+import { registerLivePersonnelPosition, unregisterLivePersonnel } from "./personnelLocations";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SIERRA MADRE & TUMAUINI ISABELA NATIVE WILDLIFE BEHAVIOR ENGINE
@@ -899,10 +900,14 @@ function RealisticPhilippineAspinDog({
   routeType = "TEMFACIL_COURTYARD",
   color = "#D97706", // Golden Tan, Black & Tan, Brindle
   seed = 1.0,
+  personnelId,
+  onSelectPerson,
 }: {
   routeType?: "TEMFACIL_COURTYARD" | "TEMFACIL_GATE" | "FOREST_TRAIL" | "WAREHOUSE_RAMP";
   color?: string;
   seed?: number;
+  personnelId?: string;
+  onSelectPerson?: (id: string) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
@@ -913,6 +918,16 @@ function RealisticPhilippineAspinDog({
   const legRRRef = useRef<THREE.Group>(null);
 
   const progressRef = useRef<number>(seed * 12.0);
+  const scratchDogWorldPos = useMemo(() => new THREE.Vector3(), []);
+
+  useEffect(() => {
+    return () => {
+      if (personnelId) {
+        unregisterLivePersonnel(personnelId);
+      }
+    };
+  }, [personnelId]);
+
 
   // Dynamic patrol waypoints
   const waypoints = useMemo(() => {
@@ -966,12 +981,57 @@ function RealisticPhilippineAspinDog({
     const pt = curve.getPointAt(progressRef.current);
     const tangent = curve.getTangentAt(progressRef.current);
 
+    if (routeType === "WAREHOUSE_RAMP") {
+      // 🐕 Brunson Chuchu Realistic Site Guard Station (Clean concrete apron beside Sir Vincent)
+      // Stationary alert guarding pose, head tracking, wagging tail, zero clipping through walls!
+      const brunsonX = 91.2;
+      const brunsonZ = -96.2;
+      const groundY = 14.85;
+      const yaw = Math.PI / 5; // Alertly facing the road and gate entrance
+
+      groupRef.current.position.set(brunsonX, groundY, brunsonZ);
+      groupRef.current.rotation.set(0, yaw, 0);
+
+      // Live world position registration for Brunson Chuchu
+      if (personnelId && groupRef.current) {
+        groupRef.current.getWorldPosition(scratchDogWorldPos);
+        registerLivePersonnelPosition(personnelId, scratchDogWorldPos, groupRef.current);
+      }
+
+      // Alert, lifelike head and snout movements (watching trucks, sniffing breeze)
+      if (headRef.current) {
+        const lookAround = Math.sin(t * 0.8) * 0.22 + Math.sin(t * 2.1) * 0.08;
+        const sniffPitch = Math.sin(t * 3.5) * 0.06;
+        headRef.current.rotation.y = lookAround;
+        headRef.current.rotation.x = 0.12 + sniffPitch;
+      }
+
+      // Friendly curled tail wagging
+      if (tailRef.current) {
+        tailRef.current.rotation.y = Math.sin(t * 6.5) * 0.40;
+        tailRef.current.rotation.x = 0.50 + Math.sin(t * 3.0) * 0.08;
+      }
+
+      // Relaxed seated / alert paws
+      if (legFLRef.current) legFLRef.current.rotation.x = 0;
+      if (legFRRef.current) legFRRef.current.rotation.x = 0;
+      if (legRLRef.current) legRLRef.current.rotation.x = 0;
+      if (legRRRef.current) legRRRef.current.rotation.x = 0;
+      return;
+    }
+
     // Height calculation: directly sample true terrain height for 100% ground contact
     const groundY = sampleTerrainY(pt.x, pt.z);
 
     const yaw = Math.atan2(tangent.x, tangent.z);
     groupRef.current.position.set(pt.x, groundY, pt.z);
     groupRef.current.rotation.set(0, yaw, 0);
+
+    // Live world position registration for other dogs
+    if (personnelId && groupRef.current) {
+      groupRef.current.getWorldPosition(scratchDogWorldPos);
+      registerLivePersonnelPosition(personnelId, scratchDogWorldPos, groupRef.current);
+    }
 
     // Dynamic head and snout sniffing motion
     if (headRef.current) {
@@ -1000,7 +1060,19 @@ function RealisticPhilippineAspinDog({
   });
 
   return (
-    <group ref={groupRef}>
+    <group
+      ref={groupRef}
+      onClick={personnelId && onSelectPerson ? (e) => { e.stopPropagation(); onSelectPerson(personnelId); } : undefined}
+      onPointerOver={personnelId && onSelectPerson ? (e) => { e.stopPropagation(); document.body.style.cursor = "pointer"; } : undefined}
+      onPointerOut={personnelId && onSelectPerson ? () => { document.body.style.cursor = "auto"; } : undefined}
+    >
+      {/* 🐕 INVISIBLE RAYCAST SELECTION HITBOX */}
+      {personnelId && onSelectPerson && (
+        <mesh position={[0, 0.35, 0]} visible={false}>
+          <cylinderGeometry args={[0.55, 0.55, 0.9, 8]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+      )}
       {/* Athletic Canine Torso */}
       <mesh position={[0, 0.38, 0]}>
         <boxGeometry args={[0.22, 0.24, 0.55]} />
@@ -1078,7 +1150,7 @@ function RealisticPhilippineAspinDog({
 }
 
 // ─── MAIN EXPORT: SIERRA MADRE WILDLIFE & DOMESTIC SITE FAUNA ECOSYSTEM ─────
-export function ForestWildlife() {
+export function ForestWildlife({ onSelectPerson }: { onSelectPerson?: (id: string) => void } = {}) {
   const carabaoPositions: [number, number][] = useMemo(() => [
     [52, -148], [62, -152], [42, -145], [18, -48],
   ], []);
@@ -1155,8 +1227,14 @@ export function ForestWildlife() {
       <RealisticPhilippineAspinDog routeType="TEMFACIL_COURTYARD" color="#D97706" seed={1.0} />
       {/* Dog 2: Black & Tan Aspin patrolling Security Checkpoint Gate */}
       <RealisticPhilippineAspinDog routeType="TEMFACIL_GATE" color="#1E293B" seed={2.5} />
-      {/* Dog 3: Brindle Aspin roaming along Warehouse Brown Dirt Road */}
-      <RealisticPhilippineAspinDog routeType="WAREHOUSE_RAMP" color="#92400E" seed={3.8} />
+      {/* 🐕 BRUNSON "CHUCHU" — SITE MASCOT & CANINE SECURITY PATROL (Warehouse Dirt Road & Laydown Yard) */}
+      <RealisticPhilippineAspinDog
+        routeType="WAREHOUSE_RAMP"
+        color="#D97706"
+        seed={3.8}
+        personnelId="DOG_BRUNSON_CHUCHU"
+        onSelectPerson={onSelectPerson}
+      />
       {/* Dog 4: Golden Aspin walking on Sierra Madre Riverside Trail */}
       <RealisticPhilippineAspinDog routeType="FOREST_TRAIL" color="#B45309" seed={4.2} />
     </group>
