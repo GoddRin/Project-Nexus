@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gisTerrainData from "@/public/data/gis-terrain-mesh.json";
 import {
@@ -524,7 +524,15 @@ export function HydroProjectPersonMesh({
     return null;
   };
 
+  const { camera } = useThree();
+  const [isCloseUp, setIsCloseUp] = useState(true);
+
   React.useEffect(() => {
+    if (personnelId && groupRef.current) {
+      groupRef.current.updateWorldMatrix(true, false);
+      groupRef.current.getWorldPosition(scratchPersonWorldPos);
+      registerLivePersonnelPosition(personnelId, scratchPersonWorldPos, groupRef.current);
+    }
     return () => {
       if (personnelId) {
         unregisterLivePersonnel(personnelId);
@@ -534,13 +542,29 @@ export function HydroProjectPersonMesh({
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    const t = clock.getElapsedTime() + shiftOffset;
 
     // 0. Live world position registration for personnel locator & camera tracking
-    if (personnelId && groupRef.current) {
+    // Guaranteed to register world position even when camera is far in Overview mode
+    if (personnelId) {
       groupRef.current.getWorldPosition(scratchPersonWorldPos);
       registerLivePersonnelPosition(personnelId, scratchPersonWorldPos, groupRef.current);
     }
+
+    // Distance-based LOD & culling
+    const distSq = camera.position.distanceToSquared(groupRef.current.position);
+    // Over 175m away: person is < 2px on screen - cull group visibility completely
+    const isVisible = distSq < 30625;
+    if (groupRef.current.visible !== isVisible) {
+      groupRef.current.visible = isVisible;
+    }
+    if (!isVisible) return;
+
+    const close = distSq < 3600; // 60 meters
+    if (close !== isCloseUp) {
+      setIsCloseUp(close);
+    }
+
+    const t = clock.getElapsedTime() + shiftOffset;
 
     // 1. Dynamic Speaker Motion on Stage
     const speakerState = speakerType ? getSpeakerTransform(clock.getElapsedTime()) : null;
@@ -1517,8 +1541,21 @@ export function CourtToolboxMeetingDirector({
 }: {
   onSelectPerson?: (id: string) => void;
 }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const COURT_CENTER = useMemo(() => new THREE.Vector3(128.0, 14.10, -80.0), []);
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+    const distSq = camera.position.distanceToSquared(COURT_CENTER);
+    const inRange = distSq < 32400; // 180 meters
+    if (groupRef.current.visible !== inRange) {
+      groupRef.current.visible = inRange;
+    }
+  });
+
   return (
-    <group>
+    <group ref={groupRef}>
       {/* ── KEY HEADS, SUPERVISORS & ENGINEERS (ON STAGE WITH WHITE HARD HATS) ── */}
       <HydroProjectPersonMesh
         personnelId="ESH_ALFREDO_ARIZ"
@@ -1703,6 +1740,470 @@ export function CourtToolboxMeetingDirector({
         bodyScale={[1.05, 1.04, 1.05]}
         shiftOffset={18.5}
         pose="TOOLBOX_CROWD"
+      />
+    </group>
+  );
+}
+
+// ─── FILIPINO 3-ON-3 BASKETBALL MATCH (SUNSET RECREATION ROUTINE) ───────────
+function BasketballPlayerMesh({
+  jerseyColor = "#DC2626",
+  shortsColor = "#1E293B",
+  skinTone = "MEDIUM",
+  bodyScale = [1, 1, 1],
+  isDribbling = false,
+  isDefending = false,
+}: {
+  jerseyColor?: string;
+  shortsColor?: string;
+  skinTone?: "LIGHT" | "MEDIUM" | "BRONZE" | "DEEP";
+  bodyScale?: [number, number, number];
+  isDribbling?: boolean;
+  isDefending?: boolean;
+}) {
+  const skinMat =
+    skinTone === "LIGHT"
+      ? MAT_SKIN_LIGHT
+      : skinTone === "BRONZE"
+      ? MAT_SKIN_BRONZE
+      : skinTone === "DEEP"
+      ? MAT_SKIN_DEEP
+      : MAT_SKIN_MEDIUM;
+
+  return (
+    <group scale={bodyScale}>
+      {/* Torso / Sando Jersey */}
+      <mesh position={[0, 1.15, 0]}>
+        <boxGeometry args={[0.38, 0.52, 0.22]} />
+        <meshStandardMaterial color={jerseyColor} roughness={0.7} />
+      </mesh>
+
+      {/* Head */}
+      <mesh position={[0, 1.58, 0]} material={skinMat}>
+        <boxGeometry args={[0.20, 0.22, 0.20]} />
+      </mesh>
+      {/* Hair */}
+      <mesh position={[0, 1.70, -0.02]} material={MAT_HAIR_BLACK}>
+        <boxGeometry args={[0.22, 0.08, 0.22]} />
+      </mesh>
+
+      {/* Bare Shoulders & Arms */}
+      <group
+        position={[-0.24, 1.30, 0]}
+        rotation={isDefending ? [-0.8, -0.6, -0.4] : isDribbling ? [-0.6, 0.2, 0] : [0, 0, -0.1]}
+      >
+        <mesh position={[0, -0.22, 0]} material={skinMat}>
+          <boxGeometry args={[0.09, 0.44, 0.09]} />
+        </mesh>
+      </group>
+      <group
+        position={[0.24, 1.30, 0]}
+        rotation={isDefending ? [-0.8, 0.6, 0.4] : isDribbling ? [-0.9, -0.3, 0] : [0, 0, 0.1]}
+      >
+        <mesh position={[0, -0.22, 0]} material={skinMat}>
+          <boxGeometry args={[0.09, 0.44, 0.09]} />
+        </mesh>
+      </group>
+
+      {/* Basketball Shorts */}
+      <mesh position={[0, 0.78, 0]}>
+        <boxGeometry args={[0.39, 0.32, 0.24]} />
+        <meshStandardMaterial color={shortsColor} roughness={0.75} />
+      </mesh>
+
+      {/* Athletic Legs */}
+      <mesh position={[-0.10, 0.42, 0]} material={skinMat}>
+        <cylinderGeometry args={[0.055, 0.045, 0.46, 6]} />
+      </mesh>
+      <mesh position={[0.10, 0.42, 0]} material={skinMat}>
+        <cylinderGeometry args={[0.055, 0.045, 0.46, 6]} />
+      </mesh>
+
+      {/* High-Top Basketball Sneakers */}
+      <mesh position={[-0.10, 0.10, 0.04]}>
+        <boxGeometry args={[0.12, 0.14, 0.26]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.4} />
+      </mesh>
+      <mesh position={[0.10, 0.10, 0.04]}>
+        <boxGeometry args={[0.12, 0.14, 0.26]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+function TemfacilBasketballGame({ onSelectPerson }: { onSelectPerson?: (id: string) => void }) {
+  const courtRef = useRef<THREE.Group>(null);
+
+  const ballRef = useRef<THREE.Group>(null);
+  const p1Ref = useRef<THREE.Group>(null); // Point Guard (Red Team) - Ball Handler
+  const p2Ref = useRef<THREE.Group>(null); // On-ball Defender (Blue Team)
+  const p3Ref = useRef<THREE.Group>(null); // Wing Cutter (Red Team)
+  const p4Ref = useRef<THREE.Group>(null); // Wing Defender (Blue Team)
+  const p5Ref = useRef<THREE.Group>(null); // Post Center (Red Team)
+  const p6Ref = useRef<THREE.Group>(null); // Post Defender (Blue Team)
+  const spec1Ref = useRef<THREE.Group>(null); // Bench Spectator 1
+  const spec2Ref = useRef<THREE.Group>(null); // Bench Spectator 2
+
+  useFrame(({ clock }) => {
+    if (!courtRef.current || !courtRef.current.visible) return;
+    const t = clock.getElapsedTime();
+
+    // Game loop timing: 14-second shot cycle
+    const cycle = (t * 0.45) % 14.0;
+
+    // Ball handler motion (Top of the key)
+    if (p1Ref.current) {
+      if (cycle < 7.0) {
+        // Dribbling at top of key, crossover rhythm
+        const p1X = Math.sin(t * 1.8) * 1.5;
+        const p1Z = 2.5 + Math.cos(t * 0.9) * 0.5;
+        p1Ref.current.position.set(p1X, 0, p1Z);
+        p1Ref.current.rotation.y = Math.PI + Math.sin(t * 1.5) * 0.2;
+      } else if (cycle < 10.5) {
+        // Drive towards the basket
+        const driveT = (cycle - 7.0) / 3.5;
+        const driveX = Math.sin(driveT * Math.PI) * 0.8;
+        const driveZ = 2.5 - driveT * 5.0;
+        const jumpY = Math.sin(driveT * Math.PI) * 0.65;
+        p1Ref.current.position.set(driveX, jumpY, driveZ);
+        p1Ref.current.rotation.y = Math.PI;
+      } else {
+        p1Ref.current.position.set(0, 0, 0.5);
+        p1Ref.current.rotation.y = Math.PI;
+      }
+    }
+
+    // Defender tracking
+    if (p2Ref.current) {
+      if (cycle < 7.0) {
+        const p2X = Math.sin(t * 1.8) * 1.3;
+        p2Ref.current.position.set(p2X, 0, 1.2);
+        p2Ref.current.rotation.y = 0;
+      } else if (cycle < 10.5) {
+        const driveT = (cycle - 7.0) / 3.5;
+        const contestY = Math.sin(driveT * Math.PI) * 0.5;
+        p2Ref.current.position.set(0.4, contestY, -1.8);
+        p2Ref.current.rotation.y = 0;
+      } else {
+        p2Ref.current.position.set(0, 0, -0.5);
+        p2Ref.current.rotation.y = 0;
+      }
+    }
+
+    // Basketball trajectory
+    if (ballRef.current) {
+      if (cycle < 7.0) {
+        const bounce = Math.abs(Math.sin(t * 7.5)) * 0.75;
+        const ballX = p1Ref.current ? p1Ref.current.position.x + 0.35 : 0.35;
+        const ballZ = p1Ref.current ? p1Ref.current.position.z - 0.25 : 2.25;
+        ballRef.current.position.set(ballX, bounce + 0.12, ballZ);
+        ballRef.current.rotation.x += 0.2;
+      } else if (cycle < 9.2) {
+        const shotProgress = (cycle - 7.0) / 2.2;
+        const startX = p1Ref.current ? p1Ref.current.position.x : 0;
+        const startY = 2.2;
+        const startZ = p1Ref.current ? p1Ref.current.position.z : -2.0;
+
+        const targetX = 0;
+        const targetY = 3.05;
+        const targetZ = 8.8;
+
+        const bx = startX + (targetX - startX) * shotProgress;
+        const bz = startZ + (targetZ - startZ) * shotProgress;
+        const arc = Math.sin(shotProgress * Math.PI) * 2.2;
+        const by = startY + (targetY - startY) * shotProgress + arc;
+
+        ballRef.current.position.set(bx, by, bz);
+        ballRef.current.rotation.x += 0.35;
+      } else if (cycle < 10.8) {
+        const dropProgress = (cycle - 9.2) / 1.6;
+        const bounceDrop = Math.abs(Math.cos(dropProgress * Math.PI * 2.5)) * (1.0 - dropProgress) * 1.5;
+        ballRef.current.position.set(0, Math.max(0.12, bounceDrop), 8.8);
+      } else {
+        const returnProgress = (cycle - 10.8) / 3.2;
+        const rx = 0 + 0.35 * returnProgress;
+        const rz = 8.8 + (2.5 - 8.8) * returnProgress;
+        ballRef.current.position.set(rx, 0.4, rz);
+      }
+    }
+
+    // Wing player cut
+    if (p3Ref.current) {
+      const cutX = -3.5 + Math.sin(t * 1.2) * 1.8;
+      const cutZ = 0.5 + Math.cos(t * 1.2) * 2.5;
+      p3Ref.current.position.set(cutX, 0, cutZ);
+    }
+    if (p4Ref.current) {
+      const defX = -3.0 + Math.sin(t * 1.2) * 1.6;
+      const defZ = 1.0 + Math.cos(t * 1.2) * 2.2;
+      p4Ref.current.position.set(defX, 0, defZ);
+    }
+
+    // Post center
+    if (p5Ref.current) {
+      p5Ref.current.position.set(2.2, 0, 3.8 + Math.sin(t * 0.8) * 0.4);
+    }
+    if (p6Ref.current) {
+      p6Ref.current.position.set(2.0, 0, 4.4 + Math.sin(t * 0.8) * 0.4);
+    }
+
+    // Spectators cheering
+    if (spec1Ref.current) {
+      spec1Ref.current.rotation.x = Math.sin(t * 4.0) * 0.08;
+    }
+    if (spec2Ref.current) {
+      spec2Ref.current.rotation.x = Math.sin(t * 3.5 + 0.5) * 0.08;
+    }
+  });
+
+  return (
+    <group ref={courtRef} position={[128.0, 14.10, -81.0]}>
+      {/* 🏀 ANIMATED BASKETBALL */}
+      <group ref={ballRef} position={[0.35, 0.7, 2.5]}>
+        <mesh castShadow>
+          <sphereGeometry args={[0.13, 16, 16]} />
+          <meshStandardMaterial color="#EA580C" roughness={0.65} metalness={0.05} />
+        </mesh>
+        {/* Black Seam Ribs */}
+        <mesh rotation={[0, 0, 0]}>
+          <torusGeometry args={[0.131, 0.005, 4, 24]} />
+          <meshBasicMaterial color="#0F172A" />
+        </mesh>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.131, 0.005, 4, 24]} />
+          <meshBasicMaterial color="#0F172A" />
+        </mesh>
+      </group>
+
+      {/* ── PLAYER 1: Point Guard (Team Red #7) ── */}
+      <group ref={p1Ref} position={[0, 0, 2.5]}>
+        <BasketballPlayerMesh jerseyColor="#DC2626" shortsColor="#1E293B" skinTone="MEDIUM" isDribbling />
+      </group>
+
+      {/* ── PLAYER 2: On-Ball Defender (Team Blue #23) ── */}
+      <group ref={p2Ref} position={[0, 0, 1.2]}>
+        <BasketballPlayerMesh jerseyColor="#2563EB" shortsColor="#0F172A" skinTone="BRONZE" isDefending />
+      </group>
+
+      {/* ── PLAYER 3: Baseline Cutter (Team Red #24) ── */}
+      <group ref={p3Ref} position={[-3.5, 0, 0.5]}>
+        <BasketballPlayerMesh jerseyColor="#DC2626" shortsColor="#1E293B" skinTone="LIGHT" />
+      </group>
+
+      {/* ── PLAYER 4: Wing Defender (Team Blue #11) ── */}
+      <group ref={p4Ref} position={[-3.0, 0, 1.0]}>
+        <BasketballPlayerMesh jerseyColor="#2563EB" shortsColor="#0F172A" skinTone="DEEP" isDefending />
+      </group>
+
+      {/* ── PLAYER 5: Post Center (Team Red #34) ── */}
+      <group ref={p5Ref} position={[2.2, 0, 3.8]}>
+        <BasketballPlayerMesh jerseyColor="#DC2626" shortsColor="#1E293B" skinTone="BRONZE" bodyScale={[1.12, 1.08, 1.12]} />
+      </group>
+
+      {/* ── PLAYER 6: Post Defender (Team Blue #15) ── */}
+      <group ref={p6Ref} position={[2.0, 0, 4.4]}>
+        <BasketballPlayerMesh jerseyColor="#2563EB" shortsColor="#0F172A" skinTone="MEDIUM" bodyScale={[1.1, 1.06, 1.1]} isDefending />
+      </group>
+
+      {/* ── COURTSIDE BENCH & CHEERING WORKERS ── */}
+      <group position={[6.2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        {/* Wooden Courtside Bench */}
+        <mesh position={[0, 0.42, 0]}>
+          <boxGeometry args={[4.2, 0.08, 0.45]} />
+          <meshStandardMaterial color="#78350F" roughness={0.8} />
+        </mesh>
+        {[-1.8, 0, 1.8].map((bx, bi) => (
+          <mesh key={`b-leg-${bi}`} position={[bx, 0.21, 0]}>
+            <boxGeometry args={[0.08, 0.42, 0.42]} />
+            <meshStandardMaterial color="#1E293B" metalness={0.8} />
+          </mesh>
+        ))}
+
+        {/* Spectator 1: Off-duty worker cheering */}
+        <group ref={spec1Ref} position={[-1.0, 0, 0]}>
+          <HydroProjectPersonMesh
+            position={[0, 0, 0]}
+            rotation={[0, 0, 0]}
+            skinTone="MEDIUM"
+            pantsStyle="JEANS"
+            hasHardhat={false}
+            hasVest={false}
+          />
+        </group>
+
+        {/* Spectator 2: Off-duty worker in yellow shirt cheering */}
+        <group ref={spec2Ref} position={[1.0, 0, 0]}>
+          <HydroProjectPersonMesh
+            position={[0, 0, 0]}
+            rotation={[0, 0, 0]}
+            skinTone="LIGHT"
+            pantsStyle="CARGO"
+            hasHardhat={false}
+            hasVest={false}
+          />
+        </group>
+      </group>
+    </group>
+  );
+}
+
+// ─── ROVING NIGHT WATCHMEN WITH FLASHLIGHTS ──────────────────────────────────
+function RovingNightWatchmen({ onSelectPerson }: { onSelectPerson?: (id: string) => void }) {
+  const g1Ref = useRef<THREE.Group>(null);
+  const g2Ref = useRef<THREE.Group>(null);
+  const p1 = useRef<number>(0);
+  const p2 = useRef<number>(0.5);
+
+  const waypoints1 = useMemo(() => [
+    new THREE.Vector3(105, 14.15, -70),
+    new THREE.Vector3(128, 14.15, -70),
+    new THREE.Vector3(135, 14.15, -95),
+    new THREE.Vector3(105, 14.15, -95),
+  ], []);
+  const curve1 = useMemo(() => new THREE.CatmullRomCurve3(waypoints1, true), [waypoints1]);
+
+  const waypoints2 = useMemo(() => [
+    new THREE.Vector3(88, 14.85, -92),
+    new THREE.Vector3(72, 14.85, -100),
+    new THREE.Vector3(72, 14.85, -118),
+    new THREE.Vector3(92, 14.85, -105),
+  ], []);
+  const curve2 = useMemo(() => new THREE.CatmullRomCurve3(waypoints2, true), [waypoints2]);
+
+  useFrame((_, delta) => {
+    p1.current = (p1.current + delta * 0.018) % 1.0;
+    p2.current = (p2.current + delta * 0.016) % 1.0;
+
+    if (g1Ref.current) {
+      const pt = curve1.getPointAt(p1.current);
+      const tang = curve1.getTangentAt(p1.current);
+      g1Ref.current.position.set(pt.x, pt.y, pt.z);
+      g1Ref.current.rotation.y = Math.atan2(tang.x, tang.z);
+    }
+    if (g2Ref.current) {
+      const pt = curve2.getPointAt(p2.current);
+      const tang = curve2.getTangentAt(p2.current);
+      g2Ref.current.position.set(pt.x, pt.y, pt.z);
+      g2Ref.current.rotation.y = Math.atan2(tang.x, tang.z);
+    }
+  });
+
+  return (
+    <group>
+      {/* Watchman 1: North Perimeter Security Patrol */}
+      <group ref={g1Ref}>
+        <HydroProjectPersonMesh
+          skinTone="BRONZE"
+          hasHardhat
+          hardhatColor="#1E293B"
+          hasVest
+          vestColor="#F59E0B"
+          pantsStyle="JEANS"
+          accessory="RADIO"
+          isPatrolling
+        />
+        <pointLight position={[0.25, 1.1, 0.4]} intensity={2.8} distance={14} color="#FEF08A" />
+      </group>
+
+      {/* Watchman 2: Warehouse Laydown Yard Security Patrol */}
+      <group ref={g2Ref}>
+        <HydroProjectPersonMesh
+          skinTone="MEDIUM"
+          hasHardhat
+          hardhatColor="#1E293B"
+          hasVest
+          vestColor="#F59E0B"
+          pantsStyle="JEANS"
+          accessory="RADIO"
+          isPatrolling
+        />
+        <pointLight position={[0.25, 1.1, 0.4]} intensity={2.8} distance={14} color="#FEF08A" />
+      </group>
+    </group>
+  );
+}
+
+// ─── DAYTIME EXECUTIVE & ADMIN WING ROUTINES ─────────────────────────────────
+function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (id: string) => void }) {
+  return (
+    <group>
+      {/* 👔 Project Manager (PM Romeo Sese) at Main Office Executive Veranda */}
+      <HydroProjectPersonMesh
+        personnelId="PM_ROMEO_SESE"
+        onSelectPerson={onSelectPerson}
+        position={[116.5, 14.15, -94.2]}
+        rotation={[0, Math.PI / 4, 0]}
+        speakerType="PROJECT_MANAGER"
+        role="PROJECT_MANAGER"
+        skinTone="LIGHT"
+        hairStyle="SHORT"
+        hairColor="SALT_PEPPER"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasBeard
+        pantsStyle="KHAKI"
+        vestColor="#EA580C"
+        accessory="BINDER"
+        bodyScale={[1.08, 1.0, 1.08]}
+      />
+
+      {/* 🦺 Environmental, Safety & Health Manager (Alfredo Ariz) inspecting central compound */}
+      <HydroProjectPersonMesh
+        personnelId="ESH_ALFREDO_ARIZ"
+        onSelectPerson={onSelectPerson}
+        position={[111.0, 14.15, -88.0]}
+        rotation={[0, -Math.PI / 6, 0]}
+        speakerType="SAFETY_HEAD"
+        role="SAFETY_HEAD"
+        skinTone="BRONZE"
+        hairStyle="BALD"
+        hasGlasses
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        pantsStyle="JEANS"
+        vestColor="#EA580C"
+        accessory="CLIPBOARD"
+        bodyScale={[1.05, 1.0, 1.05]}
+      />
+
+      {/* 📋 HR & Administrative Head (Rovigail Abellar) at Admin Office Desk */}
+      <HydroProjectPersonMesh
+        personnelId="HR_ROVIGAIL_ABELLAR"
+        onSelectPerson={onSelectPerson}
+        position={[113.5, 14.15, -97.5]}
+        rotation={[0, 0, 0]}
+        speakerType="HR_HEAD"
+        role="HR_OFFICER"
+        gender="FEMALE"
+        skinTone="LIGHT"
+        hairStyle="WOMAN_PONYTAIL"
+        hairColor="BLACK"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#1D4ED8"
+        pantsStyle="CHARCOAL_OFFICE"
+        bodyScale={[1.15, 0.96, 1.15]}
+      />
+
+      {/* 🩺 Site Occupational Health Nurse (Russelle Alcantara) at TEMFACIL Site Clinic */}
+      <HydroProjectPersonMesh
+        personnelId="NURSE_RUSSELLE_ALCANTARA"
+        onSelectPerson={onSelectPerson}
+        position={[115.0, 14.15, -96.0]}
+        rotation={[0, -Math.PI / 2, 0]}
+        gender="FEMALE"
+        role="SITE_NURSE"
+        skinTone="LIGHT"
+        hairStyle="WOMAN_PONYTAIL"
+        hairColor="AUBURN"
+        pantsStyle="MAONG_JEANS"
+        hasHardhat
+        hardhatColor="#FFFFFF"
+        hasVest
+        vestColor="#0D9488"
+        bodyScale={[0.96, 1.0, 0.96]}
       />
     </group>
   );
@@ -2430,6 +2931,7 @@ export function AnimatedSecurityGateOfficer({
     if (searchlightRef.current) {
       const isInspecting = activePhase === "INSPECTING_UNDERCARRIAGE" || activePhase === "INSPECTING_CARGO_PROHIBITED";
       searchlightRef.current.intensity = isInspecting ? 2.5 : 0;
+      searchlightRef.current.visible = isInspecting;
     }
 
     if (guardGroupRef.current) {
@@ -2464,6 +2966,7 @@ export function AnimatedSecurityGateOfficer({
       {/* Searchlight / UV Inspection Flashlight SpotLight */}
       <spotLight
         ref={searchlightRef}
+        visible={false}
         position={[0, 0.7, 0.2]}
         target-position={[0, -0.5, 1.2]}
         angle={0.5}
@@ -2686,8 +3189,28 @@ function SecurityGateCheckpointSystem({
 }) {
   const gateArmRef = useRef<THREE.Group>(null);
   const gateLedMatRef = useRef<THREE.MeshStandardMaterial>(null);
+  const rootGroupRef = useRef<THREE.Group>(null);
+  const [showGateLights, setShowGateLights] = useState(false);
+  const { camera } = useThree();
+
+  // Guardhouse is located directly at the TEMFACIL entrance tip (ROAD_CONSTANTS.GATE_PROGRESS_U = 0.655)
+  const gateTransform = useMemo(() => {
+    return getRoadTransform(ROAD_CONSTANTS.GATE_PROGRESS_U, 0, 0.12);
+  }, []);
 
   useFrame(() => {
+    if (rootGroupRef.current) {
+      const distSq = camera.position.distanceToSquared(gateTransform.point);
+      const inRange = distSq < 40000; // 200 meters
+      if (rootGroupRef.current.visible !== inRange) {
+        rootGroupRef.current.visible = inRange;
+      }
+      const near = distSq < 3600; // 60 meters
+      if (near !== showGateLights) {
+        setShowGateLights(near);
+      }
+    }
+
     const cp = checkpointRef?.current;
     const isGateOpen = cp
       ? (cp.phase === "WAVING_CLEARANCE" || cp.phase === "VEHICLE_PASSING")
@@ -2704,13 +3227,8 @@ function SecurityGateCheckpointSystem({
     }
   });
 
-  // Guardhouse is located directly at the TEMFACIL entrance tip (ROAD_CONSTANTS.GATE_PROGRESS_U = 0.655)
-  const gateTransform = useMemo(() => {
-    return getRoadTransform(ROAD_CONSTANTS.GATE_PROGRESS_U, 0, 0.12);
-  }, []);
-
   return (
-    <group position={[gateTransform.point.x, gateTransform.point.y, gateTransform.point.z]} rotation={[0, gateTransform.yaw, 0]}>
+    <group ref={rootGroupRef} position={[gateTransform.point.x, gateTransform.point.y, gateTransform.point.z]} rotation={[0, gateTransform.yaw, 0]}>
       {/* ═══ 1. CONCRETE CHECKPOINT FOUNDATION PLINTH (Right Shoulder) ═══ */}
       <mesh position={[5.2, 0.08, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
         <boxGeometry args={[3.2, 0.16, 3.2]} />
@@ -2751,7 +3269,7 @@ function SecurityGateCheckpointSystem({
         <meshBasicMaterial color="#10B981" />
       </mesh>
       {/* Interior Ambient Booth Light */}
-      <pointLight position={[5.2, 2.4, 0]} color="#FEF08A" intensity={0.8} distance={5} />
+      {showGateLights && <pointLight position={[5.2, 2.4, 0]} color="#FEF08A" intensity={0.8} distance={5} />}
 
       {/* SCIC Main Gate Security Signboard Above Window */}
       <group position={[3.96, 2.4, 0]} rotation={[0, -Math.PI / 2, 0]}>
@@ -2817,7 +3335,7 @@ function SecurityGateCheckpointSystem({
         <mesh position={[0, 5.1, 0.2]} rotation={[0.4, 0, 0]} material={MAT_HEADLIGHT_ON}>
           <boxGeometry args={[0.35, 0.2, 0.15]} />
         </mesh>
-        <pointLight position={[0, 4.8, 1.2]} color="#FFFFFF" intensity={1.5} distance={12} />
+        {showGateLights && <pointLight position={[0, 4.8, 1.2]} color="#FFFFFF" intensity={1.5} distance={12} />}
       </group>
 
       {/* ═══ 6. AUTOMATIC BOOM BARRIER GATE MECHANISM ═══ */}
@@ -2871,10 +3389,12 @@ function AutonomousSiteTrafficSystem({
   gateAngle,
   onGateAngleChange,
   onSelectPerson,
+  timeMode = "day",
 }: {
   gateAngle: number;
   onGateAngleChange: (angle: number) => void;
   onSelectPerson?: (id: string) => void;
+  timeMode?: "morning" | "day" | "sunset" | "night";
 }) {
   // Vehicle Refs
   const vDumpRef = useRef<THREE.Group>(null);
@@ -3142,12 +3662,42 @@ function AutonomousSiteTrafficSystem({
     const isGateOpen = cp.phase === "WAVING_CLEARANCE" || cp.phase === "VEHICLE_PASSING";
     onGateAngleChange(isGateOpen ? -Math.PI / 2.2 : 0);
 
-    // ─── 3. SIMULATE AUTONOMOUS VEHICLES ALONG DEDICATED PURPOSE-DRIVEN ROUTES ───
+    // ─── B. VEHICLE DISPATCH, ANTI-COLLISION & ATMOSPHERE ROUTINES ───
     vehicles.forEach((veh, i) => {
-      // 1. Handle on-site functional work pauses (Tipping, Drop-offs, QA Inspections)
+      // 1. NIGHT MODE PARKING LOGIC
+      if (timeMode === "night") {
+        if (veh.id === "DUMP_TRUCK") {
+          veh.speed = 0;
+          veh.isBraking = true;
+          if (vDumpRef.current) {
+            vDumpRef.current.position.set(86.0, 14.85, -96.5);
+            vDumpRef.current.rotation.set(0, -Math.PI / 2, 0);
+          }
+          return;
+        } else if (veh.id === "CREW_VAN") {
+          veh.speed = 0;
+          veh.isBraking = true;
+          if (vVanRef.current) {
+            vVanRef.current.position.set(77.0, 14.15, -95.0);
+            vVanRef.current.rotation.set(0, 0, 0);
+          }
+          return;
+        } else if (veh.id === "SITE_PICKUP") {
+          veh.speed = 0;
+          veh.isBraking = true;
+          if (vPickupRef.current) {
+            vPickupRef.current.position.set(135.0, 14.15, -74.5);
+            vPickupRef.current.rotation.set(0, Math.PI / 2, 0);
+          }
+          return;
+        }
+        // SECURITY_PATROL continues night patrol!
+      }
+
+      // Checkpoint and Routine Timers
       if (veh.stateTimer > 0) {
         veh.stateTimer -= delta;
-        veh.speed = 0;
+        veh.speed = THREE.MathUtils.damp(veh.speed, 0, 8.0, delta);
         veh.isBraking = true;
 
         if (veh.id === "DUMP_TRUCK") {
@@ -3158,35 +3708,21 @@ function AutonomousSiteTrafficSystem({
             if (tipperBed) tipperBed.rotation.x = -veh.bedAngle;
           }
         }
-
-        if (veh.stateTimer <= 0) {
-          veh.hazardLights = veh.id === "SECURITY_PATROL";
-        }
         return;
-      }
-
-      // Smoothly lower tipper bed if moving
-      if (veh.id === "DUMP_TRUCK" && veh.bedAngle > 0) {
-        veh.bedAngle = THREE.MathUtils.lerp(veh.bedAngle, 0, 0.08);
-        if (vDumpRef.current) {
-          const tipperBed = vDumpRef.current.getObjectByName("dumpTipperBed");
-          if (tipperBed) tipperBed.rotation.x = -veh.bedAngle;
-        }
       }
 
       let targetSpeed = veh.maxCruiseSpeed;
       let hardBrake = false;
 
-      // 2. Checkpoint Stop Line Compliance (Inbound & Outbound)
+      // 2. Checkpoint Stop Line Compliance
       const checkGateStop = (stopU: number, clearU: number) => {
         const distToStop = stopU - veh.u;
-        if (distToStop >= 0 && distToStop < 0.055) {
+        if (distToStop >= 0 && distToStop < 0.045) {
           if (veh.id === cp.activeVehId) {
             if (cp.phase !== "WAVING_CLEARANCE" && cp.phase !== "VEHICLE_PASSING") {
               if (distToStop < 0.005) {
                 targetSpeed = 0;
                 hardBrake = true;
-                veh.u = stopU;
               } else {
                 targetSpeed = Math.min(targetSpeed, (distToStop / 0.04) * veh.maxCruiseSpeed * 0.45);
               }
@@ -3194,11 +3730,10 @@ function AutonomousSiteTrafficSystem({
               targetSpeed = veh.maxCruiseSpeed * 0.85;
             }
           } else {
-            // Must wait behind stop line
-            if (distToStop < 0.005) {
+            // Must wait behind stop line or behind lead vehicle without snapping coordinates
+            if (distToStop < 0.008) {
               targetSpeed = 0;
               hardBrake = true;
-              veh.u = stopU;
             } else {
               targetSpeed = Math.min(targetSpeed, (distToStop / 0.04) * veh.maxCruiseSpeed * 0.45);
             }
@@ -3209,24 +3744,24 @@ function AutonomousSiteTrafficSystem({
       checkGateStop(veh.inboundGate.stopU, veh.inboundGate.clearU);
       checkGateStop(veh.outboundGate.stopU, veh.outboundGate.clearU);
 
-      // 3. 3D Euclidean Vehicle Anti-Collision Buffer (12.0m warning, 7.5m full stop)
+      // 3. 3D Euclidean Vehicle Anti-Collision Buffer (22.0m warning, 10.5m full stop)
       for (let j = 0; j < vehicles.length; j++) {
         if (i === j) continue;
         const other = vehicles[j];
         const dist = veh.pos.distanceTo(other.pos);
 
-        if (dist < 22.0) {
+        if (dist < 24.0) {
           const toOther = new THREE.Vector3().subVectors(other.pos, veh.pos).normalize();
           const dot = veh.forward.dot(toOther);
 
-          if (dot > 0.40) { // Other vehicle is ahead along our heading
-            if (dist < 7.5) {
+          if (dot > 0.35) { // Other vehicle is ahead along our heading
+            if (dist < 10.5) {
               targetSpeed = 0;
               hardBrake = true;
-            } else if (dist < 18.0) {
-              const followSpeed = ((dist - 7.5) / 10.5) * veh.maxCruiseSpeed;
+            } else if (dist < 22.0) {
+              const followSpeed = ((dist - 10.5) / 11.5) * veh.maxCruiseSpeed;
               targetSpeed = Math.min(targetSpeed, Math.max(0, followSpeed));
-              if (targetSpeed < 0.003) hardBrake = true;
+              if (targetSpeed < 0.004) hardBrake = true;
             }
           }
         }
@@ -3235,7 +3770,7 @@ function AutonomousSiteTrafficSystem({
       // 4. Pedestrian Proximity Detection
       pedestrians.forEach((ped) => {
         const distToPed = veh.pos.distanceTo(ped.pos);
-        if (distToPed < 6.5) {
+        if (distToPed < 7.5) {
           const toPed = new THREE.Vector3().subVectors(ped.pos, veh.pos).normalize();
           if (veh.forward.dot(toPed) > 0.4) {
             targetSpeed = 0;
@@ -3244,15 +3779,12 @@ function AutonomousSiteTrafficSystem({
         }
       });
 
-      // Apply dynamic velocity with smooth acceleration and braking
+      // Apply velocity
       veh.isBraking = hardBrake;
-      const accelRate = hardBrake ? 6.0 : 2.5;
-      veh.speed = THREE.MathUtils.damp(veh.speed, targetSpeed, accelRate, delta);
-
-      // Advance smoothly along dedicated loop spline
+      veh.speed = THREE.MathUtils.damp(veh.speed, targetSpeed, hardBrake ? 6.0 : 2.5, delta);
       veh.u = (veh.u + veh.speed * delta) % 1.0;
 
-      // 5. Trigger Dedicated Functional Routines at Work Locations
+      // 5. Trigger Routines
       veh.routines.forEach((rt) => {
         const distToRoutine = Math.abs(veh.u - rt.u);
         if (distToRoutine < 0.014 && !rt.done && veh.stateTimer <= 0) {
@@ -3296,22 +3828,22 @@ function AutonomousSiteTrafficSystem({
       {/* ═══ 2. VEHICLE FLEET WITH DISTINCT MISSIONS & COLLISION AVOIDANCE ═══ */}
       {/* Vehicle 1: Heavy 10-Wheeler Dump Truck (Quarry Logistics) */}
       <group ref={vDumpRef}>
-        <SCICHeavyDumpTruck bodyColor="#DC2626" headlightsOn={true} />
+        <SCICHeavyDumpTruck bodyColor="#DC2626" headlightsOn={timeMode === "sunset"} />
       </group>
 
       {/* Vehicle 2: SCIC 4x4 Site Pickup (QA/QC Inspection Patrol) */}
       <group ref={vPickupRef}>
-        <SCICSitePickupTruck bodyColor="#FFFFFF" headlightsOn={true} />
+        <SCICSitePickupTruck bodyColor="#FFFFFF" headlightsOn={timeMode === "sunset"} />
       </group>
 
       {/* Vehicle 3: Toyota HiAce Crew Commuter Van (Shift Workforce Transfer) */}
       <group ref={vVanRef}>
-        <ToyotaHiaceCrewVan bodyColor="#E2E8F0" headlightsOn={true} />
+        <ToyotaHiaceCrewVan bodyColor="#E2E8F0" headlightsOn={timeMode === "sunset"} />
       </group>
 
       {/* Vehicle 4: Safety Patrol 4x4 with Flashing Strobe */}
       <group ref={vPatrolRef}>
-        <SCICSitePickupTruck bodyColor="#F59E0B" headlightsOn={true} />
+        <SCICSitePickupTruck bodyColor="#F59E0B" headlightsOn={timeMode === "sunset" || timeMode === "night"} />
       </group>
 
       {/* ═══ 3. DEDICATED WALKING PEDESTRIANS (ANIMATED BIOMECHANICAL STRIDE) ═══ */}
@@ -3335,9 +3867,10 @@ function AutonomousSiteTrafficSystem({
         />
       </group>
 
-      {/* Pedestrian 2: Civil Mason walking uphill on shoulder */}
+      {/* Pedestrian 2: Civil Works Supervisor (Jaime Cano) walking on shoulder */}
       <group ref={ped2Ref}>
         <HydroProjectPersonMesh
+          personnelId="CIVIL_JAIME_CANO"
           onSelectPerson={onSelectPerson}
           isPatrolling={true}
           skinTone="MEDIUM"
@@ -3350,13 +3883,13 @@ function AutonomousSiteTrafficSystem({
         />
       </group>
 
-      {/* Pedestrian 3: Surveyor Assistant walking downhill on shoulder */}
+      {/* Pedestrian 3: Civil Works & 4S Supervisor (Henry Estrada) inspecting drainage */}
       <group ref={ped3Ref}>
         <HydroProjectPersonMesh
+          personnelId="CIVIL_HENRY_ESTRADA"
           onSelectPerson={onSelectPerson}
           isPatrolling={true}
           skinTone="BRONZE"
-
           facialHair="NONE"
           hasHardhat
           hardhatColor="#EAB308"
@@ -3685,26 +4218,39 @@ function WarehouseDynamicOperations({
 }: {
   onSelectPerson?: (id: string) => void;
 }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const WAREHOUSE_POS = useMemo(() => new THREE.Vector3(89.5, 14.85, -96.3), []);
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+    const distSq = camera.position.distanceToSquared(WAREHOUSE_POS);
+    const inRange = distSq < 32400; // 180 meters
+    if (groupRef.current.visible !== inRange) {
+      groupRef.current.visible = inRange;
+    }
+  });
+
   return (
-    <group>
+    <group ref={groupRef}>
       {/* 📋 WAREHOUSE RECEIVING LOGISTICS DESK & STAGING APPARATUS (Open Concrete Apron) */}
       <group position={[89.5, 14.85, -96.3]} rotation={[0, 0, 0]}>
-        {/* Heavy-Duty Steel Frame Warehouse Desk */}
-        <mesh position={[0, 0.40, 0]}>
+        {/* Heavy-Duty Steel Frame Warehouse Desk (Standing Waist Height 0.75m) */}
+        <mesh position={[0, 0.75, 0]}>
           <boxGeometry args={[1.40, 0.05, 0.75]} />
           <meshStandardMaterial color="#475569" roughness={0.6} metalness={0.4} />
         </mesh>
-        {/* Steel Tubular Legs */}
+        {/* Steel Tubular Legs (0.725m, resting solidly on the apron slab) */}
         {[-0.62, 0.62].map((lx, i) =>
           [-0.30, 0.30].map((lz, j) => (
-            <mesh key={`wdesk-leg-${i}-${j}`} position={[lx, 0.19, lz]}>
-              <cylinderGeometry args={[0.025, 0.025, 0.38, 8]} />
+            <mesh key={`wdesk-leg-${i}-${j}`} position={[lx, 0.3625, lz]}>
+              <cylinderGeometry args={[0.025, 0.025, 0.725, 8]} />
               <meshStandardMaterial color="#1E293B" roughness={0.3} metalness={0.8} />
             </mesh>
           ))
         )}
         {/* Rugged Industrial Panasonic Toughbook Laptop */}
-        <group position={[-0.32, 0.44, 0.05]} rotation={[0, 0.1, 0]}>
+        <group position={[-0.32, 0.79, 0.05]} rotation={[0, 0.1, 0]}>
           <mesh>
             <boxGeometry args={[0.34, 0.02, 0.24]} />
             <meshStandardMaterial color="#1E293B" roughness={0.3} metalness={0.7} />
@@ -3721,12 +4267,12 @@ function WarehouseDynamicOperations({
           </group>
         </group>
         {/* Rebar Mill Test Certificates & Delivery Manifests */}
-        <mesh position={[0.22, 0.43, 0.02]} rotation={[0, -0.15, 0]}>
+        <mesh position={[0.22, 0.78, 0.02]} rotation={[0, -0.15, 0]}>
           <boxGeometry args={[0.28, 0.015, 0.36]} />
           <meshStandardMaterial color="#F8FAFC" roughness={0.9} />
         </mesh>
         {/* Industrial Handheld Barcode Scanner on Dock */}
-        <group position={[0.48, 0.45, -0.10]} rotation={[0, -0.3, 0]}>
+        <group position={[0.48, 0.80, -0.10]} rotation={[0, -0.3, 0]}>
           <mesh>
             <boxGeometry args={[0.08, 0.04, 0.14]} />
             <meshStandardMaterial color="#F59E0B" roughness={0.4} />
@@ -3753,12 +4299,12 @@ function WarehouseDynamicOperations({
       />
 
       {/* 🚜 2. Heavy Equipment & Fleet Supervisor — Howell Gene Samson */}
-      {/* Positioned safely near the generator telemetry readout, checking gauges & radio */}
+      {/* Positioned on the open inspection apron, clear of material bundles */}
       <HydroProjectPersonMesh
         personnelId="EQUIP_HOWELL_SAMSON"
         onSelectPerson={onSelectPerson}
-        position={[86.0, 14.85, -96.5]}
-        rotation={[0, -Math.PI / 2, 0]}
+        position={[86.5, 14.85, -94.8]}
+        rotation={[0, -Math.PI / 3, 0]}
         skinTone="MEDIUM"
         hairStyle="SHORT"
         hasHardhat
@@ -3770,10 +4316,12 @@ function WarehouseDynamicOperations({
       />
 
       {/* 📋 3. Warehouse Dispatch Lead / Materials Inspector */}
-      {/* Stationed at the arrival staging apron, logging incoming deliveries */}
+      {/* Stationed at the arrival staging apron with clipboard, inspecting incoming deliveries */}
       <HydroProjectPersonMesh
-        position={[92.5, 14.85, -96.5]}
+        onSelectPerson={onSelectPerson}
+        position={[92.5, 14.85, -95.5]}
         rotation={[0, 0.15, 0]}
+        role="MATERIALS_INSPECTOR"
         skinTone="DEEP"
         hasHardhat
         hardhatColor="#FFFFFF"
@@ -3788,10 +4336,21 @@ function WarehouseDynamicOperations({
 
 export function AnimatedSiteEntities({
   onSelectPerson,
+  timeMode = "day",
 }: {
   onSelectPerson?: (id: string) => void;
+  timeMode?: "morning" | "day" | "sunset" | "night" | "MORNING" | "AFTERNOON" | "SUNSET" | "NIGHT";
 }) {
   const [currentGateAngle, setCurrentGateAngle] = useState<number>(0);
+
+  const normalizedTime: "morning" | "day" | "sunset" | "night" = useMemo(() => {
+    const t = timeMode?.toLowerCase();
+    if (t === "afternoon" || t === "day") return "day";
+    if (t === "morning") return "morning";
+    if (t === "sunset") return "sunset";
+    if (t === "night") return "night";
+    return "day";
+  }, [timeMode]);
 
   const y1 = useMemo(() => getSiteSurfaceY(76, -110), []);
   const y2 = useMemo(() => getSiteSurfaceY(90, -96), []);
@@ -3803,8 +4362,9 @@ export function AnimatedSiteEntities({
       {/* 👷 Tailrace Civil QA/QC Quality Engineer (Engr. Jimmy M. Aquino) on dry concrete apron floor */}
       <TailraceCivilQCEngineer onSelectPerson={onSelectPerson} />
 
-      {/* ⚡ Powerhouse Mechanical Commissioning Engineer at Turbine Bay TU-01 */}
+      {/* ⚡ Powerhouse Mechanical Commissioning Engineer (Supt. Eugenio Hanopol) at Turbine Bay TU-01 */}
       <HydroProjectPersonMesh
+        personnelId="SUPT_EUGENIO_HANOPOL"
         onSelectPerson={onSelectPerson}
         position={[-2.0, 0.55, 0.0]}
         rotation={[0, 0, 0]}
@@ -3815,9 +4375,9 @@ export function AnimatedSiteEntities({
         hasHardhat
         hardhatColor="#FFFFFF"
         hasVest
-        vestColor="#EA580C"
+        vestColor="#0284C7"
         pantsStyle="JEANS"
-        accessory="TABLET"
+        accessory="CLIPBOARD"
       />
 
 
@@ -3934,8 +4494,9 @@ export function AnimatedSiteEntities({
         accessory="TOTAL_STATION"
       />
 
-      {/* 🪨 Field Geological Assistant at Mountain Slope Rock Face Cut */}
+      {/* 🪨 Field Geological Assistant (Amor M. Floresca) at Mountain Slope Rock Face Cut */}
       <HydroProjectPersonMesh
+        personnelId="GEO_AMOR_FLORESCA"
         onSelectPerson={onSelectPerson}
         position={[3.0, sampleTerrainY(3.0, -18.0), -18.0]}
         rotation={[0, Math.PI / 4, 0]}
@@ -4017,8 +4578,9 @@ export function AnimatedSiteEntities({
       />
 
       {/* ═══ 2. STRUCTURAL SLAB ROOF REBAR & SURVEY TEAMS (Z = -110m) ═══ */}
-      {/* Skilled Rebar Worker / Steelman (Green Hard Hat) */}
+      {/* Skilled Rebar Worker / Steelman (Anthony Rosales) */}
       <HydroProjectPersonMesh
+        personnelId="FOREMAN_ANTHONY_ROSALES"
         onSelectPerson={onSelectPerson}
         position={[76, y1, -110]}
         rotation={[0, Math.PI / 6, 0]}
@@ -4049,10 +4611,58 @@ export function AnimatedSiteEntities({
       </group>
 
       {/* ═══ 6. AUTONOMOUS SITE TRAFFIC & WORKFORCE FLOW ═══ */}
-      <AutonomousSiteTrafficSystem gateAngle={currentGateAngle} onGateAngleChange={setCurrentGateAngle} onSelectPerson={onSelectPerson} />
+      <AutonomousSiteTrafficSystem
+        gateAngle={currentGateAngle}
+        onGateAngleChange={setCurrentGateAngle}
+        onSelectPerson={onSelectPerson}
+        timeMode={normalizedTime}
+      />
 
-      {/* ═══ 7. TUESDAY SAFETY TOOLBOX MEETING DIRECTOR & WORKFORCE FORMATION ═══ */}
-      <CourtToolboxMeetingDirector onSelectPerson={onSelectPerson} />
+      {/* ═══ 7. TIME-BASED WORKFORCE ROUTINES & GATHERINGS ═══ */}
+      {/* Morning: Safety Toolbox Meeting on the basketball court stage */}
+      {normalizedTime === "morning" && (
+        <CourtToolboxMeetingDirector onSelectPerson={onSelectPerson} />
+      )}
+
+      {/* Day / Sunset / Night: Executive and Admin Staff active in offices & verandas */}
+      {normalizedTime !== "morning" && (
+        <DaytimeExecutiveAndAdminStaff onSelectPerson={onSelectPerson} />
+      )}
+
+      {/* Sunset: Filipino 3-on-3 Basketball Match on the court with cheering spectators */}
+      {normalizedTime === "sunset" && (
+        <TemfacilBasketballGame onSelectPerson={onSelectPerson} />
+      )}
+
+      {/* Morning & Day: Active Construction Workers in Maintenance Bays & Yard */}
+      {(normalizedTime === "morning" || normalizedTime === "day") && (
+        <group>
+          {/* Welder in Laydown Fabrication Bay with structural member, dynamic welding sparks and blue arc light */}
+          <group position={[82.0, 14.85, -96.0]} rotation={[0, Math.PI / 2, 0]}>
+            {/* Structural Steel Fabrication Trestle & Seam Beam resting on the slab */}
+            <mesh position={[0, 0.42, 0.65]} receiveShadow material={MAT_STEEL_DARK}>
+              <boxGeometry args={[3.2, 0.80, 0.30]} />
+            </mesh>
+            <mesh position={[0, 0.88, 0.65]} castShadow receiveShadow material={MAT_STEEL_FRAME}>
+              <boxGeometry args={[3.6, 0.12, 0.20]} />
+            </mesh>
+            <ActiveConstructionWorkerMesh actionType="WELDING" vestColor="#0284C7" hardhatColor="#16A34A" />
+          </group>
+          {/* Aggregate Shoveler at Laydown Aggregate Stockpile */}
+          <group position={[75.0, 14.85, -112.0]} rotation={[0, -Math.PI / 4, 0]}>
+            <ActiveConstructionWorkerMesh actionType="SHOVELING" vestColor="#EA580C" hardhatColor="#16A34A" />
+          </group>
+          {/* Structural Rebar Worker on Roof Slab */}
+          <group position={[78.0, y1, -108.0]} rotation={[0, Math.PI / 3, 0]}>
+            <ActiveConstructionWorkerMesh actionType="REBAR_TYING" vestColor="#EA580C" hardhatColor="#16A34A" />
+          </group>
+        </group>
+      )}
+
+      {/* Night: Roving Night Security Watchmen with Spotlights patrolling perimeter & warehouse */}
+      {normalizedTime === "night" && (
+        <RovingNightWatchmen onSelectPerson={onSelectPerson} />
+      )}
     </group>
   );
 }

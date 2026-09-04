@@ -141,19 +141,19 @@ export function FacilityHolographicBeaconLabel({
       satellitesGroupRef.current.rotation.y = t * 1.1;
     }
 
-    // 4. Ground Radar Expanding Wave Pulse
+    // 4. Ground Radar Expanding Wave Pulse (Subtle, compact pinpoint anchor)
     if (groundRadarRef.current) {
-      const radarScale = 1.0 + (t % 2.5) * 2.2;
+      const radarScale = 1.0 + (t % 2.5) * 0.35;
       const radarOpacity = Math.max(0, 1.0 - (t % 2.5) / 2.5);
       groundRadarRef.current.scale.set(radarScale, radarScale, 1);
       if (groundRadarRef.current.material instanceof THREE.MeshBasicMaterial) {
-        groundRadarRef.current.material.opacity = radarOpacity * 0.6;
+        groundRadarRef.current.material.opacity = radarOpacity * 0.18;
       }
     }
 
     // 5. Vertical Laser Beacon Opacity Pulse
     if (beamRef.current && beamRef.current.material instanceof THREE.MeshBasicMaterial) {
-      beamRef.current.material.opacity = 0.25 + Math.sin(t * 2.8) * 0.1;
+      beamRef.current.material.opacity = 0.12 + Math.sin(t * 2.8) * 0.04;
     }
   });
 
@@ -161,47 +161,56 @@ export function FacilityHolographicBeaconLabel({
 
   return (
     <group position={[position[0], 0, position[2]]}>
-      {/* ═══ 1. GROUND RADAR PULSE RING & ANCHOR LOCATOR ═══ */}
-      <mesh
-        ref={groundRadarRef}
-        position={[0, groundY + 0.1, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <ringGeometry args={[2.0, 2.8, 36]} />
-        <meshBasicMaterial
-          color={colors.threeColor}
-          transparent
-          opacity={0.5}
-          side={THREE.DoubleSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
+      {/* ═══ 1. GROUND RADAR PULSE RING & ANCHOR LOCATOR (COMPACT & SUBTLE PINPOINT) ═══ */}
+      {hovered && (
+        <>
+          <mesh
+            ref={groundRadarRef}
+            position={[0, groundY + 0.05, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            renderOrder={1}
+          >
+            <ringGeometry args={[0.35, 0.45, 32]} />
+            <meshBasicMaterial
+              color={colors.threeColor}
+              transparent
+              opacity={0.18}
+              side={THREE.DoubleSide}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
 
-      <mesh position={[0, groundY + 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.6, 36]} />
-        <meshBasicMaterial
-          color={colors.threeColor}
-          transparent
-          opacity={0.3}
-          side={THREE.DoubleSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
+          <mesh position={[0, groundY + 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={1}>
+            <circleGeometry args={[0.22, 24]} />
+            <meshBasicMaterial
+              color={colors.threeColor}
+              transparent
+              opacity={0.12}
+              side={THREE.DoubleSide}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
+        </>
+      )}
 
-      {/* ═══ 2. DELICATE HOLOGRAPHIC TETHER LINE ═══ */}
-      <mesh
-        ref={beamRef}
-        position={[0, groundY + actualBeamHeight / 2, 0]}
-      >
-        <cylinderGeometry args={[0.02, 0.02, actualBeamHeight, 8, 1, true]} />
-        <meshBasicMaterial
-          color={colors.threeColor}
-          transparent
-          opacity={0.08}
-          side={THREE.DoubleSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
+      {/* ═══ 2. DELICATE HOLOGRAPHIC TETHER LINE (SUBTLE ON HOVER) ═══ */}
+      {hovered && (
+        <mesh
+          ref={beamRef}
+          position={[0, groundY + actualBeamHeight / 2, 0]}
+        >
+          <cylinderGeometry args={[0.015, 0.015, actualBeamHeight, 8, 1, true]} />
+          <meshBasicMaterial
+            color={colors.threeColor}
+            transparent
+            opacity={0.06}
+            side={THREE.DoubleSide}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      )}
 
       {/* ═══ 3. FLOATING BEACON CORE & 3D GYROSCOPE RINGS ═══ */}
       <group ref={groupRef} position={[0, position[1], 0]}>

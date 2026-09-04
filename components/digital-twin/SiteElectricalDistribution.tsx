@@ -295,7 +295,7 @@ export function ConcreteUtilityPole({
       {/* ═══ PRIMARY 3-PHASE STEEL CROSSARM & PORCELAIN PIN INSULATORS ═══ */}
       <group position={[0, poleHeight - 0.75, 0]} rotation={[0, streetYaw + Math.PI / 2, 0]}>
         {/* Horizontal Galvanized Steel Angle Crossarm */}
-        <mesh material={MAT_STEEL_FRAME} castShadow>
+        <mesh material={MAT_STEEL_FRAME}>
           <boxGeometry args={[2.2, 0.08, 0.08]} />
         </mesh>
         {/* Diagonal Steel Crossarm Brace Struts */}
@@ -340,12 +340,12 @@ export function ConcreteUtilityPole({
       {data.hasStreetlight && (
         <group position={[0, poleHeight - 1.2, 0]} rotation={[0, streetYaw, 0]}>
           {/* Curved Galvanized Steel Outreach Pipe Arm */}
-          <mesh position={[0.9, 0.35, 0]} rotation={[0, 0, -0.22]} material={MAT_STEEL_FRAME} castShadow>
+          <mesh position={[0.9, 0.35, 0]} rotation={[0, 0, -0.22]} material={MAT_STEEL_FRAME}>
             <cylinderGeometry args={[0.03, 0.03, 1.9, 8]} />
           </mesh>
           {/* Luminaire Head Housing */}
           <group position={[1.8, 0.62, 0]}>
-            <mesh material={MAT_STREETLIGHT_HEAD} castShadow>
+            <mesh material={MAT_STREETLIGHT_HEAD}>
               <boxGeometry args={[0.42, 0.10, 0.22]} />
             </mesh>
             {/* Emissive Warm LED Luminaire Lens */}
@@ -526,7 +526,7 @@ export function OverheadDistributionCatenaries() {
   return (
     <group>
       {spans.map((geom, idx) => (
-        <mesh key={`catenary-wire-${idx}`} geometry={geom} material={wireMat} castShadow />
+        <mesh key={`catenary-wire-${idx}`} geometry={geom} material={wireMat} />
       ))}
     </group>
   );

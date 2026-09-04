@@ -118,7 +118,7 @@ export function RealisticSkyAtmosphere({ timeMode, isStormActive = false }: SkyA
   });
 
   return (
-    <mesh ref={meshRef} scale={[-1, 1, 1]}>
+    <mesh ref={meshRef}>
       {/* Sky Dome covering the entire mountain horizon (radius 750m) */}
       <sphereGeometry args={[750, 48, 36, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
       <shaderMaterial

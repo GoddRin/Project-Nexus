@@ -34,7 +34,8 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
       if (livePos) {
         groupRef.current.position.set(livePos.x, livePos.y, livePos.z);
       } else if (loc) {
-        groupRef.current.position.set(loc.target[0], loc.target[1], loc.target[2]);
+        const floorY = loc.floorY ?? (loc.target[1] - 1.15);
+        groupRef.current.position.set(loc.target[0], floorY, loc.target[2]);
       }
     }
 
@@ -57,13 +58,15 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
 
   if (!loc || !person) return null;
 
+  const initialFloorY = loc.floorY ?? (loc.target[1] - 1.15);
+
   return (
-    <group ref={groupRef} position={[loc.target[0], loc.target[1], loc.target[2]]}>
+    <group ref={groupRef} position={[loc.target[0], initialFloorY, loc.target[2]]}>
       {/* ─── Ground Concentric Holographic Radar Rings ─── */}
-      <mesh ref={ring1Ref} geometry={RING_GEO_1} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh ref={ring1Ref} geometry={RING_GEO_1} position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <meshBasicMaterial color="#06B6D4" transparent opacity={0.8} side={THREE.DoubleSide} />
       </mesh>
-      <mesh ref={ring2Ref} geometry={RING_GEO_2} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh ref={ring2Ref} geometry={RING_GEO_2} position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <meshBasicMaterial color="#14B8A6" transparent opacity={0.5} side={THREE.DoubleSide} />
       </mesh>
 
@@ -72,15 +75,15 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
         <meshBasicMaterial color="#06B6D4" transparent opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
-      {/* ─── Floating 3D HTML Radar Badge ─── */}
-      <Html position={[0, 2.8, 0]} center distanceFactor={25} className="pointer-events-auto select-none z-30">
+      {/* ─── Floating 3D HTML Radar Badge (Crisp, Perfectly Scaled, Never Blown Out) ─── */}
+      <Html position={[0, 2.15, 0]} center className="pointer-events-auto select-none z-30">
         <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
           <div
-            className="relative flex items-center gap-3 bg-slate-950/95 border-2 border-cyan-400 shadow-2xl shadow-cyan-500/50 rounded-2xl p-2 backdrop-blur-xl text-white min-w-[230px]"
+            className="relative flex items-center gap-3 bg-slate-950/95 border-2 border-cyan-400 shadow-2xl shadow-cyan-500/50 rounded-2xl px-3.5 py-2.5 backdrop-blur-xl text-white max-w-[340px] shrink-0"
             style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
           >
             {/* High-definition Avatar thumbnail */}
-            <div className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-cyan-400 shadow-md shadow-cyan-500/30 shrink-0 bg-slate-900 ring-1 ring-cyan-300/40">
+            <div className="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-cyan-400 shadow-md shadow-cyan-500/30 shrink-0 bg-slate-900 ring-1 ring-cyan-300/40">
               <Image
                 src={person.avatarUrl}
                 alt={person.name}
@@ -100,8 +103,8 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
                   TARGET LOCATED
                 </span>
               </div>
-              <div className="text-sm font-bold text-white truncate drop-shadow-sm">{person.nickname}</div>
-              <div className="text-[11px] font-medium text-cyan-100/80 truncate">{person.role}</div>
+              <div className="text-sm font-extrabold text-white leading-tight drop-shadow-sm truncate">{person.nickname}</div>
+              <div className="text-[11px] font-medium text-cyan-100/90 leading-snug line-clamp-2">{person.role}</div>
             </div>
 
             {onDismiss && (
@@ -110,7 +113,7 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
                   e.stopPropagation();
                   onDismiss();
                 }}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800/90 text-slate-300 hover:text-white hover:bg-cyan-600 hover:scale-105 border border-slate-700 hover:border-cyan-400 text-xs ml-1 transition"
+                className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800/90 text-slate-300 hover:text-white hover:bg-cyan-600 hover:scale-105 border border-slate-700 hover:border-cyan-400 text-xs ml-1 shrink-0 transition"
                 title="Dismiss Locator"
               >
                 ✕

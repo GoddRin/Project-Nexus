@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gisTerrainData from "@/public/data/gis-terrain-mesh.json";
 import {
@@ -37,6 +37,22 @@ import { registerLivePersonnelPosition, unregisterLivePersonnel } from "./person
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const SCENE_HALF = 180.0;
+
+const scratchWorldPos = new THREE.Vector3();
+
+function useDistanceCull(groupRef: React.RefObject<THREE.Group | null>, maxDist = 175) {
+  const { camera } = useThree();
+  const maxDistSq = maxDist * maxDist;
+  useFrame(() => {
+    if (!groupRef.current) return;
+    groupRef.current.getWorldPosition(scratchWorldPos);
+    const distSq = camera.position.distanceToSquared(scratchWorldPos);
+    const inRange = distSq < maxDistSq;
+    if (groupRef.current.visible !== inRange) {
+      groupRef.current.visible = inRange;
+    }
+  });
+}
 
 function sampleTerrainY(x: number, z: number): number {
   const gridSize = (gisTerrainData as any).gridSize || 65;
@@ -94,7 +110,6 @@ function sampleTerrainY(x: number, z: number): number {
   const projX = ax + t * dx;
   const projZ = az + t * dz;
   const distToSlopeLine = Math.hypot(x - projX, z - projZ);
-
   if (distToSlopeLine < 28.0 && x >= 30.0 && x <= 98.0 && z >= -80.0 && z <= -20.0) {
     const slopeY = 0.5 + t * 13.5;
     const fade = Math.min(1.0, distToSlopeLine / 28.0);
@@ -105,8 +120,17 @@ function sampleTerrainY(x: number, z: number): number {
 }
 
 // ─── 1. PHILIPPINE CARABAO (WATER BUFFALO / KALABAW) ─────────────────────────
-function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
+function RealisticPhilippineCarabao({
+  basePos,
+  seed = 0,
+  timeMode = "day",
+}: {
+  basePos: [number, number];
+  seed?: number;
+  timeMode?: "morning" | "day" | "sunset" | "night";
+}) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 190);
   const headRef = useRef<THREE.Group>(null);
   const tailRef = useRef<THREE.Group>(null);
   const legFLRef = useRef<THREE.Group>(null);
@@ -117,10 +141,39 @@ function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number,
   const offsetRef = useRef<number>(seed * 10.0);
 
   useFrame(({ clock }, delta) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime() + seed * 6.0;
 
-    const isGrazing = ((t * 0.12) % 1.0) < 0.65;
+    const isNight = timeMode === "night";
+    const isSunset = timeMode === "sunset";
+
+    if (isNight) {
+      // 🌙 Night: Carabao resting/lying down in pasture grass chewing cud
+      const posX = basePos[0] + Math.sin(seed * 3) * 1.5;
+      const posZ = basePos[1] + Math.cos(seed * 3) * 1.5;
+      const groundY = sampleTerrainY(posX, posZ) - 0.38;
+
+      groupRef.current.position.set(posX, groundY, posZ);
+      groupRef.current.rotation.y = seed * 2.0;
+
+      // Folded resting legs under belly
+      if (legFLRef.current) legFLRef.current.rotation.set(1.2, 0, -0.3);
+      if (legFRRef.current) legFRRef.current.rotation.set(1.2, 0, 0.3);
+      if (legRLRef.current) legRLRef.current.rotation.set(-1.2, 0, -0.2);
+      if (legRRRef.current) legRRRef.current.rotation.set(-1.2, 0, 0.2);
+
+      // Relaxed resting head chewing cud slowly
+      if (headRef.current) {
+        headRef.current.rotation.x = 0.15 + Math.sin(t * 1.2) * 0.04;
+        headRef.current.rotation.y = Math.sin(t * 1.8) * 0.08;
+      }
+      if (tailRef.current) {
+        tailRef.current.rotation.z = Math.sin(t * 1.2) * 0.15;
+      }
+      return;
+    }
+
+    const isGrazing = isSunset || ((t * 0.12) % 1.0) < 0.65;
     const isWalking = !isGrazing;
 
     if (isWalking) {
@@ -130,7 +183,13 @@ function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number,
     const radius = 6.5;
     const posX = basePos[0] + Math.sin(offsetRef.current) * radius;
     const posZ = basePos[1] + Math.cos(offsetRef.current) * radius;
-    const groundY = sampleTerrainY(posX, posZ);
+    let groundY = sampleTerrainY(posX, posZ);
+
+    // Midday mud wallowing for water buffalo
+    const isWallowing = timeMode === "day" && seed > 1.2;
+    if (isWallowing) {
+      groundY -= 0.25;
+    }
 
     groupRef.current.position.set(posX, groundY, posZ);
     groupRef.current.rotation.y = offsetRef.current + Math.PI / 2;
@@ -142,10 +201,10 @@ function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number,
     const walkRL = isWalking ? -Math.sin(t * walkSpeed) * 0.28 : 0;
     const walkRR = isWalking ? Math.sin(t * walkSpeed) * 0.28 : 0;
 
-    if (legFLRef.current) legFLRef.current.rotation.x = walkFL;
-    if (legFRRef.current) legFRRef.current.rotation.x = walkFR;
-    if (legRLRef.current) legRLRef.current.rotation.x = walkRL;
-    if (legRRRef.current) legRRRef.current.rotation.x = walkRR;
+    if (legFLRef.current) legFLRef.current.rotation.set(walkFL, 0, 0);
+    if (legFRRef.current) legFRRef.current.rotation.set(walkFR, 0, 0);
+    if (legRLRef.current) legRLRef.current.rotation.set(walkRL, 0, 0);
+    if (legRRRef.current) legRRRef.current.rotation.set(walkRR, 0, 0);
 
     // Natural head dipping & grazing chew
     if (headRef.current) {
@@ -240,31 +299,59 @@ function RealisticPhilippineCarabao({ basePos, seed = 1.0 }: { basePos: [number,
 }
 
 // ─── 2. SOARING PHILIPPINE EAGLE (HARING IBON) ──────────────────────────────
-function RealisticPhilippineEagle({ orbitCenter, flightAltitude = 68, radius = 80, speed = 0.14 }: {
+function RealisticPhilippineEagle({
+  orbitCenter,
+  flightAltitude = 68,
+  radius = 80,
+  speed = 0.14,
+  timeMode = "day",
+}: {
   orbitCenter: [number, number];
   flightAltitude?: number;
   radius?: number;
   speed?: number;
+  timeMode?: "morning" | "day" | "sunset" | "night";
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 240);
   const leftWingRef = useRef<THREE.Group>(null);
   const rightWingRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const progressRef = useRef<number>(Math.random() * Math.PI * 2);
 
   useFrame(({ clock }, delta) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime();
-    progressRef.current += speed * delta;
+
+    if (timeMode === "night") {
+      // 🌙 Night: Perched asleep in high mountain cliff nest
+      const roostX = orbitCenter[0] + Math.sin(progressRef.current) * (radius * 0.4);
+      const roostZ = orbitCenter[1] + Math.cos(progressRef.current) * (radius * 0.4);
+      const roostY = sampleTerrainY(roostX, roostZ) + 14.0;
+      groupRef.current.position.set(roostX, roostY, roostZ);
+      groupRef.current.rotation.set(0, progressRef.current, 0);
+      if (leftWingRef.current) leftWingRef.current.rotation.z = -0.08;
+      if (rightWingRef.current) rightWingRef.current.rotation.z = 0.08;
+      if (headRef.current) {
+        headRef.current.rotation.x = 0.32 + Math.sin(t * 1.0) * 0.02; // Tucked head
+        headRef.current.rotation.y = 0;
+      }
+      return;
+    }
+
+    const effectiveAlt = timeMode === "sunset" ? flightAltitude * 0.68 : flightAltitude;
+    const effectiveSpeed = timeMode === "sunset" ? speed * 0.75 : speed;
+    progressRef.current += effectiveSpeed * delta;
 
     const posX = orbitCenter[0] + Math.sin(progressRef.current) * radius;
     const posZ = orbitCenter[1] + Math.cos(progressRef.current) * radius;
     const waveY = Math.sin(t * 0.35) * 3.5;
 
-    groupRef.current.position.set(posX, flightAltitude + waveY, posZ);
+    groupRef.current.position.set(posX, effectiveAlt + waveY, posZ);
     groupRef.current.rotation.y = progressRef.current + Math.PI / 2;
     groupRef.current.rotation.z = -0.22; // Inward bank into thermals
 
+    // Thermal gliding interspersed with soaring wing beats
     // Thermal gliding interspersed with soaring wing beats
     const isFlapping = ((t * 0.25) % 1.0) < 0.45;
     const flap = isFlapping ? Math.sin(t * 3.6) * 0.28 : Math.sin(t * 0.8) * 0.04;
@@ -335,6 +422,7 @@ function RealisticPhilippineEagle({ orbitCenter, flightAltitude = 68, radius = 8
 // ─── 3. SIERRA MADRE RUFOUS HORNBILL (KALAW / BUCEROS HYDROCORAX) ─────────────
 function RealisticRufousHornbill({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const birdRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const tailRef = useRef<THREE.Group>(null);
@@ -346,7 +434,7 @@ function RealisticRufousHornbill({ basePos, seed = 1.0 }: { basePos: [number, nu
   const perchHeight = 2.4; // Height of ancient ironwood snag perch branch above ground
 
   useFrame(({ clock }) => {
-    if (!birdRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible || !birdRef.current) return;
     const t = clock.getElapsedTime() + seed * 4.2;
 
     // Organic avian breathing and body sway
@@ -530,8 +618,17 @@ function RealisticRufousHornbill({ basePos, seed = 1.0 }: { basePos: [number, nu
 }
 
 // ─── 4. PHILIPPINE BROWN DEER (OSA / RUSA MARIANNA) ──────────────────────────
-function RealisticPhilippineDeer({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
+function RealisticPhilippineDeer({
+  basePos,
+  seed = 1.0,
+  timeMode = "day",
+}: {
+  basePos: [number, number];
+  seed?: number;
+  timeMode?: "morning" | "day" | "sunset" | "night";
+}) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const headRef = useRef<THREE.Group>(null);
   const legFLRef = useRef<THREE.Group>(null);
   const legFRRef = useRef<THREE.Group>(null);
@@ -541,27 +638,47 @@ function RealisticPhilippineDeer({ basePos, seed = 1.0 }: { basePos: [number, nu
   const groundY = useMemo(() => sampleTerrainY(basePos[0], basePos[1]), [basePos]);
 
   useFrame(({ clock }) => {
-    if (!groupRef.current || !headRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible || !headRef.current) return;
     const t = clock.getElapsedTime() + seed * 4.5;
 
-    const isAlert = Math.sin(t * 0.22) > 0.35;
+    if (timeMode === "night") {
+      // 🌙 Night: Deer bedded down resting in thick brush
+      groupRef.current.position.set(basePos[0], groundY - 0.42, basePos[1]);
+      groupRef.current.rotation.set(0, seed * 1.5, 0);
+
+      if (headRef.current) {
+        headRef.current.rotation.x = 0.25 + Math.sin(t * 1.0) * 0.03;
+        headRef.current.rotation.y = Math.sin(t * 0.6) * 0.08;
+      }
+      if (legFLRef.current) legFLRef.current.rotation.set(1.2, 0, -0.3);
+      if (legFRRef.current) legFRRef.current.rotation.set(1.2, 0, 0.3);
+      if (legRLRef.current) legRLRef.current.rotation.set(-1.2, 0, -0.2);
+      if (legRRRef.current) legRRRef.current.rotation.set(-1.2, 0, 0.2);
+      return;
+    }
+
+    groupRef.current.position.set(basePos[0], groundY, basePos[1]);
+
+    const isCrepuscular = timeMode === "morning" || timeMode === "sunset";
+    const isAlert = isCrepuscular ? Math.sin(t * 0.35) > 0.4 : Math.sin(t * 0.22) > 0.35;
+
     if (isAlert) {
       headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, -0.32, 0.08);
       headRef.current.rotation.y = Math.sin(t * 1.5) * 0.38;
       // Standing alert
-      if (legFLRef.current) legFLRef.current.rotation.x = 0;
-      if (legFRRef.current) legFRRef.current.rotation.x = 0;
-      if (legRLRef.current) legRLRef.current.rotation.x = 0;
-      if (legRRRef.current) legRRRef.current.rotation.x = 0;
+      if (legFLRef.current) legFLRef.current.rotation.set(0, 0, 0);
+      if (legFRRef.current) legFRRef.current.rotation.set(0, 0, 0);
+      if (legRLRef.current) legRLRef.current.rotation.set(0, 0, 0);
+      if (legRRRef.current) legRRRef.current.rotation.set(0, 0, 0);
     } else {
       headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0.38, 0.08);
       headRef.current.rotation.y = Math.sin(t * 0.4) * 0.12;
       // Gentle weight shift step
       const step = Math.sin(t * 1.8) * 0.12;
-      if (legFLRef.current) legFLRef.current.rotation.x = step;
-      if (legFRRef.current) legFRRef.current.rotation.x = -step;
-      if (legRLRef.current) legRLRef.current.rotation.x = -step;
-      if (legRRRef.current) legRRRef.current.rotation.x = step;
+      if (legFLRef.current) legFLRef.current.rotation.set(step, 0, 0);
+      if (legFRRef.current) legFRRef.current.rotation.set(-step, 0, 0);
+      if (legRLRef.current) legRLRef.current.rotation.set(-step, 0, 0);
+      if (legRRRef.current) legRRRef.current.rotation.set(step, 0, 0);
     }
   });
 
@@ -627,20 +744,48 @@ function RealisticPhilippineDeer({ basePos, seed = 1.0 }: { basePos: [number, nu
   );
 }
 
-// ─── 5. PHILIPPINE WILD BOAR (BABOY RAMO) ────────────────────────────────────
-function RealisticPhilippineWildBoar({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
+// ─── 5. PHILIPPINE WILD BOAR (BABOY RAMO / SUS PHILIPPENSIS) ─────────────────
+function RealisticPhilippineWildBoar({
+  basePos,
+  seed = 1.0,
+  timeMode = "day",
+}: {
+  basePos: [number, number];
+  seed?: number;
+  timeMode?: "morning" | "day" | "sunset" | "night";
+}) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const headRef = useRef<THREE.Group>(null);
   const legFLRef = useRef<THREE.Group>(null);
   const legFRRef = useRef<THREE.Group>(null);
   const legRLRef = useRef<THREE.Group>(null);
   const legRRRef = useRef<THREE.Group>(null);
-  const offsetRef = useRef<number>(seed * 15.0);
+
+  const offsetRef = useRef<number>(seed * 8.0);
 
   useFrame(({ clock }, delta) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime() + seed * 5.0;
 
+    const isDay = timeMode === "day";
+    if (isDay) {
+      // ☀️ Midday: Boars rest deep in ravine shadows
+      const posX = basePos[0];
+      const posZ = basePos[1];
+      const groundY = sampleTerrainY(posX, posZ) - 0.22;
+      groupRef.current.position.set(posX, groundY, posZ);
+      groupRef.current.rotation.set(0, seed * 2.5, 0);
+
+      if (headRef.current) headRef.current.rotation.set(0.1, 0, 0);
+      if (legFLRef.current) legFLRef.current.rotation.set(1.1, 0, 0);
+      if (legFRRef.current) legFRRef.current.rotation.set(1.1, 0, 0);
+      if (legRLRef.current) legRLRef.current.rotation.set(-1.1, 0, 0);
+      if (legRRRef.current) legRRRef.current.rotation.set(-1.1, 0, 0);
+      return;
+    }
+
+    // 🌙 Night / Sunset / Morning: Active crepuscular foraging
     const isRooting = ((t * 0.15) % 1.0) < 0.6;
     if (!isRooting) {
       offsetRef.current += delta * 0.42;
@@ -659,10 +804,10 @@ function RealisticPhilippineWildBoar({ basePos, seed = 1.0 }: { basePos: [number
     }
 
     const step = !isRooting ? Math.sin(t * 3.8) * 0.35 : 0;
-    if (legFLRef.current) legFLRef.current.rotation.x = step;
-    if (legFRRef.current) legFRRef.current.rotation.x = -step;
-    if (legRLRef.current) legRLRef.current.rotation.x = -step;
-    if (legRRRef.current) legRRRef.current.rotation.x = step;
+    if (legFLRef.current) legFLRef.current.rotation.set(step, 0, 0);
+    if (legFRRef.current) legFRRef.current.rotation.set(-step, 0, 0);
+    if (legRLRef.current) legRLRef.current.rotation.set(-step, 0, 0);
+    if (legRRRef.current) legRRRef.current.rotation.set(step, 0, 0);
   });
 
   return (
@@ -723,11 +868,12 @@ function RealisticPhilippineWildBoar({ basePos, seed = 1.0 }: { basePos: [number
 // ─── 6. PHILIPPINE LONG-TAILED MACAQUE (UNGGOY) ──────────────────────────────
 function RealisticPhilippineMacaque({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const headRef = useRef<THREE.Group>(null);
   const tailRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime() + seed * 3.2;
     const hopY = Math.abs(Math.sin(t * 2.8)) * 0.22;
     const groundY = sampleTerrainY(basePos[0], basePos[1]);
@@ -771,6 +917,7 @@ function RealisticPhilippineMacaque({ basePos, seed = 1.0 }: { basePos: [number,
 // ─── 7. PHILIPPINE PASTURE GOATS (KAMBING) ───────────────────────────────────
 function RealisticPhilippineGoat({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const headRef = useRef<THREE.Group>(null);
   const legFLRef = useRef<THREE.Group>(null);
   const legFRRef = useRef<THREE.Group>(null);
@@ -779,7 +926,7 @@ function RealisticPhilippineGoat({ basePos, seed = 1.0 }: { basePos: [number, nu
   const offsetRef = useRef<number>(seed * 8.0);
 
   useFrame(({ clock }, delta) => {
-    if (!groupRef.current || !headRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible || !headRef.current) return;
     const t = clock.getElapsedTime() + seed * 4.0;
     
     const isWalking = Math.sin(t * 0.18) > 0.2;
@@ -857,12 +1004,21 @@ function RealisticPhilippineGoat({ basePos, seed = 1.0 }: { basePos: [number, nu
 }
 
 // ─── 8. PHILIPPINE MONITOR LIZARD (BAYAWAK) ──────────────────────────────────
-function RealisticMonitorLizard({ basePos, seed = 1.0 }: { basePos: [number, number]; seed?: number }) {
+function RealisticMonitorLizard({
+  basePos,
+  seed = 1.0,
+  timeMode = "day",
+}: {
+  basePos: [number, number];
+  seed?: number;
+  timeMode?: "morning" | "day" | "sunset" | "night";
+}) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const tailRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime() + seed * 2.0;
     const groundY = sampleTerrainY(basePos[0], basePos[1]);
     groupRef.current.position.set(basePos[0], groundY + 0.04, basePos[1]);
@@ -902,14 +1058,17 @@ function RealisticPhilippineAspinDog({
   seed = 1.0,
   personnelId,
   onSelectPerson,
+  timeMode = "day",
 }: {
   routeType?: "TEMFACIL_COURTYARD" | "TEMFACIL_GATE" | "FOREST_TRAIL" | "WAREHOUSE_RAMP";
   color?: string;
   seed?: number;
   personnelId?: string;
   onSelectPerson?: (id: string) => void;
+  timeMode?: "morning" | "day" | "sunset" | "night";
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 175);
   const headRef = useRef<THREE.Group>(null);
   const tailRef = useRef<THREE.Group>(null);
   const legFLRef = useRef<THREE.Group>(null);
@@ -917,7 +1076,7 @@ function RealisticPhilippineAspinDog({
   const legRLRef = useRef<THREE.Group>(null);
   const legRRRef = useRef<THREE.Group>(null);
 
-  const progressRef = useRef<number>(seed * 12.0);
+  const progressRef = useRef<number>(seed * 0.25);
   const scratchDogWorldPos = useMemo(() => new THREE.Vector3(), []);
 
   useEffect(() => {
@@ -932,20 +1091,19 @@ function RealisticPhilippineAspinDog({
   // Dynamic patrol waypoints
   const waypoints = useMemo(() => {
     if (routeType === "TEMFACIL_COURTYARD") {
-      // Roaming around TEMFACIL courtyard, canteen entrance, and basketball court
+      // Roaming through the central courtyard between Office, Basketball Court & Staff Houses
       return [
-        new THREE.Vector3(126, 14.0, -78),
-        new THREE.Vector3(138, 14.0, -84),
-        new THREE.Vector3(148, 14.0, -82),
-        new THREE.Vector3(144, 14.0, -70),
-        new THREE.Vector3(128, 14.0, -68),
+        new THREE.Vector3(112, 14.15, -88),
+        new THREE.Vector3(124, 14.15, -82),
+        new THREE.Vector3(132, 14.15, -89),
+        new THREE.Vector3(120, 14.15, -94),
       ];
     } else if (routeType === "TEMFACIL_GATE") {
-      // Guard dog patrolling near Security Checkpoint Gate & road apron
+      // Patrolling around the Main Security Guardhouse and entrance barrier
       return [
-        new THREE.Vector3(92, 12.5, -66),
-        new THREE.Vector3(88, 12.0, -69),
-        new THREE.Vector3(84, 11.2, -64),
+        new THREE.Vector3(98, 14.15, -76),
+        new THREE.Vector3(94, 13.5, -70),
+        new THREE.Vector3(104, 14.15, -82),
         new THREE.Vector3(90, 12.2, -62),
       ];
     } else if (routeType === "WAREHOUSE_RAMP") {
@@ -970,8 +1128,53 @@ function RealisticPhilippineAspinDog({
   const curve = useMemo(() => new THREE.CatmullRomCurve3(waypoints, true), [waypoints]);
 
   useFrame(({ clock }, delta) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime() + seed * 3.5;
+
+    if (timeMode === "night") {
+      // 🌙 Night: Dogs resting or sleeping in their sheltered spots
+      if (routeType === "WAREHOUSE_RAMP") {
+        // Brunson Chu Chu sleeping comfortably on his warehouse concrete pad
+        groupRef.current.position.set(91.2, 14.85 - 0.16, -96.2);
+        groupRef.current.rotation.set(0, Math.PI / 5, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (tailRef.current) tailRef.current.rotation.set(0.2, Math.sin(t * 1.2) * 0.1, 0);
+        if (legFLRef.current) legFLRef.current.rotation.set(1.2, 0, -0.3);
+        if (legFRRef.current) legFRRef.current.rotation.set(1.2, 0, 0.3);
+        if (legRLRef.current) legRLRef.current.rotation.set(-1.2, 0, -0.2);
+        if (legRRRef.current) legRRRef.current.rotation.set(-1.2, 0, 0.2);
+
+        if (personnelId && groupRef.current) {
+          groupRef.current.getWorldPosition(scratchDogWorldPos);
+          registerLivePersonnelPosition(personnelId, scratchDogWorldPos, groupRef.current);
+        }
+        return;
+      } else if (routeType === "TEMFACIL_GATE") {
+        // Gate dog sits alertly beside sentry guard
+        groupRef.current.position.set(96.2, 14.15, -77.2);
+        groupRef.current.rotation.set(0, -Math.PI / 3, 0);
+        if (headRef.current) {
+          headRef.current.rotation.x = 0.08 + Math.sin(t * 1.5) * 0.04;
+          headRef.current.rotation.y = Math.sin(t * 0.8) * 0.2;
+        }
+        if (tailRef.current) tailRef.current.rotation.y = Math.sin(t * 3.0) * 0.2;
+        if (legFLRef.current) legFLRef.current.rotation.set(0, 0, 0);
+        if (legFRRef.current) legFRRef.current.rotation.set(0, 0, 0);
+        if (legRLRef.current) legRLRef.current.rotation.set(-0.8, 0, 0);
+        if (legRRRef.current) legRRRef.current.rotation.set(-0.8, 0, 0);
+        return;
+      } else if (routeType === "TEMFACIL_COURTYARD") {
+        // Courtyard dog sleeping under staff house veranda
+        groupRef.current.position.set(118.0, 14.15 - 0.16, -92.5);
+        groupRef.current.rotation.set(0, 0.4, 0);
+        if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
+        if (legFLRef.current) legFLRef.current.rotation.set(1.2, 0, -0.3);
+        if (legFRRef.current) legFRRef.current.rotation.set(1.2, 0, 0.3);
+        if (legRLRef.current) legRLRef.current.rotation.set(-1.2, 0, -0.2);
+        if (legRRRef.current) legRRRef.current.rotation.set(-1.2, 0, 0.2);
+        return;
+      }
+    }
 
     // Aspin natural movement: walking, occasional sniffing pause
     const isSniffing = Math.sin(t * 0.35) > 0.65;
@@ -1150,7 +1353,16 @@ function RealisticPhilippineAspinDog({
 }
 
 // ─── MAIN EXPORT: SIERRA MADRE WILDLIFE & DOMESTIC SITE FAUNA ECOSYSTEM ─────
-export function ForestWildlife({ onSelectPerson }: { onSelectPerson?: (id: string) => void } = {}) {
+export function ForestWildlife({
+  onSelectPerson,
+  timeMode = "day",
+}: {
+  onSelectPerson?: (id: string) => void;
+  timeMode?: "morning" | "day" | "sunset" | "night";
+} = {}) {
+  const groupRef = useRef<THREE.Group>(null);
+  useDistanceCull(groupRef, 190);
+
   const carabaoPositions: [number, number][] = useMemo(() => [
     [52, -148], [62, -152], [42, -145], [18, -48],
   ], []);
@@ -1182,15 +1394,32 @@ export function ForestWildlife({ onSelectPerson }: { onSelectPerson?: (id: strin
   ], []);
 
   return (
-    <group>
+    <group ref={groupRef}>
       {/* 1. Grazing Philippine Carabao (Water Buffalo) */}
       {carabaoPositions.map((pos, i) => (
-        <RealisticPhilippineCarabao key={`carabao-${i}`} basePos={pos} seed={i * 1.3 + 0.7} />
+        <RealisticPhilippineCarabao
+          key={`carabao-${i}`}
+          basePos={pos}
+          seed={i * 1.3 + 0.7}
+          timeMode={timeMode}
+        />
       ))}
 
       {/* 2. Soaring Philippine Eagle (Haring Ibon) above the River Gorge */}
-      <RealisticPhilippineEagle orbitCenter={[25, -20]} flightAltitude={65} radius={85} speed={0.13} />
-      <RealisticPhilippineEagle orbitCenter={[-20, -60]} flightAltitude={72} radius={70} speed={0.11} />
+      <RealisticPhilippineEagle
+        orbitCenter={[25, -20]}
+        flightAltitude={65}
+        radius={85}
+        speed={0.13}
+        timeMode={timeMode}
+      />
+      <RealisticPhilippineEagle
+        orbitCenter={[-20, -60]}
+        flightAltitude={72}
+        radius={70}
+        speed={0.11}
+        timeMode={timeMode}
+      />
 
       {/* 3. Rufous Hornbill (Kalaw) Perched in Canopy */}
       {hornbillPositions.map((pos, i) => (
@@ -1199,12 +1428,12 @@ export function ForestWildlife({ onSelectPerson }: { onSelectPerson?: (id: strin
 
       {/* 4. Philippine Brown Deer Herd */}
       {deerPositions.map((pos, i) => (
-        <RealisticPhilippineDeer key={`deer-${i}`} basePos={pos} seed={i * 1.1 + 0.3} />
+        <RealisticPhilippineDeer key={`deer-${i}`} basePos={pos} seed={i * 1.1 + 0.3} timeMode={timeMode} />
       ))}
 
       {/* 5. Wild Boars (Baboy Ramo) Foraging */}
       {boarPositions.map((pos, i) => (
-        <RealisticPhilippineWildBoar key={`boar-${i}`} basePos={pos} seed={i * 0.9 + 1.2} />
+        <RealisticPhilippineWildBoar key={`boar-${i}`} basePos={pos} seed={i * 0.9 + 1.2} timeMode={timeMode} />
       ))}
 
       {/* 6. Long-Tailed Macaques */}
@@ -1219,14 +1448,24 @@ export function ForestWildlife({ onSelectPerson }: { onSelectPerson?: (id: strin
 
       {/* 8. Philippine Monitor Lizard (Bayawak) near River Rocks */}
       {lizardPositions.map((pos, i) => (
-        <RealisticMonitorLizard key={`lizard-${i}`} basePos={pos} seed={i * 2.1 + 0.4} />
+        <RealisticMonitorLizard key={`lizard-${i}`} basePos={pos} seed={i * 2.1 + 0.4} timeMode={timeMode} />
       ))}
 
       {/* 9. Philippine Native Dogs (Aspin / Asong Pinoy) in TEMFACIL Compound & Forest Trails */}
       {/* Dog 1: Golden-Tan Aspin roaming TEMFACIL central courtyard */}
-      <RealisticPhilippineAspinDog routeType="TEMFACIL_COURTYARD" color="#D97706" seed={1.0} />
+      <RealisticPhilippineAspinDog
+        routeType="TEMFACIL_COURTYARD"
+        color="#D97706"
+        seed={1.0}
+        timeMode={timeMode}
+      />
       {/* Dog 2: Black & Tan Aspin patrolling Security Checkpoint Gate */}
-      <RealisticPhilippineAspinDog routeType="TEMFACIL_GATE" color="#1E293B" seed={2.5} />
+      <RealisticPhilippineAspinDog
+        routeType="TEMFACIL_GATE"
+        color="#1E293B"
+        seed={2.5}
+        timeMode={timeMode}
+      />
       {/* 🐕 BRUNSON "CHUCHU" — SITE MASCOT & CANINE SECURITY PATROL (Warehouse Dirt Road & Laydown Yard) */}
       <RealisticPhilippineAspinDog
         routeType="WAREHOUSE_RAMP"
@@ -1234,9 +1473,15 @@ export function ForestWildlife({ onSelectPerson }: { onSelectPerson?: (id: strin
         seed={3.8}
         personnelId="DOG_BRUNSON_CHUCHU"
         onSelectPerson={onSelectPerson}
+        timeMode={timeMode}
       />
       {/* Dog 4: Golden Aspin walking on Sierra Madre Riverside Trail */}
-      <RealisticPhilippineAspinDog routeType="FOREST_TRAIL" color="#B45309" seed={4.2} />
+      <RealisticPhilippineAspinDog
+        routeType="FOREST_TRAIL"
+        color="#B45309"
+        seed={4.2}
+        timeMode={timeMode}
+      />
     </group>
   );
 }

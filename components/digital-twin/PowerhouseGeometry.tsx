@@ -441,7 +441,7 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
       {[-6, -2, 2, 6].map((x, i) => (
         <group key={`win-${i}`}>
           {/* Dark steel frame */}
-          <mesh position={[x, 8.5, 6.98]} castShadow>
+          <mesh position={[x, 8.5, 6.98]}>
             <boxGeometry args={[2.3, 2.5, 0.12]} />
             {bMat(METAL.frame)}
           </mesh>
@@ -455,7 +455,7 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
       {/* Back-wall windows (smaller) */}
       {[-5, 0, 5].map((x, i) => (
         <group key={`bwin-${i}`}>
-          <mesh position={[x, 8.5, -6.98]} castShadow>
+          <mesh position={[x, 8.5, -6.98]}>
             <boxGeometry args={[1.8, 2.0, 0.12]} />
             {bMat(METAL.frame)}
           </mesh>
@@ -467,40 +467,40 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
 
       {/* ═══ CONCRETE PILASTERS — vertical facade columns ═══ */}
       {[-9.3, -4.5, 0, 4.5, 9.3].map((x, i) => (
-        <mesh key={`pil-${i}`} position={[x, 5.5, 7.0]} castShadow>
+        <mesh key={`pil-${i}`} position={[x, 5.5, 7.0]}>
           <boxGeometry args={[0.55, 11, 0.35]} />
           {bMat(CONCRETE.dark)}
         </mesh>
       ))}
 
       {/* ═══ CONCRETE DRIP EDGE — transition between levels ═══ */}
-      <mesh position={[0, 5.9, 7.05]} castShadow>
+      <mesh position={[0, 5.9, 7.05]}>
         <boxGeometry args={[20.6, 0.12, 0.5]} />
         {bMat(CONCRETE.dark)}
       </mesh>
-      <mesh position={[0, 5.9, -7.05]} castShadow>
+      <mesh position={[0, 5.9, -7.05]}>
         <boxGeometry args={[20.6, 0.12, 0.5]} />
         {bMat(CONCRETE.dark)}
       </mesh>
 
       {/* ═══════════ BLUE STEEL FASCIA BAND ═══════════ */}
       {/* Front */}
-      <mesh position={[0, 10.7, 6.75]} castShadow>
+      <mesh position={[0, 10.7, 6.75]}>
         <boxGeometry args={[20.6, 0.9, 0.25]} />
         {bMat(BLUE_STEEL.fascia)}
       </mesh>
       {/* Back */}
-      <mesh position={[0, 10.7, -6.75]} castShadow>
+      <mesh position={[0, 10.7, -6.75]}>
         <boxGeometry args={[20.6, 0.9, 0.25]} />
         {bMat(BLUE_STEEL.fascia)}
       </mesh>
       {/* Left */}
-      <mesh position={[-9.9, 10.7, 0]} castShadow>
+      <mesh position={[-9.9, 10.7, 0]}>
         <boxGeometry args={[0.25, 0.9, 13.8]} />
         {bMat(BLUE_STEEL.fascia)}
       </mesh>
       {/* Right */}
-      <mesh position={[9.9, 10.7, 0]} castShadow>
+      <mesh position={[9.9, 10.7, 0]}>
         <boxGeometry args={[0.25, 0.9, 13.8]} />
         {bMat(BLUE_STEEL.fascia)}
       </mesh>
@@ -508,14 +508,14 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
       {/* ═══════════ STEEL ROOF FRAME — visible trusses ═══════════ */}
       {/* Horizontal purlins (front-to-back) */}
       {[-7, -3.5, 0, 3.5, 7].map((x, i) => (
-        <mesh key={`purlin-${i}`} position={[x, 11.0, 0]} castShadow>
+        <mesh key={`purlin-${i}`} position={[x, 11.0, 0]}>
           <boxGeometry args={[0.2, 0.3, 14.8]} />
           {bMat(BLUE_STEEL.dark)}
         </mesh>
       ))}
       {/* Cross beams (left-to-right) */}
       {[-5, 0, 5].map((z, i) => (
-        <mesh key={`xbeam-${i}`} position={[0, 11.0, z]} castShadow>
+        <mesh key={`xbeam-${i}`} position={[0, 11.0, z]}>
           <boxGeometry args={[20.4, 0.25, 0.2]} />
           {bMat(BLUE_STEEL.dark)}
         </mesh>
@@ -527,27 +527,27 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
         {bMat(BLUE_STEEL.light, true)}
       </mesh>
       {/* Roof ridge cap */}
-      <mesh position={[0, 11.72, 0]} castShadow>
+      <mesh position={[0, 11.72, 0]}>
         <boxGeometry args={[22.5, 0.12, 1.0]} />
         {bMat(BLUE_STEEL.fascia, true)}
       </mesh>
       {/* Roof edge trim — front */}
-      <mesh position={[0, 11.2, 8.0]} castShadow>
+      <mesh position={[0, 11.2, 8.0]}>
         <boxGeometry args={[22.4, 0.2, 0.3]} />
         {bMat(BLUE_STEEL.dark, true)}
       </mesh>
       {/* Roof edge trim — back */}
-      <mesh position={[0, 11.2, -8.0]} castShadow>
+      <mesh position={[0, 11.2, -8.0]}>
         <boxGeometry args={[22.4, 0.2, 0.3]} />
         {bMat(BLUE_STEEL.dark, true)}
       </mesh>
       {/* Roof edge trim — left */}
-      <mesh position={[-11.0, 11.2, 0]} castShadow>
+      <mesh position={[-11.0, 11.2, 0]}>
         <boxGeometry args={[0.3, 0.2, 16.5]} />
         {bMat(BLUE_STEEL.dark, true)}
       </mesh>
       {/* Roof edge trim — right */}
-      <mesh position={[11.0, 11.2, 0]} castShadow>
+      <mesh position={[11.0, 11.2, 0]}>
         <boxGeometry args={[0.3, 0.2, 16.5]} />
         {bMat(BLUE_STEEL.dark, true)}
       </mesh>
@@ -555,30 +555,30 @@ export function RealisticPowerhouseBuilding({ isXRay = false }: PowerhouseBuildi
       {/* ═══════════ CORRUGATED ROOF & GUTTER DETAIL ═══════════ */}
       {/* Corrugation ridge ribs across roof surface */}
       {Array.from({ length: 7 }, (_, i) => (
-        <mesh key={`rib-${i}`} position={[-8 + i * 2.8, 11.68, 0]} castShadow>
+        <mesh key={`rib-${i}`} position={[-8 + i * 2.8, 11.68, 0]}>
           <boxGeometry args={[0.08, 0.12, 16.2]} />
           {bMat(BLUE_STEEL.dark, true)}
         </mesh>
       ))}
       {/* Rain gutter — front eave */}
-      <mesh position={[0, 11.05, 8.3]} castShadow>
+      <mesh position={[0, 11.05, 8.3]}>
         <boxGeometry args={[22.6, 0.15, 0.3]} />
         <meshStandardMaterial color={cc(METAL.railing)} roughness={0.35} metalness={0.75} transparent={cT} opacity={isXRay ? 0.15 : 1} />
       </mesh>
       {/* Rain gutter — back eave */}
-      <mesh position={[0, 11.05, -8.3]} castShadow>
+      <mesh position={[0, 11.05, -8.3]}>
         <boxGeometry args={[22.6, 0.15, 0.3]} />
         <meshStandardMaterial color={cc(METAL.railing)} roughness={0.35} metalness={0.75} transparent={cT} opacity={isXRay ? 0.15 : 1} />
       </mesh>
       {/* Downspout pipes at front corners */}
       {[-10.5, 10.5].map((x, i) => (
-        <mesh key={`dp-${i}`} position={[x, 5.5, 8.3]} castShadow>
+        <mesh key={`dp-${i}`} position={[x, 5.5, 8.3]}>
           <cylinderGeometry args={[0.06, 0.06, 11.0, 8]} />
           <meshStandardMaterial color={cc(METAL.railing)} roughness={0.35} metalness={0.75} transparent={cT} opacity={isXRay ? 0.15 : 1} />
         </mesh>
       ))}
       {/* Roof exhaust vent housing */}
-      <mesh position={[0, 12.1, -2]} castShadow>
+      <mesh position={[0, 12.1, -2]}>
         <boxGeometry args={[1.2, 0.7, 1.0]} />
         <meshStandardMaterial color={cc(METAL.structural)} roughness={0.4} metalness={0.65} transparent={cT} opacity={isXRay ? 0.2 : 1} />
       </mesh>
@@ -2685,7 +2685,7 @@ export function PerimeterFence() {
           <mesh position={[0, 0.2, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
             <boxGeometry args={[0.28, 0.35, 0.28]} />
           </mesh>
-          <mesh position={[0, 1.3, 0]} castShadow material={MAT_STEEL_RAILING}>
+          <mesh position={[0, 1.3, 0]} material={MAT_STEEL_RAILING}>
             <cylinderGeometry args={[0.04, 0.04, 2.4, 6]} />
           </mesh>
         </group>
@@ -2697,7 +2697,7 @@ export function PerimeterFence() {
           <boxGeometry args={[3.5, 0.06, 0.06]} />
         </mesh>
         {/* Heavy End Gatepost anchoring to West Flood Wall (X=-24.0m) */}
-        <mesh position={[1.75, 1.3, 0]} castShadow material={MAT_YELLOW_SAFETY}>
+        <mesh position={[1.75, 1.3, 0]} material={MAT_YELLOW_SAFETY}>
           <cylinderGeometry args={[0.10, 0.10, 2.6, 8]} />
         </mesh>
       </group>
@@ -2711,10 +2711,10 @@ export function PerimeterFence() {
           <boxGeometry args={[3.9, 2.2, 0.04]} />
         </mesh>
         {/* Heavy End Gatepost (Portal Right Side at X=36.0m) */}
-        <mesh position={[-2.0, 1.3, 0]} castShadow material={MAT_YELLOW_SAFETY}>
+        <mesh position={[-2.0, 1.3, 0]} material={MAT_YELLOW_SAFETY}>
           <cylinderGeometry args={[0.10, 0.10, 2.6, 8]} />
         </mesh>
-        <mesh position={[2.0, 1.3, 0]} castShadow material={MAT_STEEL_RAILING}>
+        <mesh position={[2.0, 1.3, 0]} material={MAT_STEEL_RAILING}>
           <cylinderGeometry args={[0.04, 0.04, 2.4, 6]} />
         </mesh>
         <mesh position={[0, 2.35, 0]} material={MAT_STEEL_RAILING}>
@@ -2738,7 +2738,7 @@ export function PerimeterFence() {
             <mesh position={[0, 0.2, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
               <boxGeometry args={[0.28, 0.35, 0.28]} />
             </mesh>
-            <mesh position={[0, 1.3, 0]} castShadow material={MAT_STEEL_RAILING}>
+            <mesh position={[0, 1.3, 0]} material={MAT_STEEL_RAILING}>
               <cylinderGeometry args={[0.04, 0.04, 2.4, 6]} />
             </mesh>
           </group>
@@ -2761,7 +2761,7 @@ export function PerimeterFence() {
             <mesh position={[0, 0.2, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
               <boxGeometry args={[0.28, 0.35, 0.28]} />
             </mesh>
-            <mesh position={[0, 1.3, 0]} castShadow material={MAT_STEEL_RAILING}>
+            <mesh position={[0, 1.3, 0]} material={MAT_STEEL_RAILING}>
               <cylinderGeometry args={[0.04, 0.04, 2.4, 6]} />
             </mesh>
           </group>

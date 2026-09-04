@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useMemo, useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import React, { useMemo, useRef, useEffect, useState } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { AtmosphereTimeMode } from "./RealisticSkyAtmosphere";
 import { MAT_GLASS_CLEAR, MAT_GLASS_BLUE } from "./SharedMaterials";
@@ -227,18 +227,18 @@ function MountainSwallowFlock() {
           <group key={`swallow-${i}`} position={[xOffset, yOffset, zOffset]}>
             <mesh position={[0, 0, 0]}>
               <boxGeometry args={[0.35, 0.22, 1.4]} />
-              <meshStandardMaterial color={isEgret ? "#F8FAFC" : "#1E293B"} roughness={0.7} />
+              <meshBasicMaterial color={isEgret ? "#F8FAFC" : "#1E293B"} />
             </mesh>
             <group ref={(el) => { wingRefs.current[i * 2] = el; }} position={[-0.18, 0, 0]}>
               <mesh position={[-1.3, 0, 0]}>
                 <boxGeometry args={[2.6, 0.04, 0.55]} />
-                <meshStandardMaterial color={isEgret ? "#FFFFFF" : "#334155"} roughness={0.7} />
+                <meshBasicMaterial color={isEgret ? "#FFFFFF" : "#334155"} />
               </mesh>
             </group>
             <group ref={(el) => { wingRefs.current[i * 2 + 1] = el; }} position={[0.18, 0, 0]}>
               <mesh position={[1.3, 0, 0]}>
                 <boxGeometry args={[2.6, 0.04, 0.55]} />
-                <meshStandardMaterial color={isEgret ? "#FFFFFF" : "#334155"} roughness={0.7} />
+                <meshBasicMaterial color={isEgret ? "#FFFFFF" : "#334155"} />
               </mesh>
             </group>
           </group>
@@ -254,17 +254,15 @@ function MountainSwallowFlock() {
 function PhotorealisticMountainCumulus() {
   const groupRef = useRef<THREE.Group>(null);
 
-  const puffGeometry = useMemo(() => new THREE.SphereGeometry(1, 14, 10), []);
-  const baseGeometry = useMemo(() => new THREE.SphereGeometry(1, 12, 8), []);
+  const puffGeometry = useMemo(() => new THREE.SphereGeometry(1, 8, 6), []);
+  const baseGeometry = useMemo(() => new THREE.SphereGeometry(1, 8, 6), []);
 
   const puffMaterial = useMemo(
     () =>
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: "#FFFFFF",
-        roughness: 0.98,
-        metalness: 0.0,
         transparent: true,
-        opacity: 0.90,
+        opacity: 0.88,
         depthWrite: false,
       }),
     []
@@ -272,9 +270,8 @@ function PhotorealisticMountainCumulus() {
 
   const baseMaterial = useMemo(
     () =>
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: "#94A3B8",
-        roughness: 1.0,
         transparent: true,
         opacity: 0.35,
         depthWrite: false,
@@ -444,15 +441,15 @@ function HighAltitudeRaptor() {
     <group ref={raptorRef}>
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.8, 0.35, 2.4]} />
-        <meshStandardMaterial color="#1E1E24" roughness={0.8} />
+        <meshBasicMaterial color="#1E1E24" />
       </mesh>
       <mesh position={[-3.2, 0, -0.2]} rotation={[0, 0.08, -0.05]}>
         <boxGeometry args={[5.6, 0.08, 1.2]} />
-        <meshStandardMaterial color="#2B2D42" roughness={0.8} />
+        <meshBasicMaterial color="#2B2D42" />
       </mesh>
       <mesh position={[3.2, 0, -0.2]} rotation={[0, -0.08, 0.05]}>
         <boxGeometry args={[5.6, 0.08, 1.2]} />
-        <meshStandardMaterial color="#2B2D42" roughness={0.8} />
+        <meshBasicMaterial color="#2B2D42" />
       </mesh>
     </group>
   );
@@ -463,29 +460,44 @@ function HighAltitudeRaptor() {
 // ─────────────────────────────────────────────────────────────────────────────
 function BuildingInteriorRoomLights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.45 : 1.0;
+  const { camera } = useThree();
+  const [showPowerhouseLight, setShowPowerhouseLight] = useState(false);
+  const [showTemfacilLight, setShowTemfacilLight] = useState(false);
+
+  const PH_POS = useMemo(() => new THREE.Vector3(0, 8.5, 0), []);
+  const TEMFACIL_POS = useMemo(() => new THREE.Vector3(120, 16.0, -95), []);
+
+  useFrame(() => {
+    const dPh = camera.position.distanceToSquared(PH_POS);
+    const dTem = camera.position.distanceToSquared(TEMFACIL_POS);
+    const nearPh = dPh < 3600; // 60 meters
+    const nearTem = dTem < 4900; // 70 meters
+    if (nearPh !== showPowerhouseLight) setShowPowerhouseLight(nearPh);
+    if (nearTem !== showTemfacilLight) setShowTemfacilLight(nearTem);
+  });
 
   return (
     <group name="building-interior-lights">
       {/* ═══ Inside Powerhouse Generator Hall ([0, 8.5, 0]) ═══ */}
-      <pointLight position={[0, 8.5, 0]} color="#E0F2FE" intensity={45.0 * intensityMult} distance={35} decay={2} />
-      <pointLight position={[-6, 8.5, 0]} color="#BAE6FD" intensity={30.0 * intensityMult} distance={28} decay={2} />
-      <pointLight position={[6, 8.5, 0]} color="#BAE6FD" intensity={30.0 * intensityMult} distance={28} decay={2} />
+      {showPowerhouseLight && (
+        <>
+          <pointLight position={[0, 8.5, 0]} color="#E0F2FE" intensity={45.0 * intensityMult} distance={35} decay={2} />
+          <pointLight position={[-6, 8.5, 0]} color="#BAE6FD" intensity={30.0 * intensityMult} distance={28} decay={2} />
+          <pointLight position={[6, 8.5, 0]} color="#BAE6FD" intensity={30.0 * intensityMult} distance={28} decay={2} />
+        </>
+      )}
 
-      {/* ═══ Inside TEMFACIL Staff House & Women's Quarters ([130, 16.0, -107]) ═══ */}
-      <pointLight position={[130, 16.0, -107]} color="#FEF08A" intensity={32.0 * intensityMult} distance={25} decay={2} />
-
-      {/* ═══ Inside TEMFACIL Staff Office & Planning Head Bay ([118, 16.5, -95]) ═══ */}
-      <pointLight position={[118, 16.5, -95]} color="#FFFBEB" intensity={35.0 * intensityMult} distance={28} decay={2} />
-
-      {/* ═══ Inside Barracks 1, 2, & 3 Quarters ([146, 16.0, -87]) ═══ */}
-      <pointLight position={[146, 16.0, -87]} color="#FED7AA" intensity={30.0 * intensityMult} distance={24} decay={2} />
-      <pointLight position={[146, 19.5, -87]} color="#FED7AA" intensity={26.0 * intensityMult} distance={24} decay={2} />
-
-      {/* ═══ Inside Food Canteen & Kitchen ([96, 16.0, -97]) ═══ */}
-      <pointLight position={[96, 16.0, -97]} color="#FDE047" intensity={38.0 * intensityMult} distance={30} decay={2} />
-
-      {/* ═══ Inside Guardhouse Booth ([80, 15.5, -60]) ═══ */}
-      <pointLight position={[80, 15.5, -60]} color="#FFFBEB" intensity={22.0 * intensityMult} distance={18} decay={2} />
+      {/* ═══ Inside TEMFACIL Structures ═══ */}
+      {showTemfacilLight && (
+        <>
+          <pointLight position={[130, 16.0, -107]} color="#FEF08A" intensity={32.0 * intensityMult} distance={25} decay={2} />
+          <pointLight position={[114, 16.5, -107]} color="#FFFBEB" intensity={12.0 * intensityMult} distance={18} decay={2} />
+          <pointLight position={[146, 16.0, -87]} color="#FED7AA" intensity={30.0 * intensityMult} distance={24} decay={2} />
+          <pointLight position={[146, 19.5, -87]} color="#FED7AA" intensity={26.0 * intensityMult} distance={24} decay={2} />
+          <pointLight position={[96, 16.0, -97]} color="#FDE047" intensity={38.0 * intensityMult} distance={30} decay={2} />
+          <pointLight position={[80, 15.5, -60]} color="#FFFBEB" intensity={22.0 * intensityMult} distance={18} decay={2} />
+        </>
+      )}
     </group>
   );
 }
@@ -495,132 +507,173 @@ function BuildingInteriorRoomLights({ isSunset = false }: { isSunset?: boolean }
 // ─────────────────────────────────────────────────────────────────────────────
 function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.5 : 1.0;
+  const { camera } = useThree();
+  const [showVehicleBeams, setShowVehicleBeams] = useState(false);
+  const VEHICLE_CENTER = useMemo(() => new THREE.Vector3(75, 13.0, -65), []);
+
+  useFrame(() => {
+    const distSq = camera.position.distanceToSquared(VEHICLE_CENTER);
+    const near = distSq < 5625; // 75 meters
+    if (near !== showVehicleBeams) setShowVehicleBeams(near);
+  });
 
   return (
     <group name="vehicle-night-lights">
       {/* ─── 1. Red Dump Truck (Access Road: [70, 14.5, -58]) ─── */}
       <group position={[70, 14.5, -58]} rotation={[0, -0.4, 0]}>
-        <spotLight
-          position={[-0.9, 1.1, 3.2]}
-          target-position={[-0.9, 0.0, 36.0]}
-          color="#FFFBEB"
-          intensity={45.0 * intensityMult}
-          angle={0.45}
-          penumbra={0.65}
-          distance={48}
-        />
-        <spotLight
-          position={[0.9, 1.1, 3.2]}
-          target-position={[0.9, 0.0, 36.0]}
-          color="#FFFBEB"
-          intensity={45.0 * intensityMult}
-          angle={0.45}
-          penumbra={0.65}
-          distance={48}
-        />
+        {showVehicleBeams && (
+          <>
+            <spotLight
+              position={[-0.9, 1.1, 3.2]}
+              target-position={[-0.9, 0.0, 36.0]}
+              color="#FFFBEB"
+              intensity={45.0 * intensityMult}
+              angle={0.45}
+              penumbra={0.65}
+              distance={48}
+            />
+            <spotLight
+              position={[0.9, 1.1, 3.2]}
+              target-position={[0.9, 0.0, 36.0]}
+              color="#FFFBEB"
+              intensity={45.0 * intensityMult}
+              angle={0.45}
+              penumbra={0.65}
+              distance={48}
+            />
+            <pointLight position={[0, 1.0, -3.8]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
+          </>
+        )}
         <mesh position={[-0.9, 1.1, 3.1]}>
-          <sphereGeometry args={[0.26, 10, 10]} />
+          <sphereGeometry args={[0.26, 8, 8]} />
           <meshBasicMaterial color="#FFFBEB" toneMapped={false} />
         </mesh>
         <mesh position={[0.9, 1.1, 3.1]}>
-          <sphereGeometry args={[0.26, 10, 10]} />
+          <sphereGeometry args={[0.26, 8, 8]} />
           <meshBasicMaterial color="#FFFBEB" toneMapped={false} />
         </mesh>
-        <pointLight position={[0, 1.0, -3.8]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
+        <mesh position={[0, 1.0, -3.8]}>
+          <sphereGeometry args={[0.18, 6, 6]} />
+          <meshBasicMaterial color="#EF4444" toneMapped={false} />
+        </mesh>
       </group>
 
       {/* ─── 2. Yellow Maintenance Pickup Truck (Access Road: [52, 11.8, -42]) ─── */}
       <group position={[52, 11.8, -42]} rotation={[0, 0.35, 0]}>
-        <spotLight
-          position={[-0.7, 0.85, 2.5]}
-          target-position={[-0.7, 0.0, 30.0]}
-          color="#FEF08A"
-          intensity={38.0 * intensityMult}
-          angle={0.45}
-          penumbra={0.6}
-          distance={40}
-        />
-        <spotLight
-          position={[0.7, 0.85, 2.5]}
-          target-position={[0.7, 0.0, 30.0]}
-          color="#FEF08A"
-          intensity={38.0 * intensityMult}
-          angle={0.45}
-          penumbra={0.6}
-          distance={40}
-        />
+        {showVehicleBeams && (
+          <>
+            <spotLight
+              position={[-0.7, 0.85, 2.5]}
+              target-position={[-0.7, 0.0, 30.0]}
+              color="#FEF08A"
+              intensity={38.0 * intensityMult}
+              angle={0.45}
+              penumbra={0.6}
+              distance={40}
+            />
+            <spotLight
+              position={[0.7, 0.85, 2.5]}
+              target-position={[0.7, 0.0, 30.0]}
+              color="#FEF08A"
+              intensity={38.0 * intensityMult}
+              angle={0.45}
+              penumbra={0.6}
+              distance={40}
+            />
+            <pointLight position={[0, 1.9, 0.2]} color="#F59E0B" intensity={18.0 * intensityMult} distance={22} decay={2} />
+            <pointLight position={[0, 0.8, -2.6]} color="#EF4444" intensity={10.0 * intensityMult} distance={15} decay={2} />
+          </>
+        )}
         <mesh position={[-0.7, 0.85, 2.45]}>
-          <sphereGeometry args={[0.22, 10, 10]} />
+          <sphereGeometry args={[0.22, 8, 8]} />
           <meshBasicMaterial color="#FFFBEB" toneMapped={false} />
         </mesh>
         <mesh position={[0.7, 0.85, 2.45]}>
-          <sphereGeometry args={[0.22, 10, 10]} />
+          <sphereGeometry args={[0.22, 8, 8]} />
           <meshBasicMaterial color="#FFFBEB" toneMapped={false} />
         </mesh>
-        <pointLight position={[0, 1.9, 0.2]} color="#F59E0B" intensity={18.0 * intensityMult} distance={22} decay={2} />
-        <pointLight position={[0, 0.8, -2.6]} color="#EF4444" intensity={10.0 * intensityMult} distance={15} decay={2} />
+        <mesh position={[0, 0.8, -2.6]}>
+          <sphereGeometry args={[0.16, 6, 6]} />
+          <meshBasicMaterial color="#EF4444" toneMapped={false} />
+        </mesh>
       </group>
 
       {/* ─── 3. Black Site Security SUV (TEMFACIL Compound: [90, 14.5, -80]) ─── */}
       <group position={[90, 14.5, -80]} rotation={[0, -1.2, 0]}>
-        <spotLight
-          position={[-0.75, 0.8, 2.4]}
-          target-position={[-0.75, 0.0, 28.0]}
-          color="#F8FAFC"
-          intensity={40.0 * intensityMult}
-          angle={0.42}
-          penumbra={0.6}
-          distance={42}
-        />
-        <spotLight
-          position={[0.75, 0.8, 2.4]}
-          target-position={[0.75, 0.0, 28.0]}
-          color="#F8FAFC"
-          intensity={40.0 * intensityMult}
-          angle={0.42}
-          penumbra={0.6}
-          distance={42}
-        />
+        {showVehicleBeams && (
+          <>
+            <spotLight
+              position={[-0.75, 0.8, 2.4]}
+              target-position={[-0.75, 0.0, 28.0]}
+              color="#F8FAFC"
+              intensity={40.0 * intensityMult}
+              angle={0.42}
+              penumbra={0.6}
+              distance={42}
+            />
+            <spotLight
+              position={[0.75, 0.8, 2.4]}
+              target-position={[0.75, 0.0, 28.0]}
+              color="#F8FAFC"
+              intensity={40.0 * intensityMult}
+              angle={0.42}
+              penumbra={0.6}
+              distance={42}
+            />
+            <pointLight position={[0, 0.8, -2.4]} color="#EF4444" intensity={10.0 * intensityMult} distance={15} decay={2} />
+          </>
+        )}
         <mesh position={[-0.75, 0.8, 2.35]}>
-          <sphereGeometry args={[0.2, 10, 10]} />
+          <sphereGeometry args={[0.2, 8, 8]} />
           <meshBasicMaterial color="#F8FAFC" toneMapped={false} />
         </mesh>
         <mesh position={[0.75, 0.8, 2.35]}>
-          <sphereGeometry args={[0.2, 10, 10]} />
+          <sphereGeometry args={[0.2, 8, 8]} />
           <meshBasicMaterial color="#F8FAFC" toneMapped={false} />
         </mesh>
-        <pointLight position={[0, 0.8, -2.4]} color="#EF4444" intensity={10.0 * intensityMult} distance={15} decay={2} />
+        <mesh position={[0, 0.8, -2.4]}>
+          <sphereGeometry args={[0.15, 6, 6]} />
+          <meshBasicMaterial color="#EF4444" toneMapped={false} />
+        </mesh>
       </group>
 
       {/* ─── 4. Supercar (TEMFACIL Center Circle: [105, 14.2, -92]) ─── */}
       <group position={[105, 14.2, -92]} rotation={[0, 0.8, 0]}>
-        <spotLight
-          position={[-0.7, 0.55, 2.0]}
-          target-position={[-0.7, 0.0, 28.0]}
-          color="#E0F2FE"
-          intensity={35.0 * intensityMult}
-          angle={0.42}
-          penumbra={0.5}
-          distance={35}
-        />
-        <spotLight
-          position={[0.7, 0.55, 2.0]}
-          target-position={[0.7, 0.0, 28.0]}
-          color="#E0F2FE"
-          intensity={35.0 * intensityMult}
-          angle={0.42}
-          penumbra={0.5}
-          distance={35}
-        />
+        {showVehicleBeams && (
+          <>
+            <spotLight
+              position={[-0.7, 0.55, 2.0]}
+              target-position={[-0.7, 0.0, 28.0]}
+              color="#E0F2FE"
+              intensity={35.0 * intensityMult}
+              angle={0.42}
+              penumbra={0.5}
+              distance={35}
+            />
+            <spotLight
+              position={[0.7, 0.55, 2.0]}
+              target-position={[0.7, 0.0, 28.0]}
+              color="#E0F2FE"
+              intensity={35.0 * intensityMult}
+              angle={0.42}
+              penumbra={0.5}
+              distance={35}
+            />
+            <pointLight position={[0, 0.6, -2.0]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
+          </>
+        )}
         <mesh position={[-0.7, 0.55, 1.95]}>
-          <sphereGeometry args={[0.18, 10, 10]} />
+          <sphereGeometry args={[0.18, 8, 8]} />
           <meshBasicMaterial color="#E0F2FE" toneMapped={false} />
         </mesh>
         <mesh position={[0.7, 0.55, 1.95]}>
-          <sphereGeometry args={[0.18, 10, 10]} />
+          <sphereGeometry args={[0.18, 8, 8]} />
           <meshBasicMaterial color="#E0F2FE" toneMapped={false} />
         </mesh>
-        <pointLight position={[0, 0.6, -2.0]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
+        <mesh position={[0, 0.6, -2.0]}>
+          <sphereGeometry args={[0.14, 6, 6]} />
+          <meshBasicMaterial color="#EF4444" toneMapped={false} />
+        </mesh>
       </group>
     </group>
   );
@@ -633,8 +686,16 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.45 : 1.0;
   const sentryLightRef = useRef<THREE.SpotLight>(null);
   const patrolLightRef = useRef<THREE.SpotLight>(null);
+  const { camera } = useThree();
+  const [showFlashlights, setShowFlashlights] = useState(false);
+  const GUARD_CENTER = useMemo(() => new THREE.Vector3(100, 14.0, -70), []);
 
   useFrame(({ clock }) => {
+    const distSq = camera.position.distanceToSquared(GUARD_CENTER);
+    const near = distSq < 3600; // 60 meters
+    if (near !== showFlashlights) setShowFlashlights(near);
+    if (!near) return;
+
     const t = clock.getElapsedTime();
     if (sentryLightRef.current && sentryLightRef.current.target) {
       sentryLightRef.current.target.position.x = 76 + Math.sin(t * 0.8) * 8.0;
@@ -654,63 +715,69 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
       <group position={[78, 14.8, -62]}>
         <mesh position={[0.25, 0, 0.2]} rotation={[0.4, 0, 0]}>
           <cylinderGeometry args={[0.04, 0.05, 0.25, 8]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.9} roughness={0.2} />
+          <meshBasicMaterial color="#1E293B" />
         </mesh>
         <mesh position={[0.25, -0.05, 0.32]}>
           <sphereGeometry args={[0.07, 8, 8]} />
           <meshBasicMaterial color="#FEF08A" toneMapped={false} />
         </mesh>
-        <spotLight
-          ref={sentryLightRef}
-          position={[0.25, 0, 0.3]}
-          color="#FEF08A"
-          intensity={42.0 * intensityMult}
-          angle={0.35}
-          penumbra={0.45}
-          distance={35}
-        />
+        {showFlashlights && (
+          <spotLight
+            ref={sentryLightRef}
+            position={[0.25, 0, 0.3]}
+            color="#FEF08A"
+            intensity={42.0 * intensityMult}
+            angle={0.35}
+            penumbra={0.45}
+            distance={35}
+          />
+        )}
       </group>
 
       {/* ─── Guard 2: Compound Night Perimeter Patrol ([125, 14.2, -75]) ─── */}
       <group position={[125, 14.8, -75]}>
         <mesh position={[0.25, 0, 0.2]} rotation={[0.3, 0, 0]}>
           <cylinderGeometry args={[0.04, 0.05, 0.25, 8]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.9} roughness={0.2} />
+          <meshBasicMaterial color="#1E293B" />
         </mesh>
         <mesh position={[0.25, -0.04, 0.32]}>
           <sphereGeometry args={[0.07, 8, 8]} />
           <meshBasicMaterial color="#FEF08A" toneMapped={false} />
         </mesh>
-        <spotLight
-          ref={patrolLightRef}
-          position={[0.25, 0, 0.3]}
-          color="#FEF08A"
-          intensity={38.0 * intensityMult}
-          angle={0.38}
-          penumbra={0.5}
-          distance={32}
-        />
+        {showFlashlights && (
+          <spotLight
+            ref={patrolLightRef}
+            position={[0.25, 0, 0.3]}
+            color="#FEF08A"
+            intensity={38.0 * intensityMult}
+            angle={0.38}
+            penumbra={0.5}
+            distance={32}
+          />
+        )}
       </group>
 
       {/* ─── Technician 3: Switchyard Transformer Inspection ([60, 1.2, 16]) ─── */}
       <group position={[60, 1.8, 16]}>
         <mesh position={[0.2, 0, 0.2]} rotation={[0.2, 0, 0]}>
           <cylinderGeometry args={[0.04, 0.05, 0.22, 8]} />
-          <meshStandardMaterial color="#0284C7" metalness={0.8} />
+          <meshBasicMaterial color="#0284C7" />
         </mesh>
         <mesh position={[0.2, -0.04, 0.3]}>
           <sphereGeometry args={[0.06, 8, 8]} />
           <meshBasicMaterial color="#E0F2FE" toneMapped={false} />
         </mesh>
-        <spotLight
-          position={[0.2, 0, 0.3]}
-          target-position={[60, 2.5, 24]}
-          color="#E0F2FE"
-          intensity={32.0 * intensityMult}
-          angle={0.42}
-          penumbra={0.5}
-          distance={26}
-        />
+        {showFlashlights && (
+          <spotLight
+            position={[0.2, 0, 0.3]}
+            target-position={[60, 2.5, 24]}
+            color="#E0F2FE"
+            intensity={32.0 * intensityMult}
+            angle={0.42}
+            penumbra={0.5}
+            distance={26}
+          />
+        )}
       </group>
     </group>
   );
@@ -719,9 +786,10 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // 10. BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Lush Wilderness & Ridge Forests)
 // ─────────────────────────────────────────────────────────────────────────────
-function BioluminescentForestFireflies({ count = 260 }: { count?: number }) {
+function BioluminescentForestFireflies({ count = 140 }: { count?: number }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
+  const frameCountRef = useRef(0);
 
   const fireflyData = useMemo(() => {
     const data = [];
@@ -781,6 +849,8 @@ function BioluminescentForestFireflies({ count = 260 }: { count?: number }) {
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
+    frameCountRef.current++;
+    if (frameCountRef.current % 2 !== 0) return;
     const t = clock.getElapsedTime();
 
     for (let i = 0; i < fireflyData.length; i++) {
@@ -797,7 +867,7 @@ function BioluminescentForestFireflies({ count = 260 }: { count?: number }) {
       const driftZ = Math.sin(t * 0.5 * speed + phase) * 2.8;
 
       dummy.position.set(x + driftX, y + driftY, z + driftZ);
-      dummy.scale.setScalar(glow * 0.65 + 0.05);
+      dummy.scale.setScalar(glow * 0.75 + 0.08);
       dummy.updateMatrix();
 
       meshRef.current.setMatrixAt(i, dummy.matrix);
@@ -807,11 +877,9 @@ function BioluminescentForestFireflies({ count = 260 }: { count?: number }) {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[0.35, 8, 8]} />
-      <meshStandardMaterial
-        color="#FEF08A"
-        emissive="#FACC15"
-        emissiveIntensity={6.0}
+      <sphereGeometry args={[0.38, 6, 6]} />
+      <meshBasicMaterial
+        color="#FACC15"
         toneMapped={false}
       />
     </instancedMesh>
@@ -888,20 +956,33 @@ function SurgeTankAviationStrobe() {
 // ─────────────────────────────────────────────────────────────────────────────
 function IndustrialFacilityNightLighting({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.45 : 1.0;
+  const { camera } = useThree();
+  const [showPenstockLight, setShowPenstockLight] = useState(false);
+  const PENSTOCK_POS = useMemo(() => new THREE.Vector3(-30, 30.0, -40), []);
+
+  useFrame(() => {
+    const d = camera.position.distanceToSquared(PENSTOCK_POS);
+    const near = d < 8100; // 90 meters
+    if (near !== showPenstockLight) setShowPenstockLight(near);
+  });
 
   return (
     <group name="industrial-night-lighting">
       {/* ─── 69kV Switchyard Gantry Floodlights ─── */}
-      <pointLight position={[55, 18.0, 10]} color="#E0F2FE" intensity={38.0 * intensityMult} distance={95} decay={2} />
-      <pointLight position={[75, 18.0, 20]} color="#E0F2FE" intensity={34.0 * intensityMult} distance={90} decay={2} />
+      <pointLight position={[55, 18.0, 10]} color="#E0F2FE" intensity={36.0 * intensityMult} distance={55} decay={2} />
+      <pointLight position={[75, 18.0, 20]} color="#E0F2FE" intensity={32.0 * intensityMult} distance={50} decay={2} />
       
       {/* ─── Powerhouse Apron & Gantry Crane Deck ─── */}
-      <pointLight position={[18, 30.0, 22]} color="#F8FAFC" intensity={40.0 * intensityMult} distance={110} decay={2} />
-      <pointLight position={[-12, 14.0, 24]} color="#F8FAFC" intensity={30.0 * intensityMult} distance={85} decay={2} />
+      <pointLight position={[18, 22.0, 22]} color="#F8FAFC" intensity={36.0 * intensityMult} distance={60} decay={2} />
+      <pointLight position={[-12, 14.0, 24]} color="#F8FAFC" intensity={28.0 * intensityMult} distance={50} decay={2} />
 
       {/* ─── Penstock Stairs Safety Lights ─── */}
-      <pointLight position={[-35, 42.0, -50]} color="#F59E0B" intensity={20.0 * intensityMult} distance={65} decay={2} />
-      <pointLight position={[-25, 24.0, -32]} color="#F59E0B" intensity={20.0 * intensityMult} distance={60} decay={2} />
+      {showPenstockLight && (
+        <>
+          <pointLight position={[-35, 42.0, -50]} color="#F59E0B" intensity={18.0 * intensityMult} distance={35} decay={2} />
+          <pointLight position={[-25, 24.0, -32]} color="#F59E0B" intensity={18.0 * intensityMult} distance={35} decay={2} />
+        </>
+      )}
     </group>
   );
 }

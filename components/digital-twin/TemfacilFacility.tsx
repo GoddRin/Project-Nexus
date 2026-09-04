@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
@@ -131,14 +131,32 @@ export function TemfacilFacility({
   const OFFICE_WORLD_CENTER = useMemo(() => new THREE.Vector3(114.0, 14.0, -107.0), []);
   const [isNearOffice, setIsNearOffice] = useState(false);
 
+  useEffect(() => {
+    const handleFocus = (e: Event) => {
+      const customEvent = e as CustomEvent<{ target: [number, number, number]; personnelId?: string }>;
+      if (customEvent.detail?.target) {
+        const [tx, , tz] = customEvent.detail.target;
+        const dx = tx - OFFICE_WORLD_CENTER.x;
+        const dz = tz - OFFICE_WORLD_CENTER.z;
+        // If the focus target is inside or right near the office building (radius < 20m)
+        if (dx * dx + dz * dz < 400) {
+          setIsNearOffice(true);
+        }
+      }
+    };
+    window.addEventListener("plant-scene-focus-target", handleFocus);
+    return () => window.removeEventListener("plant-scene-focus-target", handleFocus);
+  }, [OFFICE_WORLD_CENTER]);
+
   useFrame(() => {
     if (activePreset?.startsWith("temfacil-office")) {
       if (!isNearOffice) setIsNearOffice(true);
       return;
     }
     const distSq = camera.position.distanceToSquared(OFFICE_WORLD_CENTER);
-    // Strict 40m proximity threshold (40^2 = 1600)
-    const near = distSq < 1600;
+    // Strict 24m proximity threshold (24^2 = 576) AND eye-level height (< 20m)
+    // When camera is in Overview or high above looking down at the parking lot/Ferrari, interior is culled
+    const near = distSq < 576 && camera.position.y < 20.0;
     if (near !== isNearOffice) {
       setIsNearOffice(near);
     }
@@ -190,14 +208,46 @@ export function TemfacilFacility({
       {/* ═══ REAL-LIFE SMALL DUST-BROWN DIRT ACCESS ROAD (STAFF OFFICE -> UPHILL -> WAREHOUSE) ═══ */}
       {/* Modeled directly from TEMFACIL site aerial satellite photo: a 4.8m-wide unpaved brown dirt track winding uphill */}
 
-      {/* 1. Compacted Dirt Pad under Warehouse Footprint (Sized to fit 13.5m x 16.5m building) */}
-      <group position={[-28.0, 0.4, -14.0]}>
+      {/* 1. Engineered Compacted Base Pad under Warehouse Footprint & Western Laydown Yard (X: 74-98, Z: -119 to -92) */}
+      <group position={[-32.0, 0.425, -10.5]}>
         <mesh receiveShadow material={MAT_EARTH_BROWN_DUST}>
-          <boxGeometry args={[15.0, 0.8, 18.0]} />
+          <boxGeometry args={[24.0, 0.85, 27.0]} />
         </mesh>
       </group>
 
-      {/* 2. Distinct Dust-Brown Dirt Access Road Trunk & Uphill Incline Ramp (4.8m Wide) */}
+      {/* 2. Heavy-Duty Reinforced Concrete Staging & Receiving Apron Slab (X: 78-98, Z: -102 to -92.5, Top Y = 14.85) */}
+      <group position={[-30.5, 0.825, -2.25]}>
+        <mesh receiveShadow material={MAT_CONCRETE_SLAB}>
+          <boxGeometry args={[21.0, 0.05, 9.5]} />
+        </mesh>
+        {/* Logistics Receiving Boundary Markings (Safety Yellow Stripes) */}
+        <mesh position={[0, 0.027, -4.65]} rotation={[-Math.PI / 2, 0, 0]} material={MAT_YELLOW_SAFETY}>
+          <planeGeometry args={[20.8, 0.12]} />
+        </mesh>
+        <mesh position={[0, 0.027, 4.65]} rotation={[-Math.PI / 2, 0, 0]} material={MAT_YELLOW_SAFETY}>
+          <planeGeometry args={[20.8, 0.12]} />
+        </mesh>
+        <mesh position={[-10.4, 0.027, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} material={MAT_YELLOW_SAFETY}>
+          <planeGeometry args={[9.3, 0.12]} />
+        </mesh>
+        <mesh position={[10.4, 0.027, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} material={MAT_YELLOW_SAFETY}>
+          <planeGeometry args={[9.3, 0.12]} />
+        </mesh>
+      </group>
+
+      {/* 3. Smooth Heavy-Equipment Apron Incline Ramp down to Central Road (Slope from Y = 14.85m to Y = 14.10m) */}
+      <group position={[-30.5, 0.46, 4.6]}>
+        <mesh rotation={[0.165, 0, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
+          <boxGeometry args={[21.0, 0.08, 4.4]} />
+        </mesh>
+      </group>
+
+      {/* 4. Western Laydown Retaining Edge Wall (Holding compacted pad against natural slope) */}
+      <mesh position={[-44.1, 0.50, -10.5]} receiveShadow material={MAT_CONCRETE_HEADER}>
+        <boxGeometry args={[0.3, 1.0, 27.2]} />
+      </mesh>
+
+      {/* 5. Distinct Dust-Brown Dirt Access Road Trunk & Uphill Incline Ramp (4.8m Wide) */}
       {/* Lower Dirt Road Segment in Front of Staff Office (X = -13.5, Z = -3.0) */}
       <group position={[-13.5, 0.075, -3.0]}>
         <mesh receiveShadow material={MAT_EARTH_BROWN_DUST}>
@@ -209,13 +259,6 @@ export function TemfacilFacility({
       <group position={[-20.5, 0.44, -10.0]}>
         <mesh rotation={[0.09, -0.45, 0]} receiveShadow material={MAT_EARTH_BROWN_DUST}>
           <boxGeometry args={[5.0, 0.03, 16.0]} />
-        </mesh>
-      </group>
-
-      {/* Elevated Warehouse Dirt Access Apron (In Front of Shutter Door) */}
-      <group position={[-27.5, 0.83, -14.0]}>
-        <mesh receiveShadow material={MAT_EARTH_BROWN_DUST}>
-          <boxGeometry args={[12.0, 0.04, 10.0]} />
         </mesh>
       </group>
 
@@ -302,10 +345,13 @@ export function TemfacilFacility({
         ))}
 
         {/* ═══ PROMINENT MAIN FRONT ENTRANCE DOORWAY WITH DYNAMIC OFFICE HOURS ═══ */}
-        <AnimatedOfficeEntranceDoor />
+        <AnimatedOfficeEntranceDoor isNight={isNight} isDetailVisible={isTemfacilFocused} />
+
+        {/* ═══ 💡 DEDICATED GALVANIZED STEEL YARD LIGHTING MAST POLE (SAFE YARD PERIMETER CORNER) ═══ */}
+        <StaffOfficeYardLightingPole position={[-8.2, 0, 16.2]} isNight={isNight} isDetailVisible={isTemfacilFocused} />
 
         {/* ═══ AUTOMATED BACK DOORWAY (FACING REAR GRASS LAWN & OPEN 7AM TO 5PM) ═══ */}
-        <AnimatedOfficeBackDoor />
+        <AnimatedOfficeBackDoor isDetailVisible={isTemfacilFocused} />
 
         {/* ═══ AUTHENTIC MAIN SITE OFFICE INTERIOR (GATED BY GRANULAR OFFICE PROXIMITY LOD) ═══ */}
         <TemfacilOfficeInterior
@@ -345,7 +391,7 @@ export function TemfacilFacility({
         {/* ═══ FRONT ENTRANCE DOOR PORTAL FOR WOMEN'S STAFF QUARTERS (FACING MAIN WALKWAY) ═══ */}
         <group position={[0, 1.4, 7.52]}>
           {/* Foyer Interior Ambient Glow */}
-          <pointLight position={[0, 1.0, -1.0]} color="#FEF08A" intensity={0.5} distance={6} />
+          {isTemfacilFocused && <pointLight position={[0, 1.0, -1.0]} color="#FEF08A" intensity={0.5} distance={6} />}
 
           {/* Heavy Steel Surrounding Portal Frame (2.4m wide x 2.8m high) */}
           <mesh position={[-1.15, 0, 0]} material={MAT_STEEL_DARK}>
@@ -410,7 +456,7 @@ export function TemfacilFacility({
         {/* ═══ WIDE GRAND REAR DOORWAY CONNECTING STAFF HOUSE TO KITCHEN (4.2M WIDE - OPEN AT ALL TIMES) ═══ */}
         <group position={[0, 1.4, -7.52]}>
           {/* Foyer Interior Illumination Light */}
-          <pointLight position={[0, 1.2, 1.2]} color="#FEF08A" intensity={6.0} distance={8} />
+          {isTemfacilFocused && <pointLight position={[0, 1.2, 1.2]} color="#FEF08A" intensity={6.0} distance={8} />}
 
           {/* Heavy Steel Surrounding Portal Frame (4.4m wide x 2.8m high) */}
           <mesh position={[-2.15, 0, 0]} material={MAT_STEEL_DARK}>
@@ -486,15 +532,27 @@ export function TemfacilFacility({
             <boxGeometry args={[3.8, 2.4, 3.8]} />
           </mesh>
         ))}
-        {/* Timber Log Stacks */}
+        {/* Timber Log Stacks with Heavy Hardwood Dunnage Sleepers */}
+        <mesh position={[-9.5, 0.06, 5.8]} receiveShadow material={MAT_BAMBOO_TIMBER}>
+          <boxGeometry args={[4.2, 0.12, 0.25]} />
+        </mesh>
+        <mesh position={[-9.5, 0.06, 8.8]} receiveShadow material={MAT_BAMBOO_TIMBER}>
+          <boxGeometry args={[4.2, 0.12, 0.25]} />
+        </mesh>
         {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={`timber-${i}`} position={[-9.5, 0.4, 5.5 + i * 0.9]} rotation={[0, 0, Math.PI / 2]} castShadow material={MAT_PAVER_WALKWAY}>
+          <mesh key={`timber-${i}`} position={[-9.5, 0.47, 5.5 + i * 0.9]} rotation={[0, 0, Math.PI / 2]} castShadow material={MAT_PAVER_WALKWAY}>
             <cylinderGeometry args={[0.35, 0.35, 3.8, 12]} />
           </mesh>
         ))}
-        {/* Structural Steel Pipe & Rebar Bundles */}
+        {/* Structural Steel Pipe & Rebar Bundles with Steel Dunnage Channels */}
+        <mesh position={[-7.2, 0.06, 10.0]} receiveShadow material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.2, 0.12, 4.4]} />
+        </mesh>
+        <mesh position={[-3.8, 0.06, 10.0]} receiveShadow material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.2, 0.12, 4.4]} />
+        </mesh>
         {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={`pipe-${i}`} position={[-5.5, 0.4, 8.5 + i * 0.7]} rotation={[Math.PI / 2, 0, 0]} castShadow material={MAT_STEEL_FRAME}>
+          <mesh key={`pipe-${i}`} position={[-5.5, 0.37, 8.5 + i * 0.7]} rotation={[Math.PI / 2, 0, 0]} castShadow material={MAT_STEEL_FRAME}>
             <cylinderGeometry args={[0.25, 0.25, 4.2, 12]} />
           </mesh>
         ))}
@@ -582,14 +640,14 @@ export function TemfacilFacility({
           </mesh>
         </group>
         {/* Interior Technical Blueprint Drafting Desk & Overhead Light */}
-        <pointLight position={[0, 2.4, 0]} color="#E0F2FE" intensity={4.0} distance={8} />
+        {isTemfacilFocused && <pointLight position={[0, 2.4, 0]} color="#E0F2FE" intensity={4.0} distance={8} />}
         <mesh position={[0, 0.9, 0]} material={MAT_WHITE_PAINT}>
           <boxGeometry args={[2.2, 0.9, 1.4]} />
         </mesh>
       </group>
 
       {/* ═══ 7C. AUTHENTIC CANTEEN & DINING HALL (X=32, Z=14) ═══ */}
-      <TemfacilCanteenBuilding position={[32, 0, 14]} isDetailVisible={isTemfacilFocused} />
+      <TemfacilCanteenBuilding position={[32, 0, 14]} isDetailVisible={isTemfacilFocused} timeMode={timeMode} />
 
       {/* ═══ 8. SOLAR LED LIGHT TOWERS & SAFETY INFRASTRUCTURE ═══ */}
       {/* Light Tower 1 */}
@@ -618,8 +676,8 @@ export function TemfacilFacility({
         </mesh>
       </group>
 
-      {/* Industrial Waste Dumpster Bin */}
-      <mesh position={[-30, 0.9, -4]} castShadow material={MAT_SIGNBOARD_TEAL}>
+      {/* Industrial Waste Dumpster Bin (Relocated to West Laydown Yard Perimeter Fence) */}
+      <mesh position={[-41.0, 1.75, -14.0]} castShadow material={MAT_SIGNBOARD_TEAL}>
         <boxGeometry args={[3.2, 1.8, 2.2]} />
       </mesh>
 
@@ -644,8 +702,21 @@ function TemfacilHeadquartersWorkforce({
 }: {
   onSelectPerson?: (id: string) => void;
 }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const TEMFACIL_CENTER = useMemo(() => new THREE.Vector3(118.0, 14.0, -95.0), []);
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+    const distSq = camera.position.distanceToSquared(TEMFACIL_CENTER);
+    const inRange = distSq < 32400; // 180 meters
+    if (groupRef.current.visible !== inRange) {
+      groupRef.current.visible = inRange;
+    }
+  });
+
   return (
-    <group>
+    <group ref={groupRef}>
       {/* ─── 1. EXECUTIVE & TECHNICAL MANAGEMENT ─── */}
       {/* Deputy Project Manager (Nathaniel P. Principe) on Main Office Executive Veranda */}
       <HydroProjectPersonMesh
@@ -1656,7 +1727,7 @@ function useStaffOfficeSafetyBulletinBoardTexture() {
 }
 
 // ─── AUTOMATED DYNAMIC SITE OFFICE ENTRANCE DOORWAY (OPEN 7AM TO 5PM) ───
-function AnimatedOfficeEntranceDoor() {
+function AnimatedOfficeEntranceDoor({ isNight = false, isDetailVisible = false }: { isNight?: boolean; isDetailVisible?: boolean }) {
   // Load the 3 authentic textures matching the real photos
   const heppOfficeHeaderTex = useTumauiniHeppOfficeSignboardTexture();
   const eshStatisticBoardTex = useProjectEshStatisticBoardTexture();
@@ -1834,12 +1905,272 @@ function AnimatedOfficeEntranceDoor() {
           </mesh>
         );
       })}
+
+      {/* ═══ 7. ARCHITECTURAL WALL-MOUNTED GOOSENECK DOWNLIGHTS (OVER DOORWAY SIGN & BULLETIN BOARDS) ═══ */}
+      {/* Over Entrance Signboard */}
+      <group position={[0, 4.05, 0.45]}>
+        <mesh position={[0, 0, -0.22]} rotation={[0.4, 0, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.02, 0.02, 0.48, 8]} />
+        </mesh>
+        <mesh position={[0, -0.12, 0]} material={MAT_STEEL_DARK} castShadow>
+          <coneGeometry args={[0.22, 0.14, 16]} />
+        </mesh>
+        <mesh position={[0, -0.18, 0]}>
+          <circleGeometry args={[0.18, 16]} />
+          {isNight ? <meshBasicMaterial color="#FFFBEB" /> : <meshStandardMaterial color="#64748B" roughness={0.7} />}
+        </mesh>
+        {isNight && isDetailVisible && <pointLight position={[0, -0.25, 0]} color="#FFFBEB" intensity={2.8} distance={5.0} decay={2} />}
+      </group>
+
+      {/* Over Safety Bulletin Board */}
+      <group position={[4.05, 3.10, 0.35]}>
+        <mesh position={[0, 0, -0.15]} rotation={[0.35, 0, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.015, 0.015, 0.35, 8]} />
+        </mesh>
+        <mesh position={[0, -0.08, 0]} material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.65, 0.06, 0.12]} />
+        </mesh>
+        <mesh position={[0, -0.12, 0]}>
+          <planeGeometry args={[0.60, 0.08]} />
+          {isNight ? <meshBasicMaterial color="#FFFBEB" /> : <meshStandardMaterial color="#64748B" roughness={0.7} />}
+        </mesh>
+        {isNight && isDetailVisible && <pointLight position={[0, -0.18, 0]} color="#FFFBEB" intensity={2.0} distance={4.0} decay={2} />}
+      </group>
+    </group>
+  );
+}
+
+// 🌟 Procedural Soft Radial Ground Light Pool Texture
+function useYardLightGroundDecalTexture() {
+  return React.useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.clearRect(0, 0, 512, 512);
+    const grad = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+    grad.addColorStop(0.0, "rgba(255, 254, 235, 1.0)");
+    grad.addColorStop(0.2, "rgba(254, 240, 138, 0.85)");
+    grad.addColorStop(0.45, "rgba(251, 191, 36, 0.45)");
+    grad.addColorStop(0.75, "rgba(245, 158, 11, 0.15)");
+    grad.addColorStop(1.0, "rgba(217, 119, 6, 0.0)");
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(256, 256, 256, 0, Math.PI * 2);
+    ctx.fill();
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+}
+
+// 🌟 Procedural Bright Light Lens Flare Corona Sprite Texture
+function useLightHaloSpriteTexture() {
+  return React.useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.clearRect(0, 0, 256, 256);
+    const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    grad.addColorStop(0.0, "rgba(255, 255, 255, 1.0)");
+    grad.addColorStop(0.2, "rgba(255, 250, 200, 0.85)");
+    grad.addColorStop(0.5, "rgba(254, 240, 138, 0.35)");
+    grad.addColorStop(1.0, "rgba(254, 240, 138, 0.0)");
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(128, 128, 128, 0, Math.PI * 2);
+    ctx.fill();
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+}
+
+// 💡 HIGH-EFFICIENCY GALVANIZED STEEL YARD LIGHTING MAST POLE FOR STAFF OFFICE COURTYARD
+function StaffOfficeYardLightingPole({
+  position = [-8.2, 0, 16.2],
+  isNight = false,
+  isDetailVisible = false,
+}: {
+  position?: [number, number, number];
+  isNight?: boolean;
+  isDetailVisible?: boolean;
+}) {
+  const groundDecalTex = useYardLightGroundDecalTexture();
+  const haloTex = useLightHaloSpriteTexture();
+
+  return (
+    <group position={position}>
+      {/* ═══ 1. GROUND LIGHT ILLUMINATION PATCH (ONLY VISIBLE AT NIGHT/SUNSET) ═══ */}
+      {isNight && (
+        <mesh position={[1.4, 0.03, -1.4]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[8.4, 8.4]} />
+          <meshBasicMaterial
+            map={groundDecalTex || undefined}
+            color="#FFFBEB"
+            transparent
+            opacity={0.80}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      )}
+
+      {/* ═══ 2. HEAVY-DUTY GALVANIZED STEEL MAST POLE STRUCTURE ═══ */}
+      {/* Heavy-Duty Cast Concrete Pedestal Footing */}
+      <mesh position={[0, 0.22, 0]} castShadow receiveShadow material={MAT_CONCRETE_SLAB}>
+        <cylinderGeometry args={[0.36, 0.44, 0.45, 12]} />
+      </mesh>
+
+      {/* Galvanized Structural Steel Baseplate & Anchor Bolts */}
+      <mesh position={[0, 0.46, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.48, 0.05, 0.48]} />
+      </mesh>
+      {[-0.17, 0.17].map((bx, i) =>
+        [-0.17, 0.17].map((bz, j) => (
+          <mesh key={`bolt-${i}-${j}`} position={[bx, 0.50, bz]} material={MAT_STEEL_DARK}>
+            <cylinderGeometry args={[0.02, 0.02, 0.08, 6]} />
+          </mesh>
+        ))
+      )}
+
+      {/* Tapered Galvanized Steel Tubular Mast Pole (5.4m High) */}
+      <mesh position={[0, 2.9, 0]} castShadow material={MAT_STEEL_DARK}>
+        <cylinderGeometry args={[0.075, 0.14, 4.9, 12]} />
+      </mesh>
+
+      {/* Weatherproof Electrical Junction & Inspection Hatch Box */}
+      <mesh position={[0, 1.2, 0.10]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.16, 0.32, 0.08]} />
+      </mesh>
+
+      {/* ═══ 3. UPPER MAST OUTREACH BRACKET ARM & LUMINAIR HEAD (POINTING INWARD AT COURTYARD) ═══ */}
+      <group position={[0, 5.35, 0]} rotation={[0, -Math.PI / 4, 0]}>
+        {/* Pole Top Weather Cap */}
+        <mesh position={[0, 0.06, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.09, 0.09, 0.12, 12]} />
+        </mesh>
+
+        {/* Curved Bracket Outreach Arm */}
+        <mesh position={[0, 0.25, 0.95]} rotation={[0.26, 0, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.04, 0.04, 2.0, 8]} />
+        </mesh>
+        {/* Reinforcement Gusset Support Strut */}
+        <mesh position={[0, -0.15, 0.55]} rotation={[-0.45, 0, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.025, 0.025, 1.1, 8]} />
+        </mesh>
+
+        {/* Die-Cast Commercial LED Luminaire Head Housing */}
+        <group position={[0, 0.42, 1.95]} rotation={[0.15, 0, 0]}>
+          {/* Main Luminaire Body with Cooling Fins */}
+          <mesh castShadow material={MAT_STEEL_DARK}>
+            <boxGeometry args={[0.38, 0.14, 0.78]} />
+          </mesh>
+          {/* Cooling Fin Ribs on Back */}
+          {[-0.2, 0, 0.2].map((fz, fIdx) => (
+            <mesh key={`fin-${fIdx}`} position={[0, 0.09, fz]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.34, 0.05, 0.04]} />
+            </mesh>
+          ))}
+
+          {/* Integrated Blue Photocell Sensor on Top */}
+          <mesh position={[0, 0.09, -0.22]}>
+            <cylinderGeometry args={[0.03, 0.03, 0.06, 8]} />
+            <meshStandardMaterial color="#0284C7" roughness={0.2} metalness={0.8} />
+          </mesh>
+
+          {/* ═══ LUMINOUS LED EMITTER ARRAY LENS (GLOWS ONLY AT NIGHT) ═══ */}
+          <mesh position={[0, -0.075, 0.06]}>
+            <boxGeometry args={[0.32, 0.02, 0.62]} />
+            {isNight ? (
+              <meshBasicMaterial color="#FFFFF5" />
+            ) : (
+              <meshStandardMaterial color="#64748B" roughness={0.7} metalness={0.1} />
+            )}
+          </mesh>
+
+          {/* Luminous Light Sprite Flare Halo / Corona at Fixture Head (Night Only) */}
+          {isNight && haloTex && (
+            <sprite position={[0, -0.15, 0.06]} scale={[2.8, 2.8, 2.8]}>
+              <spriteMaterial
+                map={haloTex}
+                transparent
+                opacity={0.90}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+              />
+            </sprite>
+          )}
+
+          {/* ═══ 4. VISIBLE VOLUMETRIC ATMOSPHERIC LIGHT CONE BEAM (NIGHT ONLY) ═══ */}
+          {isNight && (
+            <mesh position={[0, -2.7, 0]} rotation={[0, 0, 0]}>
+              <cylinderGeometry args={[0.24, 3.8, 5.4, 24, 1, true]} />
+              <meshBasicMaterial
+                color="#FFF9C4"
+                transparent
+                opacity={0.18}
+                side={THREE.DoubleSide}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+              />
+            </mesh>
+          )}
+
+          {/* ═══ 5. HIGH-POWER DYNAMIC THREE.JS ILLUMINATORS (NIGHT ONLY) ═══ */}
+          {isNight && isDetailVisible && (
+            <>
+              {/* Primary High-Intensity Downward SpotLight */}
+              <spotLight
+                position={[0, -0.2, 0.05]}
+                color="#FFFBEB"
+                intensity={65.0}
+                distance={35.0}
+                angle={Math.PI / 3.0}
+                penumbra={0.75}
+                decay={1.2}
+              />
+
+              {/* Primary Omni Area PointLight */}
+              <pointLight
+                position={[0, -0.2, 0.05]}
+                color="#FEF08A"
+                intensity={25.0}
+                distance={25.0}
+                decay={1.2}
+              />
+
+              {/* Soft Ground Bounce PointLight */}
+              <pointLight
+                position={[0, -5.2, 0.05]}
+                color="#FEF08A"
+                intensity={8.0}
+                distance={10.0}
+                decay={1.5}
+              />
+            </>
+          )}
+        </group>
+      </group>
     </group>
   );
 }
 
 // ─── AUTOMATED DYNAMIC SITE OFFICE BACK DOORWAY (OPEN 7AM TO 5PM ON NORTH FACADE) ───
-function AnimatedOfficeBackDoor() {
+function AnimatedOfficeBackDoor({ isDetailVisible = false }: { isDetailVisible?: boolean }) {
   const leftDoorRef = useRef<THREE.Group>(null);
   const rightDoorRef = useRef<THREE.Group>(null);
   const openProgressRef = useRef(1.0);
@@ -1861,7 +2192,7 @@ function AnimatedOfficeBackDoor() {
   return (
     <group position={[0, 0, -11.0]}>
       {/* Illuminated Rear Entrance Foyer Light */}
-      <pointLight position={[0, 2.2, 1.2]} color="#FEF08A" intensity={5.0} distance={8} />
+      {isDetailVisible && <pointLight position={[0, 2.2, 1.2]} color="#FEF08A" intensity={5.0} distance={8} />}
 
       {/* Concrete Rear Step Threshold leading directly to Lawn */}
       <mesh position={[0, 0.08, -0.6]} receiveShadow material={MAT_CONCRETE_SLAB}>
@@ -3187,7 +3518,7 @@ function CanteenRoutineWorker({
       {/* Food Tray when carrying OR on table when seated */}
       {isCarryingTray && !isSeated && (
         <group position={[0, 1.0, 0.38]}>
-          <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+          <mesh material={MAT_FOOD_STAINLESS_TRAY}>
             <boxGeometry args={[0.42, 0.03, 0.3]} />
           </mesh>
           <mesh position={[-0.1, 0.025, 0]} material={MAT_GARLIC_RICE}>
@@ -3201,7 +3532,7 @@ function CanteenRoutineWorker({
 
       {isSeated && (
         <group position={[0, 0.51, 0.72]}>
-          <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+          <mesh material={MAT_FOOD_STAINLESS_TRAY}>
             <boxGeometry args={[0.42, 0.02, 0.3]} />
           </mesh>
           <mesh position={[-0.1, 0.03, 0]} material={MAT_GARLIC_RICE}>
@@ -3352,7 +3683,7 @@ function CanteenTrayWalker({
 
       {/* Stainless Steel Meal Tray carried in hands */}
       <group position={[0, 1.0, 0.38]}>
-        <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+        <mesh material={MAT_FOOD_STAINLESS_TRAY}>
           <boxGeometry args={[0.45, 0.03, 0.32]} />
         </mesh>
         <mesh position={[-0.1, 0.025, 0]} material={MAT_GARLIC_RICE}>
@@ -3640,7 +3971,7 @@ function SteamedJasmineRiceCaldero() {
   return (
     <group position={[0, 0.16, 0]}>
       {/* Heavy Commercial Aluminum Rice Caldero */}
-      <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+      <mesh material={MAT_FOOD_STAINLESS_TRAY}>
         <cylinderGeometry args={[0.22, 0.20, 0.32, 16]} />
       </mesh>
       {/* Mounded Fluffy White Steamed Jasmine Rice */}
@@ -3758,10 +4089,7 @@ function IndustrialKitchenOverheadLedFixture({
           roughness={0.3}
         />
       </mesh>
-      {/* Warm Golden Downward Ambient Point Light (Turned OFF during Daytime/Morning) */}
-      {isNight && (
-        <pointLight position={[0, -0.15, 0]} color="#FEF3C7" intensity={0.75} distance={7.5} decay={2.0} />
-      )}
+      {/* Dual Emissive High-CRI LED Glass Tubes (Active only at Night) provide realistic glow */}
     </group>
   );
 }
@@ -4030,7 +4358,6 @@ function NighttimeSmartphoneWorker({ position = [0, 0, 0], rotation = [0, 0, 0] 
             <mesh position={[0, 0, 0.007]} material={MAT_PHONE_SCREEN_GLOW}>
               <planeGeometry args={[0.082, 0.155]} />
             </mesh>
-            <pointLight ref={phoneGlowRef} position={[0, 0.04, 0.08]} color="#38BDF8" intensity={0.9} distance={1.4} />
           </group>
         </group>
       </group>
@@ -4139,7 +4466,6 @@ function NighttimeSmokingWorker({ position = [0, 0, 0], rotation = [0, 0, 0] }: 
             <mesh position={[0, 0.065, 0]} material={MAT_CIGARETTE_TIP_GLOW}>
               <cylinderGeometry args={[0.006, 0.006, 0.01, 6]} />
             </mesh>
-            <pointLight ref={cherryLightRef} position={[0, 0.07, 0]} color="#EF4444" intensity={0.5} distance={1.0} />
           </group>
         </group>
 
@@ -5259,7 +5585,7 @@ function PlanningControlHeadOfficeLunch() {
 
       {/* ── PLANNING CONTROL HEAD HOT LUNCH BENTO BOX & BEVERAGE ON DESK ── */}
       <group position={[0, 0.5, 0.18]}>
-        <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+        <mesh material={MAT_FOOD_STAINLESS_TRAY}>
           <boxGeometry args={[0.38, 0.03, 0.26]} />
         </mesh>
         <mesh position={[-0.08, 0.025, 0]} material={MAT_GARLIC_RICE}>
@@ -5414,9 +5740,11 @@ function StaffHouseLoungeDining() {
 function TemfacilCanteenBuilding({
   position = [32, 0, 14],
   isDetailVisible = true,
+  timeMode = "MORNING",
 }: {
   position?: [number, number, number];
   isDetailVisible?: boolean;
+  timeMode?: AtmosphereTimeMode;
 }) {
   return (
     <group position={position}>
@@ -5512,7 +5840,7 @@ function TemfacilCanteenBuilding({
 
       {/* 6. Canteen Dining Hall Interior Setup (Visible Through Translucent Mesh) */}
       {/* Consolidated Ambient Interior Warm Light */}
-      <pointLight position={[0, 2.6, 3.5]} color="#FEF08A" intensity={4.5} distance={15} />
+      {isDetailVisible && <pointLight position={[0, 2.6, 3.5]} color="#FEF08A" intensity={4.5} distance={15} />}
 
       {/* Multiple Rows of Long Dining Tables & Parallel Benches */}
       {[-1.8, 1.8].map((xOff, i) => (
@@ -5537,7 +5865,7 @@ function TemfacilCanteenBuilding({
         </group>
       ))}
 
-      {isDetailVisible && (
+      {isDetailVisible && timeMode !== "NIGHT" && (
         <>
           {/* ─── OPTIMIZED AUTHENTIC CANTEEN DINERS ─── */}
       {/* Front Table: Left & Right pairs */}
@@ -5555,7 +5883,7 @@ function TemfacilCanteenBuilding({
       {/* ── REAR KITCHEN PREPARATION & STORAGE BACK-COUNTER ── */}
       <group position={[0, 0.45, 8.7]}>
         {/* Stainless Steel Kitchen Prep Table */}
-        <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+        <mesh material={MAT_FOOD_STAINLESS_TRAY}>
           <boxGeometry args={[5.2, 0.06, 0.9]} />
         </mesh>
         {[-2.4, 2.4].map((x, k) => (
@@ -5640,9 +5968,6 @@ function TemfacilForemanStaffHouse({ position = [-6.5, 0, -48.5] }: { position?:
             <boxGeometry args={[0.04, buildingH - 0.2, 0.02]} />
           </mesh>
         ))}
-
-        {/* Soft Interior Foyer Ambient Glow */}
-        <pointLight position={[0, 0.2, 0]} intensity={0.2} distance={6} color="#FDE047" castShadow={false} />
       </group>
 
       {/* 3. Low-Pitch G.I. Corrugated Steel Roof with Eave Overhangs (Non-Glare Matte Slate Metal) */}
@@ -5776,6 +6101,20 @@ function TemfacilWorkerBarracksCompound({
   const isNight = timeMode === "NIGHT" || timeMode === "SUNSET";
   const isMorning = timeMode === "MORNING";
   const isDaytime = timeMode === "AFTERNOON";
+
+  const { camera } = useThree();
+  const BARRACKS_WORLD_POS = useMemo(() => new THREE.Vector3(155.0, 14.0, -107.0), []);
+  const [isNearBarracks, setIsNearBarracks] = useState(false);
+
+  useFrame(() => {
+    const distSq = camera.position.distanceToSquared(BARRACKS_WORLD_POS);
+    const near = distSq < 7225; // 85 meters
+    if (near !== isNearBarracks) {
+      setIsNearBarracks(near);
+    }
+  });
+
+  const showDetails = isDetailVisible && isNearBarracks;
   return (
     <group position={position}>
       {/* ═══ 0. HEAVY-DUTY CONCRETE PLATFORM SLAB & DRAINAGE NETWORK (DISCRETE Y=0.16m BASE) ═══ */}
@@ -5849,7 +6188,9 @@ function TemfacilWorkerBarracksCompound({
         </group>
 
         {/* 4 Ground Floor Bedroom Entrance Doors */}
-        {[-7.5, -2.5, 2.5, 7.5].map((zOff, i) => (
+        {showDetails && (
+          <>
+            {[-7.5, -2.5, 2.5, 7.5].map((zOff, i) => (
           <group key={`b1-door-gf-${i}`} position={[2.42, 1.05, zOff]}>
             <mesh material={MAT_STEEL_DARK}>
               <boxGeometry args={[0.08, 2.0, 1.1]} />
@@ -5880,7 +6221,7 @@ function TemfacilWorkerBarracksCompound({
 
         {/* Outdoor Laundry Wash Basin & Water Spigot Station (Near Back z = -9.5) */}
         <group position={[2.8, 0.45, -9.5]}>
-          <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+          <mesh material={MAT_FOOD_STAINLESS_TRAY}>
             <boxGeometry args={[0.6, 0.7, 1.2]} />
           </mesh>
           <mesh position={[0, 0.4, 0]} material={MAT_CANAL_WATER}>
@@ -6002,6 +6343,8 @@ function TemfacilWorkerBarracksCompound({
             </mesh>
           </group>
         </group>
+          </>
+        )}
       </group>
 
       {/* ═══ MIDDLE STRUCTURE: OPEN-AIR LONG WORKERS COMMUNAL KITCHEN ("KUSINA NG MGA MANGGAGAWA") ═══ */}
@@ -6086,7 +6429,9 @@ function TemfacilWorkerBarracksCompound({
         </group>
 
         {/* ═══ 7. CONNECTING COVERED BREEZEWAY CORRIDOR (BRIDGING BARRACKS 1 TO KITCHEN) ═══ */}
-        <group position={[-3.6, 0, 0]}>
+        {showDetails && (
+          <>
+            <group position={[-3.6, 0, 0]}>
           <mesh position={[0, 3.1, 0]} castShadow material={MAT_ROOF_CAP}>
             <boxGeometry args={[2.5, 0.10, 3.6]} />
           </mesh>
@@ -6210,7 +6555,7 @@ function TemfacilWorkerBarracksCompound({
           </group>
           <group position={[-0.48, 1.02, -6.8]}>
             {/* Commercial Rice Cooker */}
-            <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+            <mesh material={MAT_FOOD_STAINLESS_TRAY}>
               <cylinderGeometry args={[0.21, 0.19, 0.36, 14]} />
             </mesh>
             <mesh position={[0, 0.20, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
@@ -6228,7 +6573,7 @@ function TemfacilWorkerBarracksCompound({
             <SteamedJasmineRiceCaldero />
           </group>
           <group position={[-0.48, 1.02, -4.0]}>
-            <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+            <mesh material={MAT_FOOD_STAINLESS_TRAY}>
               <cylinderGeometry args={[0.21, 0.19, 0.36, 14]} />
             </mesh>
             <mesh position={[0, 0.20, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
@@ -6295,7 +6640,7 @@ function TemfacilWorkerBarracksCompound({
           {/* West 3: Food Prep & Hardwood Sangkalang Chopping Block (Z = 3.6) */}
           <group position={[-0.48, 0.98, 3.6]}>
             {/* Thick Round End-Grain Philippine Hardwood Chopping Block (Sangkalang Bilog) */}
-            <mesh position={[0, 0.05, 0]} castShadow material={MAT_WOOD_CHOPPING}>
+            <mesh position={[0, 0.05, 0]} material={MAT_WOOD_CHOPPING}>
               <cylinderGeometry args={[0.26, 0.26, 0.10, 24]} />
             </mesh>
 
@@ -6404,7 +6749,7 @@ function TemfacilWorkerBarracksCompound({
             <SteamedJasmineRiceCaldero />
           </group>
           <group position={[0.48, 1.02, -6.8]}>
-            <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+            <mesh material={MAT_FOOD_STAINLESS_TRAY}>
               <cylinderGeometry args={[0.21, 0.19, 0.36, 14]} />
             </mesh>
             <mesh position={[0, 0.20, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
@@ -6419,7 +6764,7 @@ function TemfacilWorkerBarracksCompound({
             <SteamedJasmineRiceCaldero />
           </group>
           <group position={[0.48, 1.02, -4.0]}>
-            <mesh castShadow material={MAT_FOOD_STAINLESS_TRAY}>
+            <mesh material={MAT_FOOD_STAINLESS_TRAY}>
               <cylinderGeometry args={[0.21, 0.19, 0.36, 14]} />
             </mesh>
             <mesh position={[0, 0.20, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
@@ -6485,7 +6830,7 @@ function TemfacilWorkerBarracksCompound({
 
           {/* East 3: Veggie Prep & Cutting Station (Z = 4.8) */}
           <group position={[0.46, 0.98, 4.8]}>
-            <mesh position={[0, 0.05, 0]} castShadow material={MAT_WOOD_CHOPPING}>
+            <mesh position={[0, 0.05, 0]} material={MAT_WOOD_CHOPPING}>
               <cylinderGeometry args={[0.20, 0.20, 0.08, 16]} />
             </mesh>
             {/* Cut Kalabasa Squash & String Beans on the Board */}
@@ -6678,6 +7023,8 @@ function TemfacilWorkerBarracksCompound({
             <NighttimeLoungingWorker position={[-1.85, 0.2, -7.2]} rotation={[0, Math.PI * 0.5, 0]} />
           </>
         )}
+          </>
+        )}
       </group>
 
       {/* ═══ BARRACKS 3 (RIGHTMOST - EAST DORMITORY WITH PRIVATE ROOM MODULES) ═══ 2-STORY BUILDING (6.4M HEIGHT) ═══ */}
@@ -6736,7 +7083,9 @@ function TemfacilWorkerBarracksCompound({
         </group>
 
         {/* 5 Ground Floor Room Entrance Doors & Mounted AC Louver Units */}
-        {[-8.0, -4.0, 0, 4.0, 8.0].map((zOff, i) => (
+        {showDetails && (
+          <>
+            {[-8.0, -4.0, 0, 4.0, 8.0].map((zOff, i) => (
           <group key={`b3-room-gf-${i}`} position={[-2.32, 1.05, zOff]}>
             <mesh material={MAT_STEEL_DARK}>
               <boxGeometry args={[0.08, 2.0, 1.05]} />
@@ -6770,6 +7119,8 @@ function TemfacilWorkerBarracksCompound({
             </mesh>
           </group>
         ))}
+          </>
+        )}
       </group>
 
       {/* ═══ COMMUNAL WASHROOM & LATRINE BLOCK (BACKGROUND NORTH Z = -15.5 - PHOTO 2 TOP LEFT) ═══ */}
@@ -6787,15 +7138,19 @@ function TemfacilWorkerBarracksCompound({
           <boxGeometry args={[8.6, 0.14, 4.6]} />
         </mesh>
         {/* 4 Cubicle Toilet / Shower Doors */}
-        {[-3.0, -1.0, 1.0, 3.0].map((xOff, i) => (
-          <mesh key={`latrine-door-${i}`} position={[xOff, 1.0, 2.02]} material={MAT_STEEL_DARK}>
-            <boxGeometry args={[0.9, 1.9, 0.06]} />
-          </mesh>
-        ))}
-        {/* Exterior Wash Trough */}
-        <mesh position={[0, 0.45, 2.4]} material={MAT_FOOD_STAINLESS_TRAY}>
-          <boxGeometry args={[7.2, 0.45, 0.5]} />
-        </mesh>
+        {showDetails && (
+          <>
+            {[-3.0, -1.0, 1.0, 3.0].map((xOff, i) => (
+              <mesh key={`latrine-door-${i}`} position={[xOff, 1.0, 2.02]} material={MAT_STEEL_DARK}>
+                <boxGeometry args={[0.9, 1.9, 0.06]} />
+              </mesh>
+            ))}
+            {/* Exterior Wash Trough */}
+            <mesh position={[0, 0.45, 2.4]} material={MAT_FOOD_STAINLESS_TRAY}>
+              <boxGeometry args={[7.2, 0.45, 0.5]} />
+            </mesh>
+          </>
+        )}
       </group>
     </group>
   );

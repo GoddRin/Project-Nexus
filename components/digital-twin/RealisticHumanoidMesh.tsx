@@ -436,13 +436,17 @@ export function RealisticHumanoidMesh({
   const rElbowRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
+    if (personnelId && rootRef.current) {
+      rootRef.current.updateWorldMatrix(true, false);
+      rootRef.current.getWorldPosition(scratchMeshWorldPos);
+      registerLivePersonnelPosition(personnelId, scratchMeshWorldPos, rootRef.current);
+    }
     return () => {
       if (personnelId) {
         unregisterLivePersonnel(personnelId);
       }
     };
   }, [personnelId]);
-
 
   const timeOffset = useMemo(() => (shiftOffset ?? Math.random() * 10), [shiftOffset]);
   const config = useMemo(() => getOutfitForRole(role), [role]);
@@ -454,10 +458,6 @@ export function RealisticHumanoidMesh({
 
   const shirtMaterial = customShirtMat || config.shirtMat;
   const pantsMaterial = customPantsMat || config.pantsMat;
-
-
-  
-  
 
   const hairMat = useMemo(() => new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.85 }), [hairColor]);
   const lipMat = useMemo(() => {
@@ -474,6 +474,13 @@ export function RealisticHumanoidMesh({
 
   // Execute Biomechanical Physics Frame Update
   useFrame(({ clock }) => {
+    // 0. Live world position registration for personnel locator & camera tracking
+    // Guaranteed to execute on EVERY frame before any pose-specific early returns!
+    if (personnelId && rootRef.current) {
+      rootRef.current.getWorldPosition(scratchMeshWorldPos);
+      registerLivePersonnelPosition(personnelId, scratchMeshWorldPos, rootRef.current);
+    }
+
     const time = clock.getElapsedTime() + timeOffset;
 
     if (pose === "SEATED") {
@@ -646,12 +653,6 @@ export function RealisticHumanoidMesh({
     // Apply Head Stabilization
     if (headRef.current) {
       headRef.current.rotation.y = g.headRotY;
-    }
-
-    // 0. Live world position registration for personnel locator & camera tracking
-    if (personnelId && rootRef.current) {
-      rootRef.current.getWorldPosition(scratchMeshWorldPos);
-      registerLivePersonnelPosition(personnelId, scratchMeshWorldPos, rootRef.current);
     }
   });
 

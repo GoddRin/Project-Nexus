@@ -1461,6 +1461,13 @@ function RealisticErgonomicMouse({
           <cylinderGeometry args={[0.0025, 0.0025, 0.008, 8]} />
         </mesh>
       </group>
+      {/* Interior Ambient Glow Points */}
+      <pointLight position={[-3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} />
+      <pointLight position={[3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} />
+      <pointLight position={[-3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} />
+      <pointLight position={[3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} />
+      <pointLight position={[-3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} />
+      <pointLight position={[3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} />
     </group>
   );
 }
@@ -4275,13 +4282,6 @@ function TemfacilOfficeInteriorContent({
         </group>
       )}
 
-      {/* Interior Ambient Glow Points */}
-      <pointLight position={[-3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} />
-      <pointLight position={[3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} />
-      <pointLight position={[-3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} />
-      <pointLight position={[3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} />
-      <pointLight position={[-3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} />
-      <pointLight position={[3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} />
     </group>
   );
 }

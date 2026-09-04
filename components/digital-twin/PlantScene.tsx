@@ -1163,10 +1163,10 @@ function PowerhouseBlockout({
       <ForestVegetation />
 
       {/* --- HIGH-DENSITY MOUNTAIN FOREST WILDLIFE ECOSYSTEM --- */}
-      <ForestWildlife onSelectPerson={onSelectPerson} />
+      <ForestWildlife onSelectPerson={onSelectPerson} timeMode={effectiveTime.toLowerCase() as any} />
 
       {/* --- LIVE ANIMATED SITE WORKERS, ENGINEERS & NAVIGATING VEHICLES --- */}
-      <AnimatedSiteEntities onSelectPerson={onSelectPerson} />
+      <AnimatedSiteEntities onSelectPerson={onSelectPerson} timeMode={effectiveTime} />
 
       {/* --- SURGE TANK HILLSIDE TERRAIN (fixes floating surge tank) --- */}
       <SurgeTankHillside />
@@ -1766,6 +1766,8 @@ function PlantSceneInner({
   focusedPersonnelId,
   onDismissPersonnelBeacon,
   hideSiteLabels = false,
+  onSelectSupercar,
+  isSupercarSelected = false,
 }: {
   activePreset: CameraPresetKey;
   equipments: EquipmentWithLocation[];
@@ -1785,6 +1787,8 @@ function PlantSceneInner({
   focusedPersonnelId?: string | null;
   onDismissPersonnelBeacon?: () => void;
   hideSiteLabels?: boolean;
+  onSelectSupercar?: () => void;
+  isSupercarSelected?: boolean;
 }) {
   const isNight = effectiveTime === "NIGHT";
   const isMorning = effectiveTime === "MORNING";
@@ -1840,14 +1844,14 @@ function PlantSceneInner({
     : { pos: [35, 88, 30] as [number, number, number], color: "#FFFDF0", intensity: 2.4 };
 
   const fogArgs: [string, number, number] = isStormActive
-    ? ["#182230", 40, 200]
+    ? ["#1E293B", 120, 1200]
     : isNight
-    ? ["#050B14", 90, 380]
+    ? ["#050B14", 400, 2400]
     : isSunset
-    ? ["#FF8A65", 140, 480]
+    ? ["#FF7043", 450, 2600]
     : isMorning
-    ? ["#FED7AA", 180, 520]
-    : ["#E0F2FE", 200, 580];
+    ? ["#FED7AA", 500, 2800]
+    : ["#BAE6FD", 600, 3200];
 
   return (
     <>
@@ -1878,11 +1882,11 @@ function PlantSceneInner({
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
-        shadow-camera-far={380}
-        shadow-camera-left={-90}
-        shadow-camera-right={90}
-        shadow-camera-top={90}
-        shadow-camera-bottom={-90}
+        shadow-camera-far={260}
+        shadow-camera-left={-85}
+        shadow-camera-right={85}
+        shadow-camera-top={85}
+        shadow-camera-bottom={-85}
         shadow-bias={-0.0003}
       />
 
@@ -1934,6 +1938,8 @@ function PlantSceneInner({
       <SupercarEntity
         customization={supercarCustomization}
         isPlayerControlled={isGtaModeActive}
+        onSelect={onSelectSupercar}
+        isSelected={isSupercarSelected}
       />
 
       {/* --- GTA-STYLE PLAYER CONTROLLER (Walking/Driving Mode) --- */}
@@ -2340,7 +2346,7 @@ interface PerfStats {
 }
 
 function RenderInfoLogger({ onStatsUpdate }: { onStatsUpdate?: (stats: PerfStats) => void }) {
-  const { gl } = useThree();
+  const { gl, scene } = useThree();
   const frameCount = useRef(0);
   const lastTime = useRef(typeof performance !== "undefined" ? performance.now() : 0);
   const lastCalls = useRef(0);
@@ -2389,6 +2395,8 @@ function RenderInfoLogger({ onStatsUpdate }: { onStatsUpdate?: (stats: PerfStats
     }
 
     if (typeof window !== "undefined") {
+      (window as any).__THREE_SCENE__ = scene;
+      (window as any).__THREE_GL__ = gl;
       (window as unknown as { __R3F_INFO__?: Record<string, number> }).__R3F_INFO__ = {
         calls: lastCalls.current,
         triangles: lastTris.current,
@@ -2449,13 +2457,23 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
     );
   };
 
-  // Supercar Showcase & Configurator state
+  // Supercar Showcase & Configurator state with Neon Underglow Defaults
   const [supercarCustomization, setSupercarCustomization] = useState<SupercarCustomization>({
     bodyColor: "#D90429",
     rimsColor: "#F8FAFC",
     caliperColor: "#F59E0B",
-    glassColor: "#1E3A5F",
+    glassColor: "#FFFFFF",
     isDriving: false,
+    underglowEnabled: true,
+    underglowColor: "#00F5FF",
+    underglowMode: "PULSE",
+    underglowIntensity: 1.8,
+    headlightMode: "FULL",
+    exhaustFlames: false,
+    nosPurge: false,
+    airSuspensionLowered: false,
+    doorOpen: false,
+    policeStrobe: false,
   });
   const [isSupercarConfigOpen, setIsSupercarConfigOpen] = useState<boolean>(false);
 
@@ -2577,7 +2595,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
     <div className="relative h-full w-full bg-[var(--bg-base,#0B1013)] overflow-hidden">
       <Suspense fallback={<PlantSceneLoading />}>
         <Canvas
-          shadows
+          shadows={{ type: THREE.PCFShadowMap }}
           dpr={[1, 1.2]}
           gl={{
             antialias: false,
@@ -2585,6 +2603,9 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             powerPreference: "high-performance",
             toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1.0,
+          }}
+          onCreated={({ gl }) => {
+            gl.shadowMap.type = THREE.PCFShadowMap;
           }}
           className="h-full w-full"
         >
@@ -2612,6 +2633,8 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
             focusedPersonnelId={focusedPersonnelId}
             onDismissPersonnelBeacon={() => setFocusedPersonnelId(null)}
             hideSiteLabels={effectiveHideSiteLabels}
+            onSelectSupercar={() => setIsSupercarConfigOpen(true)}
+            isSupercarSelected={isSupercarConfigOpen}
           />
         </Canvas>
       </Suspense>
