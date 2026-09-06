@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
@@ -789,11 +789,11 @@ function useFilingCabinetGlassTexture() {
       labels.forEach((lbl, idx) => {
         const width = 100 + (idx % 3) * 15;
         const color = binderColors[(idx * 3 + Math.floor(yTop / 200)) % binderColors.length];
-        
+
         // Binder spine body
         ctx.fillStyle = color;
         ctx.fillRect(curX, yTop, width - 6, height);
-        
+
         // Spine highlight edge
         ctx.fillStyle = "rgba(255,255,255,0.15)";
         ctx.fillRect(curX, yTop, 8, height);
@@ -1268,7 +1268,7 @@ function useNoelBlueprintMonitorTexture() {
     ctx.fillStyle = "rgba(16, 185, 129, 0.35)";
     ctx.strokeStyle = "#10B981";
     ctx.lineWidth = 2;
-    [ [240, 135, 45, 45], [460, 255, 55, 55], [680, 475, 60, 60], [860, 495, 70, 70] ].forEach(([x, y, w, h]) => {
+    [[240, 135, 45, 45], [460, 255, 55, 55], [680, 475, 60, 60], [860, 495, 70, 70]].forEach(([x, y, w, h]) => {
       ctx.fillRect(x - w / 2, y - h / 2, w, h);
       ctx.strokeRect(x - w / 2, y - h / 2, w, h);
     });
@@ -1461,13 +1461,6 @@ function RealisticErgonomicMouse({
           <cylinderGeometry args={[0.0025, 0.0025, 0.008, 8]} />
         </mesh>
       </group>
-      {/* Interior Ambient Glow Points */}
-      <pointLight position={[-3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} />
-      <pointLight position={[3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} />
-      <pointLight position={[-3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} />
-      <pointLight position={[3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} />
-      <pointLight position={[-3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} />
-      <pointLight position={[3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} />
     </group>
   );
 }
@@ -1480,7 +1473,8 @@ function TemfacilOfficeInteriorContent({
   onSelectPerson?: (id: string) => void;
 }) {
   const { camera } = useThree();
-  const [distance, setDistance] = useState<number>(0);
+  const [isCloseDistance, setIsCloseDistance] = useState<boolean>(true);
+  const frameTickRef = useRef<number>(0);
 
   const docControllerTex = useDocControllerSignTexture();
   const engineeringDeptTex = useEngineeringDeptSignTexture();
@@ -1524,35 +1518,39 @@ function TemfacilOfficeInteriorContent({
   const matCapSnapback = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1D4ED8", roughness: 0.8 }), []);
   const matMonoblocBeige = useMemo(() => new THREE.MeshStandardMaterial({ color: "#DDD6CE", roughness: 0.6 }), []);
 
-
   useFrame(() => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
     const dist = camera.position.distanceTo(new THREE.Vector3(114, 14, -107));
-    setDistance(dist);
+    const close = dist < 55;
+    if (close !== isCloseDistance) {
+      setIsCloseDistance(close);
+    }
   });
 
   const roomVis = useMemo(() => {
     if (activePreset?.startsWith("temfacil-office-")) {
       const z = activePreset.replace("temfacil-office-", "");
       return {
-        r5a: z === "zone5a" || z === "overview" || distance < 60,
-        r5b: z === "zone5b" || z === "overview" || distance < 60,
-        r5c: z === "zone5c" || z === "overview" || distance < 60,
-        r5d: z === "zone5d" || z === "overview" || distance < 60,
-        r6: z === "zone6" || z === "overview" || distance < 60,
-        rKitchen: z === "zone4" || z === "overview" || distance < 60,
-        rRestrooms: z === "zone4" || z === "overview" || distance < 60,
+        r5a: z === "zone5a" || z === "overview" || isCloseDistance,
+        r5b: z === "zone5b" || z === "overview" || isCloseDistance,
+        r5c: z === "zone5c" || z === "overview" || isCloseDistance,
+        r5d: z === "zone5d" || z === "overview" || isCloseDistance,
+        r6: z === "zone6" || z === "overview" || isCloseDistance,
+        rKitchen: z === "zone4" || z === "overview" || isCloseDistance,
+        rRestrooms: z === "zone4" || z === "overview" || isCloseDistance,
       };
     }
     return {
-      r5a: distance < 50,
-      r5b: distance < 50,
-      r5c: distance < 50,
-      r5d: distance < 50,
-      r6: distance < 50,
-      rKitchen: distance < 50,
-      rRestrooms: distance < 50,
+      r5a: isCloseDistance,
+      r5b: isCloseDistance,
+      r5c: isCloseDistance,
+      r5d: isCloseDistance,
+      r6: isCloseDistance,
+      rKitchen: isCloseDistance,
+      rRestrooms: isCloseDistance,
     };
-  }, [activePreset, distance]);
+  }, [activePreset, isCloseDistance]);
 
   const {
     geoGreenSteelTrusses,
@@ -2209,6 +2207,14 @@ function TemfacilOfficeInteriorContent({
       <mesh position={[0, 0.05, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
         <boxGeometry args={[14.2, 0.1, 22.2]} />
       </mesh>
+
+      {/* 💡 Authentic Office Interior Ceiling Ambient Illumination (Single Set of 6 Room Glow Lights) */}
+      <pointLight position={[-3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} decay={2} />
+      <pointLight position={[3.5, 3.0, 7.5]} color="#FFFBEB" intensity={0.65} distance={7} decay={2} />
+      <pointLight position={[-3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} decay={2} />
+      <pointLight position={[3.5, 3.0, 0.0]} color="#FFFBEB" intensity={0.75} distance={8} decay={2} />
+      <pointLight position={[-3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} decay={2} />
+      <pointLight position={[3.5, 3.0, -7.5]} color="#FFFBEB" intensity={0.75} distance={8} decay={2} />
 
       {geoGreenSteelTrusses && <mesh geometry={geoGreenSteelTrusses} material={MAT_STEEL_GREEN_TRUSS} castShadow />}
       {geoOrangeConduits && <mesh geometry={geoOrangeConduits} material={MAT_CONDUIT_ORANGE} />}

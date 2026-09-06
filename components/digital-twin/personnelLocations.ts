@@ -235,9 +235,9 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
     case "ENGR_ELGINE_MANGCUPANG":
       return {
         id,
-        floorY: 14.00,
-        target: [85.0, 15.15, -60.0],
-        camPos: [88.8, 17.80, -53.5],
+        floorY: 14.15,
+        target: [114.0, 15.30, -91.0],
+        camPos: [118.0, 17.50, -84.5],
         zoneName: zone,
       };
 
@@ -260,12 +260,12 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
 
     case "QC_JHON_JAYME":
-      // TemfacilFacility [118, 14, -95] + [23.0, 0.1, 24.5] -> Materials Testing Lab
+      // TemfacilFacility [118, 14, -95] + [23.3, 0.1, 22.1] -> Materials Testing Lab
       return {
         id,
         floorY: 14.10,
-        target: [141.0, 15.25, -70.5],
-        camPos: [144.8, 17.90, -64.0],
+        target: [141.3, 15.25, -72.9],
+        camPos: [144.2, 17.50, -66.5],
         zoneName: zone,
       };
 

@@ -111,8 +111,8 @@ export const SITE_UTILITY_POLES: UtilityPoleData[] = [
   },
   {
     id: "POLE-06",
-    x: 80.0,
-    z: -68.0,
+    x: 81.0,
+    z: -69.5,
     hasTransformer: true,
     hasStreetlight: true,
     streetlightYaw: -2.22,
@@ -376,8 +376,8 @@ export function ConcreteUtilityPole({
 // ═══════════════════════════════════════════════════════════════════════════
 // ⚡ 3. TEMFACIL EXTERNAL PERIMETER SUBSTATION & STEP-DOWN TRANSFORMER YARD
 // ═══════════════════════════════════════════════════════════════════════════
-export function TemfacilExternalSubstation({ position = [82.0, 0, -70.0] }: { position?: [number, number, number] }) {
-  const groundY = useMemo(() => sampleTerrainY(position[0], position[2]), [position]);
+export function TemfacilExternalSubstation({ position = [84.5, 0, -71.5] }: { position?: [number, number, number] }) {
+  const groundY = useMemo(() => Math.max(14.15, sampleTerrainY(position[0], position[2])), [position]);
 
   return (
     <group position={[position[0], groundY, position[2]]}>
@@ -550,7 +550,7 @@ export function SiteElectricalDistribution() {
       <OverheadDistributionCatenaries />
 
       {/* 4. Temfacil External Perimeter Substation & Step-Down Transformer Yard (outside gate) */}
-      <TemfacilExternalSubstation position={[82.0, 0, -70.0]} />
+      <TemfacilExternalSubstation position={[84.5, 0, -71.5]} />
     </group>
   );
 }

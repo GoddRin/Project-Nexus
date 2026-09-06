@@ -21,6 +21,12 @@ import {
   MAT_EAGLE_CREST,
 } from "./SharedMaterials";
 import { registerLivePersonnelPosition, unregisterLivePersonnel } from "./personnelLocations";
+import {
+  PhilippineCarabaoModel,
+  PhilippineEagleModel,
+  PhilippineWildBoarModel,
+} from "./RealisticBlenderAssets";
+import { getSiteSurfaceY } from "./uphillRoadConfig";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SIERRA MADRE & TUMAUINI ISABELA NATIVE WILDLIFE BEHAVIOR ENGINE
@@ -37,6 +43,37 @@ import { registerLivePersonnelPosition, unregisterLivePersonnel } from "./person
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const SCENE_HALF = 180.0;
+
+const MAT_BOAR_BRISTLES = new THREE.MeshStandardMaterial({
+  color: "#28201A",
+  roughness: 0.88,
+  metalness: 0.02,
+});
+const MAT_BOAR_MANE = new THREE.MeshStandardMaterial({
+  color: "#16110D",
+  roughness: 0.92,
+  metalness: 0.01,
+});
+const MAT_BOAR_SNOUT = new THREE.MeshStandardMaterial({
+  color: "#3D2E25",
+  roughness: 0.82,
+  metalness: 0.04,
+});
+const MAT_BOAR_TUSK = new THREE.MeshStandardMaterial({
+  color: "#F3EDE3",
+  roughness: 0.32,
+  metalness: 0.12,
+});
+const MAT_BOAR_HOOF = new THREE.MeshStandardMaterial({
+  color: "#130F0C",
+  roughness: 0.65,
+  metalness: 0.10,
+});
+const MAT_CARABAO_HOOF = new THREE.MeshStandardMaterial({
+  color: "#1B1C1E",
+  roughness: 0.65,
+  metalness: 0.12,
+});
 
 const scratchWorldPos = new THREE.Vector3();
 
@@ -55,68 +92,7 @@ function useDistanceCull(groupRef: React.RefObject<THREE.Group | null>, maxDist 
 }
 
 function sampleTerrainY(x: number, z: number): number {
-  const gridSize = (gisTerrainData as any).gridSize || 65;
-  const positions = (gisTerrainData as any).positions as number[];
-
-  const xFrac = (x + SCENE_HALF) / (SCENE_HALF * 2);
-  const zFrac = (z + SCENE_HALF) / (SCENE_HALF * 2);
-
-  const col = xFrac * (gridSize - 1);
-  const row = zFrac * (gridSize - 1);
-
-  const c0 = Math.max(0, Math.min(gridSize - 2, Math.floor(col)));
-  const r0 = Math.max(0, Math.min(gridSize - 2, Math.floor(row)));
-  const c1 = c0 + 1;
-  const r1 = r0 + 1;
-
-  const fx = col - c0;
-  const fz = row - r0;
-
-  const y00 = positions[(r0 * gridSize + c0) * 3 + 1];
-  const y10 = positions[(r0 * gridSize + c1) * 3 + 1];
-  const y01 = positions[(r1 * gridSize + c0) * 3 + 1];
-  const y11 = positions[(r1 * gridSize + c1) * 3 + 1];
-
-  const y0 = y00 * (1 - fx) + y10 * fx;
-  const y1 = y01 * (1 - fx) + y11 * fx;
-  let y = y0 * (1 - fz) + y1 * fz;
-
-  // 1. Tailrace Canal & Outfall Channel
-  if (x >= -14.0 && x <= 14.0 && z >= 6.0 && z <= 48.0) {
-    return Math.min(y, -0.45);
-  }
-
-  // 2. TEMFACIL Expanded Base Land Pad & Mountain Slope Transition
-  const dxPad = Math.max(80.0 - x, 0, x - 175.0);
-  const dzPad = Math.max(-142.0 - z, 0, z - (-66.0));
-  const distPad = Math.hypot(dxPad, dzPad);
-
-  if (distPad === 0) {
-    return 14.0;
-  } else if (distPad < 28.0) {
-    const t = distPad / 28.0;
-    const smoothT = t * t * (3.0 - 2.0 * t);
-    const origY = Math.max(14.0, y);
-    y = 14.0 * (1.0 - smoothT) + origY * smoothT;
-  }
-
-  // 3. Slope to powerhouse
-  const ax = 34.0, az = -22.0;
-  const bx = 95.0, bz = -75.0;
-  const dx = bx - ax;
-  const dz = bz - az;
-  const lenSq = dx * dx + dz * dz;
-  const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
-  const projX = ax + t * dx;
-  const projZ = az + t * dz;
-  const distToSlopeLine = Math.hypot(x - projX, z - projZ);
-  if (distToSlopeLine < 28.0 && x >= 30.0 && x <= 98.0 && z >= -80.0 && z <= -20.0) {
-    const slopeY = 0.5 + t * 13.5;
-    const fade = Math.min(1.0, distToSlopeLine / 28.0);
-    y = slopeY * (1.0 - fade) + y * fade;
-  }
-
-  return y;
+  return getSiteSurfaceY(x, z);
 }
 
 // ─── 1. PHILIPPINE CARABAO (WATER BUFFALO / KALABAW) ─────────────────────────
@@ -173,11 +149,12 @@ function RealisticPhilippineCarabao({
       return;
     }
 
+    const safeDelta = Math.min(delta, 0.04);
     const isGrazing = isSunset || ((t * 0.12) % 1.0) < 0.65;
     const isWalking = !isGrazing;
 
     if (isWalking) {
-      offsetRef.current += delta * 0.32;
+      offsetRef.current += safeDelta * 0.16;
     }
 
     const radius = 6.5;
@@ -225,73 +202,109 @@ function RealisticPhilippineCarabao({
 
   return (
     <group ref={groupRef}>
-      {/* Heavy Barrel Torso */}
-      <mesh position={[0, 0.95, 0]} material={MAT_CARABAO_HIDE}>
-        <cylinderGeometry args={[0.55, 0.62, 1.6, 8]} />
+      {/* ── High-Fidelity Anatomical Articulated Carabao Mesh (Kalabaw) ── */}
+      {/* Muscular Barrel Torso */}
+      <mesh position={[0, 0.95, 0]} rotation={[Math.PI / 2, 0, 0]} material={MAT_CARABAO_HIDE}>
+        <cylinderGeometry args={[0.56, 0.54, 1.62, 10]} />
       </mesh>
-      {/* Rump */}
-      <mesh position={[0, 0.92, -0.65]} material={MAT_CARABAO_HIDE}>
-        <sphereGeometry args={[0.54, 8, 8]} />
+      {/* Muscular Shoulder Withers Hump */}
+      <mesh position={[0, 1.10, 0.55]} scale={[0.88, 1.12, 1.0]} material={MAT_CARABAO_HIDE}>
+        <sphereGeometry args={[0.52, 8, 8]} />
       </mesh>
-      {/* Shoulders / Wither */}
-      <mesh position={[0, 1.05, 0.6]} material={MAT_CARABAO_HIDE}>
-        <sphereGeometry args={[0.56, 8, 8]} />
+      {/* Rump / Flank */}
+      <mesh position={[0, 0.94, -0.65]} material={MAT_CARABAO_HIDE}>
+        <sphereGeometry args={[0.50, 8, 8]} />
       </mesh>
 
-      {/* Head & Sweeping Curved Horns */}
-      <group ref={headRef} position={[0, 1.05, 1.0]}>
-        <mesh position={[0, 0.1, 0.35]} rotation={[-0.3, 0, 0]} material={MAT_CARABAO_HIDE}>
-          <cylinderGeometry args={[0.22, 0.32, 0.65, 8]} />
+      {/* Articulated Head, Crescent Horns & Muzzle */}
+      <group ref={headRef} position={[0, 1.12, 0.82]}>
+        {/* Neck Column */}
+        <mesh position={[0, 0.12, 0.18]} rotation={[0.42, 0, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.26, 0.32, 0.55, 8]} />
         </mesh>
-        <mesh position={[0, -0.05, 0.68]} material={MAT_CARABAO_HIDE}>
-          <boxGeometry args={[0.32, 0.22, 0.35]} />
+        {/* Cranium */}
+        <mesh position={[0, 0.32, 0.42]} scale={[0.88, 1.15, 0.92]} material={MAT_CARABAO_HIDE}>
+          <sphereGeometry args={[0.26, 8, 8]} />
         </mesh>
-        {/* Left Curved Horn (Crescent sweep) */}
-        <mesh position={[-0.45, 0.32, 0.25]} rotation={[0.4, -0.8, -0.6]} material={MAT_HORN_GREY}>
-          <cylinderGeometry args={[0.06, 0.12, 0.85, 6]} />
+        {/* Broad Muzzle & Snout with Nostrils */}
+        <mesh position={[0, 0.18, 0.68]} rotation={[0.55, 0, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.16, 0.20, 0.38, 8]} />
         </mesh>
-        {/* Right Curved Horn */}
-        <mesh position={[0.45, 0.32, 0.25]} rotation={[0.4, 0.8, 0.6]} material={MAT_HORN_GREY}>
-          <cylinderGeometry args={[0.06, 0.12, 0.85, 6]} />
+        {/* Left Sweeping Crescent Horn */}
+        <mesh position={[-0.40, 0.46, 0.34]} rotation={[0.42, -0.75, -0.55]} material={MAT_HORN_GREY}>
+          <cylinderGeometry args={[0.045, 0.095, 0.88, 8]} />
+        </mesh>
+        {/* Right Sweeping Crescent Horn */}
+        <mesh position={[0.40, 0.46, 0.34]} rotation={[0.42, 0.75, 0.55]} material={MAT_HORN_GREY}>
+          <cylinderGeometry args={[0.045, 0.095, 0.88, 8]} />
         </mesh>
         {/* Drooping Ears */}
-        <mesh position={[-0.35, 0.08, 0.15]} rotation={[0, 0, -0.5]} material={MAT_CARABAO_HIDE}>
-          <boxGeometry args={[0.22, 0.08, 0.06]} />
+        <mesh position={[-0.32, 0.28, 0.28]} rotation={[0, -0.85, -0.35]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.04, 0.07, 0.28, 5]} />
         </mesh>
-        <mesh position={[0.35, 0.08, 0.15]} rotation={[0, 0, 0.5]} material={MAT_CARABAO_HIDE}>
-          <boxGeometry args={[0.22, 0.08, 0.06]} />
-        </mesh>
-      </group>
-
-      {/* Swishing Tail */}
-      <group ref={tailRef} position={[0, 0.95, -1.05]}>
-        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
-          <cylinderGeometry args={[0.035, 0.02, 0.7, 5]} />
-        </mesh>
-        <mesh position={[0, -0.72, 0]} material={MAT_CARABAO_HIDE}>
-          <sphereGeometry args={[0.08, 6, 6]} />
+        <mesh position={[0.32, 0.28, 0.28]} rotation={[0, 0.85, 0.35]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.04, 0.07, 0.28, 5]} />
         </mesh>
       </group>
 
-      {/* Sturdy Hoofed Legs with upper shoulder pivot */}
-      <group ref={legFLRef} position={[-0.35, 0.65, 0.5]}>
-        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
-          <cylinderGeometry args={[0.12, 0.09, 0.70, 6]} />
+      {/* Articulated Swishing Tail */}
+      <group ref={tailRef} position={[0, 0.88, -0.70]}>
+        <mesh position={[0, -0.28, -0.06]} rotation={[0.22, 0, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.03, 0.04, 0.52, 6]} />
+        </mesh>
+        {/* Coarse Dark Hair Tuft at Tip */}
+        <mesh position={[0, -0.58, -0.12]} rotation={[0.22, 0, 0]} material={MAT_CARABAO_HOOF}>
+          <sphereGeometry args={[0.07, 6, 6]} />
         </mesh>
       </group>
-      <group ref={legFRRef} position={[0.35, 0.65, 0.5]}>
-        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
-          <cylinderGeometry args={[0.12, 0.09, 0.70, 6]} />
+
+      {/* 4 Articulated Strong Quadruped Legs */}
+      {/* Front Left Leg */}
+      <group ref={legFLRef} position={[-0.34, 0.72, 0.48]}>
+        <mesh position={[0, -0.18, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.12, 0.09, 0.38, 7]} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.08, 0.065, 0.34, 7]} />
+        </mesh>
+        <mesh position={[0, -0.66, 0.02]} material={MAT_CARABAO_HOOF}>
+          <boxGeometry args={[0.13, 0.08, 0.15]} />
         </mesh>
       </group>
-      <group ref={legRLRef} position={[-0.32, 0.62, -0.55]}>
-        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
-          <cylinderGeometry args={[0.12, 0.09, 0.68, 6]} />
+      {/* Front Right Leg */}
+      <group ref={legFRRef} position={[0.34, 0.72, 0.48]}>
+        <mesh position={[0, -0.18, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.12, 0.09, 0.38, 7]} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.08, 0.065, 0.34, 7]} />
+        </mesh>
+        <mesh position={[0, -0.66, 0.02]} material={MAT_CARABAO_HOOF}>
+          <boxGeometry args={[0.13, 0.08, 0.15]} />
         </mesh>
       </group>
-      <group ref={legRRRef} position={[0.32, 0.62, -0.55]}>
-        <mesh position={[0, -0.35, 0]} material={MAT_CARABAO_HIDE}>
-          <cylinderGeometry args={[0.12, 0.09, 0.68, 6]} />
+      {/* Rear Left Leg */}
+      <group ref={legRLRef} position={[-0.30, 0.72, -0.48]}>
+        <mesh position={[0, -0.18, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.13, 0.09, 0.38, 7]} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.08, 0.065, 0.34, 7]} />
+        </mesh>
+        <mesh position={[0, -0.66, 0.02]} material={MAT_CARABAO_HOOF}>
+          <boxGeometry args={[0.13, 0.08, 0.15]} />
+        </mesh>
+      </group>
+      {/* Rear Right Leg */}
+      <group ref={legRRRef} position={[0.30, 0.72, -0.48]}>
+        <mesh position={[0, -0.18, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.13, 0.09, 0.38, 7]} />
+        </mesh>
+        <mesh position={[0, -0.48, 0]} material={MAT_CARABAO_HIDE}>
+          <cylinderGeometry args={[0.08, 0.065, 0.34, 7]} />
+        </mesh>
+        <mesh position={[0, -0.66, 0.02]} material={MAT_CARABAO_HOOF}>
+          <boxGeometry args={[0.13, 0.08, 0.15]} />
         </mesh>
       </group>
     </group>
@@ -339,9 +352,10 @@ function RealisticPhilippineEagle({
       return;
     }
 
+    const safeDelta = Math.min(delta, 0.04);
     const effectiveAlt = timeMode === "sunset" ? flightAltitude * 0.68 : flightAltitude;
     const effectiveSpeed = timeMode === "sunset" ? speed * 0.75 : speed;
-    progressRef.current += effectiveSpeed * delta;
+    progressRef.current += effectiveSpeed * safeDelta;
 
     const posX = orbitCenter[0] + Math.sin(progressRef.current) * radius;
     const posZ = orbitCenter[1] + Math.cos(progressRef.current) * radius;
@@ -366,55 +380,8 @@ function RealisticPhilippineEagle({
 
   return (
     <group ref={groupRef}>
-      {/* Streamlined Eagle Body */}
-      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]} material={MAT_EAGLE_FEATHER}>
-        <cylinderGeometry args={[0.22, 0.12, 1.7, 7]} />
-      </mesh>
-      {/* White Chest & Belly */}
-      <mesh position={[0, -0.06, 0.2]} material={MAT_EAGLE_CREST}>
-        <sphereGeometry args={[0.24, 6, 6]} />
-      </mesh>
-
-      {/* Head with Shaggy Brown/Cream Crest & Hooked Beak */}
-      <group ref={headRef} position={[0, 0.12, 0.85]}>
-        <mesh material={MAT_EAGLE_CREST}>
-          <sphereGeometry args={[0.18, 7, 7]} />
-        </mesh>
-        {/* Shaggy Crest Plume */}
-        <mesh position={[0, 0.14, -0.08]} rotation={[-0.4, 0, 0]} material={MAT_EAGLE_FEATHER}>
-          <coneGeometry args={[0.15, 0.35, 6]} />
-        </mesh>
-        {/* Hooked Yellow/Black Beak */}
-        <mesh position={[0, -0.04, 0.22]} rotation={[0.4, 0, 0]}>
-          <coneGeometry args={[0.08, 0.28, 5]} />
-          <meshStandardMaterial color="#EAB308" roughness={0.3} metalness={0.2} />
-        </mesh>
-      </group>
-
-      {/* Broad 2.5m Wings with Primary Feather Tips */}
-      <group ref={leftWingRef} position={[-0.2, 0.05, 0]}>
-        <mesh position={[-1.2, 0, 0]} rotation={[0, 0.05, 0]} material={MAT_EAGLE_FEATHER}>
-          <boxGeometry args={[2.2, 0.04, 0.65]} />
-        </mesh>
-        {/* Slotted Wingtip Feathers */}
-        <mesh position={[-2.3, 0, -0.05]} rotation={[0, -0.15, 0.1]} material={MAT_EAGLE_FEATHER}>
-          <boxGeometry args={[0.45, 0.02, 0.55]} />
-        </mesh>
-      </group>
-
-      <group ref={rightWingRef} position={[0.2, 0.05, 0]}>
-        <mesh position={[1.2, 0, 0]} rotation={[0, -0.05, 0]} material={MAT_EAGLE_FEATHER}>
-          <boxGeometry args={[2.2, 0.04, 0.65]} />
-        </mesh>
-        <mesh position={[2.3, 0, -0.05]} rotation={[0, 0.15, -0.1]} material={MAT_EAGLE_FEATHER}>
-          <boxGeometry args={[0.45, 0.02, 0.55]} />
-        </mesh>
-      </group>
-
-      {/* Fan Tail */}
-      <mesh position={[0, 0.02, -0.95]} rotation={[-0.1, 0, 0]} material={MAT_EAGLE_CREST}>
-        <coneGeometry args={[0.35, 0.6, 5]} />
-      </mesh>
+      {/* ── High-Fidelity Sculpted Blender 5.2 Philippine Eagle Mesh (Haring Ibon) ── */}
+      <PhilippineEagleModel scale={[1.15, 1.15, 1.15]} />
     </group>
   );
 }
@@ -757,6 +724,7 @@ function RealisticPhilippineWildBoar({
   const groupRef = useRef<THREE.Group>(null);
   useDistanceCull(groupRef, 175);
   const headRef = useRef<THREE.Group>(null);
+  const tailRef = useRef<THREE.Group>(null);
   const legFLRef = useRef<THREE.Group>(null);
   const legFRRef = useRef<THREE.Group>(null);
   const legRLRef = useRef<THREE.Group>(null);
@@ -767,31 +735,39 @@ function RealisticPhilippineWildBoar({
   useFrame(({ clock }, delta) => {
     if (!groupRef.current || !groupRef.current.visible) return;
     const t = clock.getElapsedTime() + seed * 5.0;
+    const safeDelta = Math.min(delta, 0.04);
 
-    const isDay = timeMode === "day";
-    if (isDay) {
-      // ☀️ Midday: Boars rest deep in ravine shadows
+    const isNight = timeMode === "night";
+
+    if (isNight) {
+      // 🌙 Night: Boars bed down in forest brush or slow nocturnal foraging
       const posX = basePos[0];
       const posZ = basePos[1];
       const groundY = sampleTerrainY(posX, posZ) - 0.22;
       groupRef.current.position.set(posX, groundY, posZ);
       groupRef.current.rotation.set(0, seed * 2.5, 0);
 
-      if (headRef.current) headRef.current.rotation.set(0.1, 0, 0);
-      if (legFLRef.current) legFLRef.current.rotation.set(1.1, 0, 0);
-      if (legFRRef.current) legFRRef.current.rotation.set(1.1, 0, 0);
-      if (legRLRef.current) legRLRef.current.rotation.set(-1.1, 0, 0);
-      if (legRRRef.current) legRRRef.current.rotation.set(-1.1, 0, 0);
+      if (headRef.current) {
+        headRef.current.rotation.set(0.12 + Math.sin(t * 1.0) * 0.03, 0, 0);
+      }
+      if (tailRef.current) {
+        tailRef.current.rotation.z = Math.sin(t * 1.5) * 0.15;
+      }
+      if (legFLRef.current) legFLRef.current.rotation.set(1.1, 0, -0.2);
+      if (legFRRef.current) legFRRef.current.rotation.set(1.1, 0, 0.2);
+      if (legRLRef.current) legRLRef.current.rotation.set(-1.1, 0, -0.15);
+      if (legRRRef.current) legRRRef.current.rotation.set(-1.1, 0, 0.15);
       return;
     }
 
-    // 🌙 Night / Sunset / Morning: Active crepuscular foraging
-    const isRooting = ((t * 0.15) % 1.0) < 0.6;
+    // ☀️ Daytime / Morning / Sunset: Active energetic foraging along forest verges
+    // Rooting phase (snout digging in soil for roots, tubers, fallen fruits)
+    const isRooting = ((t * 0.18 + seed) % 1.0) < 0.45;
     if (!isRooting) {
-      offsetRef.current += delta * 0.42;
+      offsetRef.current += safeDelta * 0.15;
     }
 
-    const radius = 6.0;
+    const radius = 5.5 + Math.sin(seed * 2.0) * 1.5;
     const posX = basePos[0] + Math.sin(offsetRef.current) * radius;
     const posZ = basePos[1] + Math.cos(offsetRef.current) * radius;
     const groundY = sampleTerrainY(posX, posZ);
@@ -799,66 +775,158 @@ function RealisticPhilippineWildBoar({
     groupRef.current.position.set(posX, groundY, posZ);
     groupRef.current.rotation.y = offsetRef.current + Math.PI / 2;
 
+    // Head rooting and sniffing motion
     if (headRef.current) {
-      headRef.current.rotation.x = isRooting ? 0.45 + Math.sin(t * 5.0) * 0.08 : 0.05;
+      if (isRooting) {
+        // Deep snout rooting into ground
+        headRef.current.rotation.x = 0.42 + Math.sin(t * 6.5) * 0.10;
+        headRef.current.rotation.y = Math.sin(t * 3.5) * 0.14;
+      } else {
+        // Alert trotting head bob
+        headRef.current.rotation.x = 0.05 + Math.sin(t * 4.2) * 0.06;
+        headRef.current.rotation.y = Math.sin(t * 1.2) * 0.12;
+      }
     }
 
-    const step = !isRooting ? Math.sin(t * 3.8) * 0.35 : 0;
+    // Dynamic 4-beat diagonal walking trot cycle
+    const walkSpeed = 4.4;
+    const step = !isRooting ? Math.sin(t * walkSpeed) * 0.38 : Math.sin(t * 2.0) * 0.06;
     if (legFLRef.current) legFLRef.current.rotation.set(step, 0, 0);
     if (legFRRef.current) legFRRef.current.rotation.set(-step, 0, 0);
     if (legRLRef.current) legRLRef.current.rotation.set(-step, 0, 0);
     if (legRRRef.current) legRRRef.current.rotation.set(step, 0, 0);
+
+    // Dynamic tail flicking & wagging
+    if (tailRef.current) {
+      tailRef.current.rotation.z = Math.sin(t * 5.5) * 0.40;
+      tailRef.current.rotation.x = 0.25 + Math.cos(t * 3.8) * 0.18;
+    }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Heavy Barrel Body */}
-      <mesh position={[0, 0.48, 0]} scale={[1.1, 1.0, 1.4]}>
-        <sphereGeometry args={[0.34, 8, 8]} />
-        <meshStandardMaterial color="#2B1810" roughness={0.95} />
+      {/* ── High-Fidelity Anatomical Articulated Philippine Wild Boar (Baboy Ramo) ── */}
+      {/* Muscular Barrel Torso */}
+      <mesh position={[0, 0.48, 0]} rotation={[Math.PI / 2, 0, 0]} material={MAT_BOAR_BRISTLES}>
+        <cylinderGeometry args={[0.26, 0.23, 0.76, 8]} />
       </mesh>
-      {/* Stiff Bristle Mane Ridge */}
-      <mesh position={[0, 0.78, 0.05]}>
-        <boxGeometry args={[0.08, 0.14, 0.8]} />
-        <meshStandardMaterial color="#140A05" roughness={0.99} />
+      {/* High Arched Shoulder Withers Hump */}
+      <mesh position={[0, 0.56, 0.22]} scale={[0.88, 1.18, 1.0]} material={MAT_BOAR_BRISTLES}>
+        <sphereGeometry args={[0.27, 8, 8]} />
       </mesh>
-      {/* Snout & Head */}
-      <group ref={headRef} position={[0, 0.52, 0.42]}>
-        <mesh position={[0, 0, 0.22]} rotation={[-0.3, 0, 0]}>
-          <coneGeometry args={[0.16, 0.45, 6]} />
-          <meshStandardMaterial color="#22130C" roughness={0.95} />
+      {/* Rump / Flank */}
+      <mesh position={[0, 0.48, -0.28]} material={MAT_BOAR_BRISTLES}>
+        <sphereGeometry args={[0.24, 8, 8]} />
+      </mesh>
+      {/* Dark Dorsal Bristle Mane along Spine */}
+      <mesh position={[0, 0.64, 0.05]} material={MAT_BOAR_MANE}>
+        <boxGeometry args={[0.05, 0.10, 0.65]} />
+      </mesh>
+
+      {/* Articulated Head, Snout, Warty Bosses & Ivory Tusks */}
+      <group ref={headRef} position={[0, 0.50, 0.35]}>
+        {/* Wedge-Shaped Cranium and Snout */}
+        <mesh position={[0, 0.08, 0.22]} rotation={[0.42, 0, 0]} material={MAT_BOAR_BRISTLES}>
+          <coneGeometry args={[0.16, 0.42, 8]} />
         </mesh>
-        {/* Curved Ivory Tusks */}
-        <mesh position={[-0.12, -0.06, 0.28]} rotation={[0.4, 0, -0.4]} material={MAT_HORN_GREY}>
-          <cylinderGeometry args={[0.012, 0.02, 0.14, 5]} />
+        {/* Cartilaginous Snout Disc with Nostrils */}
+        <mesh position={[0, -0.05, 0.42]} rotation={[0.42, 0, 0]} material={MAT_BOAR_SNOUT}>
+          <cylinderGeometry args={[0.065, 0.065, 0.03, 8]} />
         </mesh>
-        <mesh position={[0.12, -0.06, 0.28]} rotation={[0.4, 0, 0.4]} material={MAT_HORN_GREY}>
-          <cylinderGeometry args={[0.012, 0.02, 0.14, 5]} />
+        {/* Nostril Cavities */}
+        {[-0.022, 0.022].map((xN, i) => (
+          <mesh key={`nostril-${i}`} position={[xN, -0.05, 0.435]} material={MAT_BOAR_MANE}>
+            <sphereGeometry args={[0.012, 5, 5]} />
+          </mesh>
+        ))}
+        {/* Warty Cheek Bosses (Sus philippensis characteristic) */}
+        <mesh position={[-0.14, 0.04, 0.22]} material={MAT_BOAR_SNOUT}>
+          <sphereGeometry args={[0.04, 6, 6]} />
+        </mesh>
+        <mesh position={[0.14, 0.04, 0.22]} material={MAT_BOAR_SNOUT}>
+          <sphereGeometry args={[0.04, 6, 6]} />
+        </mesh>
+        {/* Left Curved Ivory Upward Tusk */}
+        <mesh position={[-0.09, -0.01, 0.32]} rotation={[-0.45, -0.35, -0.45]} material={MAT_BOAR_TUSK}>
+          <coneGeometry args={[0.018, 0.12, 6]} />
+        </mesh>
+        {/* Right Curved Ivory Upward Tusk */}
+        <mesh position={[0.09, -0.01, 0.32]} rotation={[-0.45, 0.35, 0.45]} material={MAT_BOAR_TUSK}>
+          <coneGeometry args={[0.018, 0.12, 6]} />
+        </mesh>
+        {/* Pointed Alert Ears */}
+        <mesh position={[-0.13, 0.22, 0.08]} rotation={[-0.2, -0.3, -0.35]} material={MAT_BOAR_BRISTLES}>
+          <coneGeometry args={[0.045, 0.14, 5]} />
+        </mesh>
+        <mesh position={[0.13, 0.22, 0.08]} rotation={[-0.2, 0.3, 0.35]} material={MAT_BOAR_BRISTLES}>
+          <coneGeometry args={[0.045, 0.14, 5]} />
+        </mesh>
+        {/* Beady Specular Eyes */}
+        <mesh position={[-0.10, 0.12, 0.15]} material={MAT_BOAR_MANE}>
+          <sphereGeometry args={[0.018, 6, 6]} />
+        </mesh>
+        <mesh position={[0.10, 0.12, 0.15]} material={MAT_BOAR_MANE}>
+          <sphereGeometry args={[0.018, 6, 6]} />
         </mesh>
       </group>
-      {/* Articulated Sturdy Legs (Firmly Grounded on Terrain) */}
-      <group ref={legFLRef} position={[-0.2, 0.48, 0.25]}>
-        <mesh position={[0, -0.24, 0]}>
-          <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
-          <meshStandardMaterial color="#1A0D06" roughness={0.95} />
+
+      {/* Articulated Swishing Bristled Tail */}
+      <group ref={tailRef} position={[0, 0.46, -0.34]}>
+        <mesh position={[0, -0.12, -0.05]} rotation={[0.3, 0, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.018, 0.018, 0.24, 5]} />
+        </mesh>
+        <mesh position={[0, -0.24, -0.08]} material={MAT_BOAR_MANE}>
+          <sphereGeometry args={[0.035, 6, 6]} />
         </mesh>
       </group>
-      <group ref={legFRRef} position={[0.2, 0.48, 0.25]}>
-        <mesh position={[0, -0.24, 0]}>
-          <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
-          <meshStandardMaterial color="#1A0D06" roughness={0.95} />
+
+      {/* 4 Articulated Quadruped Legs with Cloven Hooves */}
+      {/* Front Left Leg */}
+      <group ref={legFLRef} position={[-0.18, 0.36, 0.22]}>
+        <mesh position={[0, -0.09, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.075, 0.055, 0.20, 6]} />
+        </mesh>
+        <mesh position={[0, -0.24, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.045, 0.035, 0.16, 6]} />
+        </mesh>
+        <mesh position={[0, -0.34, 0.01]} material={MAT_BOAR_HOOF}>
+          <boxGeometry args={[0.07, 0.04, 0.08]} />
         </mesh>
       </group>
-      <group ref={legRLRef} position={[-0.18, 0.48, -0.3]}>
-        <mesh position={[0, -0.24, 0]}>
-          <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
-          <meshStandardMaterial color="#1A0D06" roughness={0.95} />
+      {/* Front Right Leg */}
+      <group ref={legFRRef} position={[0.18, 0.36, 0.22]}>
+        <mesh position={[0, -0.09, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.075, 0.055, 0.20, 6]} />
+        </mesh>
+        <mesh position={[0, -0.24, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.045, 0.035, 0.16, 6]} />
+        </mesh>
+        <mesh position={[0, -0.34, 0.01]} material={MAT_BOAR_HOOF}>
+          <boxGeometry args={[0.07, 0.04, 0.08]} />
         </mesh>
       </group>
-      <group ref={legRRRef} position={[0.18, 0.48, -0.3]}>
-        <mesh position={[0, -0.24, 0]}>
-          <cylinderGeometry args={[0.075, 0.055, 0.48, 6]} />
-          <meshStandardMaterial color="#1A0D06" roughness={0.95} />
+      {/* Rear Left Leg */}
+      <group ref={legRLRef} position={[-0.16, 0.36, -0.22]}>
+        <mesh position={[0, -0.09, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.075, 0.055, 0.20, 6]} />
+        </mesh>
+        <mesh position={[0, -0.24, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.045, 0.035, 0.16, 6]} />
+        </mesh>
+        <mesh position={[0, -0.34, 0.01]} material={MAT_BOAR_HOOF}>
+          <boxGeometry args={[0.07, 0.04, 0.08]} />
+        </mesh>
+      </group>
+      {/* Rear Right Leg */}
+      <group ref={legRRRef} position={[0.16, 0.36, -0.22]}>
+        <mesh position={[0, -0.09, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.075, 0.055, 0.20, 6]} />
+        </mesh>
+        <mesh position={[0, -0.24, 0]} material={MAT_BOAR_BRISTLES}>
+          <cylinderGeometry args={[0.045, 0.035, 0.16, 6]} />
+        </mesh>
+        <mesh position={[0, -0.34, 0.01]} material={MAT_BOAR_HOOF}>
+          <boxGeometry args={[0.07, 0.04, 0.08]} />
         </mesh>
       </group>
     </group>
@@ -929,9 +997,10 @@ function RealisticPhilippineGoat({ basePos, seed = 1.0 }: { basePos: [number, nu
     if (!groupRef.current || !groupRef.current.visible || !headRef.current) return;
     const t = clock.getElapsedTime() + seed * 4.0;
     
+    const safeDelta = Math.min(delta, 0.04);
     const isWalking = Math.sin(t * 0.18) > 0.2;
     if (isWalking) {
-      offsetRef.current += delta * 0.38;
+      offsetRef.current += safeDelta * 0.09;
     }
 
     const radius = 4.2;
@@ -1101,10 +1170,10 @@ function RealisticPhilippineAspinDog({
     } else if (routeType === "TEMFACIL_GATE") {
       // Patrolling around the Main Security Guardhouse and entrance barrier
       return [
-        new THREE.Vector3(98, 14.15, -76),
-        new THREE.Vector3(94, 13.5, -70),
-        new THREE.Vector3(104, 14.15, -82),
-        new THREE.Vector3(90, 12.2, -62),
+        new THREE.Vector3(98, 14.15, -77),
+        new THREE.Vector3(95, 14.15, -74),
+        new THREE.Vector3(101, 14.15, -80),
+        new THREE.Vector3(94, 14.15, -78),
       ];
     } else if (routeType === "WAREHOUSE_RAMP") {
       // Roaming along the warehouse brown dirt access track
@@ -1176,10 +1245,13 @@ function RealisticPhilippineAspinDog({
       }
     }
 
-    // Aspin natural movement: walking, occasional sniffing pause
+    const safeDelta = Math.min(delta, 0.04);
+    // Aspin natural movement: calm walking / trotting with occasional sniffing pause
     const isSniffing = Math.sin(t * 0.35) > 0.65;
-    const walkSpeed = isSniffing ? 0.02 : 0.065;
-    progressRef.current = (progressRef.current + delta * walkSpeed) % 1.0;
+    const baseWalkSpeed = routeType === "TEMFACIL_COURTYARD" ? 0.022 : routeType === "TEMFACIL_GATE" ? 0.016 : 0.018;
+    const sniffSpeed = routeType === "TEMFACIL_COURTYARD" ? 0.004 : 0.003;
+    const walkSpeed = isSniffing ? sniffSpeed : baseWalkSpeed;
+    progressRef.current = (progressRef.current + safeDelta * walkSpeed) % 1.0;
 
     const pt = curve.getPointAt(progressRef.current);
     const tangent = curve.getTangentAt(progressRef.current);
@@ -1375,17 +1447,18 @@ export function ForestWildlife({
     [72, -135], [78, -142], [84, -138],
   ], []);
 
+  // Relocated hornbill from road [58, -25] into the lush forest canopy [38, -38]
   const hornbillPositions: [number, number][] = useMemo(() => [
-    [-22, 14], [58, -25], [-12, -75],
+    [-22, 14], [38, -38], [-12, -75],
   ], []);
 
   const monkeyPositions: [number, number][] = useMemo(() => [
     [32, -18], [42, -22],
   ], []);
 
-  // Relocated goats to lush Sierra Madre grassy pasture hillside
+  // Relocated goats to lush Sierra Madre grassy pasture hillside (safely clear of road cut)
   const goatPositions: [number, number][] = useMemo(() => [
-    [68, -48], [75, -54], [62, -42],
+    [45, -72], [38, -78], [52, -84],
   ], []);
 
   // Monitor lizards basking on riverbank shore rocks

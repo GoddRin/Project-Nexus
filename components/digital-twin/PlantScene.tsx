@@ -1397,8 +1397,8 @@ function CameraController({
         target: new THREE.Vector3(125, 15, -100),
       },
       "temfacil-guardhouse": {
-        pos: new THREE.Vector3(76, 18.0, -56),
-        target: new THREE.Vector3(88, 12.5, -70),
+        pos: new THREE.Vector3(82, 18.0, -62),
+        target: new THREE.Vector3(93, 14.5, -75),
       },
       "temfacil-barracks": {
         pos: new THREE.Vector3(155, 23, -84),

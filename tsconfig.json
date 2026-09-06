@@ -37,7 +37,8 @@
     "**/*.mts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next/dev/types/validator.ts"
   ],
   "extends": "expo/tsconfig.base"
 }

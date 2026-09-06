@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gisTerrainData from "@/public/data/gis-terrain-mesh.json";
@@ -102,7 +102,12 @@ import {
 } from "./uphillRoadConfig";
 import { FILIPINO_PERSONNEL_REGISTRY } from "./personnelData";
 import { FilipinoCharacterHead } from "./TemfacilFacility";
-import { registerLivePersonnelPosition, unregisterLivePersonnel } from "./personnelLocations";
+import { RealisticSCICCivilForemanModel } from "./RealisticBlenderAssets";
+import {
+  registerLivePersonnelPosition,
+  unregisterLivePersonnel,
+  LIVE_PERSONNEL_WORLD_POSITIONS,
+} from "./personnelLocations";
 
 const scratchPersonWorldPos = new THREE.Vector3();
 const scratchJimmyWorldPos = new THREE.Vector3();
@@ -139,8 +144,44 @@ export function sampleTerrainY(x: number, z: number): number {
 
   const y0 = y00 * (1 - fx) + y10 * fx;
   const y1 = y01 * (1 - fx) + y11 * fx;
-  const sampledY = y0 * (1 - fz) + y1 * fz;
+  let sampledY = y0 * (1 - fz) + y1 * fz;
 
+  // 1. Excavate Tailrace Canal & Outfall Channel
+  if (x >= -12.0 && x <= 12.0 && z >= 5.5 && z <= 48.0) {
+    return -1.35;
+  }
+
+  // 2. Powerhouse Facility Compound Base Yard (level civil foundation at Y = 0.05m)
+  const dxPH = Math.max(-32.0 - x, 0, x - 44.0);
+  const dzPH = Math.max(-24.0 - z, 0, z - 18.0);
+  const distPH = Math.hypot(dxPH, dzPH);
+  if (distPH === 0) {
+    sampledY = 0.05;
+  } else if (distPH < 22.0) {
+    const tPH = distPH / 22.0;
+    const smoothT = tPH * tPH * (3.0 - 2.0 * tPH);
+    const origY = Math.max(0.05, sampledY);
+    sampledY = 0.05 * (1.0 - smoothT) + origY * smoothT;
+  }
+
+  // 3. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 88, z: -70, y=13.8) down to Powerhouse (x: 34, z: -22, y=0.5)
+  const ax = 34.0, az = -22.0;
+  const bx = 95.0, bz = -75.0;
+  const dx = bx - ax;
+  const dz = bz - az;
+  const lenSq = dx * dx + dz * dz;
+  const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
+  const projX = ax + t * dx;
+  const projZ = az + t * dz;
+  const distToSlopeLine = Math.hypot(x - projX, z - projZ);
+
+  if (distToSlopeLine < 26.0 && x >= 30.0 && x <= 88.0 && z >= -72.0 && z <= -20.0) {
+    const slopeY = 0.5 + t * 13.3;
+    const fade = Math.min(1.0, distToSlopeLine / 26.0);
+    sampledY = slopeY * (1.0 - fade) + sampledY * fade;
+  }
+
+  // 4. TEMFACIL Compound Elevated Base Platform (EL. 14.0m to 14.85m)
   if (x >= 68.0 && z <= -58.0) {
     return Math.max(14.0, sampledY);
   }
@@ -349,7 +390,9 @@ export function HydroProjectPersonMesh({
   const torsoRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
+  const leftForearmRef = useRef<THREE.Group>(null);
   const rightArmRef = useRef<THREE.Group>(null);
+  const rightForearmRef = useRef<THREE.Group>(null);
   const leftLegRef = useRef<THREE.Group>(null);
   const rightLegRef = useRef<THREE.Group>(null);
   const eyeOpenRef = useRef<THREE.Group>(null);
@@ -359,6 +402,7 @@ export function HydroProjectPersonMesh({
   // Dedicated refs for job accessories & dynamic tools
   const propToolRef = useRef<THREE.Group>(null);
   const laserBeamRef = useRef<THREE.Mesh>(null);
+  const frameTickRef = useRef<number>(0);
 
   // Automatically determine active routine from personnelId or prop
   const activeRoutine = useMemo(() => {
@@ -559,9 +603,12 @@ export function HydroProjectPersonMesh({
     }
     if (!isVisible) return;
 
-    const close = distSq < 3600; // 60 meters
-    if (close !== isCloseUp) {
-      setIsCloseUp(close);
+    frameTickRef.current++;
+    if (frameTickRef.current % 12 === 0) {
+      const close = distSq < 1225; // 35 meters LOD boundary
+      if (close !== isCloseUp) {
+        setIsCloseUp(close);
+      }
     }
 
     const t = clock.getElapsedTime() + shiftOffset;
@@ -616,11 +663,14 @@ export function HydroProjectPersonMesh({
       if (rightLegRef.current) rightLegRef.current.rotation.set(legStrideR, 0, -lateralSway);
 
       if (leftArmRef.current) leftArmRef.current.rotation.set(-armSwing, 0.10, -0.08);
+      if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.30 - Math.max(0, -armSwing) * 0.35, 0, 0);
       if (rightArmRef.current) {
         if (speakerState?.isHoldingMic) {
-          rightArmRef.current.rotation.set(-1.4, -0.15, -0.1);
+          rightArmRef.current.rotation.set(-0.70, -0.15, -0.08);
+          if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.95, -0.10, 0);
         } else {
           rightArmRef.current.rotation.set(armSwing, -0.10, 0.08);
+          if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.30 - Math.max(0, armSwing) * 0.35, 0, 0);
         }
       }
       return;
@@ -635,8 +685,10 @@ export function HydroProjectPersonMesh({
       if (eyeClosedRef.current) eyeClosedRef.current.visible = true;
       if (prayingHandsRef.current) prayingHandsRef.current.visible = true;
 
-      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.45, 0.25);
-      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15, -0.45, -0.25);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55, 0.35, 0.20);
+      if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.25, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-0.55, -0.35, -0.20);
+      if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.95, -0.25, 0);
       if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
       if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
       return;
@@ -658,32 +710,40 @@ export function HydroProjectPersonMesh({
         groupRef.current.position.y = basePosY + breathY;
         if (torsoRef.current) torsoRef.current.rotation.set(0, beat * 0.18, beat * 0.12);
         if (headRef.current) headRef.current.rotation.set(-0.05, beat * 0.12, beat * 0.08);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-2.2 + beat * 0.35, 0.15, -0.35 + beat * 0.35);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-2.2 + beat * 0.35, -0.15, 0.35 + beat * 0.35);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.40 + beat * 0.25, 0.15, -0.35 + beat * 0.35);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.80 + beat * 0.15, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.40 + beat * 0.25, -0.15, 0.35 + beat * 0.35);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.80 + beat * 0.15, 0, 0);
       } else if (stretchPhase < 15.0) {
         const beat = Math.sin(syncT * 1.8);
         const calfRaise = Math.max(0, beat) * 0.045;
         groupRef.current.position.y = basePosY + calfRaise;
         if (torsoRef.current) torsoRef.current.rotation.set(-0.04, 0, 0);
         if (headRef.current) headRef.current.rotation.set(-0.15, 0, 0);
-        const armArc = -1.3 + beat * 1.1;
+        const armArc = -0.75 + beat * 0.65;
         if (leftArmRef.current) leftArmRef.current.rotation.set(armArc, 0.12, -0.25);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.65 + beat * 0.40, 0, 0);
         if (rightArmRef.current) rightArmRef.current.rotation.set(armArc, -0.12, 0.25);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.65 + beat * 0.40, 0, 0);
       } else if (stretchPhase < 22.5) {
         const twist = Math.sin(syncT * 1.5);
         groupRef.current.position.y = basePosY;
         if (torsoRef.current) torsoRef.current.rotation.set(0, twist * 0.32, 0);
         if (headRef.current) headRef.current.rotation.set(0, twist * 0.40, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.45, 0.35 + twist * 0.3, -0.4);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.45, -0.35 + twist * 0.3, 0.4);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.35 + twist * 0.3, -0.4);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.80, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.75, -0.35 + twist * 0.3, 0.4);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.80, 0, 0);
       } else {
         const dip = Math.sin(syncT * 1.2);
         const dipDepth = -Math.max(0, dip) * 0.06;
         groupRef.current.position.y = basePosY + dipDepth;
         if (torsoRef.current) torsoRef.current.rotation.set(0.06, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.1, 0.15, -Math.abs(dip) * 0.4);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.1, -0.15, Math.abs(dip) * 0.4);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.60, 0.15, -Math.abs(dip) * 0.4);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.60, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.60, -0.15, Math.abs(dip) * 0.4);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.60, 0, 0);
       }
       return;
     }
@@ -697,8 +757,10 @@ export function HydroProjectPersonMesh({
 
       if (headRef.current) headRef.current.rotation.set(headNod, headTurn, 0);
       if (torsoRef.current) torsoRef.current.rotation.set(0.03, headTurn * 0.15, 0);
-      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75 + gesture, 0.35, 0.18);
-      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.45, -0.15, -0.1);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45 + gesture * 0.5, 0.35, 0.18);
+      if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.75 + gesture * 0.6, 0.1, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-0.70, -0.15, -0.08);
+      if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.95, -0.10, 0);
       return;
     }
 
@@ -714,31 +776,39 @@ export function HydroProjectPersonMesh({
         const tweak = Math.sin(t * 4.0) * 0.08;
         if (torsoRef.current) torsoRef.current.rotation.set(0.18, -0.05, 0);
         if (headRef.current) headRef.current.rotation.set(0.24, -0.04, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tweak, -0.3, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.65, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.65, -0.3, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85 + tweak, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.2, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.45, 0.1, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = true;
       } else if (cycle < 9.5) {
         // Phase 2: Writing EDM measurements into yellow field logbook
         const scribble = Math.sin(t * 8.0) * 0.05;
         if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.38, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + scribble, -0.3, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.3, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + scribble, -0.15, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = false;
       } else if (cycle < 13.5) {
         // Phase 3: Waving left hand high to signal rodman across mountain slope
         const wave = Math.sin(t * 3.5) * 0.45;
         if (torsoRef.current) torsoRef.current.rotation.set(-0.04, wave * 0.1, 0);
         if (headRef.current) headRef.current.rotation.set(-0.15, wave * 0.15, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-2.4, 0.2, wave);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.75, 0.2, wave);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.65, 0, 0);
         if (rightArmRef.current) rightArmRef.current.rotation.set(0.04, 0, 0.06);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.20, 0, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = false;
       } else {
         // Phase 4: Checking digital touchscreen on total station
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0.1, 0);
         if (headRef.current) headRef.current.rotation.set(0.25, 0.15, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.1, -0.15, 0.2);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.5, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.55, -0.15, 0.2);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.2, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.40, 0, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = true;
       }
       return;
@@ -755,15 +825,19 @@ export function HydroProjectPersonMesh({
         if (rightLegRef.current) rightLegRef.current.rotation.set(0.35, 0, 0);
         if (torsoRef.current) torsoRef.current.rotation.set(0.35, 0.15, 0);
         if (headRef.current) headRef.current.rotation.set(0.45, -0.1, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.35 + hammerStrike * 0.35, -0.2, 0.15);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.7, 0.35, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.70, -0.2, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.90 + hammerStrike * 0.45, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.35, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.55, 0.1, 0);
       } else if (cycle < 12.0) {
         // Phase 2: Measuring rock discontinuity strike/dip with Clar compass
         groupRef.current.position.y = position[1] - 0.15;
         if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0.2, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0.25, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2, 0.4, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55, 0.4, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.45, -0.2, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.65, -0.1, 0);
       } else {
         // Phase 3: Standing up, logging RMR rock mass parameters on tablet
         const tap = Math.sin(t * 4.0) * 0.04;
@@ -772,8 +846,10 @@ export function HydroProjectPersonMesh({
         if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
         if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.3, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tap, -0.25, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.3, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.25, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + tap, -0.15, 0);
       }
       return;
     }
@@ -786,24 +862,30 @@ export function HydroProjectPersonMesh({
         const scan = Math.sin(t * 1.8) * 0.08;
         if (torsoRef.current) torsoRef.current.rotation.set(-0.12, scan * 0.5, 0);
         if (headRef.current) headRef.current.rotation.set(-0.35 + scan, 0, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.75 + scan, -0.15, -0.08);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.25, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.05 + scan, -0.15, -0.08);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.05, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.25, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.50, 0.1, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = true;
       } else if (cycle < 11.5) {
         // Phase 2: Logging rock bolt pull-out test data on rugged tablet
         const typeMotion = Math.sin(t * 6.0) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + typeMotion, -0.3, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.3, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + typeMotion, -0.15, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = false;
       } else {
         // Phase 3: Lateral inspection patrol along portal bench
         const step = Math.sin(t * 2.0);
         if (torsoRef.current) torsoRef.current.rotation.set(0.04, step * 0.15, 0);
         if (headRef.current) headRef.current.rotation.set(0.1, step * 0.2, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.2, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85, -0.2, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.2, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.45, 0.1, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.40, -0.2, 0);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.45, -0.1, 0);
         if (laserBeamRef.current) laserBeamRef.current.visible = false;
       }
       return;
@@ -817,21 +899,27 @@ export function HydroProjectPersonMesh({
         const sweep = Math.sin(t * 3.0) * 0.35;
         if (torsoRef.current) torsoRef.current.rotation.set(0.05, sweep * 0.2, 0);
         if (headRef.current) headRef.current.rotation.set(-0.08, sweep * 0.3, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.8 + sweep, 0.3, -0.4);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.8 - sweep, -0.3, 0.4);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.05 + sweep, 0.3, -0.4);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85, 0.1, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.05 - sweep, -0.3, 0.4);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
       } else if (cycle < 9.5) {
         // Phase 2: Inspecting steel arch rib alignment with spirit level
         if (torsoRef.current) torsoRef.current.rotation.set(0.15, -0.1, 0);
         if (headRef.current) headRef.current.rotation.set(0.28, -0.15, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.25, 0.3, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.7, -0.2, 0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55, 0.3, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.40, -0.2, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.50, -0.1, 0);
       } else {
         // Phase 3: Radioing tunnel heading blast advance status
         const nod = Math.sin(t * 2.5) * 0.08;
         if (torsoRef.current) torsoRef.current.rotation.set(0.02, 0, 0);
         if (headRef.current) headRef.current.rotation.set(nod, 0.15, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65, -0.25, -0.15);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.25, 0.05);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.75, -0.25, -0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.10, -0.15, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.25, 0.05);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.45, 0.1, 0);
       }
       return;
     }
@@ -844,8 +932,10 @@ export function HydroProjectPersonMesh({
       groupRef.current.position.y = position[1] + tremor;
       if (torsoRef.current) torsoRef.current.rotation.set(0.18, tremor * 3.0, 0);
       if (headRef.current) headRef.current.rotation.set(0.12, 0, 0);
-      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15 + leverL, 0.15, 0);
-      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15 + leverR, -0.15, 0);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55, 0.15, 0);
+      if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.75 + leverL, 0.1, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-0.55, -0.15, 0);
+      if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.75 + leverR, -0.1, 0);
       return;
     }
 
@@ -857,21 +947,27 @@ export function HydroProjectPersonMesh({
         const test = Math.sin(t * 3.0) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.22, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.35 + test, -0.2, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.3, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.65 + test, -0.2, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.3, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.55, 0.1, 0);
       } else if (cycle < 11.0) {
         // Reviewing vibration FFT harmonics on tablet
         const tap = Math.sin(t * 5.0) * 0.03;
         if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tap, -0.3, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.3, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + tap, -0.15, 0);
       } else {
         // Inspecting hydraulic governor valve
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0.15, 0);
         if (headRef.current) headRef.current.rotation.set(0.22, 0.2, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.95, -0.3, 0.2);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.6, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.55, -0.3, 0.2);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.65, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.2, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.40, 0, 0);
       }
       return;
     }
@@ -884,22 +980,28 @@ export function HydroProjectPersonMesh({
         const scan = Math.sin(t * 1.5) * 0.1;
         if (torsoRef.current) torsoRef.current.rotation.set(-0.1, scan * 0.5, 0);
         if (headRef.current) headRef.current.rotation.set(-0.35, scan, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65 + scan, -0.2, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.75, 0.25, 0.1);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.95 + scan, -0.2, 0);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.25, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.50, 0.1, 0);
       } else if (cycle < 10.5) {
         // Probing IPB busduct terminals with multimeter test leads
         const probe = Math.sin(t * 3.5) * 0.05;
         if (torsoRef.current) torsoRef.current.rotation.set(0.15, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.3, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2 + probe, 0.25, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.2 - probe, -0.25, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55, 0.25, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.80 + probe, 0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.55, -0.25, 0);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.80 - probe, -0.15, 0);
       } else {
         // Two-way radio check reporting clearance
         const nod = Math.sin(t * 2.5) * 0.08;
         if (torsoRef.current) torsoRef.current.rotation.set(0.02, 0, 0);
         if (headRef.current) headRef.current.rotation.set(nod, 0.15, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.65, -0.25, -0.15);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.25, 0.05);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.75, -0.25, -0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.10, -0.15, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.25, 0.05);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.45, 0.1, 0);
       }
       return;
     }
@@ -912,21 +1014,27 @@ export function HydroProjectPersonMesh({
         const rulerMotion = Math.sin(t * 2.5) * 0.12;
         if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.42, rulerMotion * 0.5, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.3 + rulerMotion, -0.25, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.1, 0.35, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.60, -0.25, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.90 + rulerMotion, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.50, 0.35, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.80, 0.2, 0);
       } else if (cycle < 12.0) {
         // Calculating rebar bar-bending schedules on binder
         const write = Math.sin(t * 6.0) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.18, 0.1, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0.15, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + write, -0.3, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.3, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + write, -0.15, 0);
       } else {
         // Pointing at CAD detail
         if (torsoRef.current) torsoRef.current.rotation.set(0.15, -0.1, 0);
         if (headRef.current) headRef.current.rotation.set(0.25, -0.15, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.45, -0.15, 0.2);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.7, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.75, -0.15, 0.2);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.2, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.45, 0.1, 0);
       }
       return;
     }
@@ -938,8 +1046,10 @@ export function HydroProjectPersonMesh({
       const screenGlance = Math.sin(t * 1.2) * 0.22;
       if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
       if (headRef.current) headRef.current.rotation.set(0.18, screenGlance, 0);
-      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.25 + type, 0.3, 0);
-      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + mouse, -0.3, 0);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.48, 0.3, 0);
+      if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85 + type, 0.15, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-0.48, -0.3, 0);
+      if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85 + mouse, -0.15, 0);
       return;
     }
 
@@ -956,22 +1066,28 @@ export function HydroProjectPersonMesh({
         const typingR = Math.cos(t * 7.5) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.14, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.18 + typingL, 0.22, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.18 + typingR, -0.22, -0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.22, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85 + typingL, 0.12, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.45, -0.22, -0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85 + typingR, -0.12, 0);
       } else if (workCycle < 11.0) {
         // Using optical mouse and inspecting document sheet
         const mouseMove = Math.sin(t * 3.0) * 0.03;
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, -0.05, 0);
         if (headRef.current) headRef.current.rotation.set(0.28, -0.05, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.10, 0.30, 0.15);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.20 + mouseMove, -0.25, 0.05);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.30, 0.15);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.80, 0.15, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.48, -0.25, 0.05);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85 + mouseMove, -0.12, 0);
       } else {
         // Checking and turning document page
         const pageTurn = Math.sin(t * 2.5) * 0.10;
         if (torsoRef.current) torsoRef.current.rotation.set(0.16, 0.06, 0);
         if (headRef.current) headRef.current.rotation.set(0.36, 0.06, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.25 + pageTurn, 0.20, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.15, -0.20, -0.1);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.48, 0.20, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.88 + pageTurn, 0.12, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.45, -0.20, -0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.80, -0.12, 0);
       }
       return;
     }
@@ -981,8 +1097,10 @@ export function HydroProjectPersonMesh({
       const wheelRoll = Math.sin(t * 3.0) * 0.14;
       if (torsoRef.current) torsoRef.current.rotation.set(0.22, 0, 0);
       if (headRef.current) headRef.current.rotation.set(0.38, wheelRoll * 0.4, 0);
-      if (rightArmRef.current) rightArmRef.current.rotation.set(-1.3 + wheelRoll, -0.25, 0.1);
-      if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0);
+      if (rightArmRef.current) rightArmRef.current.rotation.set(-0.60, -0.25, 0.1);
+      if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.80 + wheelRoll, -0.1, 0);
+      if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0);
+      if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
       return;
     }
 
@@ -994,22 +1112,28 @@ export function HydroProjectPersonMesh({
         const tamping = Math.sin(t * 8.0) * 0.25;
         if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.42, 0, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tamping, -0.2, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.35, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.60, -0.2, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85 + tamping * 0.4, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.35, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.55, 0.1, 0);
       } else if (slumpCycle < 11.0) {
         // Lifting slump cone upward
         const lift = Math.min(1.0, (slumpCycle - 6.5) / 2.0);
         if (torsoRef.current) torsoRef.current.rotation.set(0.25 - lift * 0.15, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.38, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.2 + lift * 0.4, 0.3, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.2 + lift * 0.4, -0.3, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55 + lift * 0.2, 0.3, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.80 - lift * 0.3, 0.1, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.55 + lift * 0.2, -0.3, 0);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.80 - lift * 0.3, -0.1, 0);
       } else {
         // Measuring slump mm with steel rule and logging ticket
         const write = Math.sin(t * 5.0) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + write, -0.3, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.3, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + write, -0.15, 0);
       }
       return;
     }
@@ -1022,22 +1146,28 @@ export function HydroProjectPersonMesh({
         const tap = Math.sin(t * 3.5) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.3, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + tap, -0.25, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.3, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.25, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + tap, -0.15, 0);
       } else if (cycle < 14.0) {
         // Pointing across valley towards powerhouse and spillway
         const pan = Math.sin(t * 1.5) * 0.15;
         if (torsoRef.current) torsoRef.current.rotation.set(-0.04, pan, 0);
         if (headRef.current) headRef.current.rotation.set(-0.12, pan * 1.5, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.6 + pan, -0.2, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.8, 0.25, 0.05);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85 + pan, -0.2, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.35, 0.25, 0.05);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.45, 0.1, 0);
       } else {
         // Discussing milestones
         const nod = Math.sin(t * 2.5) * 0.06;
         if (torsoRef.current) torsoRef.current.rotation.set(0.04, 0.1, 0);
         if (headRef.current) headRef.current.rotation.set(nod, 0.2, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.9, 0.25, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.9, -0.25, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.25, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.60, 0.1, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.40, -0.25, 0);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.60, -0.1, 0);
       }
       return;
     }
@@ -1050,22 +1180,28 @@ export function HydroProjectPersonMesh({
         const guide = Math.sin(t * 3.0) * 0.3;
         if (torsoRef.current) torsoRef.current.rotation.set(0.05, guide * 0.2, 0);
         if (headRef.current) headRef.current.rotation.set(-0.05, guide * 0.3, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.6 + guide, 0.3, -0.2);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.6 - guide, -0.3, 0.2);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85 + guide, 0.3, -0.2);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85, 0.1, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.85 - guide, -0.3, 0.2);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85, -0.1, 0);
       } else if (cycle < 9.5) {
         // Checking formwork tie-rod torque with heavy wrench
         const ratchet = Math.sin(t * 4.5);
         if (torsoRef.current) torsoRef.current.rotation.set(0.2, -0.1, 0);
         if (headRef.current) headRef.current.rotation.set(0.32, -0.15, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.35 + ratchet * 0.2, -0.2, 0.1);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.85, 0.3, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.65, -0.2, 0.1);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.85 + ratchet * 0.3, -0.1, 0);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.3, 0);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.55, 0.1, 0);
       } else {
         // Checking rebar clearance spacing with cover gauge on clipboard
         const write = Math.sin(t * 5.0) * 0.04;
         if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
         if (headRef.current) headRef.current.rotation.set(0.35, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-1.15, 0.35, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + write, -0.3, 0.15);
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.35, 0.1);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.3, 0.15);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + write, -0.15, 0);
       }
       return;
     }
@@ -1076,7 +1212,9 @@ export function HydroProjectPersonMesh({
     if (torsoRef.current) torsoRef.current.rotation.set(0, weightShift * 0.5, weightShift * 0.3);
     if (headRef.current) headRef.current.rotation.set(breath * 0.15, weightShift * 0.8, 0);
     if (leftArmRef.current) leftArmRef.current.rotation.set(0.04, 0, -0.06 + breath * 0.05);
+    if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.18, 0, 0);
     if (rightArmRef.current) rightArmRef.current.rotation.set(0.04, 0, 0.06 - breath * 0.05);
+    if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.18, 0, 0);
     if (pose !== "SEATED") {
       if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
       if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
@@ -1139,37 +1277,44 @@ export function HydroProjectPersonMesh({
               <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.9} emissive="#F1F5F9" emissiveIntensity={0.5} />
             </mesh>
             {/* Laminated ID Badge */}
-            <group position={[-0.11, 0.28, 0.12]}>
-              <mesh>
-                <boxGeometry args={[0.06, 0.08, 0.01]} />
-                <meshStandardMaterial color="#F8FAFC" roughness={0.3} />
-              </mesh>
-              <mesh position={[0, 0.015, 0.006]}>
-                <boxGeometry args={[0.04, 0.035, 0.002]} />
-                <meshStandardMaterial color="#0F172A" roughness={0.5} />
-              </mesh>
-              <mesh position={[0, -0.025, 0.006]}>
-                <boxGeometry args={[0.05, 0.012, 0.002]} />
-                <meshStandardMaterial color="#0D9488" roughness={0.3} metalness={0.6} />
-              </mesh>
-            </group>
+            {isCloseUp && (
+              <group position={[-0.11, 0.28, 0.12]}>
+                <mesh>
+                  <boxGeometry args={[0.06, 0.08, 0.01]} />
+                  <meshStandardMaterial color="#F8FAFC" roughness={0.3} />
+                </mesh>
+                <mesh position={[0, 0.015, 0.006]}>
+                  <boxGeometry args={[0.04, 0.035, 0.002]} />
+                  <meshStandardMaterial color="#0F172A" roughness={0.5} />
+                </mesh>
+                <mesh position={[0, -0.025, 0.006]}>
+                  <boxGeometry args={[0.05, 0.012, 0.002]} />
+                  <meshStandardMaterial color="#0D9488" roughness={0.3} metalness={0.6} />
+                </mesh>
+              </group>
+            )}
           </>
         )}
 
         {/* 🗣️ HEAD & SAFETY HARD HAT */}
-        <group ref={headRef} position={[0, 0.58, 0]}>
+        <group ref={headRef} position={[0, 0.53, 0]}>
+          {/* Anatomical Cervical Neck Cylinder — seamlessly bridges head into collar */}
+          <mesh position={[0, -0.09, 0.01]} material={skinMat}>
+            <cylinderGeometry args={[0.07, 0.085, 0.14, 12]} />
+          </mesh>
           <mesh material={skinMat}>
             <boxGeometry args={[0.22, 0.22, 0.22]} />
           </mesh>
-          <mesh position={[0, -0.11, 0.02]} material={skinMat}>
-            <boxGeometry args={[0.16, 0.08, 0.16]} />
-          </mesh>
-          <mesh position={[-0.115, 0.01, -0.01]} material={skinMat}>
-            <boxGeometry args={[0.015, 0.065, 0.038]} />
-          </mesh>
-          <mesh position={[0.115, 0.01, -0.01]} material={skinMat}>
-            <boxGeometry args={[0.015, 0.065, 0.038]} />
-          </mesh>
+          {isCloseUp && (
+            <>
+              <mesh position={[-0.115, 0.01, -0.01]} material={skinMat}>
+                <boxGeometry args={[0.015, 0.065, 0.038]} />
+              </mesh>
+              <mesh position={[0.115, 0.01, -0.01]} material={skinMat}>
+                <boxGeometry args={[0.015, 0.065, 0.038]} />
+              </mesh>
+            </>
+          )}
 
           {/* Hard Hat */}
           {hasHardhat && (
@@ -1180,9 +1325,11 @@ export function HydroProjectPersonMesh({
               <mesh position={[0, -0.04, 0.06]} material={customHardhatMat || MAT_WORKER_HARDHAT_WHITE}>
                 <boxGeometry args={[0.28, 0.02, 0.18]} />
               </mesh>
-              <mesh position={[0, 0.01, 0.142]} material={MAT_SIGNBOARD_TEAL}>
-                <boxGeometry args={[0.075, 0.04, 0.005]} />
-              </mesh>
+              {isCloseUp && (
+                <mesh position={[0, 0.01, 0.142]} material={MAT_SIGNBOARD_TEAL}>
+                  <boxGeometry args={[0.075, 0.04, 0.005]} />
+                </mesh>
+              )}
             </group>
           )}
 
@@ -1203,61 +1350,66 @@ export function HydroProjectPersonMesh({
             </mesh>
           )}
 
-          {/* Eyes */}
-          <group ref={eyeOpenRef} position={[0, 0.02, 0.112]}>
-            <mesh position={[-0.05, 0, 0]}>
-              <planeGeometry args={[0.04, 0.025]} />
-              <meshBasicMaterial color="#0F172A" />
-            </mesh>
-            <mesh position={[0.05, 0, 0]}>
-              <planeGeometry args={[0.04, 0.025]} />
-              <meshBasicMaterial color="#0F172A" />
-            </mesh>
-          </group>
-          <group ref={eyeClosedRef} position={[0, 0.02, 0.112]} visible={false}>
-            <mesh position={[-0.05, 0, 0]}>
-              <planeGeometry args={[0.04, 0.006]} />
-              <meshBasicMaterial color="#334155" />
-            </mesh>
-            <mesh position={[0.05, 0, 0]}>
-              <planeGeometry args={[0.04, 0.006]} />
-              <meshBasicMaterial color="#334155" />
-            </mesh>
-          </group>
+          {/* Eyes, Facial Hair & Glasses (Fidelity LOD) */}
+          {isCloseUp && (
+            <>
+              {/* Eyes */}
+              <group ref={eyeOpenRef} position={[0, 0.02, 0.112]}>
+                <mesh position={[-0.05, 0, 0]}>
+                  <planeGeometry args={[0.04, 0.025]} />
+                  <meshBasicMaterial color="#0F172A" />
+                </mesh>
+                <mesh position={[0.05, 0, 0]}>
+                  <planeGeometry args={[0.04, 0.025]} />
+                  <meshBasicMaterial color="#0F172A" />
+                </mesh>
+              </group>
+              <group ref={eyeClosedRef} position={[0, 0.02, 0.112]} visible={false}>
+                <mesh position={[-0.05, 0, 0]}>
+                  <planeGeometry args={[0.04, 0.006]} />
+                  <meshBasicMaterial color="#334155" />
+                </mesh>
+                <mesh position={[0.05, 0, 0]}>
+                  <planeGeometry args={[0.04, 0.006]} />
+                  <meshBasicMaterial color="#334155" />
+                </mesh>
+              </group>
 
-          {/* Facial Hair */}
-          {facialHair === "STUBBLE" && (
-            <mesh position={[0, -0.06, 0.112]}>
-              <planeGeometry args={[0.12, 0.05]} />
-              <meshBasicMaterial color="#1E293B" transparent opacity={0.6} />
-            </mesh>
-          )}
-          {facialHair === "MUSTACHE" && (
-            <mesh position={[0, -0.04, 0.114]} material={MAT_MUSTACHE_BLACK}>
-              <boxGeometry args={[0.08, 0.02, 0.01]} />
-            </mesh>
-          )}
-          {facialHair === "GOATEE" && (
-            <group position={[0, -0.085, 0.105]}>
-              <mesh position={[0, 0.045, 0.02]} material={MAT_MUSTACHE_BLACK}>
-                <boxGeometry args={[0.08, 0.018, 0.012]} />
-              </mesh>
-              <mesh material={MAT_MUSTACHE_BLACK}>
-                <boxGeometry args={[0.045, 0.050, 0.035]} />
-              </mesh>
-            </group>
-          )}
+              {/* Facial Hair */}
+              {facialHair === "STUBBLE" && (
+                <mesh position={[0, -0.06, 0.112]}>
+                  <planeGeometry args={[0.12, 0.05]} />
+                  <meshBasicMaterial color="#1E293B" transparent opacity={0.6} />
+                </mesh>
+              )}
+              {facialHair === "MUSTACHE" && (
+                <mesh position={[0, -0.04, 0.114]} material={MAT_MUSTACHE_BLACK}>
+                  <boxGeometry args={[0.08, 0.02, 0.01]} />
+                </mesh>
+              )}
+              {facialHair === "GOATEE" && (
+                <group position={[0, -0.085, 0.105]}>
+                  <mesh position={[0, 0.045, 0.02]} material={MAT_MUSTACHE_BLACK}>
+                    <boxGeometry args={[0.08, 0.018, 0.012]} />
+                  </mesh>
+                  <mesh material={MAT_MUSTACHE_BLACK}>
+                    <boxGeometry args={[0.045, 0.050, 0.035]} />
+                  </mesh>
+                </group>
+              )}
 
-          {/* Safety Glasses */}
-          {hasGlasses && (
-            <group position={[0, 0.035, 0.125]}>
-              <mesh position={[-0.052, 0, 0]} material={MAT_STEEL_DARK}>
-                <boxGeometry args={[0.048, 0.032, 0.008]} />
-              </mesh>
-              <mesh position={[0.052, 0, 0]} material={MAT_STEEL_DARK}>
-                <boxGeometry args={[0.048, 0.032, 0.008]} />
-              </mesh>
-            </group>
+              {/* Safety Glasses */}
+              {hasGlasses && (
+                <group position={[0, 0.035, 0.125]}>
+                  <mesh position={[-0.052, 0, 0]} material={MAT_STEEL_DARK}>
+                    <boxGeometry args={[0.048, 0.032, 0.008]} />
+                  </mesh>
+                  <mesh position={[0.052, 0, 0]} material={MAT_STEEL_DARK}>
+                    <boxGeometry args={[0.048, 0.032, 0.008]} />
+                  </mesh>
+                </group>
+              )}
+            </>
           )}
         </group>
 
@@ -1268,109 +1420,130 @@ export function HydroProjectPersonMesh({
           </mesh>
         </group>
 
-        {/* 🦾 LEFT ARM */}
+        {/* 🦾 ARTICULATED TWO-SEGMENT LEFT ARM (SHOULDER + FOREARM + SCULPTED HAND) */}
         <group ref={leftArmRef} position={[-0.24, 0.40, 0]}>
-          <mesh position={[0, -0.22, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
-            <boxGeometry args={[0.10, 0.42, 0.10]} />
+          {/* Upper Arm (Deltoid to Bicep / Tricep) */}
+          <mesh position={[0, -0.13, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
+            <boxGeometry args={[0.095, 0.26, 0.095]} />
           </mesh>
-          <mesh position={[0, -0.46, 0]} material={MAT_YELLOW_SAFETY}>
-            <boxGeometry args={[0.085, 0.09, 0.085]} />
-          </mesh>
-          {/* Handheld Props */}
-          {(accessory === "CLIPBOARD" || activeRoutine === "QUANTITY_SURVEYOR" || activeRoutine === "CIVIL_4S_SUPERVISOR") && (
-            <group position={[0, -0.52, 0.12]}>
-              <mesh material={MAT_WOOD_HANDLE}>
-                <boxGeometry args={[0.22, 0.32, 0.015]} />
-              </mesh>
-              <mesh position={[0, 0, 0.01]} material={MAT_WHITE_PAINT}>
-                <boxGeometry args={[0.19, 0.28, 0.005]} />
-              </mesh>
-            </group>
-          )}
-          {(accessory === "TABLET" || activeRoutine === "EXECUTIVE_PM" || activeRoutine === "IT_SPECIALIST" || activeRoutine === "MECHANICAL_SUPT") && (
-            <group position={[0, -0.52, 0.12]}>
-              <mesh material={MAT_PHONE_BODY}>
-                <boxGeometry args={[0.24, 0.18, 0.015]} />
-              </mesh>
-              <mesh position={[0, 0, 0.01]} material={MAT_PHONE_SCREEN_GLOW}>
-                <boxGeometry args={[0.22, 0.16, 0.005]} />
-              </mesh>
-            </group>
-          )}
-          {(accessory === "BINDER" || activeRoutine === "TECHNICAL_HEAD" || activeRoutine === "ELECTRICAL_FOREMAN") && (
-            <group position={[0, -0.52, 0.12]}>
-              <mesh material={MAT_SIGNBOARD_TEAL}>
-                <boxGeometry args={[0.25, 0.32, 0.05]} />
-              </mesh>
-            </group>
-          )}
+
+          {/* Articulated Forearm (Elbow Joint) */}
+          <group ref={leftForearmRef} position={[0, -0.26, 0]}>
+            {/* Forearm Sleeve */}
+            <mesh position={[0, -0.12, 0]} material={MAT_SHIRT_LIGHT_BLUE}>
+              <boxGeometry args={[0.085, 0.24, 0.085]} />
+            </mesh>
+            {/* Sculpted Hand with Yellow Safety Grip Gloves */}
+            <mesh position={[0, -0.24, 0.01]} material={MAT_YELLOW_SAFETY}>
+              <boxGeometry args={[0.08, 0.08, 0.075]} />
+            </mesh>
+
+            {/* Handheld Props Attached Directly to Left Hand */}
+            {(accessory === "CLIPBOARD" || activeRoutine === "QUANTITY_SURVEYOR" || activeRoutine === "CIVIL_4S_SUPERVISOR") && (
+              <group position={[0, -0.26, 0.12]}>
+                <mesh material={MAT_WOOD_HANDLE}>
+                  <boxGeometry args={[0.22, 0.32, 0.015]} />
+                </mesh>
+                <mesh position={[0, 0, 0.01]} material={MAT_WHITE_PAINT}>
+                  <boxGeometry args={[0.19, 0.28, 0.005]} />
+                </mesh>
+              </group>
+            )}
+            {(accessory === "TABLET" || activeRoutine === "EXECUTIVE_PM" || activeRoutine === "IT_SPECIALIST" || activeRoutine === "MECHANICAL_SUPT") && (
+              <group position={[0, -0.26, 0.12]}>
+                <mesh material={MAT_PHONE_BODY}>
+                  <boxGeometry args={[0.24, 0.18, 0.015]} />
+                </mesh>
+                <mesh position={[0, 0, 0.01]} material={MAT_PHONE_SCREEN_GLOW}>
+                  <boxGeometry args={[0.22, 0.16, 0.005]} />
+                </mesh>
+              </group>
+            )}
+            {(accessory === "BINDER" || activeRoutine === "TECHNICAL_HEAD" || activeRoutine === "ELECTRICAL_FOREMAN") && (
+              <group position={[0, -0.26, 0.12]}>
+                <mesh material={MAT_SIGNBOARD_TEAL}>
+                  <boxGeometry args={[0.25, 0.32, 0.05]} />
+                </mesh>
+              </group>
+            )}
+          </group>
         </group>
 
-        {/* 🦾 RIGHT ARM */}
+        {/* 🦾 ARTICULATED TWO-SEGMENT RIGHT ARM (SHOULDER + FOREARM + SCULPTED HAND) */}
         <group ref={rightArmRef} position={[0.24, 0.40, 0]}>
-          <mesh position={[0, -0.22, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
-            <boxGeometry args={[0.10, 0.42, 0.10]} />
-          </mesh>
-          <mesh position={[0, -0.46, 0]} material={MAT_YELLOW_SAFETY}>
-            <boxGeometry args={[0.085, 0.09, 0.085]} />
+          {/* Upper Arm */}
+          <mesh position={[0, -0.13, 0]} material={customVestMat || MAT_SHIRT_LIGHT_BLUE}>
+            <boxGeometry args={[0.095, 0.26, 0.095]} />
           </mesh>
 
-          {/* Right Hand Tool Props */}
-          {accessory === "MIC" && (
-            <group position={[0, -0.52, 0.05]}>
-              <mesh material={MAT_STEEL_DARK}>
-                <cylinderGeometry args={[0.015, 0.015, 0.12, 6]} />
-              </mesh>
-              <mesh position={[0, 0.07, 0]}>
-                <sphereGeometry args={[0.025, 8, 8]} />
-                <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.8} />
-              </mesh>
-            </group>
-          )}
+          {/* Articulated Forearm (Elbow Joint) */}
+          <group ref={rightForearmRef} position={[0, -0.26, 0]}>
+            {/* Forearm Sleeve */}
+            <mesh position={[0, -0.12, 0]} material={MAT_SHIRT_LIGHT_BLUE}>
+              <boxGeometry args={[0.085, 0.24, 0.085]} />
+            </mesh>
+            {/* Sculpted Hand with Yellow Safety Grip Gloves */}
+            <mesh position={[0, -0.24, 0.01]} material={MAT_YELLOW_SAFETY}>
+              <boxGeometry args={[0.08, 0.08, 0.075]} />
+            </mesh>
 
-          {(accessory === "RADIO" || activeRoutine === "TUNNEL_FOREMAN" || activeRoutine === "ELECTRICAL_SUPT") && (
-            <group position={[0, -0.52, 0.08]}>
-              <mesh material={MAT_STEEL_DARK}>
-                <boxGeometry args={[0.05, 0.13, 0.035]} />
-              </mesh>
-              <mesh position={[-0.015, 0.10, 0]} material={MAT_STEEL_DARK}>
-                <cylinderGeometry args={[0.004, 0.004, 0.14, 6]} />
-              </mesh>
-            </group>
-          )}
+            {/* Right Hand Tool Props Attached Directly to Right Hand */}
+            {accessory === "MIC" && (
+              <group position={[0, -0.26, 0.05]}>
+                <mesh material={MAT_STEEL_DARK}>
+                  <cylinderGeometry args={[0.015, 0.015, 0.12, 6]} />
+                </mesh>
+                <mesh position={[0, 0.07, 0]}>
+                  <sphereGeometry args={[0.025, 8, 8]} />
+                  <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.8} />
+                </mesh>
+              </group>
+            )}
 
-          {activeRoutine === "GEOLOGIST" && (
-            <group position={[0, -0.55, 0.1]}>
-              <mesh material={MAT_STEEL_FRAME}>
-                <cylinderGeometry args={[0.015, 0.015, 0.35, 6]} />
-              </mesh>
-              <mesh position={[0, 0.18, 0.04]} material={MAT_STEEL_DARK}>
-                <boxGeometry args={[0.04, 0.06, 0.18]} />
-              </mesh>
-            </group>
-          )}
+            {(accessory === "RADIO" || activeRoutine === "TUNNEL_FOREMAN" || activeRoutine === "ELECTRICAL_SUPT") && (
+              <group position={[0, -0.26, 0.08]}>
+                <mesh material={MAT_STEEL_DARK}>
+                  <boxGeometry args={[0.05, 0.13, 0.035]} />
+                </mesh>
+                <mesh position={[-0.015, 0.10, 0]} material={MAT_STEEL_DARK}>
+                  <cylinderGeometry args={[0.004, 0.004, 0.14, 6]} />
+                </mesh>
+              </group>
+            )}
 
-          {activeRoutine === "CIVIL_FOREMAN" && (
-            <group position={[0, -0.55, 0.1]}>
-              <mesh material={MAT_CHROME}>
-                <cylinderGeometry args={[0.018, 0.018, 0.45, 8]} />
-              </mesh>
-              <mesh position={[0, 0.22, 0.03]} material={MAT_STEEL_DARK}>
-                <cylinderGeometry args={[0.03, 0.03, 0.08, 8]} />
-              </mesh>
-            </group>
-          )}
+            {activeRoutine === "GEOLOGIST" && (
+              <group position={[0, -0.29, 0.08]}>
+                <mesh material={MAT_STEEL_FRAME}>
+                  <cylinderGeometry args={[0.015, 0.015, 0.35, 6]} />
+                </mesh>
+                <mesh position={[0, 0.18, 0.04]} material={MAT_STEEL_DARK}>
+                  <boxGeometry args={[0.04, 0.06, 0.18]} />
+                </mesh>
+              </group>
+            )}
 
-          {activeRoutine === "TUNNEL_QC" && (
-            <group position={[0, -0.52, 0.08]}>
-              <mesh material={MAT_YELLOW_SAFETY}>
-                <boxGeometry args={[0.055, 0.12, 0.04]} />
-              </mesh>
-              <mesh position={[0, 0.07, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
-                <cylinderGeometry args={[0.012, 0.012, 0.02, 8]} />
-              </mesh>
-            </group>
-          )}
+            {activeRoutine === "CIVIL_FOREMAN" && (
+              <group position={[0, -0.29, 0.08]}>
+                <mesh material={MAT_CHROME}>
+                  <cylinderGeometry args={[0.018, 0.018, 0.45, 8]} />
+                </mesh>
+                <mesh position={[0, 0.22, 0.03]} material={MAT_STEEL_DARK}>
+                  <cylinderGeometry args={[0.03, 0.03, 0.08, 8]} />
+                </mesh>
+              </group>
+            )}
+
+            {activeRoutine === "TUNNEL_QC" && (
+              <group position={[0, -0.26, 0.08]}>
+                <mesh material={MAT_YELLOW_SAFETY}>
+                  <boxGeometry args={[0.055, 0.12, 0.04]} />
+                </mesh>
+                <mesh position={[0, 0.07, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+                  <cylinderGeometry args={[0.012, 0.012, 0.02, 8]} />
+                </mesh>
+              </group>
+            )}
+          </group>
         </group>
       </group>
 
@@ -1778,12 +1951,16 @@ function BasketballPlayerMesh({
         <meshStandardMaterial color={jerseyColor} roughness={0.7} />
       </mesh>
 
+      {/* Anatomical Cervical Neck */}
+      <mesh position={[0, 1.43, 0]} material={skinMat}>
+        <cylinderGeometry args={[0.065, 0.08, 0.12, 12]} />
+      </mesh>
       {/* Head */}
-      <mesh position={[0, 1.58, 0]} material={skinMat}>
+      <mesh position={[0, 1.54, 0]} material={skinMat}>
         <boxGeometry args={[0.20, 0.22, 0.20]} />
       </mesh>
       {/* Hair */}
-      <mesh position={[0, 1.70, -0.02]} material={MAT_HAIR_BLACK}>
+      <mesh position={[0, 1.66, -0.02]} material={MAT_HAIR_BLACK}>
         <boxGeometry args={[0.22, 0.08, 0.22]} />
       </mesh>
 
@@ -2072,8 +2249,9 @@ function RovingNightWatchmen({ onSelectPerson }: { onSelectPerson?: (id: string)
   const curve2 = useMemo(() => new THREE.CatmullRomCurve3(waypoints2, true), [waypoints2]);
 
   useFrame((_, delta) => {
-    p1.current = (p1.current + delta * 0.018) % 1.0;
-    p2.current = (p2.current + delta * 0.016) % 1.0;
+    const safeDelta = Math.min(delta, 0.04);
+    p1.current = (p1.current + safeDelta * 0.013) % 1.0;
+    p2.current = (p2.current + safeDelta * 0.011) % 1.0;
 
     if (g1Ref.current) {
       const pt = curve1.getPointAt(p1.current);
@@ -2134,7 +2312,6 @@ function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (i
         onSelectPerson={onSelectPerson}
         position={[116.5, 14.15, -94.2]}
         rotation={[0, Math.PI / 4, 0]}
-        speakerType="PROJECT_MANAGER"
         role="PROJECT_MANAGER"
         skinTone="LIGHT"
         hairStyle="SHORT"
@@ -2154,7 +2331,6 @@ function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (i
         onSelectPerson={onSelectPerson}
         position={[111.0, 14.15, -88.0]}
         rotation={[0, -Math.PI / 6, 0]}
-        speakerType="SAFETY_HEAD"
         role="SAFETY_HEAD"
         skinTone="BRONZE"
         hairStyle="BALD"
@@ -2173,7 +2349,6 @@ function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (i
         onSelectPerson={onSelectPerson}
         position={[113.5, 14.15, -97.5]}
         rotation={[0, 0, 0]}
-        speakerType="HR_HEAD"
         role="HR_OFFICER"
         gender="FEMALE"
         skinTone="LIGHT"
@@ -2270,15 +2445,19 @@ function ActiveConstructionWorkerMesh({
           <boxGeometry args={[0.36, 0.04, 0.01]} />
           <meshStandardMaterial color="#FFFFFF" roughness={0.2} metalness={0.9} emissive="#FFFFFF" emissiveIntensity={0.5} />
         </mesh>
-        <mesh position={[0, 0.58, 0]} material={MAT_SKIN_MEDIUM}>
-          <boxGeometry args={[0.22, 0.25, 0.22]} />
+        {/* Anatomical Cervical Neck */}
+        <mesh position={[0, 0.46, 0]} material={MAT_SKIN_MEDIUM}>
+          <cylinderGeometry args={[0.065, 0.08, 0.12, 12]} />
+        </mesh>
+        <mesh position={[0, 0.54, 0]} material={MAT_SKIN_MEDIUM}>
+          <boxGeometry args={[0.22, 0.22, 0.22]} />
         </mesh>
         {/* Safety Hard Hat */}
-        <mesh position={[0, 0.72, 0]}>
+        <mesh position={[0, 0.67, 0]}>
           <boxGeometry args={[0.26, 0.11, 0.28]} />
           <meshStandardMaterial color={hardhatColor} roughness={0.4} metalness={0.05} />
         </mesh>
-        <mesh position={[0, 0.68, 0.06]}>
+        <mesh position={[0, 0.63, 0.06]}>
           <boxGeometry args={[0.28, 0.02, 0.18]} />
           <meshStandardMaterial color={hardhatColor} roughness={0.4} metalness={0.05} />
         </mesh>
@@ -2977,7 +3156,11 @@ export function AnimatedSecurityGateOfficer({
       />
 
       {/* Head with SOSIA Uniform Security Peak Cap & Gold Badge */}
-      <group ref={headRef} position={[0, 1.35, 0]}>
+      <group ref={headRef} position={[0, 1.28, 0]}>
+        {/* Anatomical Cervical Neck Cylinder into white uniform collar */}
+        <mesh position={[0, -0.04, 0]} material={MAT_SKIN_BRONZE}>
+          <cylinderGeometry args={[0.07, 0.085, 0.12, 12]} />
+        </mesh>
         {/* Head Mesh with Moreno Filipino Skin */}
         <mesh position={[0, 0.08, 0]} material={MAT_SKIN_BRONZE}>
           <boxGeometry args={[0.22, 0.24, 0.22]} />
@@ -3193,9 +3376,13 @@ function SecurityGateCheckpointSystem({
   const [showGateLights, setShowGateLights] = useState(false);
   const { camera } = useThree();
 
-  // Guardhouse is located directly at the TEMFACIL entrance tip (ROAD_CONSTANTS.GATE_PROGRESS_U = 0.655)
+  // Guardhouse Checkpoint System placed strictly outside the TEMFACIL compound
+  // Sitting solidly on ground level Y = 14.15m BESIDE the generator/substation (no overlap)
   const gateTransform = useMemo(() => {
-    return getRoadTransform(ROAD_CONSTANTS.GATE_PROGRESS_U, 0, 0.12);
+    return {
+      point: new THREE.Vector3(95.5, 14.15, -75.5),
+      yaw: 2.30,
+    };
   }, []);
 
   useFrame(() => {
@@ -3229,62 +3416,65 @@ function SecurityGateCheckpointSystem({
 
   return (
     <group ref={rootGroupRef} position={[gateTransform.point.x, gateTransform.point.y, gateTransform.point.z]} rotation={[0, gateTransform.yaw, 0]}>
-      {/* ═══ 1. CONCRETE CHECKPOINT FOUNDATION PLINTH (Right Shoulder) ═══ */}
-      <mesh position={[5.2, 0.08, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
-        <boxGeometry args={[3.2, 0.16, 3.2]} />
-      </mesh>
-
-      {/* ═══ 2. RED & WHITE SCIC SECURITY GUARDHOUSE BOOTH ═══ */}
-      <mesh position={[5.2, 1.48, 0]} castShadow receiveShadow material={MAT_RED_BOOTH}>
-        <boxGeometry args={[2.4, 2.8, 2.4]} />
-      </mesh>
-      {/* White Trim Pillars */}
-      {[-1.18, 1.18].map((xP, i) =>
-        [-1.18, 1.18].map((zP, j) => (
-          <mesh key={`trim-${i}-${j}`} position={[5.2 + xP, 1.48, zP]} material={MAT_ID_BADGE_WHITE}>
-            <boxGeometry args={[0.08, 2.82, 0.08]} />
-          </mesh>
-        ))
-      )}
-      {/* Guardhouse Overhanging Eaves Roof */}
-      <mesh position={[5.2, 2.92, 0]} castShadow material={MAT_STEEL_DARK}>
-        <boxGeometry args={[2.9, 0.18, 2.9]} />
-      </mesh>
-
-      {/* Road-Facing Glass Sliding Inspection Window */}
-      <mesh position={[3.98, 1.6, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_FRAME}>
-        <boxGeometry args={[1.4, 1.0, 0.06]} />
-      </mesh>
-      <mesh position={[3.98, 1.6, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_CLEAR}>
-        <boxGeometry args={[1.3, 0.9, 0.03]} />
-      </mesh>
-
-      {/* Interior Security Workstation Desk & CRT Monitor */}
-      <mesh position={[4.6, 0.85, 0]} material={MAT_TIMBER_STAKE}>
-        <boxGeometry args={[0.8, 0.1, 1.8]} />
-      </mesh>
-      {/* CCTV Monitor Screen (Glowing Green Telemetry) */}
-      <mesh position={[4.6, 1.15, 0.35]} rotation={[0, -0.4, 0]}>
-        <boxGeometry args={[0.1, 0.35, 0.45]} />
-        <meshBasicMaterial color="#10B981" />
-      </mesh>
-      {/* Interior Ambient Booth Light */}
-      {showGateLights && <pointLight position={[5.2, 2.4, 0]} color="#FEF08A" intensity={0.8} distance={5} />}
-
-      {/* SCIC Main Gate Security Signboard Above Window */}
-      <group position={[3.96, 2.4, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <mesh material={MAT_SIGNBOARD_TEAL}>
-          <boxGeometry args={[2.0, 0.4, 0.04]} />
+      {/* ═══ 1. ELEVATED SECURITY GUARDHOUSE WITH SOLID FOUNDATION PLINTH (Right Shoulder) ═══ */}
+      <group position={[4.6, 0, 0]}>
+        {/* Finished Raised Foundation Plinth Slab on Grade (Y = 14.15m) */}
+        <mesh position={[0, 0.14, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
+          <boxGeometry args={[3.4, 0.28, 3.4]} />
         </mesh>
-        <mesh position={[0, 0, 0.024]} material={MAT_ID_BADGE_WHITE}>
-          <boxGeometry args={[1.85, 0.28, 0.01]} />
+
+        {/* ═══ 2. RED & WHITE SCIC SECURITY GUARDHOUSE BOOTH ═══ */}
+        <mesh position={[0, 1.54, 0]} castShadow receiveShadow material={MAT_RED_BOOTH}>
+          <boxGeometry args={[2.4, 2.8, 2.4]} />
+        </mesh>
+        {/* White Trim Pillars */}
+        {[-1.18, 1.18].map((xP, i) =>
+          [-1.18, 1.18].map((zP, j) => (
+            <mesh key={`trim-${i}-${j}`} position={[xP, 1.52, zP]} material={MAT_ID_BADGE_WHITE}>
+              <boxGeometry args={[0.08, 2.82, 0.08]} />
+            </mesh>
+          ))
+        )}
+        {/* Guardhouse Overhanging Eaves Roof */}
+        <mesh position={[0, 2.96, 0]} castShadow material={MAT_STEEL_DARK}>
+          <boxGeometry args={[2.9, 0.18, 2.9]} />
+        </mesh>
+
+        {/* Road-Facing Glass Sliding Inspection Window */}
+        <mesh position={[-1.22, 1.64, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_FRAME}>
+          <boxGeometry args={[1.4, 1.0, 0.06]} />
+        </mesh>
+        <mesh position={[-1.22, 1.64, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_CLEAR}>
+          <boxGeometry args={[1.3, 0.9, 0.03]} />
+        </mesh>
+
+        {/* Interior Security Workstation Desk & CRT Monitor */}
+        <mesh position={[-0.6, 0.89, 0]} material={MAT_TIMBER_STAKE}>
+          <boxGeometry args={[0.8, 0.1, 1.8]} />
+        </mesh>
+        {/* CCTV Monitor Screen (Glowing Green Telemetry) */}
+        <mesh position={[-0.6, 1.19, 0.35]} rotation={[0, -0.4, 0]}>
+          <boxGeometry args={[0.1, 0.35, 0.45]} />
+          <meshBasicMaterial color="#10B981" />
+        </mesh>
+        {/* Interior Ambient Booth Light */}
+        {showGateLights && <pointLight position={[0, 2.44, 0]} color="#FEF08A" intensity={0.8} distance={5} />}
+
+        {/* SCIC Main Gate Security Signboard Above Window */}
+        <group position={[-1.24, 2.44, 0]} rotation={[0, -Math.PI / 2, 0]}>
+          <mesh material={MAT_SIGNBOARD_TEAL}>
+            <boxGeometry args={[2.0, 0.4, 0.04]} />
+          </mesh>
+          <mesh position={[0, 0, 0.024]} material={MAT_ID_BADGE_WHITE}>
+            <boxGeometry args={[1.85, 0.28, 0.01]} />
+          </mesh>
+        </group>
+
+        {/* Rear Exterior Aircon Condenser Unit */}
+        <mesh position={[1.25, 1.84, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+          <boxGeometry args={[0.3, 0.5, 0.7]} />
         </mesh>
       </group>
-
-      {/* Rear Exterior Aircon Condenser Unit */}
-      <mesh position={[6.45, 1.8, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
-        <boxGeometry args={[0.3, 0.5, 0.7]} />
-      </mesh>
 
       {/* ═══ 3. ROAD SPEED BUMPS / RUBBER RUMBLE STRIPS ACROSS ROAD ═══ */}
       {[-2.0, 2.0].map((zBump, i) => (
@@ -3384,6 +3574,23 @@ function SecurityGateCheckpointSystem({
   );
 }
 
+// ─── STATIC OBSTACLES FOR DYNAMIC VEHICLE SENSOR MATRIX ─────────────────────
+const STATIC_VEHICLE_OBSTACLES: { id: string; pos: THREE.Vector3; radius: number }[] = [
+  // Parked Ferrari 458 Italia in VIP Bay
+  { id: "PARKED_FERRARI", pos: new THREE.Vector3(116.5, 14.12, -90.5), radius: 2.1 },
+  // Tool Staging Shed Material Bundles (Teal Crates)
+  { id: "TOOL_SHED_TARP_L", pos: new THREE.Vector3(103.5, 14.8, -79.5), radius: 2.2 },
+  { id: "TOOL_SHED_TARP_R", pos: new THREE.Vector3(112.5, 14.8, -79.5), radius: 2.2 },
+  // Security Checkpoint Guardhouse Sentry Booth & Island
+  { id: "SECURITY_BOOTH", pos: new THREE.Vector3(95.0, 14.15, -77.0), radius: 2.0 },
+  // Key Personnel Initial / Standing Compound Coordinates (Zero-lag fallback)
+  { id: "STAFF_ALFREDO_ARIZ", pos: new THREE.Vector3(111.0, 14.15, -88.0), radius: 0.8 },
+  { id: "STAFF_ROMEO_SESE", pos: new THREE.Vector3(116.5, 14.15, -94.2), radius: 0.8 },
+  { id: "STAFF_ROVIGAIL_ABELLAR", pos: new THREE.Vector3(113.5, 14.15, -97.5), radius: 0.8 },
+  { id: "STAFF_RUSSELLE_ALCANTARA", pos: new THREE.Vector3(115.0, 14.15, -96.0), radius: 0.8 },
+  { id: "GUARD_RONALD_MALTO", pos: new THREE.Vector3(97.5, 14.15, -78.0), radius: 0.8 },
+];
+
 // ─── AUTONOMOUS SITE TRAFFIC & PEDESTRIAN LIFE SYSTEM ───────────────────────
 function AutonomousSiteTrafficSystem({
   gateAngle,
@@ -3401,6 +3608,8 @@ function AutonomousSiteTrafficSystem({
   const vPickupRef = useRef<THREE.Group>(null);
   const vVanRef = useRef<THREE.Group>(null);
   const vPatrolRef = useRef<THREE.Group>(null);
+  const timeModeRef = useRef(timeMode);
+  timeModeRef.current = timeMode;
 
   // Pedestrian Refs
   const ped1Ref = useRef<THREE.Group>(null);
@@ -3429,6 +3638,7 @@ function AutonomousSiteTrafficSystem({
       isBraking: false,
       hazardLights: false,
       bedAngle: 0,
+      avoidanceOffset: 0,
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vDumpRef,
@@ -3450,6 +3660,7 @@ function AutonomousSiteTrafficSystem({
       isBraking: false,
       hazardLights: false,
       bedAngle: 0,
+      avoidanceOffset: 0,
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vVanRef,
@@ -3471,6 +3682,7 @@ function AutonomousSiteTrafficSystem({
       isBraking: false,
       hazardLights: false,
       bedAngle: 0,
+      avoidanceOffset: 0,
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vPickupRef,
@@ -3493,6 +3705,7 @@ function AutonomousSiteTrafficSystem({
       isBraking: false,
       hazardLights: true,
       bedAngle: 0,
+      avoidanceOffset: 0,
       pos: new THREE.Vector3(),
       forward: new THREE.Vector3(),
       ref: vPatrolRef,
@@ -3512,7 +3725,7 @@ function AutonomousSiteTrafficSystem({
       spline: PEDESTRIAN_PATH_1_SPLINE,
       u: 0.20,
       dir: 1 as 1 | -1,
-      speed: 0.012,
+      speed: 0.013, // 1.15 m/s (~4.15 km/h) natural human walking pace on 88.97m paver loop
       role: "SURVEYOR",
       vestColor: MAT_WORKER_VEST_ORANGE,
       hardhatColor: MAT_WORKER_HARDHAT_WHITE,
@@ -3524,7 +3737,7 @@ function AutonomousSiteTrafficSystem({
       spline: PEDESTRIAN_PATH_2_SPLINE,
       u: 0.55,
       dir: -1 as 1 | -1,
-      speed: 0.010,
+      speed: 0.0044, // 1.15 m/s (~4.13 km/h) natural shoulder patrol walk on 260.5m mountain spline
       role: "SAFETY_INSPECTOR",
       vestColor: MAT_WORKER_VEST_GREEN,
       hardhatColor: MAT_WORKER_HARDHAT_GREEN,
@@ -3536,7 +3749,7 @@ function AutonomousSiteTrafficSystem({
       spline: PEDESTRIAN_PATH_3_SPLINE,
       u: 0.70,
       dir: 1 as 1 | -1,
-      speed: 0.014,
+      speed: 0.0048, // 1.25 m/s (~4.50 km/h) purposeful supervisor inspection walk on 260.5m mountain spline
       role: "CIVIL_FOREMAN",
       vestColor: MAT_WORKER_VEST_BLUE,
       hardhatColor: MAT_WORKER_HARDHAT_YELLOW,
@@ -3545,23 +3758,44 @@ function AutonomousSiteTrafficSystem({
     },
   ]);
 
+  useEffect(() => {
+    return () => {
+      unregisterLivePersonnel("ENGR_ELGINE_MANGCUPANG");
+      unregisterLivePersonnel("CIVIL_JAIME_CANO");
+      unregisterLivePersonnel("CIVIL_HENRY_ESTRADA");
+    };
+  }, []);
+
   useFrame(({ clock }, delta) => {
     const cp = checkpointRef.current;
     const vehicles = vehiclesRef.current;
     const pedestrians = pedestriansRef.current;
 
+    // Delta clamp prevents frame-hiccup leaping or teleportation across all autonomous entities
+    const safeDelta = Math.min(delta, 0.04);
+
     // ─── 1. SIMULATE WALKING PEDESTRIANS WITH DEDICATED PAVER PATHWAYS & WALL COLLISION AVOIDANCE ───
     pedestrians.forEach((ped) => {
-      ped.u = (ped.u + ped.dir * ped.speed * delta + 1.0) % 1.0;
+      ped.u = (ped.u + ped.dir * ped.speed * safeDelta + 1.0) % 1.0;
 
-      const rawTransform = getSplineTransform(ped.spline, ped.u, 0, 0.28);
+      const rawTransform = getSplineTransform(ped.spline, ped.u, 0, 0.0);
       const safe = resolveBuildingCollisions(rawTransform.point, rawTransform.tangent, 0.6);
+      safe.adjustedPos.y = getSiteSurfaceY(safe.adjustedPos.x, safe.adjustedPos.z);
       ped.pos.copy(safe.adjustedPos);
 
       if (ped.ref.current) {
         const yaw = Math.atan2(safe.adjustedForward.x, safe.adjustedForward.z) + (ped.dir === -1 ? Math.PI : 0);
         ped.ref.current.position.set(safe.adjustedPos.x, safe.adjustedPos.y, safe.adjustedPos.z);
         ped.ref.current.rotation.set(0, yaw, 0);
+
+        // Maintain continuous live positioning for personnel locator beacon
+        if (ped.id === "WALKER_1") {
+          registerLivePersonnelPosition("ENGR_ELGINE_MANGCUPANG", safe.adjustedPos, ped.ref.current);
+        } else if (ped.id === "WALKER_2") {
+          registerLivePersonnelPosition("CIVIL_JAIME_CANO", safe.adjustedPos, ped.ref.current);
+        } else if (ped.id === "WALKER_3") {
+          registerLivePersonnelPosition("CIVIL_HENRY_ESTRADA", safe.adjustedPos, ped.ref.current);
+        }
       }
     });
 
@@ -3601,37 +3835,37 @@ function AutonomousSiteTrafficSystem({
     // B. Progress Checkpoint Protocol Sub-routines with Visual Inspection Routine (~8.5s total)
     if (cp.phase === "WALKING_TO_VEHICLE") {
       // Guard steps forward to vehicle driver's window holding clipboard and inspection wand
-      cp.walkProgress = Math.min(1.0, cp.walkProgress + delta * 0.9);
+      cp.walkProgress = Math.min(1.0, cp.walkProgress + safeDelta * 0.9);
       if (cp.walkProgress >= 1.0) {
         cp.phase = "INSPECTING_DRIVER_PPE";
         cp.timer = 2.2; // 2.2s verifying Driver ID, Gate Pass, Hardhat, and Safety Vest
       }
     } else if (cp.phase === "INSPECTING_DRIVER_PPE") {
-      cp.timer -= delta;
+      cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "INSPECTING_UNDERCARRIAGE";
         cp.timer = 2.2; // 2.2s convex mirror inspection of undercarriage & chassis with searchlight
       }
     } else if (cp.phase === "INSPECTING_UNDERCARRIAGE") {
-      cp.timer -= delta;
+      cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "INSPECTING_CARGO_PROHIBITED";
         cp.timer = 2.0; // 2.0s cargo bed prohibited contraband / cargo inspection
       }
     } else if (cp.phase === "INSPECTING_CARGO_PROHIBITED") {
-      cp.timer -= delta;
+      cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "LOGGING_MANIFEST";
         cp.timer = 1.6; // 1.6s signing approval manifest logbook & stamping pass
       }
     } else if (cp.phase === "LOGGING_MANIFEST") {
-      cp.timer -= delta;
+      cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "WAVING_CLEARANCE";
         cp.timer = 1.6; // 1.6s clearance wave and upward boom barrier lift (Green LED)
       }
     } else if (cp.phase === "WAVING_CLEARANCE") {
-      cp.timer -= delta;
+      cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "VEHICLE_PASSING";
       }
@@ -3652,7 +3886,7 @@ function AutonomousSiteTrafficSystem({
       }
     } else if (cp.phase === "WALKING_TO_POST") {
       // Guard steps safely back to sentry post, lowering boom barrier
-      cp.walkProgress = Math.max(0.0, cp.walkProgress - delta * 0.9);
+      cp.walkProgress = Math.max(0.0, cp.walkProgress - safeDelta * 0.9);
       if (cp.walkProgress <= 0.0) {
         cp.phase = "SENTRY_POST";
       }
@@ -3665,10 +3899,12 @@ function AutonomousSiteTrafficSystem({
     // ─── B. VEHICLE DISPATCH, ANTI-COLLISION & ATMOSPHERE ROUTINES ───
     vehicles.forEach((veh, i) => {
       // 1. NIGHT MODE PARKING LOGIC
-      if (timeMode === "night") {
+      if (timeModeRef.current === "night") {
         if (veh.id === "DUMP_TRUCK") {
           veh.speed = 0;
           veh.isBraking = true;
+          veh.pos.set(86.0, 14.85, -96.5);
+          veh.forward.set(-1, 0, 0);
           if (vDumpRef.current) {
             vDumpRef.current.position.set(86.0, 14.85, -96.5);
             vDumpRef.current.rotation.set(0, -Math.PI / 2, 0);
@@ -3677,6 +3913,8 @@ function AutonomousSiteTrafficSystem({
         } else if (veh.id === "CREW_VAN") {
           veh.speed = 0;
           veh.isBraking = true;
+          veh.pos.set(77.0, 14.15, -95.0);
+          veh.forward.set(0, 0, 1);
           if (vVanRef.current) {
             vVanRef.current.position.set(77.0, 14.15, -95.0);
             vVanRef.current.rotation.set(0, 0, 0);
@@ -3685,6 +3923,8 @@ function AutonomousSiteTrafficSystem({
         } else if (veh.id === "SITE_PICKUP") {
           veh.speed = 0;
           veh.isBraking = true;
+          veh.pos.set(135.0, 14.15, -74.5);
+          veh.forward.set(1, 0, 0);
           if (vPickupRef.current) {
             vPickupRef.current.position.set(135.0, 14.15, -74.5);
             vPickupRef.current.rotation.set(0, Math.PI / 2, 0);
@@ -3696,8 +3936,8 @@ function AutonomousSiteTrafficSystem({
 
       // Checkpoint and Routine Timers
       if (veh.stateTimer > 0) {
-        veh.stateTimer -= delta;
-        veh.speed = THREE.MathUtils.damp(veh.speed, 0, 8.0, delta);
+        veh.stateTimer -= safeDelta;
+        veh.speed = THREE.MathUtils.damp(veh.speed, 0, 8.0, safeDelta);
         veh.isBraking = true;
 
         if (veh.id === "DUMP_TRUCK") {
@@ -3744,47 +3984,137 @@ function AutonomousSiteTrafficSystem({
       checkGateStop(veh.inboundGate.stopU, veh.inboundGate.clearU);
       checkGateStop(veh.outboundGate.stopU, veh.outboundGate.clearU);
 
-      // 3. 3D Euclidean Vehicle Anti-Collision Buffer (22.0m warning, 10.5m full stop)
+      // 3. INTELLIGENT DYNAMIC OBSTACLE AVOIDANCE & LATERAL REROUTING SYSTEM
+      // Vehicles actively detect personnel, pedestrians, static objects, and other fleet vehicles,
+      // steering laterally around them on the road, and coming to a smooth yielding stop if blocked.
+      const vehRadius = veh.id === "DUMP_TRUCK" ? 2.0 : veh.id === "CREW_VAN" ? 1.6 : 1.5;
+      const sensorRange = veh.id === "DUMP_TRUCK" ? 16.0 : 14.0;
+      const maxEvasionOffset = veh.id === "DUMP_TRUCK" ? 2.1 : 2.4;
+
+      // Baseline spline transform at current position
+      const dCenter = getSplineTransform(veh.spline, veh.u, 0, 0.04);
+      const basePt = dCenter.point;
+      const fwd = dCenter.tangent.clone().setY(0).normalize();
+      // Right normal vector perpendicular to vehicle forward travel (X-Z plane)
+      const right = new THREE.Vector3(-fwd.z, 0, fwd.x).normalize();
+
+      let desiredOffset = 0;
+      let minSafeSpeed = veh.maxCruiseSpeed;
+      let yieldStop = false;
+
+      // A. Evaluate Fleet Vehicles (Oncoming passing, follow-distance & queue management)
       for (let j = 0; j < vehicles.length; j++) {
         if (i === j) continue;
         const other = vehicles[j];
-        const dist = veh.pos.distanceTo(other.pos);
+        const dist = basePt.distanceTo(other.pos);
 
         if (dist < 24.0) {
-          const toOther = new THREE.Vector3().subVectors(other.pos, veh.pos).normalize();
-          const dot = veh.forward.dot(toOther);
+          const toOther = new THREE.Vector3().subVectors(other.pos, basePt);
+          const fwdDist = toOther.dot(fwd);
+          const latDist = toOther.dot(right);
+          const headingDot = fwd.dot(other.forward);
 
-          if (dot > 0.35) { // Other vehicle is ahead along our heading
-            if (dist < 10.5) {
-              targetSpeed = 0;
-              hardBrake = true;
-            } else if (dist < 22.0) {
-              const followSpeed = ((dist - 10.5) / 11.5) * veh.maxCruiseSpeed;
-              targetSpeed = Math.min(targetSpeed, Math.max(0, followSpeed));
-              if (targetSpeed < 0.004) hardBrake = true;
+          if (headingDot < -0.35) {
+            // Oncoming vehicle traveling opposite direction (e.g. 2-lane mountain incline / compound road)
+            // Steer right (Philippine standard traffic convention) to widen passing clearance
+            if (fwdDist > 0.5 && fwdDist < 18.0) {
+              desiredOffset = Math.max(desiredOffset, 1.2);
+              if (fwdDist < 7.5 && Math.abs(latDist) < 3.2) {
+                minSafeSpeed = Math.min(minSafeSpeed, veh.maxCruiseSpeed * 0.45);
+                if (fwdDist < 4.2 && Math.abs(latDist) < 2.4) {
+                  yieldStop = true;
+                }
+              }
+            }
+          } else if (fwdDist > 0.5 && fwdDist < 22.0) {
+            // Following lead vehicle ahead in same direction
+            if (fwdDist < 9.5) {
+              yieldStop = true;
+            } else {
+              const followSpeed = ((fwdDist - 9.5) / 12.5) * veh.maxCruiseSpeed;
+              minSafeSpeed = Math.min(minSafeSpeed, Math.max(0, followSpeed));
             }
           }
         }
       }
 
-      // 4. Pedestrian Proximity Detection
-      pedestrians.forEach((ped) => {
-        const distToPed = veh.pos.distanceTo(ped.pos);
-        if (distToPed < 7.5) {
-          const toPed = new THREE.Vector3().subVectors(ped.pos, veh.pos).normalize();
-          if (veh.forward.dot(toPed) > 0.4) {
-            targetSpeed = 0;
-            hardBrake = true;
+      // B. Dynamic Obstacle Sensing & Lateral Evasion Helper
+      const checkObstacle = (obsPos: THREE.Vector3, obsRadius: number) => {
+        const dx = obsPos.x - basePt.x;
+        const dz = obsPos.z - basePt.z;
+        // Fast broad-phase AABB test
+        if (Math.abs(dx) > sensorRange || Math.abs(dz) > sensorRange) return;
+        if (Math.abs(obsPos.y - basePt.y) > 3.8) return; // Disregard entities on different terrace elevations
+
+        const forwardDist = dx * fwd.x + dz * fwd.z;
+        if (forwardDist <= 0.3 || forwardDist >= sensorRange) return; // Behind vehicle or out of sensor cone
+
+        const lateralDist = dx * right.x + dz * right.z;
+        const requiredClearance = vehRadius + obsRadius + 0.6; // Minimum safe lateral clearance
+
+        // If obstacle is within our road clearance corridor:
+        if (Math.abs(lateralDist) < requiredClearance + 1.2) {
+          // Calculate needed lateral deflection to steer around obstacle
+          let steerNeeded = 0;
+          if (lateralDist >= 0) {
+            // Obstacle is on our right or center -> steer LEFT
+            steerNeeded = lateralDist - requiredClearance;
+          } else {
+            // Obstacle is on our left -> steer RIGHT
+            steerNeeded = lateralDist + requiredClearance;
+          }
+
+          steerNeeded = Math.max(-maxEvasionOffset, Math.min(maxEvasionOffset, steerNeeded));
+
+          if (Math.abs(steerNeeded) > Math.abs(desiredOffset)) {
+            desiredOffset = steerNeeded;
+          }
+
+          // Check if current vehicle position & evasion offset would intersect
+          const effectiveGap = lateralDist - veh.avoidanceOffset;
+          if (Math.abs(effectiveGap) < requiredClearance) {
+            if (forwardDist < 4.4) {
+              // Obstacle dead ahead with insufficient clearance -> yield to complete stop
+              yieldStop = true;
+            } else if (forwardDist < 10.5) {
+              // Smooth deceleration to allow vehicle to steer around safely
+              const frac = (forwardDist - 4.4) / (10.5 - 4.4);
+              const approachSpeed = veh.maxCruiseSpeed * Math.max(0.002, frac * 0.55);
+              minSafeSpeed = Math.min(minSafeSpeed, approachSpeed);
+            }
           }
         }
+      };
+
+      // C. Evaluate Moving Pedestrians (Walkers 1, 2, 3)
+      pedestrians.forEach((ped) => {
+        checkObstacle(ped.pos, 0.7);
       });
 
-      // Apply velocity
-      veh.isBraking = hardBrake;
-      veh.speed = THREE.MathUtils.damp(veh.speed, targetSpeed, hardBrake ? 6.0 : 2.5, delta);
-      veh.u = (veh.u + veh.speed * delta) % 1.0;
+      // D. Evaluate All Registered Live Workforce Personnel Across Site
+      LIVE_PERSONNEL_WORLD_POSITIONS.forEach((pPos) => {
+        checkObstacle(pPos, 0.75);
+      });
 
-      // 5. Trigger Routines
+      // E. Evaluate Static Crates, Tool Shed Bundles, Parked Ferrari & Key Infrastructure
+      STATIC_VEHICLE_OBSTACLES.forEach((obs) => {
+        checkObstacle(obs.pos, obs.radius);
+      });
+
+      // Combine speed throttling
+      if (yieldStop || minSafeSpeed <= 0.003) {
+        targetSpeed = 0;
+        hardBrake = true;
+      } else {
+        targetSpeed = Math.min(targetSpeed, minSafeSpeed);
+      }
+
+      // Smoothly damp vehicle velocity
+      veh.isBraking = hardBrake;
+      veh.speed = THREE.MathUtils.damp(veh.speed, targetSpeed, hardBrake ? 6.5 : 2.5, safeDelta);
+      veh.u = (veh.u + veh.speed * safeDelta) % 1.0;
+
+      // 4. Trigger Routines
       veh.routines.forEach((rt) => {
         const distToRoutine = Math.abs(veh.u - rt.u);
         if (distToRoutine < 0.014 && !rt.done && veh.stateTimer <= 0) {
@@ -3793,26 +4123,74 @@ function AutonomousSiteTrafficSystem({
           rt.done = true;
           veh.hazardLights = true;
         } else if (distToRoutine > 0.15) {
-          rt.done = false; // Reset for next loop cycle
+          rt.done = false;
         }
       });
 
-      // 6. Compute 3D Transform, Pitch & Orientation with Active Hard Wall Collision Resolution
-      const dCenter = getSplineTransform(veh.spline, veh.u, 0, 0.04);
-      const dAhead = getSplineTransform(veh.spline, veh.u + 0.012, 0, 0.04);
-      const dBehind = getSplineTransform(veh.spline, veh.u - 0.012, 0, 0.04);
+      // 5. Smoothly Damp Lateral Avoidance Offset
+      veh.avoidanceOffset = THREE.MathUtils.damp(
+        veh.avoidanceOffset,
+        desiredOffset,
+        hardBrake ? 2.5 : 3.8,
+        safeDelta
+      );
 
-      // Active Hard Wall Collision Avoidance & Exterior Boundary Push-Out
-      const safeTransform = resolveBuildingCollisions(dCenter.point, dCenter.tangent, 2.2);
+      // 6. Compute 3D Transform, Dynamic Steering Yaw & Hard Wall Collision Resolution
+      // Base point on road spline at updated u
+      const dUpdated = getSplineTransform(veh.spline, veh.u, 0, 0.04);
+      const updatedBase = dUpdated.point;
+      const updatedFwd = dUpdated.tangent.clone().setY(0).normalize();
+      const updatedRight = new THREE.Vector3(-updatedFwd.z, 0, updatedFwd.x).normalize();
+
+      // Apply lateral avoidance offset along road normal (right vector)
+      const reroutedPos = updatedBase.clone().addScaledVector(updatedRight, veh.avoidanceOffset);
+
+      // Sample ahead and behind for pitch and dynamic steering yaw
+      const aheadU = (veh.u + 0.012) % 1.0;
+      const behindU = (veh.u - 0.012 + 1.0) % 1.0;
+      const dAhead = getSplineTransform(veh.spline, aheadU, 0, 0.04);
+      const dBehind = getSplineTransform(veh.spline, behindU, 0, 0.04);
+
+      const aheadFwd = dAhead.tangent.clone().setY(0).normalize();
+      const aheadRight = new THREE.Vector3(-aheadFwd.z, 0, aheadFwd.x).normalize();
+      const anticipatedOffset = THREE.MathUtils.lerp(veh.avoidanceOffset, desiredOffset, 0.35);
+      const reroutedAhead = dAhead.point.clone().addScaledVector(aheadRight, anticipatedOffset);
+
+      const dynamicForward = new THREE.Vector3().subVectors(reroutedAhead, reroutedPos).setY(0).normalize();
+      if (dynamicForward.lengthSq() < 0.001) {
+        dynamicForward.copy(updatedFwd);
+      }
+
+      // Hard Boundary Defense: Push-out against rigid buildings, fences, and crates
+      const safeTransform = resolveBuildingCollisions(reroutedPos, dynamicForward, vehRadius);
+
+      // Dual-Axle Ground Sampling & Local 'YXZ' Incline Kinematics
+      const isDump = veh.id === "DUMP_TRUCK";
+      const wheelbase = isDump ? 4.4 : 3.2;
+      const halfL = wheelbase * 0.5;
+
+      const fwdVec = safeTransform.adjustedForward.clone().setY(0).normalize();
+      const frontAxle = safeTransform.adjustedPos.clone().addScaledVector(fwdVec, halfL);
+      const rearAxle = safeTransform.adjustedPos.clone().addScaledVector(fwdVec, -halfL);
+
+      const yFront = getSiteSurfaceY(frontAxle.x, frontAxle.z);
+      const yRear = getSiteSurfaceY(rearAxle.x, rearAxle.z);
+
+      const centerGroundY = (yFront + yRear) * 0.5 + 0.04;
+      safeTransform.adjustedPos.y = Math.max(safeTransform.adjustedPos.y, centerGroundY);
+
+      // In Three.js with 'YXZ' Euler order:
+      // Negative rotation around local X tilts the front UP when ascending an incline (yFront > yRear)
+      const rawPitch = -Math.atan2(yFront - yRear, wheelbase);
+      const clampedPitch = Math.max(-0.28, Math.min(0.28, rawPitch));
+      const yaw = Math.atan2(safeTransform.adjustedForward.x, safeTransform.adjustedForward.z);
 
       veh.pos.copy(safeTransform.adjustedPos);
       veh.forward.copy(safeTransform.adjustedForward);
 
       if (veh.ref.current) {
-        const pitch = Math.max(-0.25, Math.min(0.25, Math.atan2(dAhead.point.y - dBehind.point.y, 2.8)));
-        const yaw = Math.atan2(safeTransform.adjustedForward.x, safeTransform.adjustedForward.z);
         veh.ref.current.position.set(safeTransform.adjustedPos.x, safeTransform.adjustedPos.y, safeTransform.adjustedPos.z);
-        veh.ref.current.rotation.set(pitch, yaw, 0);
+        veh.ref.current.rotation.set(clampedPitch, yaw, 0, "YXZ");
       }
     });
   });
@@ -3828,22 +4206,22 @@ function AutonomousSiteTrafficSystem({
       {/* ═══ 2. VEHICLE FLEET WITH DISTINCT MISSIONS & COLLISION AVOIDANCE ═══ */}
       {/* Vehicle 1: Heavy 10-Wheeler Dump Truck (Quarry Logistics) */}
       <group ref={vDumpRef}>
-        <SCICHeavyDumpTruck bodyColor="#DC2626" headlightsOn={timeMode === "sunset"} />
+        <SCICHeavyDumpTruck bodyColor="#DC2626" headlightsOn={timeModeRef.current === "sunset" || timeModeRef.current === "night"} />
       </group>
 
       {/* Vehicle 2: SCIC 4x4 Site Pickup (QA/QC Inspection Patrol) */}
       <group ref={vPickupRef}>
-        <SCICSitePickupTruck bodyColor="#FFFFFF" headlightsOn={timeMode === "sunset"} />
+        <SCICSitePickupTruck bodyColor="#FFFFFF" headlightsOn={timeModeRef.current === "sunset" || timeModeRef.current === "night"} />
       </group>
 
       {/* Vehicle 3: Toyota HiAce Crew Commuter Van (Shift Workforce Transfer) */}
       <group ref={vVanRef}>
-        <ToyotaHiaceCrewVan bodyColor="#E2E8F0" headlightsOn={timeMode === "sunset"} />
+        <ToyotaHiaceCrewVan bodyColor="#E2E8F0" headlightsOn={timeModeRef.current === "sunset" || timeModeRef.current === "night"} />
       </group>
 
       {/* Vehicle 4: Safety Patrol 4x4 with Flashing Strobe */}
       <group ref={vPatrolRef}>
-        <SCICSitePickupTruck bodyColor="#F59E0B" headlightsOn={timeMode === "sunset" || timeMode === "night"} />
+        <SCICSitePickupTruck bodyColor="#F59E0B" headlightsOn={timeModeRef.current === "sunset" || timeModeRef.current === "night"} />
       </group>
 
       {/* ═══ 3. DEDICATED WALKING PEDESTRIANS (ANIMATED BIOMECHANICAL STRIDE) ═══ */}
@@ -3883,21 +4261,15 @@ function AutonomousSiteTrafficSystem({
         />
       </group>
 
-      {/* Pedestrian 3: Civil Works & 4S Supervisor (Henry Estrada) inspecting drainage */}
-      <group ref={ped3Ref}>
-        <HydroProjectPersonMesh
-          personnelId="CIVIL_HENRY_ESTRADA"
-          onSelectPerson={onSelectPerson}
-          isPatrolling={true}
-          skinTone="BRONZE"
-          facialHair="NONE"
-          hasHardhat
-          hardhatColor="#EAB308"
-          hasVest
-          vestColor="#EA580C"
-          pantsStyle="CARGO"
-          accessory="RADIO"
-        />
+      {/* Pedestrian 3: Civil Works & 4S Supervisor (Henry Estrada) with Blender Rigged Skeletal Locomotion */}
+      <group
+        ref={ped3Ref}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelectPerson?.("CIVIL_HENRY_ESTRADA");
+        }}
+      >
+        <RealisticSCICCivilForemanModel currentAction="Foreman_Walk" />
       </group>
     </group>
   );
@@ -4127,7 +4499,7 @@ function TailraceCivilQCEngineer({ onSelectPerson }: { onSelectPerson?: (id: str
         </mesh>
 
         {/* Sculpted Filipino Character Head with White Engineer Hardhat */}
-        <group ref={headRef} position={[0, 0.60, 0]}>
+        <group ref={headRef} position={[0, 0.54, 0]}>
           <FilipinoCharacterHead skinTone="MEDIUM" headwear="HARDHAT_WHITE" />
         </group>
 
@@ -4446,22 +4818,6 @@ export function AnimatedSiteEntities({
         accessory="CLIPBOARD"
       />
 
-      {/* 🏗️ Supervisor III - Civil Works & 4S (Henry V. Estrada) at Spillway Outfall Bank */}
-      <HydroProjectPersonMesh
-        personnelId="CIVIL_HENRY_ESTRADA"
-        onSelectPerson={onSelectPerson}
-        position={[-14.0, 0.55, 22.0]}
-        rotation={[0, Math.PI / 3, 0]}
-        skinTone="BRONZE"
-        hairStyle="SHORT"
-        facialHair="MUSTACHE"
-        hasHardhat
-        hardhatColor="#16A34A"
-        hasVest
-        vestColor="#EA580C"
-        pantsStyle="JEANS"
-        accessory="CLIPBOARD"
-      />
 
       {/* 🏗️ Foreman III - Civil Structures (Anthony B. Rosales) on concrete Lower Penstock Anchor Block TB-04 slab */}
       <HydroProjectPersonMesh
@@ -4619,13 +4975,13 @@ export function AnimatedSiteEntities({
       />
 
       {/* ═══ 7. TIME-BASED WORKFORCE ROUTINES & GATHERINGS ═══ */}
-      {/* Morning: Safety Toolbox Meeting on the basketball court stage */}
-      {normalizedTime === "morning" && (
+      {/* Morning & Day: Safety Toolbox Meeting on the basketball court stage with full workforce formation */}
+      {(normalizedTime === "morning" || normalizedTime === "day") && (
         <CourtToolboxMeetingDirector onSelectPerson={onSelectPerson} />
       )}
 
-      {/* Day / Sunset / Night: Executive and Admin Staff active in offices & verandas */}
-      {normalizedTime !== "morning" && (
+      {/* Sunset & Night: Executive and Admin Staff active in offices & verandas */}
+      {(normalizedTime === "sunset" || normalizedTime === "night") && (
         <DaytimeExecutiveAndAdminStaff onSelectPerson={onSelectPerson} />
       )}
 

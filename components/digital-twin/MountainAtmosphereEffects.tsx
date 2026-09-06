@@ -463,11 +463,14 @@ function BuildingInteriorRoomLights({ isSunset = false }: { isSunset?: boolean }
   const { camera } = useThree();
   const [showPowerhouseLight, setShowPowerhouseLight] = useState(false);
   const [showTemfacilLight, setShowTemfacilLight] = useState(false);
+  const frameTickRef = useRef<number>(0);
 
   const PH_POS = useMemo(() => new THREE.Vector3(0, 8.5, 0), []);
   const TEMFACIL_POS = useMemo(() => new THREE.Vector3(120, 16.0, -95), []);
 
   useFrame(() => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
     const dPh = camera.position.distanceToSquared(PH_POS);
     const dTem = camera.position.distanceToSquared(TEMFACIL_POS);
     const nearPh = dPh < 3600; // 60 meters
@@ -509,9 +512,12 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
   const intensityMult = isSunset ? 0.5 : 1.0;
   const { camera } = useThree();
   const [showVehicleBeams, setShowVehicleBeams] = useState(false);
+  const frameTickRef = useRef<number>(0);
   const VEHICLE_CENTER = useMemo(() => new THREE.Vector3(75, 13.0, -65), []);
 
   useFrame(() => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
     const distSq = camera.position.distanceToSquared(VEHICLE_CENTER);
     const near = distSq < 5625; // 75 meters
     if (near !== showVehicleBeams) setShowVehicleBeams(near);
@@ -524,24 +530,16 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
         {showVehicleBeams && (
           <>
             <spotLight
-              position={[-0.9, 1.1, 3.2]}
-              target-position={[-0.9, 0.0, 36.0]}
+              position={[0, 1.1, 3.2]}
+              target-position={[0, 0.0, 26.0]}
               color="#FFFBEB"
-              intensity={45.0 * intensityMult}
-              angle={0.45}
-              penumbra={0.65}
-              distance={48}
+              intensity={55.0 * intensityMult}
+              angle={0.52}
+              penumbra={0.7}
+              distance={26}
+              decay={2}
             />
-            <spotLight
-              position={[0.9, 1.1, 3.2]}
-              target-position={[0.9, 0.0, 36.0]}
-              color="#FFFBEB"
-              intensity={45.0 * intensityMult}
-              angle={0.45}
-              penumbra={0.65}
-              distance={48}
-            />
-            <pointLight position={[0, 1.0, -3.8]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
+            <pointLight position={[0, 1.0, -3.8]} color="#EF4444" intensity={4.0 * intensityMult} distance={4.5} decay={2} />
           </>
         )}
         <mesh position={[-0.9, 1.1, 3.1]}>
@@ -563,25 +561,17 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
         {showVehicleBeams && (
           <>
             <spotLight
-              position={[-0.7, 0.85, 2.5]}
-              target-position={[-0.7, 0.0, 30.0]}
+              position={[0, 0.85, 2.5]}
+              target-position={[0, 0.0, 22.0]}
               color="#FEF08A"
-              intensity={38.0 * intensityMult}
-              angle={0.45}
-              penumbra={0.6}
-              distance={40}
+              intensity={45.0 * intensityMult}
+              angle={0.50}
+              penumbra={0.65}
+              distance={22}
+              decay={2}
             />
-            <spotLight
-              position={[0.7, 0.85, 2.5]}
-              target-position={[0.7, 0.0, 30.0]}
-              color="#FEF08A"
-              intensity={38.0 * intensityMult}
-              angle={0.45}
-              penumbra={0.6}
-              distance={40}
-            />
-            <pointLight position={[0, 1.9, 0.2]} color="#F59E0B" intensity={18.0 * intensityMult} distance={22} decay={2} />
-            <pointLight position={[0, 0.8, -2.6]} color="#EF4444" intensity={10.0 * intensityMult} distance={15} decay={2} />
+            <pointLight position={[0, 1.9, 0.2]} color="#F59E0B" intensity={5.0 * intensityMult} distance={6} decay={2} />
+            <pointLight position={[0, 0.8, -2.6]} color="#EF4444" intensity={3.5 * intensityMult} distance={4} decay={2} />
           </>
         )}
         <mesh position={[-0.7, 0.85, 2.45]}>
@@ -603,24 +593,16 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
         {showVehicleBeams && (
           <>
             <spotLight
-              position={[-0.75, 0.8, 2.4]}
-              target-position={[-0.75, 0.0, 28.0]}
+              position={[0, 0.8, 2.4]}
+              target-position={[0, 0.0, 20.0]}
               color="#F8FAFC"
-              intensity={40.0 * intensityMult}
-              angle={0.42}
-              penumbra={0.6}
-              distance={42}
+              intensity={45.0 * intensityMult}
+              angle={0.48}
+              penumbra={0.65}
+              distance={20}
+              decay={2}
             />
-            <spotLight
-              position={[0.75, 0.8, 2.4]}
-              target-position={[0.75, 0.0, 28.0]}
-              color="#F8FAFC"
-              intensity={40.0 * intensityMult}
-              angle={0.42}
-              penumbra={0.6}
-              distance={42}
-            />
-            <pointLight position={[0, 0.8, -2.4]} color="#EF4444" intensity={10.0 * intensityMult} distance={15} decay={2} />
+            <pointLight position={[0, 0.8, -2.4]} color="#EF4444" intensity={3.5 * intensityMult} distance={4} decay={2} />
           </>
         )}
         <mesh position={[-0.75, 0.8, 2.35]}>
@@ -642,24 +624,16 @@ function VehicleNightLights({ isSunset = false }: { isSunset?: boolean }) {
         {showVehicleBeams && (
           <>
             <spotLight
-              position={[-0.7, 0.55, 2.0]}
-              target-position={[-0.7, 0.0, 28.0]}
+              position={[0, 0.55, 2.0]}
+              target-position={[0, 0.0, 18.0]}
               color="#E0F2FE"
-              intensity={35.0 * intensityMult}
-              angle={0.42}
-              penumbra={0.5}
-              distance={35}
+              intensity={40.0 * intensityMult}
+              angle={0.46}
+              penumbra={0.6}
+              distance={18}
+              decay={2}
             />
-            <spotLight
-              position={[0.7, 0.55, 2.0]}
-              target-position={[0.7, 0.0, 28.0]}
-              color="#E0F2FE"
-              intensity={35.0 * intensityMult}
-              angle={0.42}
-              penumbra={0.5}
-              distance={35}
-            />
-            <pointLight position={[0, 0.6, -2.0]} color="#EF4444" intensity={12.0 * intensityMult} distance={18} decay={2} />
+            <pointLight position={[0, 0.6, -2.0]} color="#EF4444" intensity={3.5 * intensityMult} distance={3.5} decay={2} />
           </>
         )}
         <mesh position={[-0.7, 0.55, 1.95]}>
@@ -688,13 +662,17 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
   const patrolLightRef = useRef<THREE.SpotLight>(null);
   const { camera } = useThree();
   const [showFlashlights, setShowFlashlights] = useState(false);
+  const frameTickRef = useRef<number>(0);
   const GUARD_CENTER = useMemo(() => new THREE.Vector3(100, 14.0, -70), []);
 
   useFrame(({ clock }) => {
-    const distSq = camera.position.distanceToSquared(GUARD_CENTER);
-    const near = distSq < 3600; // 60 meters
-    if (near !== showFlashlights) setShowFlashlights(near);
-    if (!near) return;
+    frameTickRef.current++;
+    if (frameTickRef.current % 15 === 0) {
+      const distSq = camera.position.distanceToSquared(GUARD_CENTER);
+      const near = distSq < 3600; // 60 meters
+      if (near !== showFlashlights) setShowFlashlights(near);
+    }
+    if (!showFlashlights) return;
 
     const t = clock.getElapsedTime();
     if (sentryLightRef.current && sentryLightRef.current.target) {
@@ -946,7 +924,7 @@ function SurgeTankAviationStrobe() {
         <sphereGeometry args={[0.5, 8, 8]} />
         <meshBasicMaterial color="#FF0000" toneMapped={false} />
       </mesh>
-      <pointLight ref={beaconRef} color="#FF1E1E" intensity={32.0} distance={150} decay={2} />
+      <pointLight ref={beaconRef} color="#FF1E1E" intensity={32.0} distance={16} decay={2} />
     </group>
   );
 }
@@ -958,9 +936,12 @@ function IndustrialFacilityNightLighting({ isSunset = false }: { isSunset?: bool
   const intensityMult = isSunset ? 0.45 : 1.0;
   const { camera } = useThree();
   const [showPenstockLight, setShowPenstockLight] = useState(false);
+  const frameTickRef = useRef<number>(0);
   const PENSTOCK_POS = useMemo(() => new THREE.Vector3(-30, 30.0, -40), []);
 
   useFrame(() => {
+    frameTickRef.current++;
+    if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
     const d = camera.position.distanceToSquared(PENSTOCK_POS);
     const near = d < 8100; // 90 meters
     if (near !== showPenstockLight) setShowPenstockLight(near);
@@ -969,18 +950,18 @@ function IndustrialFacilityNightLighting({ isSunset = false }: { isSunset?: bool
   return (
     <group name="industrial-night-lighting">
       {/* ─── 69kV Switchyard Gantry Floodlights ─── */}
-      <pointLight position={[55, 18.0, 10]} color="#E0F2FE" intensity={36.0 * intensityMult} distance={55} decay={2} />
-      <pointLight position={[75, 18.0, 20]} color="#E0F2FE" intensity={32.0 * intensityMult} distance={50} decay={2} />
+      <pointLight position={[55, 18.0, 10]} color="#E0F2FE" intensity={36.0 * intensityMult} distance={35} decay={2} />
+      <pointLight position={[75, 18.0, 20]} color="#E0F2FE" intensity={32.0 * intensityMult} distance={35} decay={2} />
       
       {/* ─── Powerhouse Apron & Gantry Crane Deck ─── */}
-      <pointLight position={[18, 22.0, 22]} color="#F8FAFC" intensity={36.0 * intensityMult} distance={60} decay={2} />
-      <pointLight position={[-12, 14.0, 24]} color="#F8FAFC" intensity={28.0 * intensityMult} distance={50} decay={2} />
+      <pointLight position={[18, 22.0, 22]} color="#F8FAFC" intensity={36.0 * intensityMult} distance={35} decay={2} />
+      <pointLight position={[-12, 14.0, 24]} color="#F8FAFC" intensity={28.0 * intensityMult} distance={35} decay={2} />
 
       {/* ─── Penstock Stairs Safety Lights ─── */}
       {showPenstockLight && (
         <>
-          <pointLight position={[-35, 42.0, -50]} color="#F59E0B" intensity={18.0 * intensityMult} distance={35} decay={2} />
-          <pointLight position={[-25, 24.0, -32]} color="#F59E0B" intensity={18.0 * intensityMult} distance={35} decay={2} />
+          <pointLight position={[-35, 42.0, -50]} color="#F59E0B" intensity={18.0 * intensityMult} distance={25} decay={2} />
+          <pointLight position={[-25, 24.0, -32]} color="#F59E0B" intensity={18.0 * intensityMult} distance={25} decay={2} />
         </>
       )}
     </group>

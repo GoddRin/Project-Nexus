@@ -15,11 +15,8 @@ export const UPHILL_ROAD_WAYPOINTS: THREE.Vector3[] = [
   new THREE.Vector3(58.0, 4.20, -28.0),   // 3: Sierra Madre Lower Slope
   new THREE.Vector3(72.0, 7.50, -48.0),   // 4: Mid-Mountain Scenic Climb
   new THREE.Vector3(84.0, 10.8, -64.0),   // 5: Upper Hillside Curve
-  new THREE.Vector3(92.0, 13.0, -74.0),   // 6: Plateau Approach
-  new THREE.Vector3(98.0, 14.15, -78.0),  // 7: TEMFACIL Security Gate Checkpoint (EL. 14.15m)
-  new THREE.Vector3(103.0, 14.15, -84.0), // 8: TEMFACIL Entrance Apron
-  new THREE.Vector3(104.0, 14.15, -93.0), // 9: Central Paved Boulevard
-  new THREE.Vector3(120.0, 14.15, -93.0), // 10: Office Drop-Off Bay
+  new THREE.Vector3(91.0, 13.0, -71.5),   // 6: Plateau Approach
+  new THREE.Vector3(95.5, 14.15, -75.5),  // 7: Terminus outside TEMFACIL Security Gate (Zero intrusion into compound)
 ];
 
 export const UPHILL_ROAD_SPLINE = new THREE.CatmullRomCurve3(UPHILL_ROAD_WAYPOINTS, false, "centripetal");
@@ -29,30 +26,31 @@ export const UPHILL_ROAD_SPLINE = new THREE.CatmullRomCurve3(UPHILL_ROAD_WAYPOIN
 export const DUMP_TRUCK_WAYPOINTS: THREE.Vector3[] = [
   new THREE.Vector3(20.0, 0.48, 18.0),   // Quarry Loading Hub (u ≈ 0.00, Loading)
   new THREE.Vector3(40.2, 0.65, 11.5),   // Switchyard Junction (Uphill Lane)
-  new THREE.Vector3(49.4, 1.80, -7.2),   // Foothill Incline (Uphill Lane)
-  new THREE.Vector3(59.4, 4.20, -27.2),  // Sierra Madre Lower Slope (Uphill Lane)
-  new THREE.Vector3(73.3, 7.50, -47.1),  // Mid-Mountain Climb (Uphill Lane)
-  new THREE.Vector3(85.3, 10.8, -63.0),  // Upper Hillside Curve (Uphill Lane)
-  new THREE.Vector3(93.2, 13.0, -73.0),  // Inbound Gate Stop Line (u ≈ 0.28)
+  new THREE.Vector3(49.4, 0.68, -7.2),   // Foothill Incline (Uphill Lane)
+  new THREE.Vector3(59.4, 6.75, -27.2),  // Sierra Madre Lower Slope (Uphill Lane)
+  new THREE.Vector3(73.3, 9.53, -47.1),  // Mid-Mountain Climb (Uphill Lane)
+  new THREE.Vector3(85.3, 14.00, -63.0), // Upper Hillside Curve (Uphill Lane)
+  new THREE.Vector3(93.2, 14.00, -73.0), // Inbound Gate Stop Line (u ≈ 0.28)
   new THREE.Vector3(98.0, 14.15, -78.0), // TEMFACIL Gate (u ≈ 0.31)
   new THREE.Vector3(103.0, 14.15, -84.0),// Entrance Apron
-  new THREE.Vector3(102.0, 14.15, -92.0),// Boulevard Approach
-  new THREE.Vector3(96.0, 14.35, -96.0), // Dirt Road Incline Branch (In front of Warehouse)
-  new THREE.Vector3(88.0, 14.65, -97.0), // Warehouse Front Apron (South of shutter door)
+  new THREE.Vector3(101.0, 14.15, -88.0),// Ramp Incline Approach
+  new THREE.Vector3(96.0, 14.50, -91.0), // Ascending Warehouse Apron Ramp
+  new THREE.Vector3(88.0, 14.85, -96.0), // Warehouse Front Apron (On concrete slab, Y = 14.85)
   new THREE.Vector3(78.0, 14.85, -98.0), // Western Laydown Entrance
   new THREE.Vector3(76.0, 14.85, -108.0),// Western Laydown Aggregate Stockpile Pad (u ≈ 0.48, Tipping)
   new THREE.Vector3(76.0, 14.85, -118.0),// Western Laydown Northwest Arc
   new THREE.Vector3(80.0, 14.85, -122.0),// Laydown North Turnaround Loop
   new THREE.Vector3(78.0, 14.85, -100.0),// Laydown South Return Lane
-  new THREE.Vector3(88.0, 14.65, -96.0), // Warehouse Front Apron Return
-  new THREE.Vector3(98.0, 14.35, -94.0), // Merging to Boulevard
+  new THREE.Vector3(88.0, 14.85, -96.0), // Warehouse Front Apron Return (On concrete slab, Y = 14.85)
+  new THREE.Vector3(96.0, 14.50, -91.0), // Descending Warehouse Apron Ramp
+  new THREE.Vector3(101.0, 14.15, -88.0),// Merging to Boulevard
   new THREE.Vector3(101.0, 14.15, -84.0),// Outbound Gate Stop Line (u ≈ 0.64)
   new THREE.Vector3(98.0, 14.15, -78.0), // TEMFACIL Gate Outbound (u ≈ 0.67)
-  new THREE.Vector3(90.8, 13.0, -75.0),  // Downhill Haul Road (Downhill Lane)
-  new THREE.Vector3(82.7, 10.8, -65.0),  // Mountain Descent (Downhill Lane)
-  new THREE.Vector3(70.7, 7.50, -48.9),  // Mid-Mountain Scenic Descent (Downhill Lane)
-  new THREE.Vector3(56.6, 4.20, -28.8),  // Lower Slope Descent (Downhill Lane)
-  new THREE.Vector3(46.6, 1.80, -8.8),   // Foothill Curve (Downhill Lane)
+  new THREE.Vector3(90.8, 14.15, -75.0), // Downhill Haul Road (Downhill Lane)
+  new THREE.Vector3(82.7, 14.00, -65.0), // Mountain Descent (Downhill Lane)
+  new THREE.Vector3(70.7, 8.88, -48.9),  // Mid-Mountain Scenic Descent (Downhill Lane)
+  new THREE.Vector3(56.6, 5.13, -28.8),  // Lower Slope Descent (Downhill Lane)
+  new THREE.Vector3(46.6, 0.16, -8.8),   // Foothill Curve (Downhill Lane)
   new THREE.Vector3(37.8, 0.65, 8.5),    // Switchyard Curve (Downhill Lane)
   new THREE.Vector3(22.0, 0.48, 16.0),   // Quarry Return Approach
 ];
@@ -63,28 +61,29 @@ export const DUMP_TRUCK_SPLINE = new THREE.CatmullRomCurve3(DUMP_TRUCK_WAYPOINTS
 export const CREW_VAN_WAYPOINTS: THREE.Vector3[] = [
   new THREE.Vector3(20.0, 0.48, 18.0),   // Powerhouse Lower Terminal (u ≈ 0.00, Boarding)
   new THREE.Vector3(40.2, 0.65, 11.5),   // Switchyard Junction (Uphill Lane)
-  new THREE.Vector3(49.4, 1.80, -7.2),   // Foothill Incline (Uphill Lane)
-  new THREE.Vector3(59.4, 4.20, -27.2),  // Sierra Madre Lower Slope (Uphill Lane)
-  new THREE.Vector3(73.3, 7.50, -47.1),  // Mountain Climb (Uphill Lane)
-  new THREE.Vector3(85.3, 10.8, -63.0),  // Upper Hillside Curve (Uphill Lane)
-  new THREE.Vector3(93.2, 13.0, -73.0),  // Inbound Gate Stop Line (u ≈ 0.28)
+  new THREE.Vector3(49.4, 0.68, -7.2),   // Foothill Incline (Uphill Lane)
+  new THREE.Vector3(59.4, 6.75, -27.2),  // Sierra Madre Lower Slope (Uphill Lane)
+  new THREE.Vector3(73.3, 9.53, -47.1),  // Mountain Climb (Uphill Lane)
+  new THREE.Vector3(85.3, 14.00, -63.0), // Upper Hillside Curve (Uphill Lane)
+  new THREE.Vector3(93.2, 14.00, -73.0), // Inbound Gate Stop Line (u ≈ 0.28)
   new THREE.Vector3(98.0, 14.15, -78.0), // TEMFACIL Gate (u ≈ 0.31)
   new THREE.Vector3(103.0, 14.15, -84.0),// Paved Entrance Boulevard
-  new THREE.Vector3(104.0, 14.15, -92.0),// Boulevard past Tool Shed
-  new THREE.Vector3(105.0, 14.15, -94.0),// Main Site Office Drop-Off Curb (u ≈ 0.48, Staff Drop-Off)
+  new THREE.Vector3(104.0, 14.15, -90.0),// Boulevard past Tool Shed
+  new THREE.Vector3(106.0, 14.15, -93.0),// Main Site Office Drop-Off Curb (u ≈ 0.48, Staff Drop-Off)
   new THREE.Vector3(116.0, 14.15, -93.0),// Office Frontage Boulevard
   new THREE.Vector3(126.0, 14.15, -93.0),// Staff House Frontage Boulevard
   new THREE.Vector3(138.0, 14.15, -90.0),// Eastern Roundabout Arc East
-  new THREE.Vector3(138.0, 14.15, -82.0),// Eastern Roundabout Arc West (Between Staff House & Court)
-  new THREE.Vector3(126.0, 14.15, -82.0),// Boulevard Return
-  new THREE.Vector3(116.0, 14.15, -82.0),// Tool Shed Frontage
-  new THREE.Vector3(104.0, 14.15, -82.0),// Outbound Gate Stop Line (u ≈ 0.64)
+  new THREE.Vector3(138.0, 14.15, -85.0),// Eastern Roundabout Arc West (Between Staff House & Court)
+  new THREE.Vector3(126.0, 14.15, -87.0),// Boulevard Return
+  new THREE.Vector3(114.0, 14.15, -87.0),// Clear Boulevard between Office & Tool Shed
+  new THREE.Vector3(105.0, 14.15, -85.5),// Apron West Approach
+  new THREE.Vector3(101.0, 14.15, -82.0),// Outbound Gate Stop Line (u ≈ 0.64)
   new THREE.Vector3(98.0, 14.15, -78.0), // TEMFACIL Gate Outbound (u ≈ 0.67)
-  new THREE.Vector3(90.8, 13.0, -75.0),  // Downhill Haul Road (Downhill Lane)
-  new THREE.Vector3(82.7, 10.8, -65.0),  // Mountain Descent (Downhill Lane)
-  new THREE.Vector3(70.7, 7.50, -48.9),  // Mid-Mountain Descent (Downhill Lane)
-  new THREE.Vector3(56.6, 4.20, -28.8),  // Lower Slope Descent (Downhill Lane)
-  new THREE.Vector3(46.6, 1.80, -8.8),   // Foothill Curve (Downhill Lane)
+  new THREE.Vector3(90.8, 14.15, -75.0), // Downhill Haul Road (Downhill Lane)
+  new THREE.Vector3(82.7, 14.00, -65.0), // Mountain Descent (Downhill Lane)
+  new THREE.Vector3(70.7, 8.88, -48.9),  // Mid-Mountain Descent (Downhill Lane)
+  new THREE.Vector3(56.6, 5.13, -28.8),  // Lower Slope Descent (Downhill Lane)
+  new THREE.Vector3(46.6, 0.16, -8.8),   // Foothill Curve (Downhill Lane)
   new THREE.Vector3(37.8, 0.65, 8.5),    // Switchyard Curve (Downhill Lane)
   new THREE.Vector3(22.0, 0.48, 16.0),   // Powerhouse Terminal Return
 ];
@@ -93,37 +92,41 @@ export const CREW_VAN_SPLINE = new THREE.CatmullRomCurve3(CREW_VAN_WAYPOINTS, tr
 // ─── 3. QA/QC PICKUP ROUTE: QA/QC OFFICE <-> SWITCHYARD <-> POWERHOUSE ───────
 export const QAQC_PICKUP_WAYPOINTS: THREE.Vector3[] = [
   new THREE.Vector3(135.0, 14.15, -74.5), // QA/QC Design Office Bay (u ≈ 0.00, Staging)
-  new THREE.Vector3(135.0, 14.15, -82.0), // Passing South of Basketball Court
-  new THREE.Vector3(122.0, 14.15, -82.0), // Boulevard Approach
-  new THREE.Vector3(104.0, 14.15, -82.0), // Outbound Gate Stop Line (u ≈ 0.11)
+  new THREE.Vector3(135.0, 14.15, -83.0), // Passing West of QA/QC Office
+  new THREE.Vector3(124.0, 14.15, -87.0), // Boulevard Approach
+  new THREE.Vector3(114.0, 14.15, -87.0), // Clear Boulevard
+  new THREE.Vector3(105.0, 14.15, -85.5), // Open Apron
+  new THREE.Vector3(101.0, 14.15, -82.0), // Outbound Gate Stop Line (u ≈ 0.11)
   new THREE.Vector3(98.0, 14.15, -78.0),  // TEMFACIL Gate Outbound (u ≈ 0.14)
-  new THREE.Vector3(90.8, 13.0, -75.0),  // Mountain Road Descent (Downhill Lane)
-  new THREE.Vector3(82.7, 10.8, -65.0),  // Upper Mountain Curve (Downhill Lane)
-  new THREE.Vector3(70.7, 7.50, -48.9),  // Mid-Mountain Curve (Downhill Lane)
-  new THREE.Vector3(56.6, 4.20, -28.8),  // Sierra Madre Lower Slope (Downhill Lane)
-  new THREE.Vector3(46.6, 1.80, -8.8),   // Foothill Curve (Downhill Lane)
-  new THREE.Vector3(37.8, 0.65, 8.5),    // Approaching Switchyard Bypass (Downhill Lane)
-  new THREE.Vector3(34.0, 0.55, 11.5),   // Switchyard Inspection Bay (Outside South Floodwall / Transformer Bay)
-  new THREE.Vector3(26.0, 0.50, 12.0),   // Approaching Powerhouse Yard
-  new THREE.Vector3(20.0, 0.48, 18.0),   // Powerhouse Lower Portal Civil Inspection (u ≈ 0.56)
-  new THREE.Vector3(28.0, 0.50, 14.0),   // Returning uphill via parking lot lane
-  new THREE.Vector3(40.2, 0.65, 11.5),   // Switchyard Bypass Curve (Uphill Lane)
-  new THREE.Vector3(49.4, 1.80, -7.2),   // Foothill Incline (Uphill Lane)
-  new THREE.Vector3(59.4, 4.20, -27.2),  // Sierra Madre Climb (Uphill Lane)
-  new THREE.Vector3(73.3, 7.50, -47.1),  // Mid-Mountain Scenic Climb (Uphill Lane)
-  new THREE.Vector3(85.3, 10.8, -63.0),  // Upper Hillside Curve (Uphill Lane)
-  new THREE.Vector3(93.2, 13.0, -73.0),  // Inbound Gate Stop Line (u ≈ 0.82)
+  new THREE.Vector3(90.8, 14.15, -75.0),  // Mountain Road Descent (Downhill Lane)
+  new THREE.Vector3(82.7, 14.00, -65.0),  // Upper Mountain Curve (Downhill Lane)
+  new THREE.Vector3(70.7, 8.88, -48.9),   // Mid-Mountain Curve (Downhill Lane)
+  new THREE.Vector3(56.6, 5.13, -28.8),   // Sierra Madre Lower Slope (Downhill Lane)
+  new THREE.Vector3(46.6, 0.16, -8.8),    // Foothill Curve (Downhill Lane)
+  new THREE.Vector3(37.8, 0.65, 8.5),     // Approaching Switchyard Bypass (Downhill Lane)
+  new THREE.Vector3(34.0, 0.55, 11.5),    // Switchyard Inspection Bay (Outside South Floodwall / Transformer Bay)
+  new THREE.Vector3(26.0, 0.50, 12.0),    // Approaching Powerhouse Yard
+  new THREE.Vector3(20.0, 0.48, 18.0),    // Powerhouse Lower Portal Civil Inspection (u ≈ 0.56)
+  new THREE.Vector3(28.0, 0.50, 14.0),    // Returning uphill via parking lot lane
+  new THREE.Vector3(40.2, 0.65, 11.5),    // Switchyard Bypass Curve (Uphill Lane)
+  new THREE.Vector3(49.4, 0.68, -7.2),    // Foothill Incline (Uphill Lane)
+  new THREE.Vector3(59.4, 6.75, -27.2),   // Sierra Madre Climb (Uphill Lane)
+  new THREE.Vector3(73.3, 9.53, -47.1),   // Mid-Mountain Scenic Climb (Uphill Lane)
+  new THREE.Vector3(85.3, 14.00, -63.0),  // Upper Hillside Curve (Uphill Lane)
+  new THREE.Vector3(93.2, 14.00, -73.0),  // Inbound Gate Stop Line (u ≈ 0.82)
   new THREE.Vector3(98.0, 14.15, -78.0),  // TEMFACIL Gate Inbound (u ≈ 0.85)
-  new THREE.Vector3(104.0, 14.15, -84.0), // Entering TEMFACIL
-  new THREE.Vector3(122.0, 14.15, -82.0), // Open Boulevard
-  new THREE.Vector3(135.0, 14.15, -78.0), // Turning into QA/QC Bay
+  new THREE.Vector3(103.0, 14.15, -84.0), // Entering TEMFACIL
+  new THREE.Vector3(114.0, 14.15, -87.0), // Open Boulevard
+  new THREE.Vector3(124.0, 14.15, -87.0), // Past Staff House
+  new THREE.Vector3(135.0, 14.15, -83.0), // Turning into QA/QC Bay
+  new THREE.Vector3(135.0, 14.15, -74.5), // QA/QC Bay Return
 ];
 export const QAQC_PICKUP_SPLINE = new THREE.CatmullRomCurve3(QAQC_PICKUP_WAYPOINTS, true, "centripetal");
 
 // ─── 4. SAFETY PATROL ROUTE: COMPOUND PERIMETER & ROAD SECURITY PATROL ───────
 export const SAFETY_PATROL_WAYPOINTS: THREE.Vector3[] = [
-  new THREE.Vector3(101.0, 14.15, -82.0), // Tool & Equipment Staging Shed (u ≈ 0.00, Equipment Check)
-  new THREE.Vector3(103.0, 14.15, -92.0), // Boulevard Crossing
+  new THREE.Vector3(105.0, 14.15, -86.5), // Tool & Equipment Staging Shed (u ≈ 0.00, Equipment Check)
+  new THREE.Vector3(104.0, 14.15, -92.0), // Boulevard Crossing
   new THREE.Vector3(94.0, 14.35, -96.0),  // Warehouse Dirt Incline
   new THREE.Vector3(78.0, 14.85, -98.0),  // Western Laydown Entrance
   new THREE.Vector3(76.0, 14.85, -118.0), // Western Laydown Perimeter
@@ -133,30 +136,38 @@ export const SAFETY_PATROL_WAYPOINTS: THREE.Vector3[] = [
   new THREE.Vector3(104.0, 14.15, -93.0), // Passing Admin Office
   new THREE.Vector3(126.0, 14.15, -93.0), // Staff House & Kitchen Perimeter
   new THREE.Vector3(138.0, 14.15, -90.0), // East Turnaround Arc
-  new THREE.Vector3(138.0, 14.15, -82.0), // South Court Perimeter
-  new THREE.Vector3(116.0, 14.15, -82.0), // Tool Shed Frontage
-  new THREE.Vector3(104.0, 14.15, -82.0), // Outbound Gate Stop Line (u ≈ 0.47)
+  new THREE.Vector3(138.0, 14.15, -85.0), // South Court Perimeter
+  new THREE.Vector3(124.0, 14.15, -87.0), // Boulevard Return
+  new THREE.Vector3(114.0, 14.15, -87.0), // Tool Shed North Clearance
+  new THREE.Vector3(105.0, 14.15, -85.5), // Apron West Approach
+  new THREE.Vector3(101.0, 14.15, -82.0), // Outbound Gate Stop Line (u ≈ 0.47)
   new THREE.Vector3(98.0, 14.15, -78.0),  // TEMFACIL Gate Outbound (u ≈ 0.50)
-  new THREE.Vector3(90.8, 13.0, -75.0),  // Mountain Road Patrol Descent (Downhill Lane)
-  new THREE.Vector3(82.7, 10.8, -65.0),  // Upper Mountain Curve Patrol (Downhill Lane)
-  new THREE.Vector3(70.7, 7.50, -48.9),  // Mid-Mountain Viewpoint Arc (Downhill Lane, u ≈ 0.68)
-  new THREE.Vector3(73.3, 7.50, -47.1),  // Crossing over to Uphill Lane
-  new THREE.Vector3(85.3, 10.8, -63.0),  // Upper Mountain Climb (Uphill Lane)
-  new THREE.Vector3(93.2, 13.0, -73.0),  // Plateau Approach (Uphill Lane, u ≈ 0.84)
+  new THREE.Vector3(90.8, 14.15, -75.0),  // Mountain Road Patrol Descent (Downhill Lane)
+  new THREE.Vector3(82.7, 14.00, -65.0),  // Upper Mountain Curve Patrol (Downhill Lane)
+  new THREE.Vector3(70.7, 8.88, -48.9),   // Mid-Mountain Viewpoint Arc (Downhill Lane, u ≈ 0.68)
+  new THREE.Vector3(73.3, 9.53, -47.1),   // Crossing over to Uphill Lane
+  new THREE.Vector3(85.3, 14.00, -63.0),  // Upper Mountain Climb (Uphill Lane)
+  new THREE.Vector3(93.2, 14.00, -73.0),  // Plateau Approach (Uphill Lane, u ≈ 0.84)
   new THREE.Vector3(98.0, 14.15, -78.0),  // TEMFACIL Gate Inbound (u ≈ 0.87)
-  new THREE.Vector3(103.0, 14.15, -82.0), // Returning to Tool Staging Hub
+  new THREE.Vector3(101.0, 14.15, -82.0), // Plateau Approach
+  new THREE.Vector3(105.0, 14.15, -86.5), // Returning to Tool Staging Hub
 ];
 export const SAFETY_PATROL_SPLINE = new THREE.CatmullRomCurve3(SAFETY_PATROL_WAYPOINTS, true, "centripetal");
 
 // ─── 5. DEDICATED PEDESTRIAN PAVER PATHWAYS (NO BUILDING CLIPPING) ───────────
 // Pathway 1: Main Admin Office <-> Staff House <-> QA/QC Office Paver Loop
 export const PED_ADMIN_CIRCUIT_WAYPOINTS: THREE.Vector3[] = [
-  new THREE.Vector3(104.0, 14.15, -94.0), // Office Frontage
-  new THREE.Vector3(120.0, 14.15, -94.0), // Admin-Staffhouse Connector
-  new THREE.Vector3(136.0, 14.15, -94.0), // Staffhouse East Paver
-  new THREE.Vector3(136.0, 14.15, -80.0), // QA/QC Office South Walkway
-  new THREE.Vector3(120.0, 14.15, -80.0), // Boulevard Return
-  new THREE.Vector3(104.0, 14.15, -80.0), // Office Drop-Off
+  new THREE.Vector3(104.0, 14.15, -91.0), // Main Site Office Plaza
+  new THREE.Vector3(114.0, 14.15, -91.0), // Main Office Front Walkway
+  new THREE.Vector3(122.0, 14.15, -91.0), // Central Courtyard Intersection
+  new THREE.Vector3(122.0, 14.15, -82.0), // Boulevard Walkway (West of Court, East of Tool Shed)
+  new THREE.Vector3(124.0, 14.15, -74.0), // North Court Apron (South of Canteen)
+  new THREE.Vector3(135.0, 14.15, -74.0), // QA/QC Office Front Inspection Bay
+  new THREE.Vector3(135.0, 14.15, -77.0), // QA/QC Office Veranda Walkway
+  new THREE.Vector3(124.0, 14.15, -77.0), // Return across Promenade
+  new THREE.Vector3(120.0, 14.15, -85.0), // Boulevard Walkway heading South
+  new THREE.Vector3(116.0, 14.15, -89.5), // Tool Shed East Clearance
+  new THREE.Vector3(106.0, 14.15, -90.5), // Admin Apron Return
 ];
 export const PED_ADMIN_CIRCUIT_SPLINE = new THREE.CatmullRomCurve3(PED_ADMIN_CIRCUIT_WAYPOINTS, true, "centripetal");
 
@@ -165,22 +176,22 @@ export const PED_MOUNTAIN_SHOULDER_CIRCUIT_WAYPOINTS: THREE.Vector3[] = [
   // Climbing Uphill (East Shoulder)
   new THREE.Vector3(22.0, 0.48, 20.0),   // Powerhouse Footpath Base
   new THREE.Vector3(39.0, 0.65, 12.5),   // Switchyard Shoulder Footpath
-  new THREE.Vector3(49.0, 1.80, -5.5),   // Foothill Path
-  new THREE.Vector3(59.5, 4.20, -25.5),  // Lower Slope Shoulder
-  new THREE.Vector3(73.5, 7.50, -45.5),  // Mid-Mountain Shoulder
-  new THREE.Vector3(85.5, 10.8, -61.5),  // Upper Slope Footpath
-  new THREE.Vector3(93.5, 13.0, -71.5),  // Plateau Approach Shoulder
-  new THREE.Vector3(99.5, 14.15, -75.5), // TEMFACIL Pedestrian Turnstile
-  new THREE.Vector3(104.0, 14.15, -80.0),// Arrival at Entrance Hub
+  new THREE.Vector3(49.0, 0.56, -5.5),   // Foothill Path
+  new THREE.Vector3(59.5, 6.90, -25.5),  // Lower Slope Shoulder
+  new THREE.Vector3(73.5, 9.53, -45.5),  // Mid-Mountain Shoulder
+  new THREE.Vector3(85.5, 14.00, -61.5), // Upper Slope Footpath
+  new THREE.Vector3(93.5, 14.00, -71.5), // Plateau Approach Shoulder
+  new THREE.Vector3(99.5, 14.15, -73.5), // TEMFACIL Pedestrian Turnstile (North of tool shed)
+  new THREE.Vector3(104.0, 14.15, -73.5),// Entrance Hub Paver Walkway (North of tool shed bundles)
   // Crossing & Descending Downhill (West Shoulder)
-  new THREE.Vector3(102.0, 14.15, -83.0),// West Pedestrian Walkway
-  new THREE.Vector3(96.5, 14.15, -80.0), // West Shoulder Gate Pass
-  new THREE.Vector3(90.0, 13.0, -76.0),  // Upper Descent Shoulder
-  new THREE.Vector3(82.0, 10.8, -66.5),  // Mountain Curve West Shoulder
-  new THREE.Vector3(70.0, 7.50, -50.0),  // Mid-Mountain West Shoulder
-  new THREE.Vector3(56.0, 4.20, -30.0),  // Lower Slope West Shoulder
-  new THREE.Vector3(46.0, 1.80, -10.0),  // Foothill West Path
-  new THREE.Vector3(37.0, 0.65, 8.0),    // Switchyard West Shoulder
+  new THREE.Vector3(100.0, 14.15, -73.5),// Turnstile Return Walkway
+  new THREE.Vector3(95.0, 14.15, -73.5), // West Shoulder Gate Pass (Clear of guardhouse)
+  new THREE.Vector3(89.5, 14.00, -73.8), // Upper Descent Shoulder
+  new THREE.Vector3(82.0, 14.00, -66.5), // Mountain Curve West Shoulder
+  new THREE.Vector3(70.0, 8.63, -50.0),  // Mid-Mountain West Shoulder
+  new THREE.Vector3(56.0, 4.92, -30.0),  // Lower Slope West Shoulder
+  new THREE.Vector3(46.0, 0.11, -10.0),  // Foothill West Path
+  new THREE.Vector3(37.0, 0.65, 10.0),   // Switchyard West Shoulder
   new THREE.Vector3(21.0, 0.48, 16.0),   // Powerhouse Crossing
 ];
 export const PED_MOUNTAIN_SHOULDER_CIRCUIT_SPLINE = new THREE.CatmullRomCurve3(PED_MOUNTAIN_SHOULDER_CIRCUIT_WAYPOINTS, true, "centripetal");
@@ -212,7 +223,7 @@ export const TEMFACIL_BUILDING_COLLIDERS: BuildingCollider[] = [
     minX: 107.75,
     maxX: 120.25,
     minZ: -118.0,
-    maxZ: -96.0,
+    maxZ: -95.5,
   },
   {
     id: "STAFF_HOUSE",
@@ -237,10 +248,10 @@ export const TEMFACIL_BUILDING_COLLIDERS: BuildingCollider[] = [
   },
   {
     id: "TOOL_STAGING_SHED",
-    minX: 103.7,
-    maxX: 112.3,
-    minZ: -87.0,
-    maxZ: -83.0,
+    minX: 101.5,
+    maxX: 114.5,
+    minZ: -87.5,
+    maxZ: -77.5,
   },
   {
     id: "QAQC_DESIGN_OFFICE",
@@ -250,11 +261,18 @@ export const TEMFACIL_BUILDING_COLLIDERS: BuildingCollider[] = [
     maxZ: -70.1,
   },
   {
+    id: "CANTEEN_BUILDING",
+    minX: 144.0,
+    maxX: 156.0,
+    minZ: -88.0,
+    maxZ: -74.0,
+  },
+  {
     id: "SECURITY_GUARDHOUSE_BOOTH",
-    minX: 93.0,
-    maxX: 96.5,
-    minZ: -79.0,
-    maxZ: -75.0,
+    minX: 90.5,
+    maxX: 94.5,
+    minZ: -81.0,
+    maxZ: -77.0,
   },
   {
     id: "SWITCHYARD_FLOODWALL",
@@ -306,20 +324,26 @@ export function resolveBuildingCollisions(
 
       const minDist = Math.min(distLeft, distRight, distBack, distFront);
 
+      // Deflection clamp prevents unnatural multi-meter teleportation jumps if an entity touches a corner
+      const maxDeflect = 0.8;
       if (minDist === distLeft) {
-        adjustedPos.x = minX;
+        adjustedPos.x = Math.max(pos.x - maxDeflect, minX);
         if (adjustedForward.x > 0) adjustedForward.x = 0;
       } else if (minDist === distRight) {
-        adjustedPos.x = maxX;
+        adjustedPos.x = Math.min(pos.x + maxDeflect, maxX);
         if (adjustedForward.x < 0) adjustedForward.x = 0;
       } else if (minDist === distBack) {
-        adjustedPos.z = minZ;
+        adjustedPos.z = Math.max(pos.z - maxDeflect, minZ);
         if (adjustedForward.z > 0) adjustedForward.z = 0;
       } else {
-        adjustedPos.z = maxZ;
+        adjustedPos.z = Math.min(pos.z + maxDeflect, maxZ);
         if (adjustedForward.z < 0) adjustedForward.z = 0;
       }
-      adjustedForward.normalize();
+      if (adjustedForward.lengthSq() > 0.0001) {
+        adjustedForward.normalize();
+      } else {
+        adjustedForward.copy(forward);
+      }
     }
   }
 
@@ -333,7 +357,7 @@ export const ROAD_CONSTANTS = {
   SIDEWALK_OFFSET: 4.2,     // Pedestrian natural walking trail on mountain shoulder
   POWERHOUSE_U: 0.05,       // Spline parameter 'u' at Powerhouse Lower Portal
   SWITCHYARD_U: 0.15,       // Spline parameter 'u' at Switchyard Turnaround
-  GATE_PROGRESS_U: 0.655,   // Spline parameter 'u' at TEMFACIL Main Security Checkpoint & Road Entrance Tip
+  GATE_PROGRESS_U: 1.00,    // Spline parameter 'u' at TEMFACIL Main Security Checkpoint outside gate ([95.5, 14.15, -75.5])
   TEMFACIL_OFFICE_U: 0.85,  // Spline parameter 'u' at Staff Office Drop-Off
   TEMFACIL_DEPOT_U: 0.96,   // Spline parameter 'u' at Material Laydown Depot Turnaround
 };
@@ -370,7 +394,7 @@ export function getSiteSurfaceY(x: number, z: number): number {
   }
 
   // 3. TEMFACIL Elevated Facility Plateau, Slabs, Warehouses & Laydown Yards
-  if (x >= 68.0 && z <= -58.0) {
+  if (x >= 68.0 && z <= -74.0) {
     // Western Laydown Yard, Warehouse Footprint & Concrete Staging Apron (X: 74 to 100, Z: -126 to -92.5)
     if (x >= 74.0 && x <= 100.0 && z <= -92.5) {
       return Math.max(14.85, terrainY);
@@ -402,7 +426,7 @@ export function getSplineTransform(
   lateralOffset: number = 0,
   yOffset: number = 0.04
 ) {
-  const safeU = (u % 1.0 + 1.0) % 1.0;
+  const safeU = spline.closed ? ((u % 1.0 + 1.0) % 1.0) : Math.max(0.0001, Math.min(0.9999, u));
   const clampedU = Math.max(0.0001, Math.min(0.9999, safeU));
   const pt = spline.getPointAt(clampedU);
   const tangent = spline.getTangentAt(clampedU).normalize();
@@ -411,9 +435,10 @@ export function getSplineTransform(
   const finalX = pt.x + normal.x * lateralOffset;
   const finalZ = pt.z + normal.z * lateralOffset;
 
-  // The true surface is the maximum of the spline's engineered grade (pt.y),
-  // the structural floor / slab height, and the terrain height.
-  const surfaceY = Math.max(pt.y, getSiteSurfaceY(finalX, finalZ));
+  // The true surface is the exact ground surface (terrain or concrete slab) at (finalX, finalZ).
+  // Math.max with pt.y ensures entities never sink underground or below engineered structures.
+  const siteSurfaceY = getSiteSurfaceY(finalX, finalZ);
+  const surfaceY = Math.max(pt.y, siteSurfaceY);
   const groundY = surfaceY + yOffset;
 
   return {

@@ -56,5 +56,6 @@ next-env.d.ts
 # scratch & binaries
 /scratch/
 *.apk
+*.blend1
 test_weather.js
 
