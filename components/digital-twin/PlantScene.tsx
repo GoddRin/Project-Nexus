@@ -60,6 +60,7 @@ import {
   ShieldAlert,
   Waves,
   Layers,
+  UtensilsCrossed,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -116,6 +117,7 @@ export type CameraPresetKey =
   | "temfacil"
   | "temfacil-guardhouse"
   | "temfacil-barracks"
+  | "temfacil-canteen"
   | "temfacil-office"
   | "temfacil-office-interior"
   | "temfacil-office-zone1"
@@ -217,8 +219,8 @@ const FLOW_PATH_POINTS = [
   new THREE.Vector3(52.0, sampleTerrainY(52.0, -29.0) + 7.9, -29.0), // 13. Utility Pole P3 (Mid-Mountain Verge)
   new THREE.Vector3(61.0, sampleTerrainY(61.0, -43.0) + 7.9, -43.0), // 14. Utility Pole P4 (Upper Mountain Verge)
   new THREE.Vector3(70.5, sampleTerrainY(70.5, -56.0) + 7.9, -56.0), // 15. Utility Pole P5 (Plateau Approach Verge)
-  new THREE.Vector3(80.0, sampleTerrainY(80.0, -68.0) + 7.9, -68.0), // 16. Utility Pole P6 (Gate Terminal Pole)
-  new THREE.Vector3(82.0, sampleTerrainY(82.0, -70.0) + 1.2, -70.0), // 17. Temfacil External Substation Step-Down Transformer
+  new THREE.Vector3(80.5, sampleTerrainY(80.5, -70.5) + 7.9, -70.5), // 16. Utility Pole P6 (Gate Terminal Pole)
+  new THREE.Vector3(84.0, 14.15 + 1.2, -83.0),                        // 17. Temfacil Internal Utility Substation & Standby Genset
 ];
 
 /**
@@ -1397,12 +1399,16 @@ function CameraController({
         target: new THREE.Vector3(125, 15, -100),
       },
       "temfacil-guardhouse": {
-        pos: new THREE.Vector3(82, 18.0, -62),
-        target: new THREE.Vector3(93, 14.5, -75),
+        pos: new THREE.Vector3(95.0, 18.0, -52.0),
+        target: new THREE.Vector3(94.0, 13.8, -68.0),
       },
       "temfacil-barracks": {
         pos: new THREE.Vector3(155, 23, -84),
         target: new THREE.Vector3(155, 15, -107),
+      },
+      "temfacil-canteen": {
+        pos: new THREE.Vector3(150, 18, -95),
+        target: new THREE.Vector3(150, 15.5, -81),
       },
       "temfacil-office": {
         pos: new THREE.Vector3(118, 18, -78),
@@ -2877,6 +2883,19 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
                     <span className="truncate">Barracks & Food</span>
                   </Button>
                   <Button
+                    variant={activePreset === "temfacil-canteen" && !isFreeNav ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "font-mono text-[11px] h-7 px-2 justify-start transition-all",
+                      activePreset === "temfacil-canteen" && !isFreeNav && "border-flow-teal bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/30"
+                    )}
+                    onClick={() => handleSelectPreset("temfacil-canteen")}
+                    title="Authentic Construction Canteen & Mess Hall"
+                  >
+                    <UtensilsCrossed className="h-3 w-3 mr-1.5 shrink-0 text-amber-400" />
+                    <span className="truncate">Canteen Hall</span>
+                  </Button>
+                  <Button
                     variant={activePreset === "temfacil-office" && !isFreeNav ? "default" : "outline"}
                     size="sm"
                     className={cn(
@@ -3220,10 +3239,10 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           </Card>
         </div>
 
-        {/* Center: Powerhouse Architectural Model Badge */}
+        {/* Center: Site Architectural Model Badge */}
         <div className="pointer-events-none select-none hidden lg:flex items-center gap-2 rounded-lg border border-white/10 bg-black/75 px-3.5 py-1.5 font-mono text-[10px] text-text-muted backdrop-blur-md shadow-xl mb-0.5">
           <Layers className="h-3.5 w-3.5 text-flow-teal shrink-0" />
-          <span>11.3 MW HEPP · Powerhouse Architectural Model</span>
+          <span>11.3 MW THEPP · Site Architectural Model</span>
         </div>
 
         {/* Right Side: Real-time Hardware Performance Telemetry HUD Chip */}

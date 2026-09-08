@@ -117,77 +117,8 @@ const scratchSecWorldPos = new THREE.Vector3();
    TERRAIN HEIGHT SAMPLER & SPLINE UTILITIES
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const SCENE_HALF = 180.0;
-
-export function sampleTerrainY(x: number, z: number): number {
-  const gridSize = (gisTerrainData as any).gridSize || 65;
-  const positions = (gisTerrainData as any).positions as number[];
-
-  const xFrac = (x + SCENE_HALF) / (SCENE_HALF * 2);
-  const zFrac = (z + SCENE_HALF) / (SCENE_HALF * 2);
-
-  const col = xFrac * (gridSize - 1);
-  const row = zFrac * (gridSize - 1);
-
-  const c0 = Math.max(0, Math.min(gridSize - 2, Math.floor(col)));
-  const r0 = Math.max(0, Math.min(gridSize - 2, Math.floor(row)));
-  const c1 = c0 + 1;
-  const r1 = r0 + 1;
-
-  const fx = col - c0;
-  const fz = row - r0;
-
-  const y00 = positions[(r0 * gridSize + c0) * 3 + 1];
-  const y10 = positions[(r0 * gridSize + c1) * 3 + 1];
-  const y01 = positions[(r1 * gridSize + c0) * 3 + 1];
-  const y11 = positions[(r1 * gridSize + c1) * 3 + 1];
-
-  const y0 = y00 * (1 - fx) + y10 * fx;
-  const y1 = y01 * (1 - fx) + y11 * fx;
-  let sampledY = y0 * (1 - fz) + y1 * fz;
-
-  // 1. Excavate Tailrace Canal & Outfall Channel
-  if (x >= -12.0 && x <= 12.0 && z >= 5.5 && z <= 48.0) {
-    return -1.35;
-  }
-
-  // 2. Powerhouse Facility Compound Base Yard (level civil foundation at Y = 0.05m)
-  const dxPH = Math.max(-32.0 - x, 0, x - 44.0);
-  const dzPH = Math.max(-24.0 - z, 0, z - 18.0);
-  const distPH = Math.hypot(dxPH, dzPH);
-  if (distPH === 0) {
-    sampledY = 0.05;
-  } else if (distPH < 22.0) {
-    const tPH = distPH / 22.0;
-    const smoothT = tPH * tPH * (3.0 - 2.0 * tPH);
-    const origY = Math.max(0.05, sampledY);
-    sampledY = 0.05 * (1.0 - smoothT) + origY * smoothT;
-  }
-
-  // 3. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 88, z: -70, y=13.8) down to Powerhouse (x: 34, z: -22, y=0.5)
-  const ax = 34.0, az = -22.0;
-  const bx = 95.0, bz = -75.0;
-  const dx = bx - ax;
-  const dz = bz - az;
-  const lenSq = dx * dx + dz * dz;
-  const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
-  const projX = ax + t * dx;
-  const projZ = az + t * dz;
-  const distToSlopeLine = Math.hypot(x - projX, z - projZ);
-
-  if (distToSlopeLine < 26.0 && x >= 30.0 && x <= 88.0 && z >= -72.0 && z <= -20.0) {
-    const slopeY = 0.5 + t * 13.3;
-    const fade = Math.min(1.0, distToSlopeLine / 26.0);
-    sampledY = slopeY * (1.0 - fade) + sampledY * fade;
-  }
-
-  // 4. TEMFACIL Compound Elevated Base Platform (EL. 14.0m to 14.85m)
-  if (x >= 68.0 && z <= -58.0) {
-    return Math.max(14.0, sampledY);
-  }
-
-  return sampledY;
-}
+import { sampleTerrainY } from "./terrainData";
+export { sampleTerrainY };
 
 function getSafeSplineData(spline: THREE.CatmullRomCurve3, rawProgress: number) {
   const u = Math.max(0.0001, Math.min(0.9999, rawProgress));
@@ -2343,11 +2274,11 @@ function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (i
         bodyScale={[1.05, 1.0, 1.05]}
       />
 
-      {/* 📋 HR & Administrative Head (Rovigail Abellar) at Admin Office Desk */}
+      {/* 📋 HR & Administrative Head (Rovigail Abellar) on Main Office Front Veranda */}
       <HydroProjectPersonMesh
         personnelId="HR_ROVIGAIL_ABELLAR"
         onSelectPerson={onSelectPerson}
-        position={[113.5, 14.15, -97.5]}
+        position={[113.5, 14.15, -93.8]}
         rotation={[0, 0, 0]}
         role="HR_OFFICER"
         gender="FEMALE"
@@ -2362,11 +2293,11 @@ function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (i
         bodyScale={[1.15, 0.96, 1.15]}
       />
 
-      {/* 🩺 Site Occupational Health Nurse (Russelle Alcantara) at TEMFACIL Site Clinic */}
+      {/* 🩺 Site Occupational Health Nurse (Russelle Alcantara) on Clinic Veranda */}
       <HydroProjectPersonMesh
         personnelId="NURSE_RUSSELLE_ALCANTARA"
         onSelectPerson={onSelectPerson}
-        position={[115.0, 14.15, -96.0]}
+        position={[115.0, 14.15, -93.8]}
         rotation={[0, -Math.PI / 2, 0]}
         gender="FEMALE"
         role="SITE_NURSE"
@@ -2982,43 +2913,43 @@ export function AnimatedSecurityGateOfficer({
     const cargoZ = activeDir === 1 ? 1.85 : -1.85;
 
     if (activePhase === "WALKING_TO_VEHICLE") {
-      // Guard physically walks from under guardhouse porch (x=4.4, z=0.8) to driver window (x=2.4, z=driverZ)
-      st.pos.x = THREE.MathUtils.lerp(4.4, 2.4, activeWalk);
-      st.pos.z = THREE.MathUtils.lerp(0.8, driverZ, activeWalk);
-      st.targetRotY = activeDir === 1 ? -2.1 : -1.2;
+      // Guard physically walks from under guardhouse porch on left shoulder (x=1.6, z=0.5) to driver window (x=5.2, z=driverZ)
+      st.pos.x = THREE.MathUtils.lerp(1.6, 5.2, activeWalk);
+      st.pos.z = THREE.MathUtils.lerp(0.5, driverZ, activeWalk);
+      st.targetRotY = activeDir === 1 ? 1.4 : 1.7;
     } else if (activePhase === "WALKING_TO_POST") {
-      // Guard physically walks back from vehicle to under guardhouse porch
-      st.pos.x = THREE.MathUtils.lerp(2.4, 4.4, 1.0 - activeWalk);
-      st.pos.z = THREE.MathUtils.lerp(driverZ, 0.8, 1.0 - activeWalk);
-      st.targetRotY = 1.15;
+      // Guard physically walks back from vehicle to under guardhouse porch on left shoulder
+      st.pos.x = THREE.MathUtils.lerp(5.2, 1.6, 1.0 - activeWalk);
+      st.pos.z = THREE.MathUtils.lerp(driverZ, 0.5, 1.0 - activeWalk);
+      st.targetRotY = -1.5;
     } else if (activePhase === "INSPECTING_DRIVER_PPE") {
-      st.pos.set(2.4, 0, driverZ);
-      st.targetRotY = -Math.PI / 2; // Facing driver window
+      st.pos.set(5.2, 0, driverZ);
+      st.targetRotY = Math.PI / 2; // Facing driver window (looking towards road +X)
     } else if (activePhase === "INSPECTING_UNDERCARRIAGE") {
       // Walks along vehicle undercarriage sweeping mirror wand front-to-back
       const sweepZ = Math.sin(t * 2.2) * 1.3;
-      st.pos.set(2.3 + Math.abs(Math.sin(t * 1.5)) * 0.15, 0, driverZ + sweepZ);
-      st.targetRotY = -Math.PI / 2 + Math.sin(t * 2.2) * 0.3;
+      st.pos.set(5.1 + Math.abs(Math.sin(t * 1.5)) * 0.15, 0, driverZ + sweepZ);
+      st.targetRotY = Math.PI / 2 + Math.sin(t * 2.2) * 0.3;
     } else if (activePhase === "INSPECTING_CARGO_PROHIBITED") {
       // Steps along cargo bed peering inside for prohibited items (liquor/firearms/unmanifested tools)
       const cargoPace = Math.sin(t * 1.8) * 0.6;
-      st.pos.set(2.4, 0, cargoZ + cargoPace);
-      st.targetRotY = -Math.PI / 2 + Math.sin(t * 1.8) * 0.2;
+      st.pos.set(5.2, 0, cargoZ + cargoPace);
+      st.targetRotY = Math.PI / 2 + Math.sin(t * 1.8) * 0.2;
     } else if (activePhase === "LOGGING_MANIFEST") {
-      st.pos.set(2.4, 0, driverZ);
-      st.targetRotY = -Math.PI / 2;
+      st.pos.set(5.2, 0, driverZ);
+      st.targetRotY = Math.PI / 2;
     } else if (activePhase === "WAVING_CLEARANCE" || activePhase === "VEHICLE_PASSING") {
-      st.pos.set(3.0, 0, driverZ + (activeDir === 1 ? 0.3 : -0.3));
-      st.targetRotY = activeDir === 1 ? -Math.PI / 2.3 : -Math.PI / 1.7;
+      st.pos.set(4.6, 0, driverZ + (activeDir === 1 ? -0.4 : 0.4));
+      st.targetRotY = Math.PI / 2.5;
     } else {
-      // SENTRY_POST (Under guardhouse porch)
-      st.pos.set(4.4, 0, 0.8);
+      // SENTRY_POST (Under guardhouse porch on left shoulder)
+      st.pos.set(1.6, 0, 0.5);
       st.scanTimer -= delta;
       if (st.scanTimer <= 0) {
         st.scanTimer = 3.2 + Math.sin(t) * 1.5;
         st.scanAngle = Math.sin(t * 0.6) * 0.35;
       }
-      st.targetRotY = -Math.PI / 3 + st.scanAngle;
+      st.targetRotY = 0.2 + st.scanAngle;
     }
 
     // Smooth rotational damping
@@ -3031,11 +2962,11 @@ export function AnimatedSecurityGateOfficer({
 
     // ─── 2. ARTICULATED BIOMECHANICAL ANATOMY KINEMATICS ───
     if (isWalking) {
-      const walkSpeed = (activePhase === "WALKING_TO_VEHICLE" || activePhase === "WALKING_TO_POST") ? 8.0 : 4.0;
+      const walkSpeed = (activePhase === "WALKING_TO_VEHICLE" || activePhase === "WALKING_TO_POST") ? 12.0 : 6.0;
       const walkSin = Math.sin(t * walkSpeed);
       const walkCos = Math.cos(t * walkSpeed);
-      const legStride = walkSin * ((activePhase === "WALKING_TO_VEHICLE" || activePhase === "WALKING_TO_POST") ? 0.45 : 0.22);
-      const armSwing = walkSin * 0.28;
+      const legStride = walkSin * ((activePhase === "WALKING_TO_VEHICLE" || activePhase === "WALKING_TO_POST") ? 0.48 : 0.24);
+      const armSwing = walkSin * 0.32;
       const pelvicBounce = Math.abs(walkSin) * 0.028;
 
       if (guardGroupRef.current) guardGroupRef.current.position.y = pelvicBounce;
@@ -3048,14 +2979,14 @@ export function AnimatedSecurityGateOfficer({
         if (torsoRef.current) torsoRef.current.rotation.set(0.24, walkCos * 0.05, 0);
         if (headRef.current) headRef.current.rotation.set(0.38, -walkCos * 0.06, 0);
         if (leftArmRef.current) leftArmRef.current.rotation.set(-0.7, 0.25, 0.1);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.35 + Math.sin(t * 2.2) * 0.15, -0.15, -0.2);
-        if (mirrorWandRef.current) mirrorWandRef.current.rotation.set(0.85 + Math.sin(t * 2.2) * 0.2, 0, 0);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.35 + Math.sin(t * 3.6) * 0.15, -0.15, -0.2);
+        if (mirrorWandRef.current) mirrorWandRef.current.rotation.set(0.85 + Math.sin(t * 3.6) * 0.2, 0, 0);
       } else if (activePhase === "INSPECTING_CARGO_PROHIBITED") {
         // Look up and into truck bed / cargo box with inspection beam
         if (torsoRef.current) torsoRef.current.rotation.set(0.12, 0, 0);
-        if (headRef.current) headRef.current.rotation.set(0.22, Math.sin(t * 2.5) * 0.4, 0);
+        if (headRef.current) headRef.current.rotation.set(0.22, Math.sin(t * 3.2) * 0.4, 0);
         if (leftArmRef.current) leftArmRef.current.rotation.set(-0.95, 0.35, 0.15);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + Math.sin(t * 2.5) * 0.2, -0.25, 0.15);
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-1.25 + Math.sin(t * 3.2) * 0.2, -0.25, 0.15);
         if (mirrorWandRef.current) mirrorWandRef.current.rotation.set(-0.2, 0, 0);
       } else {
         if (headRef.current) headRef.current.rotation.set(0, -walkCos * 0.05, 0);
@@ -3324,8 +3255,8 @@ function CheckpointInspectionHUD({
       hudRef.current.visible = isInspecting;
       if (isInspecting) {
         const t = clock.getElapsedTime();
-        hudRef.current.position.x = activeDir === 1 ? 1.8 : -1.8;
-        hudRef.current.position.y = 3.6 + Math.sin(t * 1.8) * 0.06;
+        hudRef.current.position.x = activeDir === 1 ? 6.5 : 12.5;
+        hudRef.current.position.y = 3.8 + Math.sin(t * 1.8) * 0.06;
       }
     }
     if (scanLineRef.current) {
@@ -3335,7 +3266,7 @@ function CheckpointInspectionHUD({
   });
 
   return (
-    <group ref={hudRef} position={[1.8, 3.6, 0]} visible={false}>
+    <group ref={hudRef} position={[6.5, 3.8, 0]} visible={false}>
       {/* HUD Holographic Glass Backdrop */}
       <mesh material={MAT_GLASS_BLUE}>
         <planeGeometry args={[3.8, 1.1]} />
@@ -3357,11 +3288,27 @@ function CheckpointInspectionHUD({
         <planeGeometry args={[0.08, 0.6]} />
         <meshStandardMaterial color="#38BDF8" emissive="#38BDF8" emissiveIntensity={3.0} />
       </mesh>
+
+      {/* Live Inspection State Badges */}
+      <group position={[0, -0.05, 0.04]}>
+        <mesh position={[-1.2, 0, 0]}>
+          <planeGeometry args={[0.9, 0.4]} />
+          <meshBasicMaterial color="#0F172A" opacity={0.85} transparent />
+        </mesh>
+        <mesh position={[0, 0, 0]}>
+          <planeGeometry args={[0.9, 0.4]} />
+          <meshBasicMaterial color="#0F172A" opacity={0.85} transparent />
+        </mesh>
+        <mesh position={[1.2, 0, 0]}>
+          <planeGeometry args={[0.9, 0.4]} />
+          <meshBasicMaterial color="#0F172A" opacity={0.85} transparent />
+        </mesh>
+      </group>
     </group>
   );
 }
 
-function SecurityGateCheckpointSystem({
+export function SecurityGuardhouseCheckpoint({
   checkpointRef,
   gateAngle,
   onSelectPerson,
@@ -3376,12 +3323,12 @@ function SecurityGateCheckpointSystem({
   const [showGateLights, setShowGateLights] = useState(false);
   const { camera } = useThree();
 
-  // Guardhouse Checkpoint System placed strictly outside the TEMFACIL compound
-  // Sitting solidly on ground level Y = 14.15m BESIDE the generator/substation (no overlap)
+  // Guardhouse Checkpoint System placed on the LEFT (WEST) SHOULDER outside TEMFACIL
+  // Positioned at X = 85.5m, Y = 13.35m, Z = -67.5m, with 15.5m barrier arm spanning the entire 16m asphalt ramp
   const gateTransform = useMemo(() => {
     return {
-      point: new THREE.Vector3(95.5, 14.15, -75.5),
-      yaw: 2.30,
+      point: new THREE.Vector3(85.5, 13.35, -67.5),
+      yaw: 0.0,
     };
   }, []);
 
@@ -3403,9 +3350,10 @@ function SecurityGateCheckpointSystem({
       ? (cp.phase === "WAVING_CLEARANCE" || cp.phase === "VEHICLE_PASSING")
       : (gateAngle !== undefined && Math.abs(gateAngle) > 0.1);
 
-    const targetAngle = isGateOpen ? -Math.PI / 2.2 : 0;
+    // Rotating upward around +Z axis lifts arm from +X (horizontal) up towards +Y (vertical)
+    const targetAngle = isGateOpen ? Math.PI / 2.2 : 0;
     if (gateArmRef.current) {
-      gateArmRef.current.rotation.z = THREE.MathUtils.lerp(gateArmRef.current.rotation.z, targetAngle, 0.08);
+      gateArmRef.current.rotation.z = THREE.MathUtils.lerp(gateArmRef.current.rotation.z, targetAngle, 0.14);
     }
     if (gateLedMatRef.current) {
       const col = isGateOpen ? "#22C55E" : "#EF4444";
@@ -3416,52 +3364,52 @@ function SecurityGateCheckpointSystem({
 
   return (
     <group ref={rootGroupRef} position={[gateTransform.point.x, gateTransform.point.y, gateTransform.point.z]} rotation={[0, gateTransform.yaw, 0]}>
-      {/* ═══ 1. ELEVATED SECURITY GUARDHOUSE WITH SOLID FOUNDATION PLINTH (Right Shoulder) ═══ */}
-      <group position={[4.6, 0, 0]}>
-        {/* Finished Raised Foundation Plinth Slab on Grade (Y = 14.15m) */}
-        <mesh position={[0, 0.14, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
-          <boxGeometry args={[3.4, 0.28, 3.4]} />
+      {/* ═══ 1. SECURITY GUARDHOUSE WITH SOLID FOUNDATION PLINTH (Left Shoulder) ═══ */}
+      <group position={[0, 0, 0]}>
+        {/* Finished Raised Foundation Plinth Slab (Grounded firmly into shoulder slope) */}
+        <mesh position={[0, -0.15, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
+          <boxGeometry args={[3.8, 0.60, 3.8]} />
         </mesh>
 
         {/* ═══ 2. RED & WHITE SCIC SECURITY GUARDHOUSE BOOTH ═══ */}
-        <mesh position={[0, 1.54, 0]} castShadow receiveShadow material={MAT_RED_BOOTH}>
-          <boxGeometry args={[2.4, 2.8, 2.4]} />
+        <mesh position={[0, 1.45, 0]} castShadow receiveShadow material={MAT_RED_BOOTH}>
+          <boxGeometry args={[2.4, 2.6, 2.4]} />
         </mesh>
         {/* White Trim Pillars */}
         {[-1.18, 1.18].map((xP, i) =>
           [-1.18, 1.18].map((zP, j) => (
-            <mesh key={`trim-${i}-${j}`} position={[xP, 1.52, zP]} material={MAT_ID_BADGE_WHITE}>
-              <boxGeometry args={[0.08, 2.82, 0.08]} />
+            <mesh key={`trim-${i}-${j}`} position={[xP, 1.45, zP]} material={MAT_ID_BADGE_WHITE}>
+              <boxGeometry args={[0.08, 2.62, 0.08]} />
             </mesh>
           ))
         )}
         {/* Guardhouse Overhanging Eaves Roof */}
-        <mesh position={[0, 2.96, 0]} castShadow material={MAT_STEEL_DARK}>
-          <boxGeometry args={[2.9, 0.18, 2.9]} />
+        <mesh position={[0, 2.80, 0]} castShadow material={MAT_STEEL_DARK}>
+          <boxGeometry args={[3.0, 0.18, 3.0]} />
         </mesh>
 
-        {/* Road-Facing Glass Sliding Inspection Window */}
-        <mesh position={[-1.22, 1.64, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_FRAME}>
+        {/* Road-Facing Glass Sliding Inspection Window (Facing East +X across road) */}
+        <mesh position={[1.22, 1.55, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_FRAME}>
           <boxGeometry args={[1.4, 1.0, 0.06]} />
         </mesh>
-        <mesh position={[-1.22, 1.64, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_CLEAR}>
+        <mesh position={[1.22, 1.55, 0]} rotation={[0, Math.PI / 2, 0]} material={MAT_GLASS_CLEAR}>
           <boxGeometry args={[1.3, 0.9, 0.03]} />
         </mesh>
 
         {/* Interior Security Workstation Desk & CRT Monitor */}
-        <mesh position={[-0.6, 0.89, 0]} material={MAT_TIMBER_STAKE}>
+        <mesh position={[0.6, 0.89, 0]} material={MAT_TIMBER_STAKE}>
           <boxGeometry args={[0.8, 0.1, 1.8]} />
         </mesh>
         {/* CCTV Monitor Screen (Glowing Green Telemetry) */}
-        <mesh position={[-0.6, 1.19, 0.35]} rotation={[0, -0.4, 0]}>
+        <mesh position={[0.6, 1.19, 0.35]} rotation={[0, 0.4, 0]}>
           <boxGeometry args={[0.1, 0.35, 0.45]} />
           <meshBasicMaterial color="#10B981" />
         </mesh>
         {/* Interior Ambient Booth Light */}
-        {showGateLights && <pointLight position={[0, 2.44, 0]} color="#FEF08A" intensity={0.8} distance={5} />}
+        {showGateLights && <pointLight position={[0, 2.35, 0]} color="#FEF08A" intensity={0.8} distance={5} />}
 
-        {/* SCIC Main Gate Security Signboard Above Window */}
-        <group position={[-1.24, 2.44, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        {/* SCIC Main Gate Security Signboard Above Window (Facing Road +X) */}
+        <group position={[1.24, 2.35, 0]} rotation={[0, Math.PI / 2, 0]}>
           <mesh material={MAT_SIGNBOARD_TEAL}>
             <boxGeometry args={[2.0, 0.4, 0.04]} />
           </mesh>
@@ -3470,21 +3418,21 @@ function SecurityGateCheckpointSystem({
           </mesh>
         </group>
 
-        {/* Rear Exterior Aircon Condenser Unit */}
-        <mesh position={[1.25, 1.84, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+        {/* Rear Exterior Aircon Condenser Unit (West -X face) */}
+        <mesh position={[-1.25, 1.70, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
           <boxGeometry args={[0.3, 0.5, 0.7]} />
         </mesh>
       </group>
 
-      {/* ═══ 3. ROAD SPEED BUMPS / RUBBER RUMBLE STRIPS ACROSS ROAD ═══ */}
+      {/* ═══ 3. ROAD SPEED BUMPS / RUBBER RUMBLE STRIPS ACROSS ROAD (15.5m span across ramp) ═══ */}
       {[-2.0, 2.0].map((zBump, i) => (
-        <group key={`bump-${i}`} position={[0, 0.04, zBump]}>
+        <group key={`bump-${i}`} position={[10.5, 0.04, zBump]}>
           {/* Black Rubber Base */}
           <mesh material={MAT_STEEL_DARK}>
-            <boxGeometry args={[7.2, 0.06, 0.4]} />
+            <boxGeometry args={[15.5, 0.06, 0.4]} />
           </mesh>
           {/* Yellow Chevron Stripes */}
-          {[-2.7, -1.8, -0.9, 0, 0.9, 1.8, 2.7].map((xS, j) => (
+          {[-6.6, -5.5, -4.4, -3.3, -2.2, -1.1, 0, 1.1, 2.2, 3.3, 4.4, 5.5, 6.6].map((xS, j) => (
             <mesh key={`stripe-${j}`} position={[xS, 0.035, 0]} material={MAT_YELLOW_SAFETY}>
               <boxGeometry args={[0.35, 0.02, 0.42]} />
             </mesh>
@@ -3492,9 +3440,9 @@ function SecurityGateCheckpointSystem({
         </group>
       ))}
 
-      {/* ═══ 4. TRAFFIC SAFETY CONES (Demarcating Inspection Lane) ═══ */}
+      {/* ═══ 4. TRAFFIC SAFETY CONES (Demarcating Roadside Shoulder at X = 2.4) ═══ */}
       {[-1.5, -0.5, 0.5, 1.5].map((zC, i) => (
-        <group key={`cone-${i}`} position={[3.4, 0, zC]}>
+        <group key={`cone-${i}`} position={[2.4, 0, zC]}>
           <mesh position={[0, 0.02, 0]} material={MAT_SAFETY_RED}>
             <boxGeometry args={[0.26, 0.04, 0.26]} />
           </mesh>
@@ -3509,7 +3457,7 @@ function SecurityGateCheckpointSystem({
       ))}
 
       {/* ═══ 5. HIGH SECURITY MAST POLE (CCTV DOME & SOLAR FLOODLIGHT) ═══ */}
-      <group position={[3.8, 0, -1.6]}>
+      <group position={[1.8, 0, -1.6]}>
         <mesh position={[0, 2.8, 0]} material={MAT_STEEL_DARK}>
           <cylinderGeometry args={[0.06, 0.08, 5.6, 8]} />
         </mesh>
@@ -3529,17 +3477,17 @@ function SecurityGateCheckpointSystem({
       </group>
 
       {/* ═══ 6. AUTOMATIC BOOM BARRIER GATE MECHANISM ═══ */}
-      {/* Heavy Yellow Barrier Post */}
-      <mesh position={[3.8, 0.6, 0]} material={MAT_YELLOW_SAFETY}>
+      {/* Heavy Yellow Barrier Post on West Shoulder Curb */}
+      <mesh position={[2.0, 0.6, 0]} material={MAT_YELLOW_SAFETY}>
         <cylinderGeometry args={[0.16, 0.16, 1.2, 10]} />
       </mesh>
       {/* Steel Base Mount */}
-      <mesh position={[3.8, 0.06, 0]} material={MAT_STEEL_DARK}>
+      <mesh position={[2.0, 0.06, 0]} material={MAT_STEEL_DARK}>
         <boxGeometry args={[0.45, 0.12, 0.45]} />
       </mesh>
 
       {/* Red / Green Clearance LED Signal Light */}
-      <mesh position={[3.8, 1.26, 0]}>
+      <mesh position={[2.0, 1.26, 0]}>
         <sphereGeometry args={[0.09, 10, 10]} />
         <meshStandardMaterial
           ref={gateLedMatRef}
@@ -3549,15 +3497,15 @@ function SecurityGateCheckpointSystem({
         />
       </mesh>
 
-      {/* Rotating Boom Barrier Arm ($7.4m span across road) */}
-      <group ref={gateArmRef} position={[3.8, 1.0, 0]}>
-        <mesh position={[-3.7, 0, 0]} material={MAT_YELLOW_SAFETY}>
-          <boxGeometry args={[7.4, 0.10, 0.06]} />
+      {/* Rotating Boom Barrier Arm (15.5m span across full elevated ramp) */}
+      <group ref={gateArmRef} position={[2.0, 1.0, 0]}>
+        <mesh position={[7.75, 0, 0]} material={MAT_YELLOW_SAFETY}>
+          <boxGeometry args={[15.5, 0.10, 0.06]} />
         </mesh>
         {/* Red Reflective Stripes */}
-        {[-1.2, -2.4, -3.6, -4.8, -6.0].map((xOff, i) => (
+        {[1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, 12.0, 13.5, 15.0].map((xOff, i) => (
           <mesh key={`stripe-${i}`} position={[xOff, 0, 0]} material={MAT_RED_BOOTH}>
-            <boxGeometry args={[0.32, 0.11, 0.07]} />
+            <boxGeometry args={[0.35, 0.11, 0.07]} />
           </mesh>
         ))}
       </group>
@@ -3581,14 +3529,11 @@ const STATIC_VEHICLE_OBSTACLES: { id: string; pos: THREE.Vector3; radius: number
   // Tool Staging Shed Material Bundles (Teal Crates)
   { id: "TOOL_SHED_TARP_L", pos: new THREE.Vector3(103.5, 14.8, -79.5), radius: 2.2 },
   { id: "TOOL_SHED_TARP_R", pos: new THREE.Vector3(112.5, 14.8, -79.5), radius: 2.2 },
-  // Security Checkpoint Guardhouse Sentry Booth & Island
-  { id: "SECURITY_BOOTH", pos: new THREE.Vector3(95.0, 14.15, -77.0), radius: 2.0 },
   // Key Personnel Initial / Standing Compound Coordinates (Zero-lag fallback)
   { id: "STAFF_ALFREDO_ARIZ", pos: new THREE.Vector3(111.0, 14.15, -88.0), radius: 0.8 },
   { id: "STAFF_ROMEO_SESE", pos: new THREE.Vector3(116.5, 14.15, -94.2), radius: 0.8 },
-  { id: "STAFF_ROVIGAIL_ABELLAR", pos: new THREE.Vector3(113.5, 14.15, -97.5), radius: 0.8 },
-  { id: "STAFF_RUSSELLE_ALCANTARA", pos: new THREE.Vector3(115.0, 14.15, -96.0), radius: 0.8 },
-  { id: "GUARD_RONALD_MALTO", pos: new THREE.Vector3(97.5, 14.15, -78.0), radius: 0.8 },
+  { id: "STAFF_ROVIGAIL_ABELLAR", pos: new THREE.Vector3(113.5, 14.15, -93.8), radius: 0.8 },
+  { id: "STAFF_RUSSELLE_ALCANTARA", pos: new THREE.Vector3(115.0, 14.15, -93.8), radius: 0.8 },
 ];
 
 // ─── AUTONOMOUS SITE TRAFFIC & PEDESTRIAN LIFE SYSTEM ───────────────────────
@@ -3625,95 +3570,95 @@ function AutonomousSiteTrafficSystem({
     walkProgress: 0,
   });
 
-  // Staggered Vehicle Starting States with Dedicated Purpose-Driven Loop Splines
+  // Staggered Vehicle Starting States with Dedicated Purpose-Driven Loop Splines & Calibrated Gate Values
   const vehiclesRef = useRef([
     {
       id: "DUMP_TRUCK",
       spline: DUMP_TRUCK_SPLINE,
-      u: 0.12, // Climbing mountain road from Quarry
-      speed: 0.015,
-      maxCruiseSpeed: 0.015,
-      state: "HAULING",
-      stateTimer: 0,
-      isBraking: false,
-      hazardLights: false,
-      bedAngle: 0,
+      u: 0.488, // Starts at Western Laydown Stockpile Pad actively tipping aggregates
+      speed: 0.024,
+      maxCruiseSpeed: 0.024,
+      state: "DEPOT_DUMPING",
+      stateTimer: 4.0,
+      isBraking: true,
+      hazardLights: true,
+      bedAngle: 0.48,
       avoidanceOffset: 0,
-      pos: new THREE.Vector3(),
-      forward: new THREE.Vector3(),
+      pos: new THREE.Vector3(73.0, 14.85, -114.0),
+      forward: new THREE.Vector3(0, 0, -1),
       ref: vDumpRef,
-      inboundGate: { stopU: 0.27, clearU: 0.35 },
-      outboundGate: { stopU: 0.64, clearU: 0.72 },
+      inboundGate: { stopU: 0.256, clearU: 0.302 },
+      outboundGate: { stopU: 0.721, clearU: 0.767 },
       routines: [
-        { u: 0.48, duration: 4.5, type: "DEPOT_DUMPING", done: false, targetBedAngle: 0.45 },
-        { u: 0.99, duration: 4.0, type: "QUARRY_LOADING", done: false, targetBedAngle: 0.0 },
+        { u: 0.488, duration: 4.0, type: "DEPOT_DUMPING", done: false, targetBedAngle: 0.48 },
+        { u: 0.000, duration: 3.5, type: "QUARRY_LOADING", done: false, targetBedAngle: 0.0 },
       ],
     },
     {
       id: "CREW_VAN",
       spline: CREW_VAN_SPLINE,
-      u: 0.88, // Descending mountain road or returning to terminal
-      speed: 0.017,
-      maxCruiseSpeed: 0.017,
+      u: 0.850, // Starts on mountain road cruising down toward Powerhouse Passenger Boarding Canopy
+      speed: 0.026,
+      maxCruiseSpeed: 0.026,
       state: "CRUISING",
       stateTimer: 0,
       isBraking: false,
       hazardLights: false,
       bedAngle: 0,
       avoidanceOffset: 0,
-      pos: new THREE.Vector3(),
-      forward: new THREE.Vector3(),
+      pos: new THREE.Vector3(46.6, 0.36, -8.8),
+      forward: new THREE.Vector3(-0.8, 0, 0.6),
       ref: vVanRef,
-      inboundGate: { stopU: 0.27, clearU: 0.35 },
-      outboundGate: { stopU: 0.63, clearU: 0.71 },
+      inboundGate: { stopU: 0.275, clearU: 0.325 },
+      outboundGate: { stopU: 0.700, clearU: 0.750 },
       routines: [
-        { u: 0.48, duration: 3.5, type: "OFFICE_DROPOFF", done: false, targetBedAngle: 0.0 },
-        { u: 0.99, duration: 3.5, type: "STAFF_BOARDING", done: false, targetBedAngle: 0.0 },
+        { u: 0.425, duration: 3.5, type: "OFFICE_DROPOFF", done: false, targetBedAngle: 0.0 },
+        { u: 0.000, duration: 3.5, type: "STAFF_BOARDING", done: false, targetBedAngle: 0.0 },
       ],
     },
     {
       id: "SITE_PICKUP",
       spline: QAQC_PICKUP_SPLINE,
-      u: 0.38, // Approaching Switchyard Substation
-      speed: 0.019,
-      maxCruiseSpeed: 0.019,
-      state: "INSPECTION_PATROL",
-      stateTimer: 0,
-      isBraking: false,
-      hazardLights: false,
+      u: 0.442, // Starts at Switchyard Parking Stall #2 conducting electrical audit
+      speed: 0.027,
+      maxCruiseSpeed: 0.027,
+      state: "SWITCHYARD_INSPECT",
+      stateTimer: 3.5,
+      isBraking: true,
+      hazardLights: true,
       bedAngle: 0,
       avoidanceOffset: 0,
-      pos: new THREE.Vector3(),
-      forward: new THREE.Vector3(),
+      pos: new THREE.Vector3(32.0, 0.48, 12.5),
+      forward: new THREE.Vector3(-1, 0, 0),
       ref: vPickupRef,
-      outboundGate: { stopU: 0.11, clearU: 0.19 },
-      inboundGate: { stopU: 0.82, clearU: 0.90 },
+      outboundGate: { stopU: 0.186, clearU: 0.233 },
+      inboundGate: { stopU: 0.791, clearU: 0.837 },
       routines: [
-        { u: 0.45, duration: 3.0, type: "SWITCHYARD_INSPECT", done: false, targetBedAngle: 0.0 },
-        { u: 0.56, duration: 2.5, type: "PORTAL_INSPECT", done: false, targetBedAngle: 0.0 },
-        { u: 0.99, duration: 3.0, type: "QAQC_STAGING", done: false, targetBedAngle: 0.0 },
+        { u: 0.442, duration: 3.5, type: "SWITCHYARD_INSPECT", done: false, targetBedAngle: 0.0 },
+        { u: 0.488, duration: 3.0, type: "PORTAL_INSPECT", done: false, targetBedAngle: 0.0 },
+        { u: 0.000, duration: 3.5, type: "QAQC_STAGING", done: false, targetBedAngle: 0.0 },
       ],
     },
     {
       id: "SECURITY_PATROL",
       spline: SAFETY_PATROL_SPLINE,
-      u: 0.05, // Patrolling TEMFACIL compound perimeter
-      speed: 0.017,
-      maxCruiseSpeed: 0.017,
-      state: "PERIMETER_PATROL",
+      u: 0.050, // Starts inside compound cruising wide warehouse apron
+      speed: 0.025,
+      maxCruiseSpeed: 0.025,
+      state: "CRUISING",
       stateTimer: 0,
       isBraking: false,
-      hazardLights: true,
+      hazardLights: true, // Emergency strobe continuously active
       bedAngle: 0,
       avoidanceOffset: 0,
-      pos: new THREE.Vector3(),
-      forward: new THREE.Vector3(),
+      pos: new THREE.Vector3(104.0, 14.15, -92.0),
+      forward: new THREE.Vector3(-1, 0, 0),
       ref: vPatrolRef,
-      outboundGate: { stopU: 0.47, clearU: 0.55 },
-      inboundGate: { stopU: 0.85, clearU: 0.93 },
+      outboundGate: { stopU: 0.412, clearU: 0.471 },
+      inboundGate: { stopU: 0.824, clearU: 0.882 },
       routines: [
-        { u: 0.01, duration: 2.5, type: "TOOL_SHED_CHECK", done: false, targetBedAngle: 0.0 },
-        { u: 0.68, duration: 2.5, type: "MOUNTAIN_PERIMETER_CHECK", done: false, targetBedAngle: 0.0 },
+        { u: 0.000, duration: 3.5, type: "TOOL_SHED_CHECK", done: false, targetBedAngle: 0.0 },
+        { u: 0.618, duration: 3.5, type: "MOUNTAIN_PERIMETER_CHECK", done: false, targetBedAngle: 0.0 },
       ],
     },
   ]);
@@ -3832,52 +3777,58 @@ function AutonomousSiteTrafficSystem({
       }
     }
 
-    // B. Progress Checkpoint Protocol Sub-routines with Visual Inspection Routine (~8.5s total)
+    // B. Progress Checkpoint Protocol Sub-routines with Visual Inspection Routine (~3.6s total)
     if (cp.phase === "WALKING_TO_VEHICLE") {
-      // Guard steps forward to vehicle driver's window holding clipboard and inspection wand
-      cp.walkProgress = Math.min(1.0, cp.walkProgress + safeDelta * 0.9);
+      // Guard steps forward briskly to vehicle driver's window holding clipboard and inspection wand
+      cp.walkProgress = Math.min(1.0, cp.walkProgress + safeDelta * 2.2);
       if (cp.walkProgress >= 1.0) {
         cp.phase = "INSPECTING_DRIVER_PPE";
-        cp.timer = 2.2; // 2.2s verifying Driver ID, Gate Pass, Hardhat, and Safety Vest
+        cp.timer = 0.8; // 0.8s verifying Driver ID, Gate Pass, Hardhat, and Safety Vest
       }
     } else if (cp.phase === "INSPECTING_DRIVER_PPE") {
       cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "INSPECTING_UNDERCARRIAGE";
-        cp.timer = 2.2; // 2.2s convex mirror inspection of undercarriage & chassis with searchlight
+        cp.timer = 0.9; // 0.9s convex mirror inspection of undercarriage & chassis with searchlight
       }
     } else if (cp.phase === "INSPECTING_UNDERCARRIAGE") {
       cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "INSPECTING_CARGO_PROHIBITED";
-        cp.timer = 2.0; // 2.0s cargo bed prohibited contraband / cargo inspection
+        cp.timer = 0.7; // 0.7s cargo bed prohibited contraband / cargo inspection
       }
     } else if (cp.phase === "INSPECTING_CARGO_PROHIBITED") {
       cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "LOGGING_MANIFEST";
-        cp.timer = 1.6; // 1.6s signing approval manifest logbook & stamping pass
+        cp.timer = 0.6; // 0.6s signing approval manifest logbook & stamping pass
       }
     } else if (cp.phase === "LOGGING_MANIFEST") {
       cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "WAVING_CLEARANCE";
-        cp.timer = 1.6; // 1.6s clearance wave and upward boom barrier lift (Green LED)
+        cp.timer = 0.6; // 0.6s clearance wave and upward boom barrier lift (Green LED)
       }
     } else if (cp.phase === "WAVING_CLEARANCE") {
       cp.timer -= safeDelta;
       if (cp.timer <= 0) {
         cp.phase = "VEHICLE_PASSING";
+        cp.timer = 5.0; // 5.0s watchdog timer ensures gate never hangs or deadlocks
       }
     } else if (cp.phase === "VEHICLE_PASSING") {
+      cp.timer -= safeDelta;
       // Check if active vehicle has completely cleared the gate boundary
       const activeVeh = vehicles.find((v) => v.id === cp.activeVehId);
-      let isCleared = true;
+      let isCleared = cp.timer <= 0; // Automatic watchdog clearance
       if (activeVeh) {
         if (cp.activeVehDir === 1) {
-          isCleared = activeVeh.u >= activeVeh.inboundGate.clearU || activeVeh.u < activeVeh.inboundGate.stopU - 0.05;
+          if (activeVeh.u >= activeVeh.inboundGate.clearU || activeVeh.u < activeVeh.inboundGate.stopU - 0.05) {
+            isCleared = true;
+          }
         } else {
-          isCleared = activeVeh.u >= activeVeh.outboundGate.clearU || activeVeh.u < activeVeh.outboundGate.stopU - 0.05;
+          if (activeVeh.u >= activeVeh.outboundGate.clearU || activeVeh.u < activeVeh.outboundGate.stopU - 0.05) {
+            isCleared = true;
+          }
         }
       }
       if (isCleared) {
@@ -3886,7 +3837,7 @@ function AutonomousSiteTrafficSystem({
       }
     } else if (cp.phase === "WALKING_TO_POST") {
       // Guard steps safely back to sentry post, lowering boom barrier
-      cp.walkProgress = Math.max(0.0, cp.walkProgress - safeDelta * 0.9);
+      cp.walkProgress = Math.max(0.0, cp.walkProgress - safeDelta * 2.0);
       if (cp.walkProgress <= 0.0) {
         cp.phase = "SENTRY_POST";
       }
@@ -3934,30 +3885,62 @@ function AutonomousSiteTrafficSystem({
         // SECURITY_PATROL continues night patrol!
       }
 
-      // Checkpoint and Routine Timers
-      if (veh.stateTimer > 0) {
-        veh.stateTimer -= safeDelta;
-        veh.speed = THREE.MathUtils.damp(veh.speed, 0, 8.0, safeDelta);
-        veh.isBraking = true;
-
-        if (veh.id === "DUMP_TRUCK") {
-          const targetBed = veh.state === "DEPOT_DUMPING" ? 0.45 : 0;
-          veh.bedAngle = THREE.MathUtils.lerp(veh.bedAngle, targetBed, 0.08);
-          if (vDumpRef.current) {
-            const tipperBed = vDumpRef.current.getObjectByName("dumpTipperBed");
-            if (tipperBed) tipperBed.rotation.x = -veh.bedAngle;
-          }
-        }
-        return;
-      }
-
+      // Dynamic Job Routines & Operational Activity Kinematics
+      const isRoutineActive = veh.stateTimer > 0;
       let targetSpeed = veh.maxCruiseSpeed;
       let hardBrake = false;
 
-      // 2. Checkpoint Stop Line Compliance
+      if (isRoutineActive) {
+        veh.stateTimer -= safeDelta;
+        veh.speed = THREE.MathUtils.damp(veh.speed, 0, 8.0, safeDelta);
+        targetSpeed = 0;
+        hardBrake = true;
+        veh.isBraking = true;
+        veh.hazardLights = true;
+
+        const t = clock.getElapsedTime();
+
+        // 1. DUMP TRUCK: Hydraulic Tipper Bed & Heavy Diesel Rumble
+        if (veh.id === "DUMP_TRUCK") {
+          if (veh.state === "DEPOT_DUMPING") {
+            // Over 6.0s duration:
+            // 0.0s to 2.0s: Ram lifts tipper bed smoothly to 45 deg (0.48 rad)
+            // 2.0s to 4.2s: Bed shakes at 45 deg as aggregate gravel pours into stockpile
+            // 4.2s to 6.0s: Bed smoothly lowers back to horizontal
+            const progress = Math.max(0, Math.min(1, 1.0 - veh.stateTimer / 6.0));
+            let targetBed = 0;
+            if (progress < 0.33) {
+              targetBed = (progress / 0.33) * 0.48;
+            } else if (progress < 0.70) {
+              targetBed = 0.48 + Math.sin(t * 22.0) * 0.018;
+            } else {
+              targetBed = 0.48 * (1.0 - (progress - 0.70) / 0.30);
+            }
+            veh.bedAngle = THREE.MathUtils.damp(veh.bedAngle, targetBed, 6.0, safeDelta);
+            if (vDumpRef.current) {
+              const tipperBed = vDumpRef.current.getObjectByName("dumpTipperBed");
+              if (tipperBed) tipperBed.rotation.x = -veh.bedAngle;
+            }
+          } else if (veh.state === "QUARRY_LOADING") {
+            // Heavy diesel engine rumble and chassis suspension spring vibration
+            veh.bedAngle = THREE.MathUtils.damp(veh.bedAngle, 0, 8.0, safeDelta);
+            if (vDumpRef.current) {
+              const tipperBed = vDumpRef.current.getObjectByName("dumpTipperBed");
+              if (tipperBed) tipperBed.rotation.x = 0;
+            }
+          }
+        }
+      } else {
+        if (veh.hazardLights && veh.id !== "SECURITY_PATROL") {
+          veh.hazardLights = false;
+        }
+      }
+
+      // 2. Checkpoint Stop Line Compliance & Anti-Bunching Corridor Reservation
+      const isAnyOtherVehActive = cp.activeVehId !== null && cp.activeVehId !== veh.id;
       const checkGateStop = (stopU: number, clearU: number) => {
         const distToStop = stopU - veh.u;
-        if (distToStop >= 0 && distToStop < 0.045) {
+        if (distToStop >= 0 && distToStop < 0.075) {
           if (veh.id === cp.activeVehId) {
             if (cp.phase !== "WAVING_CLEARANCE" && cp.phase !== "VEHICLE_PASSING") {
               if (distToStop < 0.005) {
@@ -3970,12 +3953,15 @@ function AutonomousSiteTrafficSystem({
               targetSpeed = veh.maxCruiseSpeed * 0.85;
             }
           } else {
-            // Must wait behind stop line or behind lead vehicle without snapping coordinates
-            if (distToStop < 0.008) {
+            // Anti-Bunching: If another vehicle is actively being inspected or crossing the gate,
+            // hold trailing vehicle at least 15m back (distToStop < 0.024) rather than crowding the barrier!
+            const holdThreshold = isAnyOtherVehActive ? 0.024 : 0.008;
+            if (distToStop < holdThreshold) {
               targetSpeed = 0;
               hardBrake = true;
             } else {
-              targetSpeed = Math.min(targetSpeed, (distToStop / 0.04) * veh.maxCruiseSpeed * 0.45);
+              const slowFactor = Math.max(0.12, (distToStop - holdThreshold) / 0.045);
+              targetSpeed = Math.min(targetSpeed, slowFactor * veh.maxCruiseSpeed * 0.4);
             }
           }
         }
@@ -4002,11 +3988,23 @@ function AutonomousSiteTrafficSystem({
       let minSafeSpeed = veh.maxCruiseSpeed;
       let yieldStop = false;
 
-      // A. Evaluate Fleet Vehicles (Oncoming passing, follow-distance & queue management)
+      // A. Evaluate Fleet Vehicles (Oncoming passing, follow-distance, proximity & queue management)
       for (let j = 0; j < vehicles.length; j++) {
         if (i === j) continue;
         const other = vehicles[j];
         const dist = basePt.distanceTo(other.pos);
+
+        // Universal 360° Headway & Proximity Guard:
+        // Any vehicle within safe buffer yields immediately regardless of direction/angle
+        const otherRadius = other.id === "DUMP_TRUCK" ? 2.2 : other.id === "CREW_VAN" ? 1.8 : 1.6;
+        const minSafeDistance = vehRadius + otherRadius + 1.8; // ~5.4m - 6.0m
+        if (dist < minSafeDistance) {
+          yieldStop = true;
+          hardBrake = true;
+        } else if (dist < minSafeDistance + 4.0) {
+          const slowRatio = (dist - minSafeDistance) / 4.0;
+          minSafeSpeed = Math.min(minSafeSpeed, veh.maxCruiseSpeed * Math.max(0.04, slowRatio * 0.4));
+        }
 
         if (dist < 24.0) {
           const toOther = new THREE.Vector3().subVectors(other.pos, basePt);
@@ -4016,12 +4014,12 @@ function AutonomousSiteTrafficSystem({
 
           if (headingDot < -0.35) {
             // Oncoming vehicle traveling opposite direction (e.g. 2-lane mountain incline / compound road)
-            // Steer right (Philippine standard traffic convention) to widen passing clearance
-            if (fwdDist > 0.5 && fwdDist < 18.0) {
-              desiredOffset = Math.max(desiredOffset, 1.2);
-              if (fwdDist < 7.5 && Math.abs(latDist) < 3.2) {
-                minSafeSpeed = Math.min(minSafeSpeed, veh.maxCruiseSpeed * 0.45);
-                if (fwdDist < 4.2 && Math.abs(latDist) < 2.4) {
+            // Splines are ALREADY separated into distinct dual lanes (+1.6m and -1.6m, giving 3.2m lateral separation).
+            // Yield speed smoothly if close; avoid lateral swerves that cause vehicle wiggle!
+            if (fwdDist > 0.5 && fwdDist < 14.0) {
+              if (fwdDist < 7.0 && Math.abs(latDist) < 2.0) {
+                minSafeSpeed = Math.min(minSafeSpeed, veh.maxCruiseSpeed * 0.5);
+                if (fwdDist < 3.5 && Math.abs(latDist) < 1.4) {
                   yieldStop = true;
                 }
               }
@@ -4092,7 +4090,9 @@ function AutonomousSiteTrafficSystem({
       });
 
       // D. Evaluate All Registered Live Workforce Personnel Across Site
-      LIVE_PERSONNEL_WORLD_POSITIONS.forEach((pPos) => {
+      LIVE_PERSONNEL_WORLD_POSITIONS.forEach((pPos, pId) => {
+        // Exclude Ronald Malto so inspecting officer does not cause vehicle to swerve!
+        if (pId === "SEC_RONALD_MALTO") return;
         checkObstacle(pPos, 0.75);
       });
 
@@ -4128,10 +4128,19 @@ function AutonomousSiteTrafficSystem({
       });
 
       // 5. Smoothly Damp Lateral Avoidance Offset
+      // Lock lateral offset strictly to zero when stopped, braking, or within the checkpoint zone
+      const isNearCheckpoint = (veh.id === cp.activeVehId) ||
+        Math.abs(veh.u - veh.inboundGate.stopU) < 0.035 ||
+        Math.abs(veh.u - veh.outboundGate.stopU) < 0.035;
+
+      if (isNearCheckpoint || hardBrake || veh.speed < 0.002) {
+        desiredOffset = 0;
+      }
+
       veh.avoidanceOffset = THREE.MathUtils.damp(
         veh.avoidanceOffset,
         desiredOffset,
-        hardBrake ? 2.5 : 3.8,
+        (isNearCheckpoint || hardBrake) ? 8.0 : 3.8,
         safeDelta
       );
 
@@ -4156,13 +4165,35 @@ function AutonomousSiteTrafficSystem({
       const anticipatedOffset = THREE.MathUtils.lerp(veh.avoidanceOffset, desiredOffset, 0.35);
       const reroutedAhead = dAhead.point.clone().addScaledVector(aheadRight, anticipatedOffset);
 
-      const dynamicForward = new THREE.Vector3().subVectors(reroutedAhead, reroutedPos).setY(0).normalize();
+      const dynamicForward = (Math.abs(veh.avoidanceOffset) < 0.01 && Math.abs(desiredOffset) < 0.01)
+        ? updatedFwd.clone()
+        : new THREE.Vector3().subVectors(reroutedAhead, reroutedPos).setY(0).normalize();
+
       if (dynamicForward.lengthSq() < 0.001) {
         dynamicForward.copy(updatedFwd);
       }
 
       // Hard Boundary Defense: Push-out against rigid buildings, fences, and crates
       const safeTransform = resolveBuildingCollisions(reroutedPos, dynamicForward, vehRadius);
+
+      // Elastic 2D Push-Out Separation: Guarantee mathematically ZERO mesh penetration between vehicles
+      for (let j = 0; j < vehicles.length; j++) {
+        if (i === j) continue;
+        const other = vehicles[j];
+        if (other.pos.lengthSq() < 1) continue;
+        const oRadius = other.id === "DUMP_TRUCK" ? 2.2 : other.id === "CREW_VAN" ? 1.8 : 1.6;
+        const combinedR = vehRadius + oRadius;
+        const dx = safeTransform.adjustedPos.x - other.pos.x;
+        const dz = safeTransform.adjustedPos.z - other.pos.z;
+        const d2 = Math.sqrt(dx * dx + dz * dz);
+        if (d2 > 0.001 && d2 < combinedR) {
+          const overlap = combinedR - d2;
+          const nx = dx / d2;
+          const nz = dz / d2;
+          safeTransform.adjustedPos.x += nx * overlap * 0.5;
+          safeTransform.adjustedPos.z += nz * overlap * 0.5;
+        }
+      }
 
       // Dual-Axle Ground Sampling & Local 'YXZ' Incline Kinematics
       const isDump = veh.id === "DUMP_TRUCK";
@@ -4177,7 +4208,7 @@ function AutonomousSiteTrafficSystem({
       const yRear = getSiteSurfaceY(rearAxle.x, rearAxle.z);
 
       const centerGroundY = (yFront + yRear) * 0.5 + 0.04;
-      safeTransform.adjustedPos.y = Math.max(safeTransform.adjustedPos.y, centerGroundY);
+      safeTransform.adjustedPos.y = centerGroundY;
 
       // In Three.js with 'YXZ' Euler order:
       // Negative rotation around local X tilts the front UP when ascending an incline (yFront > yRear)
@@ -4188,8 +4219,27 @@ function AutonomousSiteTrafficSystem({
       veh.pos.copy(safeTransform.adjustedPos);
       veh.forward.copy(safeTransform.adjustedForward);
 
+      // Apply subtle operational idle vibration when stopped at job routines
+      const t = clock.getElapsedTime();
+      let idleShakeY = 0;
+      if (isRoutineActive) {
+        if (veh.id === "DUMP_TRUCK" && veh.state === "QUARRY_LOADING") {
+          idleShakeY = Math.sin(t * 26.0) * 0.010;
+        } else if (veh.id === "CREW_VAN") {
+          idleShakeY = Math.sin(t * 12.0) * 0.005 - 0.012;
+        } else if (veh.id === "SITE_PICKUP") {
+          idleShakeY = Math.sin(t * 18.0) * 0.004;
+        } else if (veh.id === "SECURITY_PATROL") {
+          idleShakeY = Math.sin(t * 16.0) * 0.004;
+        }
+      }
+
       if (veh.ref.current) {
-        veh.ref.current.position.set(safeTransform.adjustedPos.x, safeTransform.adjustedPos.y, safeTransform.adjustedPos.z);
+        veh.ref.current.position.set(
+          safeTransform.adjustedPos.x,
+          safeTransform.adjustedPos.y + idleShakeY,
+          safeTransform.adjustedPos.z
+        );
         veh.ref.current.rotation.set(clampedPitch, yaw, 0, "YXZ");
       }
     });
@@ -4198,7 +4248,7 @@ function AutonomousSiteTrafficSystem({
   return (
     <group>
       {/* ═══ 1. INTERACTIVE TEMFACIL SECURITY CHECKPOINT BOOM GATE WITH FILIPINO OFFICER ═══ */}
-      <SecurityGateCheckpointSystem
+      <SecurityGuardhouseCheckpoint
         checkpointRef={checkpointRef}
         onSelectPerson={onSelectPerson}
       />
@@ -5004,12 +5054,12 @@ export function AnimatedSiteEntities({
             </mesh>
             <ActiveConstructionWorkerMesh actionType="WELDING" vestColor="#0284C7" hardhatColor="#16A34A" />
           </group>
-          {/* Aggregate Shoveler at Laydown Aggregate Stockpile */}
-          <group position={[75.0, 14.85, -112.0]} rotation={[0, -Math.PI / 4, 0]}>
+          {/* Aggregate Shoveler at Laydown Aggregate Stockpile (Clear of crates and vehicle driveway) */}
+          <group position={[69.0, 14.85, -114.0]} rotation={[0, -Math.PI / 4, 0]}>
             <ActiveConstructionWorkerMesh actionType="SHOVELING" vestColor="#EA580C" hardhatColor="#16A34A" />
           </group>
-          {/* Structural Rebar Worker on Roof Slab */}
-          <group position={[78.0, y1, -108.0]} rotation={[0, Math.PI / 3, 0]}>
+          {/* Structural Rebar Worker at Fabrication Bench (Clear of crates and vehicle driveway) */}
+          <group position={[70.0, 14.85, -102.0]} rotation={[0, Math.PI / 3, 0]}>
             <ActiveConstructionWorkerMesh actionType="REBAR_TYING" vestColor="#EA580C" hardhatColor="#16A34A" />
           </group>
         </group>

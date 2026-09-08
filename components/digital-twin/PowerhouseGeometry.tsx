@@ -5,7 +5,7 @@ import { useFrame, extend } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import gisTerrainData from "@/public/data/gis-terrain-mesh.json";
-import { sampleTerrainY } from "./AnimatedSiteEntities";
+import { PROCESSED_TERRAIN_POSITIONS, PROCESSED_TERRAIN_COLORS, sampleTerrainY } from "./terrainData";
 import { UPHILL_ROAD_SPLINE, ROAD_CONSTANTS, getRoadTransform } from "./uphillRoadConfig";
 
 /* ═══════════════════════════════════════════════════════════
@@ -825,110 +825,9 @@ export function RealisticSwitchyard() {
 
 export function MountainTerrain() {
   const gisGeometry = useMemo(() => {
-    const positions = new Float32Array(gisTerrainData.positions);
-
-    // Excavate Tailrace Canal, Level TEMFACIL Pad, & Grade Smooth Continuous Hillside Slope
-    const ax = 34.0, az = -22.0;
-    const bx = 95.0, bz = -75.0;
-    const dx = bx - ax;
-    const dz = bz - az;
-    const lenSq = dx * dx + dz * dz;
-    const terrainColors = new Float32Array(gisTerrainData.colors);
-
-    for (let i = 0; i < positions.length; i += 3) {
-      const x = positions[i];
-      const y = positions[i + 1];
-      const z = positions[i + 2];
-
-      // 1. Deeply Excavate Tailrace Canal & Outfall Channel (well below concrete chute floor)
-      if (x >= -12.0 && x <= 12.0 && z >= 5.5 && z <= 48.0) {
-        positions[i + 1] = -1.35;
-        terrainColors[i] = 0.12;
-        terrainColors[i + 1] = 0.16;
-        terrainColors[i + 2] = 0.13;
-        continue;
-      }
-
-      // 2. Powerhouse Facility Compound Base Yard (level civil foundation at Y = 0.05m)
-      const dxPH = Math.max(-32.0 - x, 0, x - 44.0);
-      const dzPH = Math.max(-24.0 - z, 0, z - 18.0);
-      const distPH = Math.hypot(dxPH, dzPH);
-
-      if (distPH === 0) {
-        positions[i + 1] = 0.05;
-        // Clean neutral compacted civil ground / crushed aggregate tone (eliminates weird green grid & blotches)
-        terrainColors[i] = 0.29;
-        terrainColors[i + 1] = 0.28;
-        terrainColors[i + 2] = 0.26;
-        continue;
-      } else if (distPH < 22.0) {
-        const t = distPH / 22.0;
-        const smoothT = t * t * (3.0 - 2.0 * t);
-        const origY = Math.max(0.05, y);
-        positions[i + 1] = 0.05 * (1.0 - smoothT) + origY * smoothT;
-
-        const cCivilR = 0.29, cCivilG = 0.28, cCivilB = 0.26;
-        const cForestR = 0.16, cForestG = 0.25, cForestB = 0.13;
-        const cSoilR = 0.28, cSoilG = 0.23, cSoilB = 0.17;
-        const mixSoil = (Math.sin(x * 0.15 + z * 0.12) * 0.5 + 0.5);
-        const cTargetR = THREE.MathUtils.lerp(cForestR, cSoilR, mixSoil * 0.6);
-        const cTargetG = THREE.MathUtils.lerp(cForestG, cSoilG, mixSoil * 0.6);
-        const cTargetB = THREE.MathUtils.lerp(cForestB, cSoilB, mixSoil * 0.6);
-
-        terrainColors[i] = THREE.MathUtils.lerp(cCivilR, cTargetR, smoothT);
-        terrainColors[i + 1] = THREE.MathUtils.lerp(cCivilG, cTargetG, smoothT);
-        terrainColors[i + 2] = THREE.MathUtils.lerp(cCivilB, cTargetB, smoothT);
-        continue;
-      }
-
-      // 3. TEMFACIL Excavated Base Land Pad & Mountain Slope Transition
-      // TEMFACIL Compound base platform extends x from 74 to 180, z from -148 to -60
-      const dxPad = Math.max(74.0 - x, 0, x - 180.0);
-      const dzPad = Math.max(-148.0 - z, 0, z - (-60.0));
-      const distPad = Math.hypot(dxPad, dzPad);
-
-      if (distPad === 0) {
-        // Deep excavation underneath TEMFACIL compound at y = 13.0 (1.0m below the 14.0m civil slab)
-        // This ensures the terrain mesh can NEVER intersect, poke through, or Z-fight with the TEMFACIL flooring!
-        positions[i + 1] = 13.0;
-        terrainColors[i] = 0.28;
-        terrainColors[i + 1] = 0.26;
-        terrainColors[i + 2] = 0.22;
-        continue;
-      } else if (distPad < 28.0) {
-        // Natural mountain slope rising behind (z < -126) and around TEMFACIL
-        const t = distPad / 28.0;
-        const smoothT = t * t * (3.0 - 2.0 * t);
-        const origY = Math.max(13.0, y);
-        positions[i + 1] = 13.0 * (1.0 - smoothT) + origY * smoothT;
-
-        // Rich tropical forest green & mountain soil colors on the slope behind and beside TEMFACIL
-        const cGreenR = 0.16, cGreenG = 0.25, cGreenB = 0.13; // Sierra Madre lush green
-        const cSoilR = 0.28, cSoilG = 0.23, cSoilB = 0.17;  // Mountain earth soil
-
-        const mixSoil = (Math.sin(x * 0.12) * 0.35 + 0.35) * (1.0 - t * 0.4);
-        terrainColors[i] = THREE.MathUtils.lerp(cGreenR, cSoilR, mixSoil);
-        terrainColors[i + 1] = THREE.MathUtils.lerp(cGreenG, cSoilG, mixSoil);
-        terrainColors[i + 2] = THREE.MathUtils.lerp(cGreenB, cSoilB, mixSoil);
-        continue;
-      }
-
-      // 4. Smooth Continuous Linear Slope Grade from TEMFACIL (x: 88, z: -70, y=13.8) down to Powerhouse (x: 34, z: -22, y=0.5)
-      const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
-      const projX = ax + t * dx;
-      const projZ = az + t * dz;
-      const distToSlopeLine = Math.hypot(x - projX, z - projZ);
-
-      if (distToSlopeLine < 26.0 && x >= 30.0 && x <= 88.0 && z >= -72.0 && z <= -20.0) {
-        const slopeY = 0.5 + t * 13.3;
-        const fade = Math.min(1.0, distToSlopeLine / 26.0);
-        positions[i + 1] = slopeY * (1.0 - fade) + positions[i + 1] * fade;
-      }
-    }
-
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute("color", new THREE.Float32BufferAttribute(terrainColors, 3));
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(PROCESSED_TERRAIN_POSITIONS, 3));
+    geo.setAttribute("color", new THREE.Float32BufferAttribute(PROCESSED_TERRAIN_COLORS, 3));
     geo.setAttribute("uv", new THREE.Float32BufferAttribute(gisTerrainData.uvs, 2));
     geo.setIndex(gisTerrainData.indices);
     geo.computeVertexNormals();

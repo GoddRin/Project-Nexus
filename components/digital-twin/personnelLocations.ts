@@ -370,11 +370,12 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
     case "SEC_RONALD_MALTO":
       return {
         id,
-        floorY: 14.00,
-        target: [68.0, 15.15, -56.0],
-        camPos: [71.8, 17.80, -49.5],
+        floorY: 13.20,
+        target: [90.8, 14.35, -64.2],
+        camPos: [85.0, 16.5, -57.0],
         zoneName: zone,
       };
+
 
     // ─── 7. ADMIN, HR & IT SYSTEMS ───
     case "HR_ROVIGAIL_ABELLAR":

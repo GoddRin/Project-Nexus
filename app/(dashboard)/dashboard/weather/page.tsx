@@ -1,16 +1,41 @@
 import { PageHeader } from "@/components/shared/PageHeader";
-import { fetchWeather, getWeatherInfo, fetchHistoricalWeather } from "@/lib/weather/fetchWeather";
+import {
+  fetchWeather,
+  evaluateDayOperationalStatus,
+  fetchHistoricalWeather,
+  toSerializableEvaluation,
+  DayOperationalEvaluation,
+} from "@/lib/weather/fetchWeather";
+import { fetchPagasaSignals } from "@/lib/weather/pagasa";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { CloudLightning, Wind, Droplets, History } from "lucide-react";
+import {
+  Cloud,
+  CloudLightning,
+  Wind,
+  Droplets,
+  History,
+  ShieldCheck,
+  AlertTriangle,
+  Clock,
+  CheckCircle2,
+  Info,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WeatherChart } from "./WeatherChart";
 import { HistoricalWeatherCharts } from "./HistoricalWeatherCharts";
+import { ForecastCardsGrid } from "./ForecastCardsGrid";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
 export default async function WeatherPage() {
-  const weather = await fetchWeather();
+  const [weather, pagasaSignals] = await Promise.all([
+    fetchWeather(),
+    fetchPagasaSignals().catch((err) => {
+      console.warn("Failed to fetch PAGASA bulletin in WeatherPage:", err);
+      return null;
+    }),
+  ]);
 
   if (!weather) {
     return (
@@ -29,13 +54,18 @@ export default async function WeatherPage() {
   }
 
   const { current, daily, hourly } = weather;
-  const currentRecommendation = getWeatherInfo(current.weather_code);
-  const todayRec = daily?.weather_code?.length > 0 ? getWeatherInfo(daily.weather_code[0]) : currentRecommendation;
-  const todayPrecipMax = daily?.precipitation_probability_max?.length > 0 ? daily.precipitation_probability_max[0] : 0;
-  const hasAfternoonHazard = todayRec.intent === "suspend" && currentRecommendation.intent === "favorable";
+  const siteSignalNumber = pagasaSignals?.siteSignalNumber ?? 0;
+  const hasActiveTc = pagasaSignals?.hasActiveBulletin ?? false;
 
-  const effectiveIntent = hasAfternoonHazard ? "caution" : currentRecommendation.intent;
-  const CurrentIcon = currentRecommendation.icon;
+  // Evaluate Today's condition using multi-factor shift-aware intelligence
+  const todayEval = evaluateDayOperationalStatus({
+    dayIndex: 0,
+    weather,
+    siteSignalNumber,
+    isToday: true,
+  });
+
+  const TodayIcon = todayEval.icon || Cloud;
 
   const intentStyles = {
     favorable: "bg-flow-teal/10 text-flow-teal ring-flow-teal/30",
@@ -43,30 +73,96 @@ export default async function WeatherPage() {
     suspend: "bg-signal-red/10 text-signal-red ring-signal-red/30",
   };
 
+  const intentBorders = {
+    favorable: "border-t-flow-teal shadow-[inset_0_30px_30px_-30px_rgba(31,182,166,0.15)]",
+    caution: "border-t-signal-amber shadow-[inset_0_30px_30px_-30px_rgba(232,163,61,0.15)]",
+    suspend: "border-t-signal-red shadow-[inset_0_30px_30px_-30px_rgba(214,72,63,0.15)]",
+  };
+
+  // Evaluate all forecast days and convert to plain serializable objects for client component
+  const forecastEvaluations = daily.time.map((_, i) =>
+    toSerializableEvaluation(
+      evaluateDayOperationalStatus({
+        dayIndex: i,
+        weather,
+        siteSignalNumber,
+        isToday: i === 0,
+      })
+    )
+  );
+
   return (
-    <div className="relative">
+    <div className="relative space-y-8">
       <PageHeader
         title="Weather Forecast"
-        subtitle="Live site conditions and 7-day forecast for Tumauini, Isabela."
+        subtitle="Live site conditions, PAGASA regional bulletin, and shift-aware operational forecast for SCIC Tumauini HEPP (Day: 07:00–16:00 • Night: 19:00–04:00)."
       />
 
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Current Conditions Expanded */}
-        <div className={cn(
-          "glass-card p-6 relative overflow-hidden border-t-2 lg:col-span-1 flex flex-col justify-between",
-          effectiveIntent === "favorable" && "border-t-flow-teal shadow-[inset_0_30px_30px_-30px_rgba(31,182,166,0.15)]",
-          effectiveIntent === "caution" && "border-t-signal-amber shadow-[inset_0_30px_30px_-30px_rgba(232,163,61,0.15)]",
-          effectiveIntent === "suspend" && "border-t-signal-red shadow-[inset_0_30px_30px_-30px_rgba(214,72,63,0.15)]"
-        )}>
+      {/* Authoritative Meteorological Cross-Reference Banner */}
+      <div className="rounded-xl border border-border-hairline bg-black/[0.02] dark:bg-white/[0.02] p-4 backdrop-blur-sm">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 rounded-lg bg-flow-teal/10 p-2 text-flow-teal ring-1 ring-flow-teal/20 shrink-0">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-text-muted">
+                  DOST-PAGASA Regional Bulletin Cross-Reference
+                </span>
+                {siteSignalNumber > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-bold bg-signal-red/10 text-signal-red ring-1 ring-signal-red/30">
+                    <AlertTriangle className="h-3 w-3" /> TCWS Signal #{siteSignalNumber} Raised
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-bold bg-flow-teal/10 text-flow-teal ring-1 ring-flow-teal/30">
+                    <CheckCircle2 className="h-3 w-3" /> PAR Clear • No Storm Signals in Isabela
+                  </span>
+                )}
+                <span className="rounded bg-black/[0.04] dark:bg-white/[0.06] px-2 py-0.5 font-mono text-[10px] text-text-muted">
+                  Tumauini HEPP (17.3188°N, 121.9749°E)
+                </span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                <strong className="text-text-primary">Synoptic System:</strong> Southwest Monsoon (Habagat) active over western Luzon. 
+                Cagayan Valley basin is sheltered by the Sierra Madre range. 
+                {hasActiveTc
+                  ? ` Tropical Cyclone ${pagasaSignals?.tcName || ""} active outside immediate site threshold.`
+                  : " No active tropical cyclone in PAR. Inland mornings remain predominantly clear and favorable with isolated afternoon convective rain showers."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2 text-[11px] text-text-muted border-t border-border-hairline pt-2 lg:border-t-0 lg:pt-0">
+            <Info className="h-3.5 w-3.5 text-flow-teal" />
+            <span>ECMWF & GFS ensemble tuned for Day (07:00–16:00) & Night (19:00–04:00) shifts</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Current Conditions Card */}
+        <div
+          className={cn(
+            "glass-card p-6 relative overflow-hidden border-t-2 lg:col-span-1 flex flex-col justify-between",
+            intentBorders[todayEval.intent]
+          )}
+        >
           <div>
-            <h2 className="text-lg font-semibold tracking-wide text-text-primary mb-6">Current Conditions</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold tracking-wide text-text-primary">Current Conditions</h2>
+              <span className="text-[11px] font-mono text-text-muted">Live Telemetry</span>
+            </div>
+
             <div className="flex items-center gap-6 mb-8">
-              <CurrentIcon className={cn(
-                "h-16 w-16 drop-shadow-lg shrink-0",
-                currentRecommendation.intent === "favorable" && "text-flow-teal",
-                currentRecommendation.intent === "caution" && "text-signal-amber",
-                currentRecommendation.intent === "suspend" && "text-signal-red"
-              )} />
+              <TodayIcon
+                className={cn(
+                  "h-16 w-16 drop-shadow-lg shrink-0",
+                  todayEval.intent === "favorable" && "text-flow-teal",
+                  todayEval.intent === "caution" && "text-signal-amber",
+                  todayEval.intent === "suspend" && "text-signal-red"
+                )}
+              />
               <div>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display text-5xl font-bold tracking-tight text-text-primary">
@@ -75,10 +171,10 @@ export default async function WeatherPage() {
                   <span className="text-xl font-medium text-text-muted">C</span>
                 </div>
                 <p className="text-base font-medium text-text-primary mt-1">
-                  {currentRecommendation.conditionLabel}
+                  {todayEval.conditionLabel}
                 </p>
                 <p className="text-xs text-text-muted mt-1">
-                  Feels like {Math.round(current.apparent_temperature)}°C
+                  Feels like {Math.round(current.apparent_temperature)}°C • High: {todayEval.tempMax}°C / Low: {todayEval.tempMin}°C
                 </p>
               </div>
             </div>
@@ -89,117 +185,100 @@ export default async function WeatherPage() {
                   <Wind className="h-4 w-4" />
                   <span className="text-xs uppercase tracking-wider font-mono font-medium">Wind</span>
                 </div>
-                <span className="text-lg font-semibold text-text-primary">{current.wind_speed_10m} <span className="text-xs text-text-muted">km/h</span></span>
+                <span className="text-lg font-semibold text-text-primary">
+                  {current.wind_speed_10m} <span className="text-xs text-text-muted">km/h</span>
+                </span>
+                <p className="text-[10px] text-text-muted mt-1 font-mono">
+                  Day Gusts: {todayEval.dayShiftMaxWindKph} km/h
+                </p>
               </div>
               <div className="rounded-lg dark:bg-white/[0.03] bg-black/[0.03] p-4 ring-1 ring-border-hairline">
                 <div className="flex items-center gap-2 text-text-muted mb-2">
                   <Droplets className="h-4 w-4" />
-                  <span className="text-xs uppercase tracking-wider font-mono font-medium">Humidity</span>
+                  <span className="text-xs uppercase tracking-wider font-mono font-medium">Shift Rain</span>
                 </div>
-                <span className="text-lg font-semibold text-text-primary">{current.relative_humidity_2m}%</span>
+                <span className="text-lg font-semibold text-text-primary">
+                  {todayEval.dayShiftPrecipMm} <span className="text-xs text-text-muted">mm Day</span>
+                </span>
+                <p className="text-[10px] text-text-muted mt-1 font-mono">
+                  Night Shift: {todayEval.nightShiftPrecipMm} mm
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="mt-8 rounded-lg dark:bg-white/[0.03] bg-black/[0.03] p-4 ring-1 ring-border-hairline space-y-2">
-            <p className="text-xs font-medium text-text-muted uppercase tracking-wider font-mono">Site Operational Recommendation</p>
-            {hasAfternoonHazard ? (
-              <div className="space-y-1.5">
-                <div className={cn(
-                  "inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ring-1",
-                  intentStyles.caution
-                )}>
-                  Favorable Morning • Afternoon {todayRec.conditionLabel} Alert
-                </div>
-                <p className="text-[11px] text-text-muted leading-relaxed">
-                  Proceed with scheduled morning operations. Secure crane, scaffolding, and concrete pouring prior to {todayPrecipMax}% rain peak in afternoon.
-                </p>
+          <div className="mt-8 rounded-lg dark:bg-white/[0.03] bg-black/[0.03] p-4 ring-1 ring-border-hairline space-y-2.5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-text-muted uppercase tracking-wider font-mono">
+                Site Operational Recommendation
+              </p>
+              <div
+                className={cn(
+                  "inline-flex items-center rounded px-2 py-0.5 text-[11px] font-bold ring-1 font-mono uppercase tracking-wider",
+                  intentStyles[todayEval.intent]
+                )}
+              >
+                {todayEval.badgeLabel}
               </div>
-            ) : (
-              <div className={cn(
-                "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-semibold ring-1",
-                intentStyles[currentRecommendation.intent]
-              )}>
-                {currentRecommendation.label}
+            </div>
+
+            <p className="text-xs text-text-primary leading-relaxed">
+              {todayEval.operationalGuidance}
+            </p>
+
+            {todayEval.peakRainWindow && (
+              <div className="flex items-center gap-1.5 text-[11px] text-signal-amber pt-1 border-t border-border-hairline">
+                <Clock className="h-3 w-3" />
+                <span>Peak afternoon rain window: {todayEval.peakRainWindow}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Hourly Chart */}
-        <div className="glass-card p-6 lg:col-span-2">
-          <h2 className="text-lg font-semibold tracking-wide text-text-primary mb-4">Hourly Forecast (Next 24h)</h2>
+        <div className="glass-card p-6 lg:col-span-2 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold tracking-wide text-text-primary">Hourly Forecast (Next 24h)</h2>
+              <p className="text-xs text-text-muted mt-0.5">
+                Detailed hourly temperature, rainfall probability, and shift timeline
+              </p>
+            </div>
+            <div className="flex items-center gap-3 text-xs font-mono">
+              <span className="flex items-center gap-1.5 text-flow-teal">
+                <span className="h-2 w-2 rounded-full bg-flow-teal" /> Temp (°C)
+              </span>
+              <span className="flex items-center gap-1.5 text-signal-amber">
+                <span className="h-2 w-2 rounded-full bg-signal-amber" /> Rain Probability (%)
+              </span>
+            </div>
+          </div>
           <WeatherChart hourly={hourly} />
         </div>
       </div>
 
-      {/* Forecast Cards */}
-      <div className="mt-8">
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-lg font-semibold tracking-wide text-text-primary">
-            {daily.time.length >= 7 ? "7-Day Forecast" : `${daily.time.length}-Day Forecast`}
-          </h2>
+      {/* 7-Day Shift-Aware Forecast Cards */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-wide text-text-primary">
+              {daily.time.length >= 7 ? "7-Day Forecast" : `${daily.time.length}-Day Forecast`}
+            </h2>
+            <p className="text-xs text-text-muted">
+              Shift-aware operational recommendations calibrated for civil works (Day Shift: 07:00–16:00 • Night Shift: 19:00–04:00).
+            </p>
+          </div>
           {daily.time.length < 7 && (
-            <span className="text-xs font-medium text-signal-amber bg-signal-amber/10 px-2 py-1 rounded-md border border-signal-amber/20">
+            <span className="text-xs font-medium text-signal-amber bg-signal-amber/10 px-2 py-1 rounded-md border border-signal-amber/20 self-start">
               Limited by fallback provider
             </span>
           )}
         </div>
-        <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-thin scrollbar-track-white/[0.02] scrollbar-thumb-white/10">
-          {daily.time.map((dateStr, i) => {
-            const date = new Date(dateStr);
-            const isToday = new Date().toDateString() === date.toDateString();
-            const rec = getWeatherInfo(daily.weather_code[i]);
-            const DayIcon = rec.icon;
 
-            return (
-              <div key={dateStr} className={cn(
-                "glass-card shrink-0 w-64 p-5 flex flex-col justify-between transition-all duration-300 hover:dark:bg-white/[0.04] bg-black/[0.04]",
-                isToday && "ring-1 ring-flow-teal/30 bg-flow-teal/[0.02]"
-              )}>
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-medium text-text-primary">
-                      {isToday ? "Today" : date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-                    </span>
-                    <DayIcon className={cn(
-                      "h-6 w-6",
-                      rec.intent === "favorable" && "text-flow-teal",
-                      rec.intent === "caution" && "text-signal-amber",
-                      rec.intent === "suspend" && "text-signal-red"
-                    )} />
-                  </div>
-                  
-                  <div className="flex items-end gap-3 mb-2">
-                    <span className="font-display text-2xl font-bold text-text-primary">
-                      {Math.round(daily.temperature_2m_max[i])}°
-                    </span>
-                    <span className="text-sm font-medium text-text-muted mb-1">
-                      / {Math.round(daily.temperature_2m_min[i])}°C
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm text-text-primary mb-4">{rec.conditionLabel}</p>
-
-                  <div className="flex items-center gap-2 text-xs text-text-muted">
-                    <Droplets className="h-3.5 w-3.5 text-signal-amber" />
-                    <span>{daily.precipitation_probability_max[i]}% precipitation</span>
-                  </div>
-                </div>
-
-                <div className={cn(
-                  "mt-4 inline-block rounded px-2 py-1 text-[10px] uppercase tracking-wider font-semibold ring-1 font-mono",
-                  intentStyles[rec.intent]
-                )}>
-                  {rec.intent === "favorable" ? "Favorable" : rec.intent === "caution" ? "Caution" : "Suspend"}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ForecastCardsGrid evaluations={forecastEvaluations} hourly={hourly} />
       </div>
 
-      {/* Historical Data */}
+      {/* Historical Data Section */}
       <div className="mt-8">
         <h2 className="text-lg font-semibold tracking-wide text-text-primary mb-4">Historical Weather & Analytics</h2>
         <Suspense fallback={<HistoricalWeatherSkeleton />}>

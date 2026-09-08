@@ -88,7 +88,7 @@ export const SITE_BOX_OBSTACLES: BoxObstacle[] = [
   { name: "Court South Fence", minX: 122.0, maxX: 142.0, minZ: -64.0, maxZ: -63.0 },
   { name: "Court East Fence", minX: 141.5, maxX: 142.5, minZ: -84.5, maxZ: -63.5 },
   // 6. Security Guardhouse Booth
-  { name: "Guardhouse Booth", minX: 86.0, maxX: 94.0, minZ: -74.0, maxZ: -67.0 },
+  { name: "Guardhouse Booth", minX: 89.5, maxX: 93.5, minZ: -66.5, maxZ: -62.5 },
   // 7. Powerhouse Main Building (Turbine Hall & Generator Bay)
   { name: "Powerhouse Building", minX: -16.0, maxX: 16.0, minZ: -16.0, maxZ: 16.0 },
   // 8. 69kV Switchyard Transformer Yard Platform

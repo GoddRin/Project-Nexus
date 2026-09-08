@@ -83,11 +83,11 @@ export function MountainAtmosphereEffects({ timeMode, isStormActive = false }: M
         </>
       )}
 
-      {/* ─── 🌙 BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES ─── */}
-      {isDeepNight && (
+      {/* ─── 🌙 BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES & CELESTIAL METEORS ─── */}
+      {isNight && (
         <>
-          <BioluminescentForestFireflies count={260} />
-          <CelestialShootingStars />
+          <BioluminescentForestFireflies isSunset={timeMode === "SUNSET"} />
+          {isDeepNight && <CelestialShootingStars />}
         </>
       )}
 
@@ -762,90 +762,142 @@ function GuardFlashlights({ isSunset = false }: { isSunset?: boolean }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10. BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Lush Wilderness & Ridge Forests)
 // ─────────────────────────────────────────────────────────────────────────────
-function BioluminescentForestFireflies({ count = 140 }: { count?: number }) {
+// 10. BIOLUMINESCENT SIERRA MADRE FOREST FIREFLIES (Curated Facility & Forest Swarms)
+// ─────────────────────────────────────────────────────────────────────────────
+const CURATED_FIREFLIES = [
+  // ═══ 1. TEMFACIL COMPOUND (24 fireflies) ═══
+  // A. Inside Canteen Hall, Entrance Steps & Veranda (10 fireflies - True Indoor & Veranda)
+  { x: 149.0, y: 15.35, z: -89.0, isIndoor: true },  // Hovering right at Canteen front entrance step
+  { x: 151.0, y: 15.45, z: -88.5, isIndoor: true },  // Hovering near Canteen entrance doorway
+  { x: 150.0, y: 16.10, z: -87.2, isIndoor: true },  // Hovering under front canopy entrance lintel
+  { x: 148.5, y: 16.20, z: -84.0, isIndoor: true },  // Above Table 1 diners under the rafters
+  { x: 151.5, y: 16.20, z: -81.0, isIndoor: true },  // Above Table 2 diners under the rafters
+  { x: 147.5, y: 15.85, z: -77.5, isIndoor: true },  // Hovering near food warming counter lamp
+  { x: 149.2, y: 15.80, z: -85.5, isIndoor: true },  // Hovering near 5-gallon water dispenser
+  { x: 150.8, y: 16.00, z: -76.5, isIndoor: true },  // Hovering near chalkboard menu & condiments
+  { x: 152.8, y: 15.90, z: -82.0, isIndoor: true },  // Hovering near east dining screened wall
+  { x: 146.5, y: 15.80, z: -81.2, isIndoor: true },  // Hovering near west screened patio doorway
+
+  // B. Staff House & Barracks Courtyard (6 fireflies)
+  { x: 114.5, y: 15.35, z: -126.2, isIndoor: true },  // Staff House Wooden Front Veranda
+  { x: 117.0, y: 15.45, z: -129.5, isIndoor: true },  // Covered Breezeway Corridor
+  { x: 121.2, y: 15.25, z: -125.0, isIndoor: false }, // Barracks Porch Step
+  { x: 118.0, y: 15.10, z: -133.0, isIndoor: false }, // Courtyard Garden Lawn
+  { x: 111.5, y: 14.95, z: -137.5, isIndoor: false }, // Rear Garden Flowerbed
+  { x: 113.5, y: 15.15, z: -134.2, isIndoor: false }, // Pathway Border Shrubbery
+
+  // C. Main Office & QA/QC Veranda (5 fireflies)
+  { x: 115.5, y: 15.35, z: -86.5, isIndoor: true },  // Executive Office Porch
+  { x: 122.0, y: 15.25, z: -94.0, isIndoor: false }, // QA/QC Lab Planter
+  { x: 118.5, y: 15.05, z: -89.5, isIndoor: false }, // Ornamental Shrubbery
+  { x: 131.5, y: 15.20, z: -87.5, isIndoor: false }, // Office-to-Canteen Breezeway
+  { x: 104.5, y: 15.25, z: -97.5, isIndoor: false }, // Greenhouse Nursery Foliage
+
+  // D. Basketball Court & Drainage Canal (3 fireflies)
+  { x: 126.0, y: 15.00, z: -78.0, isIndoor: false }, // North Court Bleachers
+  { x: 134.0, y: 15.10, z: -72.0, isIndoor: false }, // South Perimeter Fence Hedge
+  { x: 128.5, y: 14.85, z: -84.0, isIndoor: false }, // Drainage Canal Riprap
+
+  // ═══ 2. POWERHOUSE COMPOUND (18 fireflies) ═══
+  // A. Inside Powerhouse Turbine & Generator Hall (6 fireflies - True Indoor)
+  { x: -4.0, y: 7.20, z: 0.5, isIndoor: true },   // Above Turbine #1 Pit
+  { x: -2.6, y: 6.90, z: -1.6, isIndoor: true },  // Beside Turbine #1 Housing
+  { x: 0.0,  y: 7.55, z: 0.2, isIndoor: true },   // Central Generator Bay Aisle
+  { x: 4.0,  y: 7.20, z: 0.5, isIndoor: true },   // Above Turbine #2 Pit
+  { x: 2.8,  y: 6.95, z: -1.5, isIndoor: true },  // Beside Turbine #2 Housing
+  { x: 1.2,  y: 8.25, z: -3.5, isIndoor: true },  // Mezzanine Walkway Railing
+
+  // B. Powerhouse Front Facade Windows & Balcony Walkway (8 fireflies)
+  { x: -4.5, y: 7.80, z: 7.2, isIndoor: false },  // Hovering outside Generator Hall Window 1
+  { x: -1.5, y: 7.80, z: 7.2, isIndoor: false },  // Hovering outside Generator Hall Window 2
+  { x: 1.5,  y: 7.80, z: 7.2, isIndoor: false },  // Hovering outside Generator Hall Window 3
+  { x: 4.5,  y: 7.80, z: 7.2, isIndoor: false },  // Hovering outside Generator Hall Window 4
+  { x: 8.5,  y: 5.20, z: 10.5, isIndoor: false }, // Above yellow balcony safety handrail
+  { x: 11.5, y: 4.80, z: 12.0, isIndoor: false }, // Near walkway exterior access stairs
+  { x: 0.0,  y: 4.20, z: 13.8, isIndoor: false }, // Over tailrace balcony railing
+  { x: -5.5, y: 4.20, z: 14.0, isIndoor: false }, // Over west gate hoist pier
+
+  // C. Switchyard & Penstock Saddle (4 fireflies)
+  { x: 54.0,  y: 2.20, z: 14.0, isIndoor: false }, // 69kV Switchyard Transformer Bed
+  { x: 62.0,  y: 2.10, z: 17.5, isIndoor: false }, // Switchyard Fence Shrubs
+  { x: -22.0, y: 3.20, z: -10.0, isIndoor: false },// Penstock Concrete Footing
+  { x: -15.5, y: 2.60, z: -4.5, isIndoor: false }, // Hillside Stairs Landing
+
+  // ═══ 3. TUMAUINI RIVERBANK & FOREST VERGE (12 fireflies) ═══
+  // A. Riverbank Reeds & Water Edge (8 fireflies)
+  { x: -42.0, y: 1.60, z: 28.0, isIndoor: false },
+  { x: -28.0, y: 1.75, z: 33.0, isIndoor: false },
+  { x: -14.0, y: 1.50, z: 27.5, isIndoor: false },
+  { x: 5.0,   y: 1.65, z: 34.5, isIndoor: false },
+  { x: 18.0,  y: 1.60, z: 30.5, isIndoor: false },
+  { x: 32.0,  y: 1.80, z: 35.0, isIndoor: false },
+  { x: -8.0,  y: 1.55, z: 23.0, isIndoor: false },
+  { x: 12.0,  y: 1.65, z: 25.0, isIndoor: false },
+
+  // B. Lower Mountain Roadside Margin (4 fireflies)
+  { x: 45.0,  y: 8.50, z: -36.0, isIndoor: false },
+  { x: 52.0,  y: 9.30, z: -43.0, isIndoor: false },
+  { x: 60.0,  y: 10.40, z: -50.0, isIndoor: false },
+  { x: 68.0,  y: 11.20, z: -57.0, isIndoor: false },
+];
+
+function BioluminescentForestFireflies({
+  isSunset = false,
+}: {
+  count?: number;
+  isSunset?: boolean;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const frameCountRef = useRef(0);
 
   const fireflyData = useMemo(() => {
-    const data = [];
     let seed = 44211;
     const lcg = () => {
       seed = (seed * 1664525 + 1013904223) % 4294967296;
       return seed / 4294967296;
     };
 
-    for (let i = 0; i < count; i++) {
-      const sector = i % 4;
-      let x = 0, z = 0, y = 0;
-
-      if (sector === 0) {
-        // Sector 1: Upper Eastern Mountain Ridge & High Forest Trees
-        x = 175 + lcg() * 95;
-        z = -260 + lcg() * 180;
-        y = 16 + lcg() * 45;
-      } else if (sector === 1) {
-        // Sector 2: Western River Gorge & Penstock Mountain Forest
-        x = -210 + lcg() * 165;
-        z = -180 + lcg() * 220;
-        y = 10 + lcg() * 45;
-      } else if (sector === 2) {
-        // Sector 3: Tumauini Riparian Riverbanks & Bamboo Groves
-        x = -85 + lcg() * 180;
-        z = 35 + lcg() * 90;
-        y = 1.5 + lcg() * 16;
-      } else {
-        // Sector 4: Deep North-East Mountain Forest & Saddle
-        x = 40 + lcg() * 140;
-        z = -280 + lcg() * 110;
-        y = 18 + lcg() * 40;
-      }
-
-      // Strict Facility Exclusion Zone Check (Keep Powerhouse & TEMFACIL clean)
-      const isInTemfacil = x >= 65 && x <= 170 && z >= -150 && z <= -45;
-      const isInPowerhouse = x >= -30 && x <= 75 && z >= -30 && z <= 32;
-
-      if (isInTemfacil) {
-        // Shift outward into the Eastern Sierra Madre forest slope
-        x += 110;
-        z -= 40;
-      } else if (isInPowerhouse) {
-        // Shift outward into the Western river gorge forest
-        x -= 65;
-        z += 45;
-      }
-
-      const speed = 0.5 + lcg() * 1.4;
+    return CURATED_FIREFLIES.map((pt, i) => {
+      const speed = 0.5 + lcg() * 1.2;
       const phase = lcg() * Math.PI * 2;
-      const waveGroup = Math.floor(lcg() * 4);
-      data.push({ x, y, z, speed, phase, waveGroup });
-    }
-    return data;
-  }, [count]);
+      const waveGroup = i % 4;
+      return {
+        ...pt,
+        speed,
+        phase,
+        waveGroup,
+      };
+    });
+  }, []);
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
     frameCountRef.current++;
-    if (frameCountRef.current % 2 !== 0) return;
+    if (frameCountRef.current % 2 !== 0) return; // 30fps update
     const t = clock.getElapsedTime();
+    const baseMult = isSunset ? 0.65 : 1.0;
 
     for (let i = 0; i < fireflyData.length; i++) {
-      const { x, y, z, speed, phase, waveGroup } = fireflyData[i];
+      const { x, y, z, speed, phase, waveGroup, isIndoor } = fireflyData[i];
 
-      // Organic synchronized wave flashing with individual twinkling jitter
+      // Organic synchronized wave flashing with individual twinkling jitter (original look)
       const groupWave = Math.sin(t * 1.5 + waveGroup * 1.57) * 0.5 + 0.5;
       const individualPulse = Math.sin(t * 3.8 * speed + phase) * 0.5 + 0.5;
-      const glow = Math.pow(groupWave * 0.4 + individualPulse * 0.6, 2.5);
+      const glow = Math.pow(groupWave * 0.4 + individualPulse * 0.6, 2.5) * baseMult;
 
       // Gentle 3D floating & hovering motion
-      const driftX = Math.sin(t * 0.6 * speed + phase) * 2.8;
-      const driftY = Math.cos(t * 1.2 * speed + phase) * 1.4;
-      const driftZ = Math.sin(t * 0.5 * speed + phase) * 2.8;
+      // Indoor fireflies have tight, calm drift to avoid clipping walls or equipment
+      const driftAmpXZ = isIndoor ? 0.45 : 1.2;
+      const driftAmpY = isIndoor ? 0.18 : 0.45;
+      const driftX = Math.sin(t * 0.55 * speed + phase) * driftAmpXZ;
+      const driftY = Math.cos(t * 1.1 * speed + phase) * driftAmpY;
+      const driftZ = Math.sin(t * 0.48 * speed + phase * 1.3) * driftAmpXZ;
 
       dummy.position.set(x + driftX, y + driftY, z + driftZ);
-      dummy.scale.setScalar(glow * 0.75 + 0.08);
+      // Delicate glowing sphere with visible resting spark and radiant HDR bloom peak
+      dummy.scale.setScalar(glow * 0.72 + 0.10);
       dummy.updateMatrix();
 
       meshRef.current.setMatrixAt(i, dummy.matrix);
@@ -854,10 +906,13 @@ function BioluminescentForestFireflies({ count = 140 }: { count?: number }) {
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[0.38, 6, 6]} />
-      <meshBasicMaterial
-        color="#FACC15"
+    <instancedMesh ref={meshRef} args={[undefined, undefined, CURATED_FIREFLIES.length]}>
+      <sphereGeometry args={[0.34, 8, 8]} />
+      <meshStandardMaterial
+        color="#FEF08A"
+        emissive="#FACC15"
+        emissiveIntensity={7.0}
+        roughness={0.2}
         toneMapped={false}
       />
     </instancedMesh>

@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import gisTerrainData from "@/public/data/gis-terrain-mesh.json";
 import { UPHILL_ROAD_WAYPOINTS } from "./uphillRoadConfig";
+import { sampleTerrainY } from "./terrainData";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    PHILIPPINE SIERRA MADRE RAINFOREST ENGINE (High-Fidelity Flora & Non-Culling)
@@ -51,72 +52,7 @@ function rectSignedDist(px: number, pz: number, xMin: number, xMax: number, zMin
   return Math.hypot(dx, dz);
 }
 
-// ─── Terrain Height Sampler ─────────────────────────────────────────────────
-function sampleTerrainY(x: number, z: number): number {
-  const gridSize = (gisTerrainData as any).gridSize || 65;
-  const positions = (gisTerrainData as any).positions as number[];
 
-  const xFrac = (x + 180.0) / 360.0;
-  const zFrac = (z + 180.0) / 360.0;
-
-  const col = xFrac * (gridSize - 1);
-  const row = zFrac * (gridSize - 1);
-
-  const c0 = Math.max(0, Math.min(gridSize - 2, Math.floor(col)));
-  const r0 = Math.max(0, Math.min(gridSize - 2, Math.floor(row)));
-  const c1 = c0 + 1;
-  const r1 = r0 + 1;
-
-  const fx = col - c0;
-  const fz = row - r0;
-
-  const y00 = positions[(r0 * gridSize + c0) * 3 + 1];
-  const y10 = positions[(r0 * gridSize + c1) * 3 + 1];
-  const y01 = positions[(r1 * gridSize + c0) * 3 + 1];
-  const y11 = positions[(r1 * gridSize + c1) * 3 + 1];
-
-  const y0 = y00 * (1 - fx) + y10 * fx;
-  const y1 = y01 * (1 - fx) + y11 * fx;
-  let y = y0 * (1 - fz) + y1 * fz;
-
-  // 1. Tailrace Canal & Outfall Channel
-  if (x >= -14.0 && x <= 14.0 && z >= 6.0 && z <= 48.0) {
-    return Math.min(y, -0.45);
-  }
-
-  // 2. TEMFACIL Expanded Base Land Pad & Mountain Slope Transition
-  const dxPad = Math.max(80.0 - x, 0, x - 175.0);
-  const dzPad = Math.max(-142.0 - z, 0, z - (-66.0));
-  const distPad = Math.hypot(dxPad, dzPad);
-
-  if (distPad === 0) {
-    return 14.0;
-  } else if (distPad < 28.0) {
-    const t = distPad / 28.0;
-    const smoothT = t * t * (3.0 - 2.0 * t);
-    const origY = Math.max(14.0, y);
-    y = 14.0 * (1.0 - smoothT) + origY * smoothT;
-  }
-
-  // 3. Slope to powerhouse
-  const ax = 34.0, az = -22.0;
-  const bx = 95.0, bz = -75.0;
-  const dx = bx - ax;
-  const dz = bz - az;
-  const lenSq = dx * dx + dz * dz;
-  const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / lenSq));
-  const projX = ax + t * dx;
-  const projZ = az + t * dz;
-  const distToSlopeLine = Math.hypot(x - projX, z - projZ);
-
-  if (distToSlopeLine < 28.0 && x >= 30.0 && x <= 98.0 && z >= -80.0 && z <= -20.0) {
-    const slopeY = 0.5 + t * 13.5;
-    const fade = Math.min(1.0, distToSlopeLine / 28.0);
-    y = slopeY * (1.0 - fade) + y * fade;
-  }
-
-  return y;
-}
 
 // ─── Safe Geometry Merger (Normalizes indexing and attributes) ─────────────
 function safeMergeGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeometry {

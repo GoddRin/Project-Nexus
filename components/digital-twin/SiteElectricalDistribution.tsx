@@ -374,44 +374,44 @@ export function ConcreteUtilityPole({
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ⚡ 3. TEMFACIL EXTERNAL PERIMETER SUBSTATION & STEP-DOWN TRANSFORMER YARD
+// ⚡ 3. TEMFACIL INTERNAL UTILITY SUBSTATION & 500kVA STANDBY GENSET YARD
 // ═══════════════════════════════════════════════════════════════════════════
-export function TemfacilExternalSubstation({ position = [84.5, 0, -71.5] }: { position?: [number, number, number] }) {
+export function TemfacilExternalSubstation({ position = [84.0, 0, -83.0] }: { position?: [number, number, number] }) {
   const groundY = useMemo(() => Math.max(14.15, sampleTerrainY(position[0], position[2])), [position]);
 
   return (
     <group position={[position[0], groundY, position[2]]}>
-      {/* Heavy Reinforced Concrete Equipment Foundation Pad */}
+      {/* Heavy Reinforced Concrete Equipment Foundation Pad inside TEMFACIL Compound */}
       <mesh position={[0, 0.12, 0]} receiveShadow material={MAT_CONCRETE_SLAB}>
-        <boxGeometry args={[3.8, 0.24, 3.2]} />
+        <boxGeometry args={[5.6, 0.24, 3.6]} />
       </mesh>
 
       {/* Perimeter Safety Chainlink Fence Enclosure with Yellow Caution Frame */}
       {/* Back Wall */}
-      <mesh position={[0, 1.1, -1.5]} material={MAT_STEEL_DARK}>
-        <boxGeometry args={[3.6, 2.0, 0.04]} />
+      <mesh position={[0, 1.1, -1.75]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[5.4, 2.0, 0.04]} />
       </mesh>
       {/* Left Wall */}
-      <mesh position={[-1.8, 1.1, 0]} material={MAT_STEEL_DARK}>
-        <boxGeometry args={[0.04, 2.0, 3.0]} />
+      <mesh position={[-2.7, 1.1, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.04, 2.0, 3.4]} />
       </mesh>
       {/* Right Wall */}
-      <mesh position={[1.8, 1.1, 0]} material={MAT_STEEL_DARK}>
-        <boxGeometry args={[0.04, 2.0, 3.0]} />
+      <mesh position={[2.7, 1.1, 0]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[0.04, 2.0, 3.4]} />
       </mesh>
 
       {/* High-Voltage OSHA Warning Signboard */}
-      <group position={[0, 1.6, 1.52]}>
+      <group position={[-1.2, 1.6, 1.76]}>
         <mesh material={MAT_YELLOW_SAFETY}>
-          <boxGeometry args={[0.8, 0.5, 0.02]} />
+          <boxGeometry args={[0.9, 0.5, 0.02]} />
         </mesh>
         <mesh position={[0, 0, 0.015]} material={MAT_STEEL_DARK}>
-          <boxGeometry args={[0.72, 0.42, 0.005]} />
+          <boxGeometry args={[0.82, 0.42, 0.005]} />
         </mesh>
       </group>
 
-      {/* Main 3-Phase Step-Down Distribution Transformer (13.8kV -> 480V/230V) */}
-      <group position={[-0.6, 0.24, 0]}>
+      {/* ─── A. MAIN 3-PHASE STEP-DOWN DISTRIBUTION TRANSFORMER (13.8kV -> 480V/230V) ─── */}
+      <group position={[-1.4, 0.24, 0]}>
         {/* Main Transformer Oil Tank Body */}
         <mesh position={[0, 0.8, 0]} material={MAT_TRANSFORMER_CAN} castShadow>
           <boxGeometry args={[1.3, 1.4, 1.1]} />
@@ -438,8 +438,8 @@ export function TemfacilExternalSubstation({ position = [84.5, 0, -71.5] }: { po
         ))}
       </group>
 
-      {/* Outdoor Weatherproof Main Distribution Panel (MDP) & Switchgear Cabinet */}
-      <group position={[1.0, 0.24, 0]}>
+      {/* ─── B. OUTDOOR MAIN DISTRIBUTION PANEL (MDP) & SWITCHGEAR ─── */}
+      <group position={[0.2, 0.24, 0]}>
         <mesh position={[0, 0.95, 0]} material={MAT_STEEL_FRAME} castShadow>
           <boxGeometry args={[0.9, 1.65, 0.7]} />
         </mesh>
@@ -454,18 +454,42 @@ export function TemfacilExternalSubstation({ position = [84.5, 0, -71.5] }: { po
         </mesh>
       </group>
 
-      {/* High-Voltage Pothead Riser Pipe coming down from Pole 6 */}
-      <mesh position={[-1.5, 1.8, -0.6]} material={MAT_CONDUIT_METALLIC}>
-        <cylinderGeometry args={[0.05, 0.05, 3.2, 8]} />
-      </mesh>
+      {/* ─── C. 500kVA STANDBY INDUSTRIAL DIESEL GENERATOR (GEN-CAT-500) ─── */}
+      <group position={[1.8, 0.24, 0]}>
+        {/* Genset Skid Base */}
+        <mesh position={[0, 0.12, 0]} material={MAT_GENSET_DARK} castShadow>
+          <boxGeometry args={[1.5, 0.20, 1.2]} />
+        </mesh>
+        {/* Soundproof Yellow Acoustic Enclosure */}
+        <mesh position={[0, 0.72, 0]} material={MAT_GENSET_YELLOW} castShadow>
+          <boxGeometry args={[1.4, 1.0, 1.05]} />
+        </mesh>
+        {/* Dark Overhang Roof */}
+        <mesh position={[0, 1.25, 0]} material={MAT_GENSET_DARK}>
+          <boxGeometry args={[1.45, 0.06, 1.1]} />
+        </mesh>
+        {/* Front Cooling Radiator Louvers */}
+        <mesh position={[0.71, 0.72, 0]} material={MAT_GENSET_RADIATOR}>
+          <boxGeometry args={[0.04, 0.8, 0.85]} />
+        </mesh>
+        {/* Vertical Exhaust Stack with Rain Cap */}
+        <mesh position={[-0.3, 1.55, 0.25]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.06, 0.06, 0.55, 8]} />
+        </mesh>
+        {/* Control Panel Screen */}
+        <mesh position={[-0.4, 0.82, 0.53]}>
+          <planeGeometry args={[0.22, 0.14]} />
+          <meshBasicMaterial color="#38BDF8" />
+        </mesh>
+      </group>
 
       {/* Ground-Level Underground Concrete Cable Trench / Duct Bank entering compound */}
-      <mesh position={[2.4, 0.06, 0]} material={MAT_CONCRETE_HEADER} receiveShadow>
-        <boxGeometry args={[1.4, 0.12, 0.7]} />
+      <mesh position={[0, 0.06, 1.85]} material={MAT_CONCRETE_HEADER} receiveShadow>
+        <boxGeometry args={[1.8, 0.12, 0.6]} />
       </mesh>
       {/* Diamond-Plate Trench Cover */}
-      <mesh position={[2.4, 0.13, 0]} material={MAT_STEEL_DARK}>
-        <boxGeometry args={[1.36, 0.02, 0.66]} />
+      <mesh position={[0, 0.13, 1.85]} material={MAT_STEEL_DARK}>
+        <boxGeometry args={[1.76, 0.02, 0.56]} />
       </mesh>
     </group>
   );
@@ -549,8 +573,8 @@ export function SiteElectricalDistribution() {
       {/* 3. Continuous 3-Phase Overhead Electrical Lines with Catenary Sag */}
       <OverheadDistributionCatenaries />
 
-      {/* 4. Temfacil External Perimeter Substation & Step-Down Transformer Yard (outside gate) */}
-      <TemfacilExternalSubstation position={[84.5, 0, -71.5]} />
+      {/* 4. Temfacil Internal Utility Substation & Step-Down Transformer Yard */}
+      <TemfacilExternalSubstation position={[84.0, 0, -83.0]} />
     </group>
   );
 }

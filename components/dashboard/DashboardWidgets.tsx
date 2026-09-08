@@ -18,7 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/db/prisma";
-import { fetchWeather, getWeatherInfo } from "@/lib/weather/fetchWeather";
+import { fetchWeather, getWeatherInfo, evaluateDayOperationalStatus } from "@/lib/weather/fetchWeather";
 
 /* Card uses the shared .glass-card CSS utility from globals.css */
 /* Card uses the shared .glass-scic-card CSS utility from globals.css */
@@ -189,8 +189,12 @@ export async function WeatherWidget({ delay = 0 }: { delay?: number }) {
   }
 
   const current = weather.current;
-  const recommendation = getWeatherInfo(current.weather_code);
-  const WeatherIcon = recommendation.icon;
+  const todayEval = evaluateDayOperationalStatus({
+    dayIndex: 0,
+    weather,
+    isToday: true,
+  });
+  const WeatherIcon = todayEval.icon;
 
   const intentStyles = {
     favorable: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
@@ -204,16 +208,16 @@ export async function WeatherWidget({ delay = 0 }: { delay?: number }) {
         className={cn(
           GLASS_CARD, 
           "p-6 flex flex-col justify-between",
-          recommendation.intent === "favorable" && "scic-card-accent-green",
-          recommendation.intent === "caution" && "scic-card-accent-amber",
-          recommendation.intent === "suspend" && "scic-card-accent-red"
+          todayEval.intent === "favorable" && "scic-card-accent-green",
+          todayEval.intent === "caution" && "scic-card-accent-amber",
+          todayEval.intent === "suspend" && "scic-card-accent-red"
         )} 
       >
         <CardHeader 
           icon={WeatherIcon} 
           title="Tumauini Site Meteorology" 
-          glow={recommendation.intent === "favorable"}
-          accent={recommendation.intent === "favorable" ? "green" : recommendation.intent === "caution" ? "amber" : "red"}
+          glow={todayEval.intent === "favorable"}
+          accent={todayEval.intent === "favorable" ? "green" : todayEval.intent === "caution" ? "amber" : "red"}
         />
         
         <div className="flex flex-1 flex-col justify-between">
@@ -221,9 +225,9 @@ export async function WeatherWidget({ delay = 0 }: { delay?: number }) {
             <div className="flex items-center gap-3">
               <WeatherIcon className={cn(
                 "h-10 w-10 drop-shadow-md",
-                recommendation.intent === "favorable" && "text-emerald-500 dark:text-emerald-400",
-                recommendation.intent === "caution" && "text-amber-500 dark:text-amber-400",
-                recommendation.intent === "suspend" && "text-red-500 dark:text-red-400"
+                todayEval.intent === "favorable" && "text-emerald-500 dark:text-emerald-400",
+                todayEval.intent === "caution" && "text-amber-500 dark:text-amber-400",
+                todayEval.intent === "suspend" && "text-red-500 dark:text-red-400"
               )} />
               <div>
                 <div className="flex items-baseline gap-1">
@@ -233,7 +237,7 @@ export async function WeatherWidget({ delay = 0 }: { delay?: number }) {
                   <span className="text-xs font-semibold text-text-muted">C</span>
                 </div>
                 <p className="text-xs font-semibold text-text-primary mt-0.5">
-                  {recommendation.conditionLabel}
+                  {todayEval.conditionLabel}
                 </p>
               </div>
             </div>
@@ -254,9 +258,9 @@ export async function WeatherWidget({ delay = 0 }: { delay?: number }) {
             <p className="text-[10px] font-bold text-text-muted mb-1 uppercase tracking-wider font-mono">Operations Directive</p>
             <div className={cn(
               "inline-flex items-center rounded-lg px-2 py-0.5 text-xs font-bold",
-              intentStyles[recommendation.intent]
+              intentStyles[todayEval.intent]
             )}>
-              {recommendation.label}
+              {todayEval.badgeLabel}: {todayEval.operationalGuidance.length > 55 ? `${todayEval.operationalGuidance.slice(0, 52)}...` : todayEval.operationalGuidance}
             </div>
           </div>
 

@@ -140,16 +140,18 @@ export function TemfacilFacility({
   activePreset?: string;
   timeMode?: AtmosphereTimeMode;
 }) {
-  const isTemfacilFocused = !activePreset || activePreset.startsWith("temfacil");
+  // Granular Compound & Office Building LOD Proximity
+  const { camera } = useThree();
+  const TEMFACIL_WORLD_CENTER = useMemo(() => new THREE.Vector3(120.0, 14.0, -95.0), []);
+  const OFFICE_WORLD_CENTER = useMemo(() => new THREE.Vector3(114.0, 14.0, -107.0), []);
+  const [isNearTemfacil, setIsNearTemfacil] = useState(true);
+  const [isNearOffice, setIsNearOffice] = useState(false);
+  const frameTickRef = useRef<number>(0);
+
+  const isTemfacilFocused = !activePreset || activePreset.startsWith("temfacil") || isNearTemfacil;
   const isNight = timeMode === "NIGHT" || timeMode === "SUNSET";
   const isMorning = timeMode === "MORNING";
   const isDaytime = timeMode === "AFTERNOON";
-
-  // Granular Office Building LOD Proximity (Center: [114.0, 14.0, -107.0])
-  const { camera } = useThree();
-  const OFFICE_WORLD_CENTER = useMemo(() => new THREE.Vector3(114.0, 14.0, -107.0), []);
-  const [isNearOffice, setIsNearOffice] = useState(false);
-  const frameTickRef = useRef<number>(0);
 
   useEffect(() => {
     const handleFocus = (e: Event) => {
@@ -169,22 +171,25 @@ export function TemfacilFacility({
   }, [OFFICE_WORLD_CENTER]);
 
   useFrame(() => {
-    if (activePreset?.startsWith("temfacil-office")) {
-      if (!isNearOffice) setIsNearOffice(true);
-      return;
-    }
     frameTickRef.current++;
     if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
-    const distSq = camera.position.distanceToSquared(OFFICE_WORLD_CENTER);
-    // Strict 24m proximity threshold (24^2 = 576) AND eye-level height (< 20m)
-    // When camera is in Overview or high above looking down at the parking lot/Ferrari, interior is culled
-    const near = distSq < 576 && camera.position.y < 20.0;
-    if (near !== isNearOffice) {
-      setIsNearOffice(near);
+
+    // 1. Compound proximity check (220m radius)
+    const temfacilDistSq = camera.position.distanceToSquared(TEMFACIL_WORLD_CENTER);
+    const nearCompound = temfacilDistSq < 48400;
+    if (nearCompound !== isNearTemfacil) {
+      setIsNearTemfacil(nearCompound);
+    }
+
+    // 2. Office interior proximity threshold (120m radius across any inspection angle/altitude)
+    const officeDistSq = camera.position.distanceToSquared(OFFICE_WORLD_CENTER);
+    const nearOffice = officeDistSq < 14400; // 120m radius
+    if (nearOffice !== isNearOffice) {
+      setIsNearOffice(nearOffice);
     }
   });
 
-  const isOfficeInteriorVisible = !!(activePreset?.startsWith("temfacil-office") || isNearOffice);
+  const isOfficeInteriorVisible = isTemfacilFocused || isNearOffice;
 
   return (
     <group position={[118, 14.0, -95]} rotation={[0, 0, 0]}>
@@ -197,17 +202,61 @@ export function TemfacilFacility({
         </mesh>
 
         {/* Concrete Edge Retention Curbs (Perimeter Header) */}
+        {/* North Perimeter Curb Header */}
         <mesh position={[0, 0.58, -41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
           <boxGeometry args={[84.4, 0.26, 0.4]} />
         </mesh>
-        <mesh position={[0, 0.58, 41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
-          <boxGeometry args={[84.4, 0.26, 0.4]} />
+        {/* South Perimeter Curb Header - Split with 16m gateway opening for mountain road entrance corridor (X: 88 to 104) */}
+        {/* West segment of South Curb (xA: -42.2 to -39.0, width: 3.2m) */}
+        <mesh position={[-40.6, 0.58, 41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[3.2, 0.26, 0.4]} />
         </mesh>
+        {/* East segment of South Curb (xA: -23.0 to +42.2, width: 65.2m) */}
+        <mesh position={[9.6, 0.58, 41.1]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[65.2, 0.26, 0.4]} />
+        </mesh>
+        {/* Gateway Entrance Safety Bullnose Curbs (Yellow/Black striped boundary) */}
+        <mesh position={[-38.9, 0.58, 41.1]} receiveShadow material={MAT_YELLOW_SAFETY}>
+          <boxGeometry args={[0.3, 0.28, 0.45]} />
+        </mesh>
+        <mesh position={[-23.1, 0.58, 41.1]} receiveShadow material={MAT_YELLOW_SAFETY}>
+          <boxGeometry args={[0.3, 0.28, 0.45]} />
+        </mesh>
+        {/* West Perimeter Curb Header */}
         <mesh position={[-42.1, 0.58, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
           <boxGeometry args={[0.4, 0.26, 82.4]} />
         </mesh>
+        {/* East Perimeter Curb Header */}
         <mesh position={[42.1, 0.58, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
           <boxGeometry args={[0.4, 0.26, 82.4]} />
+        </mesh>
+      </group>
+
+      {/* ═══ ENGINEERED HEAVY-DUTY ENTRANCE INCLINE RAMP (ROAD EL. 13.20m -> TEMFACIL EL. 14.15m) ═══ */}
+      {/* 16.0m wide asphalt ramp smoothly transitioning traffic across Z = -64.0 to -75.0 (slope: ~5.4 deg) */}
+      <group position={[-22.0, -0.32, 26.0]}>
+        {/* Main Asphalt Pavement Ramp Box */}
+        <mesh rotation={[0.0948, 0, 0]} receiveShadow material={MAT_ASPHALT_DARK}>
+          <boxGeometry args={[16.0, 0.22, 10.2]} />
+        </mesh>
+        {/* Left Concrete Shoulder Curb */}
+        <mesh position={[-8.1, 0.05, 0]} rotation={[0.0948, 0, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[0.3, 0.32, 10.2]} />
+        </mesh>
+        {/* Right Concrete Shoulder Curb */}
+        <mesh position={[8.1, 0.05, 0]} rotation={[0.0948, 0, 0]} receiveShadow material={MAT_CONCRETE_HEADER}>
+          <boxGeometry args={[0.3, 0.32, 10.2]} />
+        </mesh>
+        {/* Yellow Centerline Highway Marking */}
+        <mesh position={[0, 0.12, 0]} rotation={[-Math.PI / 2 + 0.0948, 0, 0]} material={MAT_YELLOW_SAFETY}>
+          <planeGeometry args={[0.18, 9.8]} />
+        </mesh>
+        {/* White Edge Fog Lines */}
+        <mesh position={[-7.6, 0.12, 0]} rotation={[-Math.PI / 2 + 0.0948, 0, 0]} material={MAT_WHITE_PAINT}>
+          <planeGeometry args={[0.16, 9.8]} />
+        </mesh>
+        <mesh position={[7.6, 0.12, 0]} rotation={[-Math.PI / 2 + 0.0948, 0, 0]} material={MAT_WHITE_PAINT}>
+          <planeGeometry args={[0.16, 9.8]} />
         </mesh>
       </group>
 
@@ -534,10 +583,10 @@ export function TemfacilFacility({
         </mesh>
 
         {/* ═══ EXPANDED MATERIAL LAYDOWN & STORAGE YARD ═══ */}
-        {/* Blue Tarp Material Stacks */}
-        {[-4.5, 0, 4.5].map((xOff, i) => (
-          <mesh key={`tarp-${i}`} position={[-9.5, 1.2, -5 + i * 4.5]} castShadow material={MAT_SIGNBOARD_TEAL}>
-            <boxGeometry args={[3.8, 2.4, 3.8]} />
+        {/* Blue Tarp Material Stacks - Compacted and placed against warehouse west wall (clear of driveway) */}
+        {[-4.0, 0, 4.0].map((zOff, i) => (
+          <mesh key={`tarp-${i}`} position={[-7.6, 1.0, -4 + i * 3.6]} castShadow material={MAT_SIGNBOARD_TEAL}>
+            <boxGeometry args={[2.0, 2.0, 2.8]} />
           </mesh>
         ))}
         {/* Timber Log Stacks with Heavy Hardwood Dunnage Sleepers */}
@@ -727,12 +776,11 @@ function TemfacilHeadquartersWorkforce({
         accessory="CLIPBOARD"
       />
 
-      {/* ─── 3. HR, ADMINISTRATION & IT OPERATIONS ─── */}
-      {/* HR Admin (Joshua) at HR Office Counter */}
+      {/* HR Admin (Joshua) on Main Office Front Veranda Reception Counter */}
       <HydroProjectPersonMesh
         personnelId="HR_JOSHUA_ADMIN"
         onSelectPerson={onSelectPerson}
-        position={[-2.5, 0.1, -8.0]}
+        position={[-2.5, 0.1, 0.8]}
         rotation={[0, -Math.PI / 2, 0]}
         skinTone="LIGHT"
         hairStyle="SHORT"
@@ -1989,14 +2037,15 @@ function StaffOfficeYardLightingPole({
   return (
     <group position={position}>
       {/* ═══ 1. GROUND LIGHT ILLUMINATION PATCH (ONLY VISIBLE AT NIGHT/SUNSET) ═══ */}
+      {/* Positioned forward in front of the staff office entrance walkway & sports car VIP bay */}
       {isNight && (
-        <mesh position={[1.4, 0.03, -1.4]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[8.4, 8.4]} />
+        <mesh position={[4.5, 0.03, -0.8]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[11.0, 9.5]} />
           <meshBasicMaterial
             map={groundDecalTex || undefined}
             color="#FFFBEB"
             transparent
-            opacity={0.80}
+            opacity={0.82}
             depthWrite={false}
             blending={THREE.AdditiveBlending}
           />
@@ -2031,24 +2080,25 @@ function StaffOfficeYardLightingPole({
         <boxGeometry args={[0.16, 0.32, 0.08]} />
       </mesh>
 
-      {/* ═══ 3. UPPER MAST OUTREACH BRACKET ARM & LUMINAIR HEAD (POINTING INWARD AT COURTYARD) ═══ */}
-      <group position={[0, 5.35, 0]} rotation={[0, -Math.PI / 4, 0]}>
+      {/* ═══ 3. UPPER MAST OUTREACH BRACKET ARM & LUMINAIRE HEAD (FACING FRONT TOWARDS SPORTS CAR & OFFICE ENTRANCE) ═══ */}
+      {/* Rotated yaw ~93.6° (Math.PI * 0.52) so outreach arm points straight forward at the Ferrari & staff office entrance */}
+      <group position={[0, 5.35, 0]} rotation={[0, Math.PI * 0.52, 0]}>
         {/* Pole Top Weather Cap */}
         <mesh position={[0, 0.06, 0]} material={MAT_STEEL_DARK}>
           <cylinderGeometry args={[0.09, 0.09, 0.12, 12]} />
         </mesh>
 
-        {/* Curved Bracket Outreach Arm */}
-        <mesh position={[0, 0.25, 0.95]} rotation={[0.26, 0, 0]} material={MAT_STEEL_DARK}>
-          <cylinderGeometry args={[0.04, 0.04, 2.0, 8]} />
+        {/* Realistic Horizontal Cantilever Outreach Arm (Cylinder rotated ~79.6° to extend forward along Z) */}
+        <mesh position={[0, 0.18, 0.95]} rotation={[1.39, 0, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.04, 0.04, 1.95, 12]} />
         </mesh>
-        {/* Reinforcement Gusset Support Strut */}
-        <mesh position={[0, -0.15, 0.55]} rotation={[-0.45, 0, 0]} material={MAT_STEEL_DARK}>
-          <cylinderGeometry args={[0.025, 0.025, 1.1, 8]} />
+        {/* Reinforcement Gusset Diagonal Support Strut (Starts at Y = -0.55 on pole, connects to underside of arm) */}
+        <mesh position={[0, -0.20, 0.40]} rotation={[0.85, 0, 0]} material={MAT_STEEL_DARK}>
+          <cylinderGeometry args={[0.025, 0.025, 1.08, 12]} />
         </mesh>
 
-        {/* Die-Cast Commercial LED Luminaire Head Housing */}
-        <group position={[0, 0.42, 1.95]} rotation={[0.15, 0, 0]}>
+        {/* Die-Cast Commercial LED Luminaire Head Housing & Mounting Bracket */}
+        <group position={[0, 0.32, 2.0]} rotation={[0.16, 0, 0]}>
           {/* Main Luminaire Body with Cooling Fins */}
           <mesh castShadow material={MAT_STEEL_DARK}>
             <boxGeometry args={[0.38, 0.14, 0.78]} />
@@ -2091,8 +2141,8 @@ function StaffOfficeYardLightingPole({
 
           {/* ═══ 4. VISIBLE VOLUMETRIC ATMOSPHERIC LIGHT CONE BEAM (NIGHT ONLY) ═══ */}
           {isNight && (
-            <mesh position={[0, -2.7, 0]} rotation={[0, 0, 0]}>
-              <cylinderGeometry args={[0.24, 3.8, 5.4, 24, 1, true]} />
+            <mesh position={[0, -2.7, 0.12]} rotation={[0.16, 0, 0]}>
+              <cylinderGeometry args={[0.24, 4.2, 5.4, 24, 1, true]} />
               <meshBasicMaterial
                 color="#FFF9C4"
                 transparent
@@ -2107,20 +2157,21 @@ function StaffOfficeYardLightingPole({
           {/* ═══ 5. HIGH-POWER DYNAMIC THREE.JS ILLUMINATORS (NIGHT ONLY) ═══ */}
           {isNight && isDetailVisible && (
             <>
-              {/* Primary High-Intensity Downward SpotLight */}
+              {/* Primary High-Intensity Downward & Forward SpotLight */}
               <spotLight
                 position={[0, -0.2, 0.05]}
+                target-position={[0, -8.0, 3.5]}
                 color="#FFFBEB"
-                intensity={60.0}
-                distance={20.0}
-                angle={Math.PI / 3.2}
+                intensity={65.0}
+                distance={22.0}
+                angle={Math.PI / 3.0}
                 penumbra={0.75}
                 decay={2.0}
               />
 
               {/* Soft Ground Bounce PointLight */}
               <pointLight
-                position={[0, -4.8, 0.05]}
+                position={[0, -4.8, 0.2]}
                 color="#FEF08A"
                 intensity={6.0}
                 distance={8.0}
@@ -7519,6 +7570,123 @@ function StaffHouseLoungeDining() {
   );
 }
 
+// ─── AUTHENTIC CANTEEN TABLETOP CONDIMENT CADDY & MEAL TRAYS ───
+function CanteenTabletopCondimentsAndTrays({ hasTrays = true }: { hasTrays?: boolean }) {
+  return (
+    <group position={[0, 0.74, 0]}>
+      {/* Central Filipino Condiment Caddy */}
+      <group position={[0, 0.015, 0]}>
+        {/* Wire/Wooden Caddy Base Tray */}
+        <mesh material={MAT_STEEL_DARK}>
+          <boxGeometry args={[0.22, 0.016, 0.16]} />
+        </mesh>
+        {/* 1. UFC Banana Ketchup Bottle (Red Glass Bottle with Yellow Cap) */}
+        <group position={[-0.065, 0.07, -0.03]}>
+          <mesh material={MAT_DATU_PUTI_RED}>
+            <cylinderGeometry args={[0.02, 0.022, 0.12, 8]} />
+          </mesh>
+          <mesh position={[0, 0.07, 0]} material={MAT_YELLOW_SAFETY}>
+            <cylinderGeometry args={[0.008, 0.011, 0.03, 6]} />
+          </mesh>
+        </group>
+        {/* 2. Datu Puti Spiced Vinegar Bottle (Clear Glass with floating Siling Labuyo) */}
+        <group position={[0.065, 0.07, -0.03]}>
+          <mesh material={MAT_GLASS_CLEAR}>
+            <cylinderGeometry args={[0.02, 0.022, 0.12, 8]} />
+          </mesh>
+          <mesh position={[0, 0.005, 0]} material={MAT_WORKER_VEST_GREEN}>
+            <sphereGeometry args={[0.007, 4, 4]} />
+          </mesh>
+          <mesh position={[0.006, -0.02, 0]} material={MAT_DATU_PUTI_RED}>
+            <sphereGeometry args={[0.007, 4, 4]} />
+          </mesh>
+          <mesh position={[0, 0.07, 0]} material={MAT_DATU_PUTI_YELLOW}>
+            <cylinderGeometry args={[0.009, 0.009, 0.028, 6]} />
+          </mesh>
+        </group>
+        {/* 3. Silver Swan Soy Sauce Bottle (Dark Bottle with Yellow Cap) */}
+        <group position={[-0.065, 0.07, 0.035]}>
+          <mesh material={MAT_ASPHALT_DARK}>
+            <cylinderGeometry args={[0.02, 0.022, 0.12, 8]} />
+          </mesh>
+          <mesh position={[0, 0.07, 0]} material={MAT_DATU_PUTI_YELLOW}>
+            <cylinderGeometry args={[0.008, 0.011, 0.028, 6]} />
+          </mesh>
+        </group>
+        {/* 4. Stainless Steel Folded Paper Napkin Dispenser */}
+        <group position={[0.065, 0.05, 0.035]}>
+          <mesh material={MAT_FOOD_STAINLESS_TRAY}>
+            <boxGeometry args={[0.06, 0.08, 0.05]} />
+          </mesh>
+          <mesh position={[0, 0.042, 0]} material={MAT_WHITE_PAINT}>
+            <boxGeometry args={[0.045, 0.01, 0.025]} />
+          </mesh>
+        </group>
+        {/* 5. Authentic Filipino Canteen Water Pitcher (Translucent Blue with White Lid) */}
+        <group position={[0.18, 0.075, 0]}>
+          <mesh material={MAT_GLASS_BLUE}>
+            <cylinderGeometry args={[0.042, 0.048, 0.15, 10]} />
+          </mesh>
+          <mesh position={[0, 0.08, 0]} material={MAT_WHITE_PAINT}>
+            <cylinderGeometry args={[0.046, 0.046, 0.015, 10]} />
+          </mesh>
+          {/* Pitcher Handle */}
+          <mesh position={[0.052, 0.01, 0]} material={MAT_GLASS_BLUE}>
+            <boxGeometry args={[0.014, 0.10, 0.014]} />
+          </mesh>
+        </group>
+        {/* 6. Stainless Steel Spoon & Fork Cutlery Tumbler */}
+        <group position={[-0.18, 0.055, 0]}>
+          <mesh material={MAT_FOOD_STAINLESS_TRAY}>
+            <cylinderGeometry args={[0.032, 0.028, 0.11, 10]} />
+          </mesh>
+          {/* Spoons & Forks sticking up */}
+          <mesh position={[-0.01, 0.075, 0]} rotation={[0.12, 0, 0.12]} material={MAT_FOOD_STAINLESS_TRAY}>
+            <boxGeometry args={[0.01, 0.08, 0.01]} />
+          </mesh>
+          <mesh position={[0.01, 0.075, 0.01]} rotation={[-0.12, 0, -0.12]} material={MAT_FOOD_STAINLESS_TRAY}>
+            <boxGeometry args={[0.01, 0.08, 0.01]} />
+          </mesh>
+        </group>
+      </group>
+
+      {/* Table Resting Trays with Food Plates for unoccupied spots */}
+      {hasTrays && (
+        <>
+          <group position={[-0.6, 0.01, 0]}>
+            <mesh material={MAT_FOOD_STAINLESS_TRAY}>
+              <boxGeometry args={[0.36, 0.018, 0.26]} />
+            </mesh>
+            <mesh position={[-0.08, 0.02, 0]} material={MAT_GARLIC_RICE}>
+              <cylinderGeometry args={[0.065, 0.075, 0.03, 10]} />
+            </mesh>
+            <mesh position={[0.07, 0.02, 0]} material={MAT_ADOBO}>
+              <boxGeometry args={[0.11, 0.025, 0.13]} />
+            </mesh>
+            <mesh position={[0.13, 0.05, 0.08]} material={MAT_GLASS_CLEAR}>
+              <cylinderGeometry args={[0.03, 0.022, 0.09, 8]} />
+            </mesh>
+          </group>
+          <group position={[0.6, 0.01, 0]}>
+            <mesh material={MAT_FOOD_STAINLESS_TRAY}>
+              <boxGeometry args={[0.36, 0.018, 0.26]} />
+            </mesh>
+            <mesh position={[-0.08, 0.02, 0]} material={MAT_GARLIC_RICE}>
+              <cylinderGeometry args={[0.065, 0.075, 0.03, 10]} />
+            </mesh>
+            <mesh position={[0.07, 0.02, 0]} material={MAT_ADOBO}>
+              <boxGeometry args={[0.11, 0.025, 0.13]} />
+            </mesh>
+            <mesh position={[0.13, 0.05, 0.08]} material={MAT_GLASS_CLEAR}>
+              <cylinderGeometry args={[0.03, 0.022, 0.09, 8]} />
+            </mesh>
+          </group>
+        </>
+      )}
+    </group>
+  );
+}
+
 // ─── AUTHENTIC CONSTRUCTION SITE CANTEEN & MESS HALL (EXPANDED KITCHEN SERVING HALL) ───
 function TemfacilCanteenBuilding({
   position = [32, 0, 14],
@@ -7623,39 +7791,97 @@ function TemfacilCanteenBuilding({
 
       {/* 6. Canteen Dining Hall Interior Setup */}
       {/* Consolidated Ambient Interior Warm Light */}
-      {isDetailVisible && <pointLight position={[0, 2.6, 3.5]} color="#FEF08A" intensity={4.5} distance={15} />}
+      {isDetailVisible && (
+        <pointLight
+          position={[0, 2.6, 3.5]}
+          color="#FEF08A"
+          intensity={timeMode === "NIGHT" ? 6.5 : 3.5}
+          distance={18}
+        />
+      )}
 
-      {/* Multiple Rows of Authentic PBR Wooden Dining Tables & Attached Benches (1:1 Ergonomic Scale) */}
+      {/* Multiple Rows of Authentic PBR Wooden Dining Tables & Attached Benches */}
       {[-1.8, 1.8].map((xOff, i) => (
         <group key={`canteen-table-row-${i}`} position={[xOff, 0, 0]}>
           {[-3.0, 2.0].map((zOff, j) => (
-            <CanteenDiningTableSetModel key={`ct-table-${j}`} position={[0, 0, zOff]} scale={1.0} />
+            <group key={`ct-table-${j}`} position={[0, 0, zOff]}>
+              <CanteenDiningTableSetModel scale={1.0} />
+              <CanteenTabletopCondimentsAndTrays hasTrays={zOff > 0} />
+            </group>
           ))}
         </group>
       ))}
 
-      {isDetailVisible && timeMode !== "NIGHT" && (
+      {/* Authentic Commercial 5-Gallon Drinking Water Cooler Dispenser */}
+      <CanteenWaterDispenserModel position={[-3.1, 0, -5.2]} scale={1.1} />
+
+      {isDetailVisible && (
         <>
-          {/* ─── OPTIMIZED AUTHENTIC CANTEEN DINERS (SQUARELY ON BENCHES FACING TABLE) ─── */}
-          {/* West Front Table (Center: X=-1.8, Z=-3.0, North Bench: Z=-3.68, South Bench: Z=-2.32) */}
-          <CanteenSeatedDiner position={[-2.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="MEDIUM" />
-          <CanteenSeatedDiner position={[-1.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EAB308" hardhatColor="#16A34A" wearingHardhat={true} skinTone="BRONZE" />
-          <CanteenSeatedDiner position={[-2.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="LIGHT" />
-          <CanteenSeatedDiner position={[-1.3, 0.0, -2.32]} facingDir={-1} role="STAFF" shirtColor="#0284C7" hardhatColor="#FFFFFF" wearingHardhat={true} skinTone="MEDIUM" />
+          {/* ─── 24/7 CANTEEN DINERS (DAYTIME CREWS & NIGHTTIME SHIFT WORKERS) ─── */}
+          {timeMode !== "NIGHT" ? (
+            <>
+              {/* Daytime Construction Workers & Site Staff */}
+              <CanteenSeatedDiner position={[-2.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="MEDIUM" />
+              <CanteenSeatedDiner position={[-1.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EAB308" hardhatColor="#16A34A" wearingHardhat={true} skinTone="BRONZE" />
+              <CanteenSeatedDiner position={[-2.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="LIGHT" />
+              <CanteenSeatedDiner position={[-1.3, 0.0, -2.32]} facingDir={-1} role="STAFF" shirtColor="#0284C7" hardhatColor="#FFFFFF" wearingHardhat={true} skinTone="MEDIUM" />
 
-          {/* East Front Table (Center: X=1.8, Z=-3.0, North Bench: Z=-3.68, South Bench: Z=-2.32) */}
-          <CanteenSeatedDiner position={[1.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EAB308" hardhatColor="#16A34A" wearingHardhat={false} skinTone="BRONZE" />
-          <CanteenSeatedDiner position={[2.3, 0.0, -3.68]} facingDir={1} role="STAFF" shirtColor="#0284C7" hardhatColor="#FFFFFF" wearingHardhat={false} skinTone="LIGHT" />
-          <CanteenSeatedDiner position={[1.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={true} skinTone="MEDIUM" />
-          <CanteenSeatedDiner position={[2.3, 0.0, -2.32]} facingDir={-1} role="STAFF" shirtColor="#15803D" hardhatColor="#FFFFFF" wearingHardhat={false} skinTone="BRONZE" />
+              <CanteenSeatedDiner position={[1.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EAB308" hardhatColor="#16A34A" wearingHardhat={false} skinTone="BRONZE" />
+              <CanteenSeatedDiner position={[2.3, 0.0, -3.68]} facingDir={1} role="STAFF" shirtColor="#0284C7" hardhatColor="#FFFFFF" wearingHardhat={false} skinTone="LIGHT" />
+              <CanteenSeatedDiner position={[1.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={true} skinTone="MEDIUM" />
+              <CanteenSeatedDiner position={[2.3, 0.0, -2.32]} facingDir={-1} role="STAFF" shirtColor="#15803D" hardhatColor="#FFFFFF" wearingHardhat={false} skinTone="BRONZE" />
+            </>
+          ) : (
+            <>
+              {/* Night-Shift Operating Personnel having hot late meals & coffee */}
+              <CanteenSeatedDiner position={[-2.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={true} skinTone="MEDIUM" />
+              <CanteenSeatedDiner position={[-1.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#15803D" hardhatColor="#FFFFFF" wearingHardhat={false} skinTone="BRONZE" />
+              <CanteenSeatedDiner position={[-2.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="LIGHT" />
+              <CanteenSeatedDiner position={[-1.3, 0.0, -2.32]} facingDir={-1} role="STAFF" shirtColor="#0284C7" hardhatColor="#FFFFFF" wearingHardhat={true} skinTone="MEDIUM" />
 
-          {/* Authentic Dynamic Filipino Carinderia Food Display Counter */}
+              <CanteenSeatedDiner position={[1.3, 0.0, -3.68]} facingDir={1} role="WORKER" shirtColor="#EAB308" hardhatColor="#16A34A" wearingHardhat={true} skinTone="BRONZE" />
+              <CanteenSeatedDiner position={[2.3, 0.0, -3.68]} facingDir={1} role="STAFF" shirtColor="#0284C7" hardhatColor="#FFFFFF" wearingHardhat={false} skinTone="LIGHT" />
+              <CanteenSeatedDiner position={[1.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#EA580C" hardhatColor="#16A34A" wearingHardhat={false} skinTone="MEDIUM" />
+              <CanteenSeatedDiner position={[2.3, 0.0, -2.32]} facingDir={-1} role="WORKER" shirtColor="#15803D" hardhatColor="#16A34A" wearingHardhat={true} skinTone="BRONZE" />
+            </>
+          )}
+
+          {/* Authentic Dynamic Filipino Carinderia Food Display Counter (Active Day & Night) */}
           <FilipinoCanteenFoodCounter />
+
+          {/* ── AUTHENTIC CARINDERIA OVERHEAD HANGING MENU SIGNBOARD & WARM PENDANT LAMPS ── */}
+          <group position={[0, 2.55, 5.8]}>
+            {/* Dark Slate Chalkboard Framed in Timber */}
+            <mesh material={MAT_BAMBOO_TIMBER}>
+              <boxGeometry args={[4.2, 0.75, 0.06]} />
+            </mesh>
+            <mesh position={[0, 0, 0.035]} material={MAT_STEEL_DARK}>
+              <boxGeometry args={[4.0, 0.65, 0.02]} />
+            </mesh>
+            {/* Suspension Steel Rods */}
+            {[-1.8, 1.8].map((hx, hi) => (
+              <mesh key={`menu-rod-${hi}`} position={[hx, 0.5, 0]} material={MAT_STEEL_DARK}>
+                <cylinderGeometry args={[0.008, 0.008, 0.45, 6]} />
+              </mesh>
+            ))}
+            {/* Overhead Warm Food Lamps (Illuminating dishes from above) */}
+            {[-1.2, 0, 1.2].map((lx, li) => (
+              <group key={`food-lamp-${li}`} position={[lx, -0.42, 0.35]}>
+                <mesh material={MAT_STEEL_DARK}>
+                  <coneGeometry args={[0.11, 0.09, 10]} />
+                </mesh>
+                <mesh position={[0, -0.04, 0]} material={MAT_YELLOW_SAFETY}>
+                  <sphereGeometry args={[0.035, 8, 8]} />
+                </mesh>
+                <pointLight color="#FED7AA" intensity={2.4} distance={4.5} decay={2} />
+              </group>
+            ))}
+          </group>
 
           {/* ── AUTHENTIC FILIPINO CARINDERIA ATE ROUTINE SERVER ── */}
           <CanteenAteServer />
 
-          {/* ── REAR KITCHEN PREPARATION & STORAGE BACK-COUNTER ── */}
+          {/* ── REAR KITCHEN PREPARATION & STORAGE BACK-COUNTER (ACTIVE 24/7) ── */}
           <group position={[0, 0.45, 8.7]}>
             {/* Stainless Steel Kitchen Prep Table */}
             <mesh material={MAT_FOOD_STAINLESS_TRAY}>
@@ -7666,16 +7892,25 @@ function TemfacilCanteenBuilding({
                 <boxGeometry args={[0.08, 0.44, 0.8]} />
               </mesh>
             ))}
-            {/* 2 Electric Commercial Rice Cookers */}
+            {/* 2 Electric Commercial Rice Cookers with Active Cooking Steam */}
             {[-1.5, -0.5].map((rx, r) => (
-              <mesh key={`rice-cooker-${r}`} position={[rx, 0.22, 0]} material={MAT_WHITE_PAINT} castShadow>
-                <cylinderGeometry args={[0.26, 0.26, 0.35, 14]} />
-              </mesh>
+              <group key={`rice-cooker-${r}`} position={[rx, 0.22, 0]}>
+                <mesh material={MAT_WHITE_PAINT} castShadow>
+                  <cylinderGeometry args={[0.26, 0.26, 0.35, 14]} />
+                </mesh>
+                <mesh position={[0, 0.18, 0]} material={MAT_FOOD_STAINLESS_TRAY}>
+                  <cylinderGeometry args={[0.27, 0.27, 0.02, 14]} />
+                </mesh>
+                {r === 0 && <AnimatedCookingSteam height={0.28} count={3} speed={1.0} />}
+              </group>
             ))}
-            {/* Stainless Steel Soup Stockpot */}
-            <mesh position={[0.8, 0.25, 0]} material={MAT_FOOD_STAINLESS_TRAY} castShadow>
-              <cylinderGeometry args={[0.28, 0.28, 0.42, 16]} />
-            </mesh>
+            {/* Stainless Steel Soup Stockpot with Rich Hot Simmering Steam */}
+            <group position={[0.8, 0.25, 0]}>
+              <mesh material={MAT_FOOD_STAINLESS_TRAY} castShadow>
+                <cylinderGeometry args={[0.28, 0.28, 0.42, 16]} />
+              </mesh>
+              <AnimatedCookingSteam height={0.35} count={4} speed={1.2} />
+            </group>
           </group>
 
           {/* ── REAL-WORLD 4-PHASE ROUTINE WORKERS (WALK IN -> ORDER -> CARRY TRAY -> SIT & EAT -> LEAVE) ── */}
@@ -7783,13 +8018,13 @@ function TemfacilWorkerBarracksCompound({
     frameTickRef.current++;
     if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
     const distSq = camera.position.distanceToSquared(BARRACKS_WORLD_POS);
-    const near = distSq < 7225; // 85 meters
+    const near = distSq < 48400; // 220 meters
     if (near !== isNearBarracks) {
       setIsNearBarracks(near);
     }
   });
 
-  const showDetails = isDetailVisible && isNearBarracks;
+  const showDetails = isDetailVisible;
   return (
     <group position={position}>
       {/* ═══ 0. HEAVY-DUTY CONCRETE PLATFORM SLAB & DRAINAGE NETWORK (DISCRETE Y=0.16m BASE) ═══ */}
@@ -8013,6 +8248,13 @@ function TemfacilWorkerBarracksCompound({
         {[-7.5, -4.5, -1.5, 1.5, 4.5, 7.5].map((zOff, i) => (
           <IndustrialKitchenOverheadLedFixture key={`kit-led-fixture-${i}`} position={[0, 3.35, zOff]} isNight={isNight} />
         ))}
+        {/* Warm 3000K Island Illumination for 24/7 Night Kitchen Operations */}
+        {isNight && (
+          <>
+            <pointLight position={[0, 3.2, -4.5]} color="#FEF3C7" intensity={4.5} distance={14} decay={2} />
+            <pointLight position={[0, 3.2, 4.5]} color="#FEF3C7" intensity={4.5} distance={14} decay={2} />
+          </>
+        )}
 
         {/* 6. Painted Kitchen Designation Signboard */}
         <group position={[0, 3.0, -10.4]}>

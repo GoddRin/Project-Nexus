@@ -1522,7 +1522,7 @@ function TemfacilOfficeInteriorContent({
     frameTickRef.current++;
     if (frameTickRef.current % 15 !== 0) return; // Throttled to ~4 times a second
     const dist = camera.position.distanceTo(new THREE.Vector3(114, 14, -107));
-    const close = dist < 55;
+    const close = dist < 120;
     if (close !== isCloseDistance) {
       setIsCloseDistance(close);
     }
