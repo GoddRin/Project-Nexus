@@ -2900,8 +2900,8 @@ function TemfacilOfficeInteriorContent({
         {/* Sir Amor — Geological Mapper & Engineering Geologist (Seated on West side of table, facing East into his laptop) */}
         <RealisticHumanoidMesh
           role="CIVIL_ENGINEER"
-          personnelId="GEO_AMOR_FLORESCA"
-          onSelectPerson={onSelectPerson}
+          personnelId="GEO_AMOR_OFFICE_DESK"
+          onSelectPerson={() => onSelectPerson?.("GEO_AMOR_FLORESCA")}
           skinTone="BRONZE"
           hairStyle="SHORT_POMPADOUR"
           hairColor="#0F172A"

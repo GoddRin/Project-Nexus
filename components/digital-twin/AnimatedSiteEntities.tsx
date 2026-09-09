@@ -333,6 +333,11 @@ export function HydroProjectPersonMesh({
   // Dedicated refs for job accessories & dynamic tools
   const propToolRef = useRef<THREE.Group>(null);
   const laserBeamRef = useRef<THREE.Mesh>(null);
+  const geoHammerRef = useRef<THREE.Group>(null);
+  const geoCompassRef = useRef<THREE.Group>(null);
+  const geoTabletRef = useRef<THREE.Group>(null);
+  const geoStylusRef = useRef<THREE.Group>(null);
+  const holsteredHammerRef = useRef<THREE.Group>(null);
   const frameTickRef = useRef<number>(0);
 
   // Automatically determine active routine from personnelId or prop
@@ -748,39 +753,95 @@ export function HydroProjectPersonMesh({
     // 2. ENGINEERING GEOLOGIST (Amor Floresca Jr.)
     if (activeRoutine === "GEOLOGIST") {
       const cycle = t % 18.0;
+      // Sturdy, natural geologist field stance: grounded solidly on terrain (zero ground-sinking/floating)
+      groupRef.current.position.y = position[1];
+      if (leftLegRef.current) leftLegRef.current.rotation.set(-0.05, 0.08, -0.03);
+      if (rightLegRef.current) rightLegRef.current.rotation.set(0.05, -0.08, 0.03);
+
       if (cycle < 6.5) {
-        // Phase 1: Crouched tapping rock joint with geological hammer
-        const hammerStrike = Math.sin(t * 5.5);
-        groupRef.current.position.y = position[1] - 0.25;
-        if (leftLegRef.current) leftLegRef.current.rotation.set(0.45, 0, 0);
-        if (rightLegRef.current) rightLegRef.current.rotation.set(0.35, 0, 0);
-        if (torsoRef.current) torsoRef.current.rotation.set(0.35, 0.15, 0);
-        if (headRef.current) headRef.current.rotation.set(0.45, -0.1, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.70, -0.2, 0.15);
-        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.90 + hammerStrike * 0.45, -0.1, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.40, 0.35, 0);
-        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.55, 0.1, 0);
+        // ── Phase 1: Rock Sounding & Joint Discontinuity Inspection ─────────
+        // Tapping joint fracture face with Estwing rock pick to evaluate rock mass sound & solidity
+        const strikeCycle = (t * 2.8) % 3.0; // rhythmic inspection strikes with pauses
+        let strikeAngle = 0;
+        if (strikeCycle < 0.35) {
+          // Strike 1
+          strikeAngle = Math.sin((strikeCycle / 0.35) * Math.PI) * 0.45;
+        } else if (strikeCycle >= 0.55 && strikeCycle < 0.90) {
+          // Strike 2
+          strikeAngle = Math.sin(((strikeCycle - 0.55) / 0.35) * Math.PI) * 0.55;
+        }
+
+        // Leaning in forward with attentive geological focus
+        if (torsoRef.current) torsoRef.current.rotation.set(0.16, -0.12, 0.02);
+        if (headRef.current) headRef.current.rotation.set(0.24, -0.18, 0.05);
+
+        // Right arm holding geological hammer, delivering precise joint sound taps
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.65, -0.18, 0.12);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.75 + strikeAngle, 0.15, 0.08);
+
+        // Left arm stabilizing on rock face or holding 10x magnifying loupe
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.50, 0.28, -0.08);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.60, -0.10, 0);
+
+        // Equipment visibility & clearance
+        if (geoHammerRef.current) {
+          geoHammerRef.current.visible = true;
+          geoHammerRef.current.rotation.set(0.2, 0, 0);
+        }
+        if (geoCompassRef.current) geoCompassRef.current.visible = false;
+        if (geoTabletRef.current) geoTabletRef.current.visible = false;
+        if (geoStylusRef.current) geoStylusRef.current.visible = false;
+        if (holsteredHammerRef.current) holsteredHammerRef.current.visible = false;
+
       } else if (cycle < 12.0) {
-        // Phase 2: Measuring rock discontinuity strike/dip with Clar compass
-        groupRef.current.position.y = position[1] - 0.15;
-        if (torsoRef.current) torsoRef.current.rotation.set(0.28, 0.2, 0);
-        if (headRef.current) headRef.current.rotation.set(0.35, 0.25, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.55, 0.4, 0.1);
-        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.85, 0.2, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.45, -0.2, 0.1);
-        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.65, -0.1, 0);
+        // ── Phase 2: Discontinuity Dip & Strike Measurement with Brunton Compass ──
+        // Placing Brunton clinometer compass flush on joint plane to measure orientation
+        const microSway = Math.sin(t * 1.5) * 0.015;
+        if (torsoRef.current) torsoRef.current.rotation.set(0.12, -0.06, 0);
+        if (headRef.current) headRef.current.rotation.set(0.30 + microSway, -0.10, 0.08); // Eyes checking spirit vial & mirror
+
+        // Left arm holding Brunton compass firmly against rock plane
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.78, 0.16, -0.12);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.72 + microSway, -0.15, -0.10);
+
+        // Right arm fine-tuning clinometer index lever
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.52, -0.22, 0.10);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-0.82 + microSway * 1.5, 0.20, 0.05);
+
+        // Equipment visibility: compass active in left hand, hammer resting safely outward at hip (never piercing leg!)
+        if (geoHammerRef.current) {
+          geoHammerRef.current.visible = true;
+          geoHammerRef.current.rotation.set(-0.2, 0, -0.4);
+        }
+        if (geoCompassRef.current) geoCompassRef.current.visible = true;
+        if (geoTabletRef.current) geoTabletRef.current.visible = false;
+        if (geoStylusRef.current) geoStylusRef.current.visible = false;
+        if (holsteredHammerRef.current) holsteredHammerRef.current.visible = false;
+
       } else {
-        // Phase 3: Standing up, logging RMR rock mass parameters on tablet
-        const tap = Math.sin(t * 4.0) * 0.04;
-        groupRef.current.position.y = position[1];
-        if (leftLegRef.current) leftLegRef.current.rotation.set(0, 0, 0);
-        if (rightLegRef.current) rightLegRef.current.rotation.set(0, 0, 0);
-        if (torsoRef.current) torsoRef.current.rotation.set(0.08, 0, 0);
-        if (headRef.current) headRef.current.rotation.set(0.32, 0, 0);
-        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.45, 0.3, 0.1);
-        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-0.95, 0.2, 0);
-        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.50, -0.25, 0.15);
-        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.05 + tap, -0.15, 0);
+        // ── Phase 3: Core Sample Review & RMR Rating on Geotechnical Tablet ────
+        // Turning towards core box table, holding rugged tablet, logging rock mass rating
+        const writeTap = Math.sin(t * 5.5) * 0.035;
+        const headNod = Math.sin(t * 1.2) * 0.06;
+
+        // Torso turned slightly left toward core box
+        if (torsoRef.current) torsoRef.current.rotation.set(0.06, 0.18, 0);
+        if (headRef.current) headRef.current.rotation.set(0.34 + headNod, 0.12, 0); // glancing between core box and tablet
+
+        // Left arm holding rugged field tablet steady
+        if (leftArmRef.current) leftArmRef.current.rotation.set(-0.52, 0.25, -0.05);
+        if (leftForearmRef.current) leftForearmRef.current.rotation.set(-1.05, -0.12, 0);
+
+        // Right hand with stylus logging parameters
+        if (rightArmRef.current) rightArmRef.current.rotation.set(-0.48, -0.15, 0.08);
+        if (rightForearmRef.current) rightForearmRef.current.rotation.set(-1.10 + writeTap, 0.18, 0);
+
+        // Equipment visibility: hammer is in hip holster, tablet in left hand, stylus in right hand!
+        if (geoHammerRef.current) geoHammerRef.current.visible = false;
+        if (geoCompassRef.current) geoCompassRef.current.visible = false;
+        if (geoTabletRef.current) geoTabletRef.current.visible = true;
+        if (geoStylusRef.current) geoStylusRef.current.visible = true;
+        if (holsteredHammerRef.current) holsteredHammerRef.current.visible = true;
       }
       return;
     }
@@ -1226,6 +1287,44 @@ export function HydroProjectPersonMesh({
             )}
           </>
         )}
+        {/* 🧰 GEOLOGIST LEATHER UTILITY BELT, HAMMER HOLSTER & COMPASS POUCH */}
+        {activeRoutine === "GEOLOGIST" && (
+          <group position={[0, 0.04, 0]}>
+            {/* Heavy Saddle-Leather Belt */}
+            <mesh material={MAT_STEEL_DARK}>
+              <boxGeometry args={[0.39, 0.05, 0.23]} />
+            </mesh>
+            {/* Belt Buckle */}
+            <mesh position={[0, 0, 0.118]} material={MAT_CHROME}>
+              <boxGeometry args={[0.06, 0.055, 0.01]} />
+            </mesh>
+            {/* Right Hip: Leather Geological Pick Holster Sleeve */}
+            <group position={[0.20, -0.06, 0.02]} rotation={[0, 0, -0.15]}>
+              <mesh material={MAT_STEEL_DARK}>
+                <boxGeometry args={[0.05, 0.10, 0.04]} />
+              </mesh>
+              {/* Holstered hammer when hands are busy with tablet (Phase 3) */}
+              <group ref={holsteredHammerRef} position={[0, -0.06, 0]} visible={false}>
+                <mesh position={[0, -0.08, 0]}>
+                  <cylinderGeometry args={[0.012, 0.012, 0.20, 8]} />
+                  <meshStandardMaterial color="#1E40AF" roughness={0.4} />
+                </mesh>
+                <mesh position={[0, 0.03, 0]} material={MAT_CHROME}>
+                  <boxGeometry args={[0.03, 0.03, 0.12]} />
+                </mesh>
+              </group>
+            </group>
+            {/* Left Hip: Leather Field Compass / Clinometer Pouch */}
+            <group position={[-0.20, -0.04, 0.02]}>
+              <mesh material={MAT_STEEL_DARK}>
+                <boxGeometry args={[0.05, 0.085, 0.05]} />
+              </mesh>
+              <mesh position={[-0.005, 0.02, 0.026]} material={MAT_CHROME}>
+                <boxGeometry args={[0.015, 0.015, 0.005]} />
+              </mesh>
+            </group>
+          </group>
+        )}
 
         {/* 🗣️ HEAD & SAFETY HARD HAT */}
         <group ref={headRef} position={[0, 0.53, 0]}>
@@ -1397,6 +1496,58 @@ export function HydroProjectPersonMesh({
                 </mesh>
               </group>
             )}
+
+            {/* 🧭 GEOLOGIST LEFT-HAND PROPS (Brunton Compass & Rugged Field Tablet) */}
+            {activeRoutine === "GEOLOGIST" && (
+              <>
+                {/* A. Brunton Geological Pocket Transit Compass / Clinometer (Phase 2) */}
+                <group ref={geoCompassRef} position={[0, -0.25, 0.09]} rotation={[-0.2, 0.2, 0]} visible={false}>
+                  {/* Compass Body (Cast Aluminium / Composite) */}
+                  <mesh material={MAT_STEEL_DARK}>
+                    <boxGeometry args={[0.085, 0.085, 0.022]} />
+                  </mesh>
+                  {/* Mirrored Sighting Lid (Open at 135 deg) */}
+                  <group position={[0, 0.042, 0]} rotation={[-0.85, 0, 0]}>
+                    <mesh material={MAT_STEEL_DARK}>
+                      <boxGeometry args={[0.085, 0.085, 0.01]} />
+                    </mesh>
+                    {/* Mirror Surface with Center Sighting Line */}
+                    <mesh position={[0, 0, 0.006]} material={MAT_CHROME}>
+                      <planeGeometry args={[0.075, 0.075]} />
+                    </mesh>
+                  </group>
+                  {/* Round Compass Dial Face & Clinometer Spirit Vial */}
+                  <mesh position={[0, 0, 0.012]}>
+                    <cylinderGeometry args={[0.036, 0.036, 0.005, 16]} />
+                    <meshStandardMaterial color="#0F172A" roughness={0.3} />
+                  </mesh>
+                  {/* Needle & Dial Glass Cover */}
+                  <mesh position={[0, 0, 0.016]} material={MAT_GLASS_BLUE}>
+                    <cylinderGeometry args={[0.038, 0.038, 0.002, 16]} />
+                  </mesh>
+                </group>
+
+                {/* B. Rugged Geotechnical RMR Field Tablet (Phase 3) */}
+                <group ref={geoTabletRef} position={[0, -0.25, 0.11]} rotation={[0.1, 0, 0]} visible={false}>
+                  {/* Heavy-Duty Drop-Resistant Bumper Body */}
+                  <mesh material={MAT_PHONE_BODY}>
+                    <boxGeometry args={[0.24, 0.17, 0.02]} />
+                  </mesh>
+                  {/* High-Vis Corner Bumpers */}
+                  {[-0.12, 0.12].map((x, xi) =>
+                    [-0.085, 0.085].map((y, yi) => (
+                      <mesh key={`bump-${xi}-${yi}`} position={[x, y, 0]} material={MAT_YELLOW_SAFETY}>
+                        <boxGeometry args={[0.025, 0.025, 0.024]} />
+                      </mesh>
+                    ))
+                  )}
+                  {/* High-Brightness Sunlight-Readable Screen with Geological Log Grid */}
+                  <mesh position={[0, 0, 0.012]} material={MAT_PHONE_SCREEN_GLOW}>
+                    <planeGeometry args={[0.21, 0.14]} />
+                  </mesh>
+                </group>
+              </>
+            )}
           </group>
         </group>
 
@@ -1442,15 +1593,54 @@ export function HydroProjectPersonMesh({
               </group>
             )}
 
+            {/* ⛏️ AUTHENTIC ESTWING GEOLOGICAL ROCK PICK & STYLUS */}
             {activeRoutine === "GEOLOGIST" && (
-              <group position={[0, -0.29, 0.08]}>
-                <mesh material={MAT_STEEL_FRAME}>
-                  <cylinderGeometry args={[0.015, 0.015, 0.35, 6]} />
-                </mesh>
-                <mesh position={[0, 0.18, 0.04]} material={MAT_STEEL_DARK}>
-                  <boxGeometry args={[0.04, 0.06, 0.18]} />
-                </mesh>
-              </group>
+              <>
+                {/* 1. Estwing Solid Steel Rock Pick with Blue Shock-Reduction Grip */}
+                <group ref={geoHammerRef} position={[0, -0.23, 0.04]} rotation={[0.4, 0, 0]}>
+                  {/* Textured Ergonomic Blue Shock-Reduction Grip */}
+                  <mesh position={[0, 0, 0]}>
+                    <cylinderGeometry args={[0.016, 0.017, 0.14, 10]} />
+                    <meshStandardMaterial color="#1E40AF" roughness={0.35} metalness={0.1} />
+                  </mesh>
+                  {/* Blue Grip Ring Ridges */}
+                  {[-0.04, -0.01, 0.02, 0.05].map((yOff, ri) => (
+                    <mesh key={`grip-${ri}`} position={[0, yOff, 0]}>
+                      <cylinderGeometry args={[0.018, 0.018, 0.008, 10]} />
+                      <meshStandardMaterial color="#172554" roughness={0.6} />
+                    </mesh>
+                  ))}
+                  {/* Drop-Forged Solid Steel Shaft Neck */}
+                  <mesh position={[0, 0.12, 0]} material={MAT_CHROME}>
+                    <cylinderGeometry args={[0.010, 0.012, 0.16, 8]} />
+                  </mesh>
+                  {/* Double-Sided Geological Pick Head */}
+                  <group position={[0, 0.19, 0.01]}>
+                    {/* Central Forged Steel Eye Boss */}
+                    <mesh material={MAT_STEEL_DARK}>
+                      <boxGeometry args={[0.032, 0.038, 0.045]} />
+                    </mesh>
+                    {/* Front: Square Flat Impact Sounding Face */}
+                    <mesh position={[0, 0, 0.045]} material={MAT_CHROME}>
+                      <boxGeometry args={[0.028, 0.028, 0.048]} />
+                    </mesh>
+                    {/* Rear: Pointed Rock Splitting Pick Horn */}
+                    <mesh position={[0, -0.012, -0.052]} rotation={[-0.25, 0, 0]} material={MAT_STEEL_DARK}>
+                      <coneGeometry args={[0.016, 0.085, 4]} />
+                    </mesh>
+                  </group>
+                </group>
+
+                {/* 2. Precision Geotechnical Data-Entry Stylus (Phase 3) */}
+                <group ref={geoStylusRef} position={[0, -0.23, 0.04]} rotation={[0.7, 0, 0]} visible={false}>
+                  <mesh material={MAT_STEEL_DARK}>
+                    <cylinderGeometry args={[0.004, 0.004, 0.14, 8]} />
+                  </mesh>
+                  <mesh position={[0, 0.07, 0]} material={MAT_CHROME}>
+                    <sphereGeometry args={[0.005, 6, 6]} />
+                  </mesh>
+                </group>
+              </>
             )}
 
             {activeRoutine === "CIVIL_FOREMAN" && (
@@ -1627,6 +1817,172 @@ export function HydroProjectPersonMesh({
           <mesh position={[0.32, 1.15, 0]} rotation={[0, -0.15, 0]} material={MAT_PHONE_SCREEN_GLOW}>
             <boxGeometry args={[0.48, 0.32, 0.03]} />
           </mesh>
+        </group>
+      )}
+
+      {/* 🪨 E. FIELD GEOLOGICAL ROCK MECHANICS & CORE LOGGING STATION (Amor Teofilo Floresca Jr.) */}
+      {activeRoutine === "GEOLOGIST" && (
+        <group position={[0, 0, 0]}>
+          {/* 1. Natural Jointed Mountain Rock Outcrop Face (Flanking Sir Amor's Left Reach) */}
+          <group position={[0.64, 0, 0.48]} rotation={[0, -0.38, 0]}>
+            {/* Primary Outcrop Boulder Mass */}
+            <mesh position={[0, 0.40, 0]}>
+              <boxGeometry args={[0.82, 0.80, 0.52]} />
+              <meshStandardMaterial color="#475569" roughness={0.92} metalness={0.05} />
+            </mesh>
+            {/* Layered Bedding Cleavage & Joint Discontinuity Plane (Angled at 42 deg dip) */}
+            <group position={[-0.06, 0.48, 0.22]} rotation={[-0.68, 0.12, -0.18]}>
+              {/* Exposed Joint Surface */}
+              <mesh>
+                <boxGeometry args={[0.65, 0.05, 0.42]} />
+                <meshStandardMaterial color="#334155" roughness={0.85} />
+              </mesh>
+              {/* Quartz / Calcite Mineral Vein Streak */}
+              <mesh position={[0.08, 0.03, 0]}>
+                <boxGeometry args={[0.03, 0.015, 0.38]} />
+                <meshStandardMaterial color="#E2E8F0" roughness={0.35} metalness={0.2} />
+              </mesh>
+              {/* Chalked Strike & Dip Measurement Markings */}
+              <mesh position={[-0.10, 0.03, 0]}>
+                <boxGeometry args={[0.20, 0.005, 0.10]} />
+                <meshBasicMaterial color="#FEF08A" />
+              </mesh>
+            </group>
+            {/* Weathered Rock Stepped Ledge */}
+            <mesh position={[0.20, 0.18, 0.12]}>
+              <boxGeometry args={[0.40, 0.36, 0.32]} />
+              <meshStandardMaterial color="#3E4C5E" roughness={0.95} />
+            </mesh>
+            {/* Basal Talus & Fresh Impact Rock Spalls */}
+            {[-0.22, -0.04, 0.20, 0.34].map((xOff, i) => (
+              <mesh key={`spall-${i}`} position={[xOff, 0.03, 0.28 + (i % 2) * 0.08]} rotation={[0.2 * i, 0.5 * i, 0]}>
+                <boxGeometry args={[0.07, 0.04, 0.06]} />
+                <meshStandardMaterial color="#64748B" roughness={0.9} />
+              </mesh>
+            ))}
+            {/* Geological Sample Photo Scale (10cm alternating black & white checkerboard) */}
+            <mesh position={[0.28, 0.50, 0.24]} rotation={[0, 0, 0.1]}>
+              <boxGeometry args={[0.12, 0.025, 0.005]} />
+              <meshBasicMaterial color="#FFFFFF" />
+            </mesh>
+          </group>
+
+          {/* 2. Field Rock Core Logging Table (Core Box Inspection Stand) */}
+          <group position={[-0.68, 0, 0.42]} rotation={[0, 0.45, 0]}>
+            {/* Timber Field Table Base & 4 Legs */}
+            {[-0.26, 0.26].map((xOff, i) =>
+              [-0.18, 0.18].map((zOff, j) => (
+                <mesh key={`table-leg-${i}-${j}`} position={[xOff, 0.38, zOff]} material={MAT_WOOD_HANDLE}>
+                  <boxGeometry args={[0.045, 0.76, 0.045]} />
+                </mesh>
+              ))
+            )}
+            {/* Leg Cross-Brace Bars */}
+            <mesh position={[0, 0.20, 0]} material={MAT_WOOD_HANDLE}>
+              <boxGeometry args={[0.55, 0.03, 0.38]} />
+            </mesh>
+            {/* Plywood Tabletop */}
+            <mesh position={[0, 0.76, 0]}>
+              <boxGeometry args={[0.65, 0.035, 0.48]} />
+              <meshStandardMaterial color="#A16207" roughness={0.7} />
+            </mesh>
+
+            {/* Wooden HQ Drill Rock Core Box (3 Longitudinal Channels) */}
+            <group position={[0, 0.81, 0]}>
+              {/* Outer Core Box Tray Frame */}
+              <mesh>
+                <boxGeometry args={[0.58, 0.05, 0.40]} />
+                <meshStandardMaterial color="#78350F" roughness={0.8} />
+              </mesh>
+              {/* Channel Dividers */}
+              {[-0.07, 0.07].map((zOff, di) => (
+                <mesh key={`div-${di}`} position={[0, 0.015, zOff]}>
+                  <boxGeometry args={[0.56, 0.035, 0.015]} />
+                  <meshStandardMaterial color="#92400E" roughness={0.8} />
+                </mesh>
+              ))}
+              {/* Drilled Cylindrical Rock Core Specimens (Igneous/Metamorphic Cores) */}
+              {/* Row 1 (Back) */}
+              <mesh position={[-0.10, 0.02, -0.13]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.022, 0.022, 0.32, 10]} />
+                <meshStandardMaterial color="#64748B" roughness={0.85} />
+              </mesh>
+              <mesh position={[0.16, 0.02, -0.13]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.022, 0.022, 0.16, 10]} />
+                <meshStandardMaterial color="#475569" roughness={0.85} />
+              </mesh>
+              {/* Row 2 (Middle) */}
+              <mesh position={[-0.05, 0.02, 0]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.022, 0.022, 0.42, 10]} />
+                <meshStandardMaterial color="#52525B" roughness={0.8} />
+              </mesh>
+              {/* Row 3 (Front - Fractured Core Disks) */}
+              {[-0.18, -0.06, 0.04, 0.16].map((cx, ci) => (
+                <mesh key={`disk-${ci}`} position={[cx, 0.02, 0.13]} rotation={[0, 0, Math.PI / 2]}>
+                  <cylinderGeometry args={[0.022, 0.022, 0.08, 10]} />
+                  <meshStandardMaterial color="#71717A" roughness={0.85} />
+                </mesh>
+              ))}
+
+              {/* Wooden Spacer Meterage Blocks */}
+              <mesh position={[0.26, 0.02, -0.13]}>
+                <boxGeometry args={[0.035, 0.035, 0.045]} />
+                <meshStandardMaterial color="#FEF08A" />
+              </mesh>
+              <mesh position={[0.24, 0.02, 0.13]}>
+                <boxGeometry args={[0.035, 0.035, 0.045]} />
+                <meshStandardMaterial color="#FEF08A" />
+              </mesh>
+            </group>
+
+            {/* Schmidt Rebound Hammer (Resting in open sleeve on table) */}
+            <group position={[0.22, 0.81, 0.16]} rotation={[0, -0.4, 0]}>
+              <mesh position={[0, 0.02, 0]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[0.016, 0.016, 0.18, 10]} />
+                <meshStandardMaterial color="#E2E8F0" metalness={0.85} roughness={0.2} />
+              </mesh>
+              {/* Red Calibration End Cap */}
+              <mesh position={[0.10, 0.02, 0]} rotation={[0, 0, Math.PI / 2]} material={MAT_SAFETY_RED}>
+                <cylinderGeometry args={[0.018, 0.018, 0.025, 10]} />
+              </mesh>
+              {/* Plunger Tip */}
+              <mesh position={[-0.10, 0.02, 0]} rotation={[0, 0, Math.PI / 2]} material={MAT_STEEL_DARK}>
+                <cylinderGeometry args={[0.007, 0.007, 0.03, 8]} />
+              </mesh>
+            </group>
+
+            {/* 10x Geological Hand Loupe Lens */}
+            <mesh position={[-0.24, 0.80, 0.16]} material={MAT_CHROME}>
+              <cylinderGeometry args={[0.015, 0.015, 0.01, 10]} />
+            </mesh>
+
+            {/* Geotechnical Calico Sample Bag with Specimen Tag */}
+            <group position={[-0.22, 0.83, -0.15]}>
+              <mesh>
+                <sphereGeometry args={[0.065, 8, 8]} />
+                <meshStandardMaterial color="#E2E8F0" roughness={0.9} />
+              </mesh>
+              {/* Yellow Specimen Tag */}
+              <mesh position={[0.04, 0.05, 0]} rotation={[0, 0, 0.3]}>
+                <planeGeometry args={[0.045, 0.03]} />
+                <meshBasicMaterial color="#FACC15" />
+              </mesh>
+            </group>
+          </group>
+
+          {/* 3. Survey Ranging Rod (Red & White Alternating 20cm Segments) */}
+          <group position={[0.72, 0, 0.65]}>
+            {[0, 1, 2, 3, 4, 5, 6].map((seg) => (
+              <mesh key={`rod-${seg}`} position={[0, 0.12 + seg * 0.22, 0]}>
+                <cylinderGeometry args={[0.014, 0.014, 0.22, 8]} />
+                <meshStandardMaterial color={seg % 2 === 0 ? "#EF4444" : "#F8FAFC"} roughness={0.3} metalness={0.5} />
+              </mesh>
+            ))}
+            {/* Ground Spike Tip */}
+            <mesh position={[0, 0.01, 0]} material={MAT_STEEL_DARK}>
+              <coneGeometry args={[0.016, 0.05, 8]} />
+            </mesh>
+          </group>
         </group>
       )}
     </group>

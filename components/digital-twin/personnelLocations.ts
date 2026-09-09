@@ -70,7 +70,7 @@ export function getPersonnelZoneName(id: string): string {
     case "SURVEYOR_JOHNNY_FARONGEY":
       return "Penstock Ridge Geodetic Sighting Station";
     case "GEO_AMOR_FLORESCA":
-      return "TEMFACIL Geotechnical Engineering & Rock Mechanics Station";
+      return "Mountain Slope Rock Cut (Geotechnical & RMR Station)";
     case "CIVIL_JAIME_CANO":
       return "Powerhouse Entrance Apron & Access Area";
     case "CIVIL_HENRY_ESTRADA":
@@ -221,16 +221,6 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
         zoneName: zone,
       };
 
-    case "GEO_AMOR_FLORESCA":
-      // Office interior geology desk: [-3.16, 0.05, -1.8] -> [110.84, 14.05, -108.80]
-      return {
-        id,
-        floorY: 14.05,
-        target: [110.84, 15.20, -108.80],
-        camPos: [113.60, 15.80, -105.50],
-        zoneName: zone,
-      };
-
     // ─── 3. QA/QC & MATERIALS TESTING ───
     case "ENGR_ELGINE_MANGCUPANG":
       return {
@@ -281,15 +271,16 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
     }
 
-    case "GEO_AMOR_FLORESCA":
-      // Office interior Geotechnical station: [-3.16, 0.05, -1.8] -> [110.84, 14.05, -108.80]
+    case "GEO_AMOR_FLORESCA": {
+      const gY = sampleTerrainY(3.0, -18.0);
       return {
         id,
-        floorY: 14.05,
-        target: [110.84, 15.20, -108.80],
-        camPos: [114.40, 17.80, -102.40],
+        floorY: gY,
+        target: [3.0, gY + 1.15, -18.0],
+        camPos: [4.60, gY + 1.85, -15.20],
         zoneName: zone,
       };
+    }
 
     // ─── 5. CIVIL STRUCTURES & UNDERGROUND TUNNELING ───
     case "CIVIL_JAIME_CANO":

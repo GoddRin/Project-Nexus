@@ -294,8 +294,8 @@ export const FILIPINO_PERSONNEL_REGISTRY: Record<string, FilipinoPersonnel> = {
     hasGlasses: false,
     avatarUrl: "/images/personnel/geo_amor_floresca.jpg",
     licenseNumber: "PRC Registered Geologist #0004289",
-    currentTask: "Conducting geological 3D cross-section reviews, RMR structural mapping & slope stability evaluations",
-    locationName: "Main Technical & Project Engineering Office (Geological & Civil Station)",
+    currentTask: "Conducting rock mass rating (RMR), joint discontinuity survey & core sample analysis with Schmidt rebound hammer and Brunton compass",
+    locationName: "Mountain Slope Rock Cut (Geotechnical & RMR Station)",
 
     shift: "Day Shift (07:00 - 16:00)",
     yearsOfExp: 11,
