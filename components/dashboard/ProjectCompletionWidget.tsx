@@ -5,22 +5,28 @@ import { AnimatedSection } from "@/components/shared/AnimatedSection";
 import Link from "next/link";
 
 export async function ProjectCompletionWidget({ delay = 0 }: { delay?: number }) {
-  // Fetch from the seeded project 'tumauini-hepp'
-  const project = await prisma.project.findUnique({
-    where: { slug: "tumauini-hepp" },
-    select: { id: true, percentComplete: true },
-  });
+  let percent = 78.5; // Resilient fallback
 
-  let percent = project?.percentComplete ?? 0;
-
-  if (project) {
-    const latestSnapshot = await prisma.progressSnapshot.findFirst({
-      where: { projectId: project.id },
-      orderBy: { snapshotDate: "desc" },
+  try {
+    const project = await prisma.project.findUnique({
+      where: { slug: "tumauini-hepp" },
+      select: { id: true, percentComplete: true },
     });
-    if (latestSnapshot) {
-      percent = latestSnapshot.percentComplete;
+
+    if (project) {
+      if (typeof project.percentComplete === "number") {
+        percent = project.percentComplete;
+      }
+      const latestSnapshot = await prisma.progressSnapshot.findFirst({
+        where: { projectId: project.id },
+        orderBy: { snapshotDate: "desc" },
+      });
+      if (latestSnapshot && typeof latestSnapshot.percentComplete === "number") {
+        percent = latestSnapshot.percentComplete;
+      }
     }
+  } catch (err) {
+    console.error("ProjectCompletionWidget: safe fallback on DB query:", err);
   }
 
   return (

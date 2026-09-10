@@ -1,24 +1,31 @@
 import { Sidebar } from "@/components/shared/Sidebar";
 import { TopBar } from "@/components/shared/TopBar";
-import { prisma } from "@/lib/db/prisma";
+import { getCachedProject } from "@/lib/db/cachedQueries";
 import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const project = await prisma.project.findUnique({
-    where: { slug: "tumauini-hepp" },
-  });
-  if (!project) {
-    throw new Error("Project 'tumauini-hepp' not found in database.");
-  }
+  let role = "EMPLOYEE";
+  let userName = "Site Admin";
+  let userEmail = "";
 
-  const { dbUser, member } = await getOrCreateUser(project.id);
-  const role = member?.role || "EMPLOYEE";
-  const userName = dbUser?.name || "Site Admin";
-  const userEmail = dbUser?.email || "";
+  try {
+    const project = await getCachedProject("tumauini-hepp");
+    if (project) {
+      const { dbUser, member } = await getOrCreateUser(project.id);
+      if (member?.role) role = member.role;
+      if (dbUser?.name) userName = dbUser.name;
+      if (dbUser?.email) userEmail = dbUser.email;
+    }
+  } catch (err) {
+    console.error("DashboardLayout safe fallback during DB/auth query:", err);
+    // Graceful fallback: preserve dashboard shell so users can access navigation
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-transparent">

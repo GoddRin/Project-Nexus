@@ -85,14 +85,21 @@ function ScaffoldCard({
 }
 
 export async function OpenTicketsWidget({ delay = 0 }: { delay?: number }) {
-  const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
-  
-  const openTickets = await prisma.ticket.count({
-    where: {
-      projectId: project?.id,
-      status: { in: ["OPEN", "IN_PROGRESS"] },
+  let openTickets = 0;
+
+  try {
+    const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
+    if (project) {
+      openTickets = await prisma.ticket.count({
+        where: {
+          projectId: project.id,
+          status: { in: ["OPEN", "IN_PROGRESS"] },
+        }
+      });
     }
-  });
+  } catch (err) {
+    console.error("OpenTicketsWidget: safe fallback on DB query:", err);
+  }
 
   return (
     <AnimatedSection delay={delay} className="h-full">
@@ -129,14 +136,21 @@ export async function OpenTicketsWidget({ delay = 0 }: { delay?: number }) {
 }
 
 export async function OnSiteWidget({ delay = 0 }: { delay?: number }) {
-  const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
-  
-  const onSiteVisitors = await prisma.visitor.count({
-    where: {
-      projectId: project?.id,
-      status: "CHECKED_IN",
+  let onSiteVisitors = 0;
+
+  try {
+    const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
+    if (project) {
+      onSiteVisitors = await prisma.visitor.count({
+        where: {
+          projectId: project.id,
+          status: "CHECKED_IN",
+        }
+      });
     }
-  });
+  } catch (err) {
+    console.error("OnSiteWidget: safe fallback on DB query:", err);
+  }
 
   return (
     <AnimatedSection delay={delay} className="h-full">
@@ -288,47 +302,54 @@ export function AnnouncementsWidget({ delay = 0 }: { delay?: number }) {
 }
 
 export async function RecentActivityWidget({ delay = 0 }: { delay?: number }) {
-  const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
-  
-  const reports = await prisma.accomplishmentReport.findMany({
-    where: { projectId: project?.id },
-    include: {
-      submittedBy: true,
-      reviewedBy: true,
-    },
-    orderBy: { updatedAt: "desc" },
-    take: 4,
-  });
-
-  const transactions = await prisma.inventoryTransaction.findMany({
-    where: { projectId: project?.id, status: "APPROVED" },
-    include: {
-      item: true,
-      approvedBy: true,
-      requestedBy: true
-    },
-    orderBy: { updatedAt: "desc" },
-    take: 4,
-  });
-
-  const visitors = await prisma.visitor.findMany({
-    where: { projectId: project?.id },
-    include: { host: true, loggedBy: true },
-    orderBy: { createdAt: "desc" },
-    take: 4,
-  });
-
-  // Combine and sort by date
   type Activity = 
-    | { type: 'report', date: Date, data: typeof reports[0] }
-    | { type: 'transaction', date: Date, data: typeof transactions[0] }
-    | { type: 'visitor', date: Date, data: typeof visitors[0] };
+    | { type: 'report', date: Date, data: any }
+    | { type: 'transaction', date: Date, data: any }
+    | { type: 'visitor', date: Date, data: any };
   
-  const activities: Activity[] = [
-    ...reports.map(r => ({ type: 'report' as const, date: r.updatedAt, data: r })),
-    ...transactions.map(t => ({ type: 'transaction' as const, date: t.updatedAt, data: t })),
-    ...visitors.map(v => ({ type: 'visitor' as const, date: v.createdAt, data: v }))
-  ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 4);
+  let activities: Activity[] = [];
+
+  try {
+    const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
+    
+    if (project) {
+      const [reports, transactions, visitors] = await Promise.all([
+        prisma.accomplishmentReport.findMany({
+          where: { projectId: project.id },
+          include: {
+            submittedBy: true,
+            reviewedBy: true,
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 4,
+        }),
+        prisma.inventoryTransaction.findMany({
+          where: { projectId: project.id, status: "APPROVED" },
+          include: {
+            item: true,
+            approvedBy: true,
+            requestedBy: true
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 4,
+        }),
+        prisma.visitor.findMany({
+          where: { projectId: project.id },
+          include: { host: true, loggedBy: true },
+          orderBy: { createdAt: "desc" },
+          take: 4,
+        }),
+      ]);
+
+      activities = [
+        ...reports.map(r => ({ type: 'report' as const, date: r.updatedAt, data: r })),
+        ...transactions.map(t => ({ type: 'transaction' as const, date: t.updatedAt, data: t })),
+        ...visitors.map(v => ({ type: 'visitor' as const, date: v.createdAt, data: v }))
+      ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 4);
+    }
+  } catch (err) {
+    console.error("RecentActivityWidget: safe fallback on DB query:", err);
+  }
 
   return (
     <AnimatedSection delay={delay} className="h-full">
