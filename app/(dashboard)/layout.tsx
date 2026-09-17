@@ -1,5 +1,8 @@
 import { Sidebar } from "@/components/shared/Sidebar";
 import { TopBar } from "@/components/shared/TopBar";
+import { MobileNavProvider } from "@/components/shared/MobileNavContext";
+import { MobileNavDrawer } from "@/components/shared/MobileNavDrawer";
+import { MobileBottomBar } from "@/components/shared/MobileBottomBar";
 import { getCachedProject } from "@/lib/db/cachedQueries";
 import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
 
@@ -28,18 +31,28 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-transparent">
-      {/* Persistent left sidebar */}
-      <Sidebar role={role} userName={userName} userEmail={userEmail} />
+    <MobileNavProvider>
+      <div className="flex h-screen overflow-hidden bg-transparent">
+        {/* Desktop persistent left sidebar */}
+        <Sidebar role={role} userName={userName} userEmail={userEmail} />
 
-      {/* Main content area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top bar */}
-        <TopBar />
+        {/* Mobile slide-out navigation drawer */}
+        <MobileNavDrawer role={role} userName={userName} userEmail={userEmail} />
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        {/* Main content area */}
+        <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+          {/* Top bar */}
+          <TopBar />
+
+          {/* Content — responsive padding on mobile, 100% original p-6 on desktop */}
+          <main className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 pb-24 md:pb-6">
+            {children}
+          </main>
+        </div>
+
+        {/* Mobile thumb-zone bottom navigation bar */}
+        <MobileBottomBar />
       </div>
-    </div>
+    </MobileNavProvider>
   );
 }

@@ -253,7 +253,7 @@ export function SettingsClient({ projectId, initialCodDate, initialMilestones }:
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as MilestoneCategory)}
-                  className="w-full rounded-xl bg-[#0f1115] border border-white/[0.08] px-4 py-2.5 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+                  className="w-full rounded-xl bg-card dark:bg-[#0f1115] border border-border-hairline px-4 py-2.5 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
                 >
                   <option value="CIVIL">Civil Works</option>
                   <option value="MECHANICAL">Mechanical Works</option>
@@ -269,7 +269,7 @@ export function SettingsClient({ projectId, initialCodDate, initialMilestones }:
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as MilestoneStatus2)}
-                  className="w-full rounded-xl bg-[#0f1115] border border-white/[0.08] px-4 py-2.5 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+                  className="w-full rounded-xl bg-card dark:bg-[#0f1115] border border-border-hairline px-4 py-2.5 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
                 >
                   <option value="LOCKED">Locked</option>
                   <option value="UPCOMING">Upcoming</option>
@@ -285,7 +285,7 @@ export function SettingsClient({ projectId, initialCodDate, initialMilestones }:
                   type="date"
                   value={newTargetDate}
                   onChange={(e) => setNewTargetDate(e.target.value)}
-                  className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors font-mono"
+                  className="w-full rounded-xl bg-card dark:bg-white/[0.03] border border-border-hairline px-4 py-2.5 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors font-mono"
                 />
               </div>
 
@@ -373,7 +373,7 @@ export function SettingsClient({ projectId, initialCodDate, initialMilestones }:
                         value={m.status}
                         onChange={(e) => handleStatusChange(m.id, e.target.value as MilestoneStatus2)}
                         disabled={isPending}
-                        className="w-full rounded-lg bg-[#0f1115] border border-white/[0.08] px-2.5 py-1.5 text-xs text-text-primary focus:border-flow-teal outline-none transition-colors"
+                        className="w-full rounded-lg bg-card dark:bg-[#0f1115] border border-border-hairline px-2.5 py-1.5 text-xs text-text-primary focus:border-flow-teal outline-none transition-colors"
                       >
                         <option value="LOCKED">Locked</option>
                         <option value="UPCOMING">Upcoming</option>

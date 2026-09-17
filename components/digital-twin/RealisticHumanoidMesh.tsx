@@ -47,6 +47,8 @@ export type HydroWorkforceRole =
   | "IT_ENGINEER"
   | "CAD_ENGINEER"
   | "HR_OFFICER"
+  | "ADMIN_OFFICER"
+  | "ADMIN_ASSISTANT"
   | "PED_ENGINEER"
   | "SITE_SUPERVISOR"
   | "CRANE_OPERATOR"

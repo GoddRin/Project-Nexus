@@ -128,7 +128,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 group/grid">
+      <div className="flex sm:grid overflow-x-auto sm:overflow-x-visible pb-3 sm:pb-0 snap-x snap-mandatory sm:snap-none gap-3.5 sm:gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 group/grid -mx-3.5 px-3.5 sm:mx-0 sm:px-0 scrollbar-thin">
         {evaluations.slice(0, 7).map((evalData) => {
           const date = new Date(evalData.dateStr);
           const DayIcon = resolveIcon(evalData.iconName);
@@ -140,7 +140,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
               key={evalData.dateStr}
               onClick={() => setSelectedDay(evalData)}
               className={cn(
-                "glass-card p-4 flex flex-col justify-between rounded-xl relative overflow-hidden transition-all duration-300 ease-out cursor-pointer group select-none",
+                "glass-card p-4 flex flex-col justify-between rounded-xl relative overflow-hidden transition-all duration-300 ease-out cursor-pointer group select-none min-w-[260px] xs:min-w-[280px] sm:min-w-0 snap-center shrink-0 sm:shrink",
                 // Spotlight Dimming: when hovering any card in the grid, other cards gently dim
                 "group-hover/grid:opacity-40 hover:!opacity-100",
                 // Elevation & Smooth Scaling on hover
@@ -346,7 +346,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
           >
             <motion.div
               className={cn(
-                "w-full max-w-2xl glass-card rounded-2xl border border-border-hairline shadow-2xl p-6 relative overflow-hidden max-h-[90vh] flex flex-col bg-slate-950/95",
+                "w-full max-w-2xl glass-card rounded-2xl border border-border-hairline shadow-2xl p-4 sm:p-6 relative overflow-hidden max-h-[92vh] flex flex-col bg-card/95 dark:bg-slate-950/95",
                 selectedDay.intent === "suspend" && "border-t-4 border-t-signal-red",
                 selectedDay.intent === "caution" && "border-t-4 border-t-signal-amber",
                 selectedDay.intent === "favorable" && "border-t-4 border-t-flow-teal"
@@ -406,7 +406,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                   </span>
                   <button
                     onClick={() => setSelectedDay(null)}
-                    className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-white/10 transition-colors"
+                    className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -414,17 +414,17 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
               </div>
 
               {/* Modal Body: Scrollable */}
-              <div className="space-y-4 overflow-y-auto py-4 pr-1">
+              <div className="space-y-4 overflow-y-auto py-4 pr-1 scrollbar-thin">
                 {/* 1. Full Operational Directive Banner */}
                 <div
                   className={cn(
                     "rounded-xl p-4 border flex items-start gap-3",
-                    selectedDay.intent === "favorable" && "bg-flow-teal/[0.06] border-flow-teal/30 text-flow-teal",
-                    selectedDay.intent === "caution" && "bg-signal-amber/[0.06] border-signal-amber/30 text-signal-amber",
-                    selectedDay.intent === "suspend" && "bg-signal-red/[0.06] border-signal-red/30 text-signal-red"
+                    selectedDay.intent === "favorable" && "bg-flow-teal/5 border-flow-teal/20 text-flow-teal",
+                    selectedDay.intent === "caution" && "bg-signal-amber/5 border-signal-amber/20 text-signal-amber",
+                    selectedDay.intent === "suspend" && "bg-signal-red/5 border-signal-red/20 text-signal-red"
                   )}
                 >
-                  <div className="p-1.5 rounded-lg bg-black/20 shrink-0 mt-0.5">
+                  <div className="p-1.5 rounded-lg bg-black/5 dark:bg-black/20 shrink-0 mt-0.5">
                     {selectedDay.intent === "favorable" ? (
                       <ShieldCheck className="h-5 w-5" />
                     ) : selectedDay.intent === "caution" ? (
@@ -434,7 +434,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                     )}
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-mono tracking-wider font-bold block">
+                    <span className="text-[10px] uppercase font-mono tracking-wider font-bold block text-text-muted">
                       Full Construction Site Operational Advisory
                     </span>
                     <p className="text-sm font-medium text-text-primary leading-relaxed">
@@ -446,7 +446,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                 {/* 2. Side-by-Side In-Depth Shift Intelligence Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Day Shift Card */}
-                  <div className="rounded-xl bg-black/30 dark:bg-white/[0.02] border border-border-hairline p-4 space-y-3">
+                  <div className="rounded-xl bg-slate-50/70 dark:bg-white/[0.02] border border-slate-200/60 dark:border-border-hairline p-4 space-y-3">
                     <div className="flex items-center justify-between border-b border-border-hairline/60 pb-2">
                       <div className="flex items-center gap-2">
                         <Sun className="h-4 w-4 text-flow-teal" />
@@ -461,7 +461,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Rain Timing</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.dayShift.rainWindow ? (
@@ -472,21 +472,21 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                         </span>
                       </div>
 
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Max Wind Gusts</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.dayShift.maxWindKph} km/h
                         </span>
                       </div>
 
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Rain Probability</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.dayShift.precipProbMax}% peak
                         </span>
                       </div>
 
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Average Temp</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.dayShift.tempAvg}°C
@@ -501,7 +501,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                   </div>
 
                   {/* Night Shift Card */}
-                  <div className="rounded-xl bg-black/30 dark:bg-white/[0.02] border border-border-hairline p-4 space-y-3">
+                  <div className="rounded-xl bg-slate-50/70 dark:bg-white/[0.02] border border-slate-200/60 dark:border-border-hairline p-4 space-y-3">
                     <div className="flex items-center justify-between border-b border-border-hairline/60 pb-2">
                       <div className="flex items-center gap-2">
                         <Cloud className="h-4 w-4 text-signal-amber" />
@@ -525,7 +525,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Rain Timing</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.nightShift.rainWindow ? (
@@ -536,21 +536,21 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                         </span>
                       </div>
 
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Max Wind Gusts</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.nightShift.maxWindKph} km/h
                         </span>
                       </div>
 
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Rain Probability</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.nightShift.precipProbMax}% peak
                         </span>
                       </div>
 
-                      <div className="rounded-lg bg-black/20 p-2 border border-border-hairline/40">
+                      <div className="rounded-lg bg-white dark:bg-black/20 p-2 border border-slate-200/80 dark:border-border-hairline/40">
                         <span className="text-[10px] text-text-muted block">Average Temp</span>
                         <span className="font-bold text-text-primary">
                           {selectedDay.shiftBreakdown.nightShift.tempAvg}°C
@@ -567,7 +567,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
 
                 {/* 3. Hour-by-Hour Shift Visual Timeline */}
                 {selectedHourly.length > 0 && (
-                  <div className="rounded-xl bg-black/30 dark:bg-white/[0.02] border border-border-hairline p-4 space-y-3">
+                  <div className="rounded-xl bg-slate-50/70 dark:bg-white/[0.02] border border-slate-200/60 dark:border-border-hairline p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold uppercase tracking-wider font-mono text-text-muted flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5 text-flow-teal" /> Hourly Shift Progression Timeline
@@ -588,8 +588,8 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                               hasRain
                                 ? "bg-signal-amber/10 border-signal-amber/30 text-signal-amber"
                                 : item.isDay
-                                ? "bg-black/20 border-border-hairline/60 text-text-primary"
-                                : "bg-white/[0.02] border-border-hairline/40 text-text-muted"
+                                ? "bg-white dark:bg-black/20 border-slate-200/80 dark:border-border-hairline/60 text-text-primary"
+                                : "bg-slate-50/50 dark:bg-white/[0.02] border-slate-200/50 dark:border-border-hairline/40 text-text-muted"
                             )}
                           >
                             <span className="text-[10px] font-bold block">{item.hourLabel}</span>
@@ -617,7 +617,7 @@ export function ForecastCardsGrid({ evaluations, hourly }: ForecastCardsGridProp
                 )}
 
                 {/* 4. Civil Engineering Protocols Checklist */}
-                <div className="rounded-xl bg-black/20 border border-border-hairline p-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                <div className="rounded-xl bg-slate-50/70 dark:bg-black/20 border border-slate-200/60 dark:border-border-hairline p-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-flow-teal" />
                     <div>

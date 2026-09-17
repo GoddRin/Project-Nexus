@@ -79,26 +79,26 @@ export function SupercarConfiguratorOverlay({
   const currentNeonMode = customization.underglowMode || "PULSE";
 
   return (
-    <div className="absolute top-20 right-6 z-30 w-96 bg-slate-900/95 backdrop-blur-2xl border border-amber-500/30 rounded-2xl shadow-2xl p-5 text-white font-sans transition-all duration-300 animate-in fade-in slide-in-from-right-5 select-none max-h-[88vh] overflow-y-auto">
+    <div className="absolute top-20 right-6 z-30 w-96 bg-card/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-amber-500/40 rounded-2xl shadow-2xl p-5 text-text-primary dark:text-white font-sans transition-all duration-300 animate-in fade-in slide-in-from-right-5 select-none max-h-[88vh] overflow-y-auto">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+      <div className="flex items-center justify-between border-b border-border-hairline pb-3 mb-3">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-red-600 via-amber-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-red-500/30">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-sm tracking-wider uppercase text-slate-100 flex items-center gap-1.5">
+            <h3 className="font-bold text-sm tracking-wider uppercase text-text-primary dark:text-slate-100 flex items-center gap-1.5">
               Ferrari 458 Italia
-              <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono font-bold">
+              <span className="text-[10px] bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono font-bold">
                 VIP
               </span>
             </h3>
-            <p className="text-[11px] text-slate-400">Executive Courtyard Customizer</p>
+            <p className="text-[11px] text-text-muted dark:text-slate-400">Executive Courtyard Customizer</p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+          className="text-text-muted hover:text-text-primary dark:text-slate-400 dark:hover:text-white p-1 rounded-lg hover:bg-muted dark:hover:bg-slate-800 transition-colors"
           title="Close Panel"
         >
           <X className="w-4 h-4" />
@@ -106,27 +106,27 @@ export function SupercarConfiguratorOverlay({
       </div>
 
       {/* Telemetry / Driving Status Banner */}
-      <div className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 mb-3.5 flex items-center justify-between">
+      <div className="bg-muted/40 dark:bg-slate-950/80 border border-border-hairline rounded-xl p-3 mb-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="text-center">
-            <span className="text-[10px] text-slate-400 uppercase font-mono block">Speed</span>
-            <span className="text-xl font-black text-amber-400 font-mono tracking-tight">
+            <span className="text-[10px] text-text-muted dark:text-slate-400 uppercase font-mono block">Speed</span>
+            <span className="text-xl font-black text-amber-500 dark:text-amber-400 font-mono tracking-tight">
               {speed}
-              <span className="text-[10px] text-slate-400 ml-0.5 font-normal">km/h</span>
+              <span className="text-[10px] text-text-muted dark:text-slate-400 ml-0.5 font-normal">km/h</span>
             </span>
           </div>
-          <div className="h-6 w-px bg-slate-800" />
+          <div className="h-6 w-px bg-border-hairline" />
           <div className="text-center">
-            <span className="text-[10px] text-slate-400 uppercase font-mono block">Tachometer</span>
-            <span className="text-sm font-bold text-slate-200 font-mono tracking-tight">
+            <span className="text-[10px] text-text-muted dark:text-slate-400 uppercase font-mono block">Tachometer</span>
+            <span className="text-sm font-bold text-text-primary dark:text-slate-200 font-mono tracking-tight">
               {rpm.toLocaleString()}
-              <span className="text-[9px] text-slate-400 ml-0.5 font-normal">RPM</span>
+              <span className="text-[9px] text-text-muted dark:text-slate-400 ml-0.5 font-normal">RPM</span>
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded bg-red-950 border border-red-500/50 flex items-center justify-center font-mono font-bold text-xs text-red-400">
+          <div className="w-7 h-7 rounded bg-red-100 dark:bg-red-950 border border-red-500/50 flex items-center justify-center font-mono font-bold text-xs text-red-600 dark:text-red-400">
             {gear}
           </div>
           <button
@@ -151,13 +151,13 @@ export function SupercarConfiguratorOverlay({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="grid grid-cols-3 gap-1 bg-slate-950/60 p-1 rounded-xl mb-3.5 border border-slate-800">
+      <div className="grid grid-cols-3 gap-1 bg-muted/50 dark:bg-slate-950/60 p-1 rounded-xl mb-3.5 border border-border-hairline">
         <button
           onClick={() => setActiveTab("NEON")}
           className={`py-1.5 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
             activeTab === "NEON"
-              ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/40 shadow-sm"
+              : "text-text-muted dark:text-slate-400 hover:text-text-primary dark:hover:text-white"
           }`}
         >
           <Zap className="w-3.5 h-3.5" />
@@ -167,8 +167,8 @@ export function SupercarConfiguratorOverlay({
           onClick={() => setActiveTab("PAINT")}
           className={`py-1.5 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
             activeTab === "PAINT"
-              ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 shadow-sm"
+              : "text-text-muted dark:text-slate-400 hover:text-text-primary dark:hover:text-white"
           }`}
         >
           <Palette className="w-3.5 h-3.5" />
@@ -178,8 +178,8 @@ export function SupercarConfiguratorOverlay({
           onClick={() => setActiveTab("PERFORMANCE")}
           className={`py-1.5 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
             activeTab === "PERFORMANCE"
-              ? "bg-red-500/20 text-red-300 border border-red-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white"
+              ? "bg-red-500/20 text-red-600 dark:text-red-300 border border-red-500/40 shadow-sm"
+              : "text-text-muted dark:text-slate-400 hover:text-text-primary dark:hover:text-white"
           }`}
         >
           <Flame className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export function SupercarConfiguratorOverlay({
       {activeTab === "NEON" && (
         <div className="space-y-3.5">
           {/* Master Neon Toggle */}
-          <div className="flex items-center justify-between bg-slate-950/60 border border-slate-800 p-2.5 rounded-xl">
+          <div className="flex items-center justify-between bg-muted/40 dark:bg-slate-950/60 border border-border-hairline p-2.5 rounded-xl">
             <div className="flex items-center gap-2">
               <div
                 className="w-3 h-3 rounded-full shadow-lg transition-colors"
@@ -202,20 +202,20 @@ export function SupercarConfiguratorOverlay({
                     ? currentNeonColor === "RAINBOW"
                       ? "#00F5FF"
                       : currentNeonColor
-                    : "#475569",
+                    : "#94a3b8",
                   boxShadow: underglowOn
                     ? `0 0 10px ${currentNeonColor === "RAINBOW" ? "#00F5FF" : currentNeonColor}`
                     : "none",
                 }}
               />
-              <span className="text-xs font-bold text-slate-200">Neon Underglow System</span>
+              <span className="text-xs font-bold text-text-primary dark:text-slate-200">Neon Underglow System</span>
             </div>
             <button
               onClick={() => onChange({ underglowEnabled: !underglowOn })}
               className={`px-3 py-1 text-[11px] font-bold rounded-lg transition-all ${
                 underglowOn
                   ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30"
-                  : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                  : "bg-muted text-text-muted hover:bg-muted/80 dark:bg-slate-800 dark:text-slate-400"
               }`}
             >
               {underglowOn ? "ACTIVE" : "OFF"}
@@ -224,9 +224,9 @@ export function SupercarConfiguratorOverlay({
 
           {/* Underglow Colors */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center justify-between mb-2">
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider flex items-center justify-between mb-2">
               <span>Underglow Color Palette</span>
-              <span className="text-[10px] text-cyan-400 font-mono">
+              <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">
                 {SUPERCAR_UNDERGLOW_PRESETS.find((p) => p.hex === currentNeonColor)?.name || currentNeonColor}
               </span>
             </label>
@@ -241,12 +241,12 @@ export function SupercarConfiguratorOverlay({
                     onClick={() => onChange({ underglowColor: preset.hex, underglowEnabled: true })}
                     className={`py-2 px-1.5 rounded-xl text-[10px] font-bold border transition-all text-center flex flex-col items-center gap-1.5 ${
                       isSelected
-                        ? "border-cyan-400 bg-cyan-500/15 text-white shadow-lg ring-1 ring-cyan-400/50"
-                        : "border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-600"
+                        ? "border-cyan-500 bg-cyan-500/15 text-text-primary dark:text-white shadow-lg ring-1 ring-cyan-400/50"
+                        : "border-border-hairline bg-muted/40 dark:bg-slate-950/60 text-text-secondary dark:text-slate-300 hover:border-border"
                     }`}
                   >
                     <div
-                      className="w-5 h-5 rounded-full border border-white/30 transition-transform"
+                      className="w-5 h-5 rounded-full border border-black/10 dark:border-white/30 transition-transform"
                       style={{
                         background: isRainbow
                           ? "linear-gradient(135deg, #FF0000, #FFFF00, #00FF00, #00FFFF, #0000FF, #FF00FF)"
@@ -265,7 +265,7 @@ export function SupercarConfiguratorOverlay({
 
           {/* Animation Modes */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider block mb-2">
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider block mb-2">
               Underglow Pulse & Animation
             </label>
             <div className="grid grid-cols-2 gap-1.5">
@@ -288,12 +288,12 @@ export function SupercarConfiguratorOverlay({
                     }
                     className={`py-1.5 px-2.5 rounded-lg text-xs font-semibold border transition-all text-left flex items-center justify-between ${
                       isSelected
-                        ? "bg-cyan-500/20 border-cyan-400 text-cyan-200"
-                        : "bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200"
+                        ? "bg-cyan-500/20 border-cyan-500 text-cyan-600 dark:text-cyan-200"
+                        : "bg-muted/40 dark:bg-slate-950/60 border-border-hairline text-text-muted dark:text-slate-400 hover:text-text-primary dark:hover:text-slate-200"
                     }`}
                   >
                     <span>{mode.label}</span>
-                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />}
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-ping" />}
                   </button>
                 );
               })}
@@ -302,9 +302,9 @@ export function SupercarConfiguratorOverlay({
 
           {/* Intensity Slider */}
           <div>
-            <div className="flex justify-between text-[11px] font-semibold text-slate-300 mb-1">
+            <div className="flex justify-between text-[11px] font-semibold text-text-secondary dark:text-slate-300 mb-1">
               <span>Luminance Intensity</span>
-              <span className="font-mono text-cyan-400">
+              <span className="font-mono text-cyan-600 dark:text-cyan-400">
                 {(customization.underglowIntensity ?? 1.8).toFixed(1)}x
               </span>
             </div>
@@ -315,7 +315,7 @@ export function SupercarConfiguratorOverlay({
               step="0.1"
               value={customization.underglowIntensity ?? 1.8}
               onChange={(e) => onChange({ underglowIntensity: parseFloat(e.target.value) })}
-              className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+              className="w-full h-1.5 bg-muted dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
             />
           </div>
         </div>
@@ -328,8 +328,8 @@ export function SupercarConfiguratorOverlay({
         <div className="space-y-3.5">
           {/* Body Paint Palette */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <Palette className="w-3.5 h-3.5 text-amber-400" />
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <Palette className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               Body Clearcoat Finish
             </label>
             <div className="grid grid-cols-4 gap-2">
@@ -341,12 +341,12 @@ export function SupercarConfiguratorOverlay({
                     onClick={() => onChange({ bodyColor: color.hex })}
                     className={`py-2 px-1.5 rounded-xl text-[10px] font-bold border transition-all text-center flex flex-col items-center gap-1.5 ${
                       isCurrent
-                        ? "border-amber-400 bg-amber-500/15 text-white shadow-lg"
-                        : "border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-600"
+                        ? "border-amber-500 bg-amber-500/15 text-text-primary dark:text-white shadow-lg"
+                        : "border-border-hairline bg-muted/40 dark:bg-slate-950/60 text-text-secondary dark:text-slate-300 hover:border-border"
                     }`}
                   >
                     <div
-                      className="w-5 h-5 rounded-full border border-white/30"
+                      className="w-5 h-5 rounded-full border border-black/10 dark:border-white/30"
                       style={{ backgroundColor: color.hex }}
                     />
                     <span className="truncate w-full">{color.name}</span>
@@ -358,8 +358,8 @@ export function SupercarConfiguratorOverlay({
 
           {/* Alloy Rims Finish */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <Compass className="w-3.5 h-3.5 text-slate-400" />
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <Compass className="w-3.5 h-3.5 text-text-muted dark:text-slate-400" />
               Alloy Wheel Rims
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -371,12 +371,12 @@ export function SupercarConfiguratorOverlay({
                     onClick={() => onChange({ rimsColor: rim.hex })}
                     className={`py-2 px-2 rounded-lg text-xs font-medium border text-center transition-all flex items-center gap-2 ${
                       isCurrent
-                        ? "bg-amber-500/20 border-amber-400 text-amber-200"
-                        : "bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-600"
+                        ? "bg-amber-500/20 border-amber-500 text-amber-600 dark:text-amber-200"
+                        : "bg-muted/40 dark:bg-slate-950/60 border-border-hairline text-text-secondary dark:text-slate-300 hover:border-border"
                     }`}
                   >
                     <div
-                      className="w-3 h-3 rounded-full border border-white/40"
+                      className="w-3 h-3 rounded-full border border-black/10 dark:border-white/40"
                       style={{ backgroundColor: rim.hex }}
                     />
                     {rim.name}
@@ -388,8 +388,8 @@ export function SupercarConfiguratorOverlay({
 
           {/* Brake Calipers */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
               Ceramic Brake Calipers
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -401,12 +401,12 @@ export function SupercarConfiguratorOverlay({
                     onClick={() => onChange({ caliperColor: caliper.hex })}
                     className={`py-2 px-2 rounded-lg text-xs font-medium border text-center transition-all flex items-center gap-2 ${
                       isCurrent
-                        ? "bg-red-500/20 border-red-400 text-red-200"
-                        : "bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-600"
+                        ? "bg-red-500/20 border-red-500 text-red-600 dark:text-red-200"
+                        : "bg-muted/40 dark:bg-slate-950/60 border-border-hairline text-text-secondary dark:text-slate-300 hover:border-border"
                     }`}
                   >
                     <div
-                      className="w-3 h-3 rounded-full border border-white/40"
+                      className="w-3 h-3 rounded-full border border-black/10 dark:border-white/40"
                       style={{ backgroundColor: caliper.hex }}
                     />
                     {caliper.name}
@@ -425,37 +425,37 @@ export function SupercarConfiguratorOverlay({
         <div className="space-y-3.5">
           {/* Interactive Sound Synthesizer Controls */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <Volume2 className="w-3.5 h-3.5 text-amber-400" />
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <Volume2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               Interactive Sound FX
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => playEngineRev()}
-                className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-red-600/30 to-amber-600/30 hover:from-red-600/50 hover:to-amber-600/50 border border-red-500/40 text-xs font-bold text-white flex items-center gap-2 transition-all shadow-md active:scale-95"
+                className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-red-600/20 to-amber-600/20 hover:from-red-600/30 hover:to-amber-600/30 border border-red-500/40 text-xs font-bold text-text-primary dark:text-white flex items-center gap-2 transition-all shadow-md active:scale-95"
               >
-                <Flame className="w-4 h-4 text-red-400" />
+                <Flame className="w-4 h-4 text-red-500 dark:text-red-400" />
                 Rev 4.5L V8
               </button>
               <button
                 onClick={() => playKeyFobBeep()}
-                className="py-2.5 px-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 flex items-center gap-2 transition-all shadow-md active:scale-95"
+                className="py-2.5 px-3 rounded-xl bg-muted/60 hover:bg-muted dark:bg-slate-950/80 dark:hover:bg-slate-800 border border-border-hairline text-xs font-bold text-text-primary dark:text-slate-200 flex items-center gap-2 transition-all shadow-md active:scale-95"
               >
-                <Key className="w-4 h-4 text-amber-400" />
+                <Key className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                 Key Fob Chirp
               </button>
               <button
                 onClick={() => playNosPurge()}
-                className="py-2.5 px-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 flex items-center gap-2 transition-all shadow-md active:scale-95"
+                className="py-2.5 px-3 rounded-xl bg-muted/60 hover:bg-muted dark:bg-slate-950/80 dark:hover:bg-slate-800 border border-border-hairline text-xs font-bold text-text-primary dark:text-slate-200 flex items-center gap-2 transition-all shadow-md active:scale-95"
               >
-                <Wind className="w-4 h-4 text-cyan-400" />
+                <Wind className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
                 NOS Purge Hiss
               </button>
               <button
                 onClick={() => playHornBeep()}
-                className="py-2.5 px-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 flex items-center gap-2 transition-all shadow-md active:scale-95"
+                className="py-2.5 px-3 rounded-xl bg-muted/60 hover:bg-muted dark:bg-slate-950/80 dark:hover:bg-slate-800 border border-border-hairline text-xs font-bold text-text-primary dark:text-slate-200 flex items-center gap-2 transition-all shadow-md active:scale-95"
               >
-                <Radio className="w-4 h-4 text-emerald-400" />
+                <Radio className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                 Italian Horn
               </button>
             </div>
@@ -463,23 +463,23 @@ export function SupercarConfiguratorOverlay({
 
           {/* Visual Effects & Stance Toggles */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+            <label className="text-[11px] font-semibold text-text-secondary dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <Zap className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
               Aero & Visual FX Stance
             </label>
             <div className="space-y-2">
               {/* Exhaust Flames */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-muted/40 dark:bg-slate-950/60 border border-border-hairline">
                 <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-orange-400" />
-                  <span className="text-xs font-medium text-slate-200">Exhaust Afterburner Flames</span>
+                  <Flame className="w-4 h-4 text-orange-500 dark:text-orange-400" />
+                  <span className="text-xs font-medium text-text-primary dark:text-slate-200">Exhaust Afterburner Flames</span>
                 </div>
                 <button
                   onClick={() => onChange({ exhaustFlames: !customization.exhaustFlames })}
                   className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all ${
                     customization.exhaustFlames
                       ? "bg-orange-500 text-white shadow-md shadow-orange-500/30"
-                      : "bg-slate-800 text-slate-400"
+                      : "bg-muted text-text-muted hover:bg-muted/80 dark:bg-slate-800 dark:text-slate-400"
                   }`}
                 >
                   {customization.exhaustFlames ? "ACTIVE" : "OFF"}
@@ -487,10 +487,10 @@ export function SupercarConfiguratorOverlay({
               </div>
 
               {/* NOS Cryo Purge */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-muted/40 dark:bg-slate-950/60 border border-border-hairline">
                 <div className="flex items-center gap-2">
-                  <Wind className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs font-medium text-slate-200">NOS Fender Steam Purge</span>
+                  <Wind className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
+                  <span className="text-xs font-medium text-text-primary dark:text-slate-200">NOS Fender Steam Purge</span>
                 </div>
                 <button
                   onClick={() => {
@@ -500,7 +500,7 @@ export function SupercarConfiguratorOverlay({
                   className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all ${
                     customization.nosPurge
                       ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30"
-                      : "bg-slate-800 text-slate-400"
+                      : "bg-muted text-text-muted hover:bg-muted/80 dark:bg-slate-800 dark:text-slate-400"
                   }`}
                 >
                   {customization.nosPurge ? "PURGING" : "OFF"}
@@ -508,17 +508,17 @@ export function SupercarConfiguratorOverlay({
               </div>
 
               {/* Air Suspension Lowered */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-muted/40 dark:bg-slate-950/60 border border-border-hairline">
                 <div className="flex items-center gap-2">
-                  <ArrowDownToLine className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-medium text-slate-200">Air Suspension Track Stance</span>
+                  <ArrowDownToLine className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                  <span className="text-xs font-medium text-text-primary dark:text-slate-200">Air Suspension Track Stance</span>
                 </div>
                 <button
                   onClick={() => onChange({ airSuspensionLowered: !customization.airSuspensionLowered })}
                   className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all ${
                     customization.airSuspensionLowered
                       ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30"
-                      : "bg-slate-800 text-slate-400"
+                      : "bg-muted text-text-muted hover:bg-muted/80 dark:bg-slate-800 dark:text-slate-400"
                   }`}
                 >
                   {customization.airSuspensionLowered ? "SLAMMED" : "STOCK"}
@@ -526,17 +526,17 @@ export function SupercarConfiguratorOverlay({
               </div>
 
               {/* Remote Door Open */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-muted/40 dark:bg-slate-950/60 border border-border-hairline">
                 <div className="flex items-center gap-2">
-                  <DoorOpen className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-medium text-slate-200">Remote Driver Door</span>
+                  <DoorOpen className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                  <span className="text-xs font-medium text-text-primary dark:text-slate-200">Remote Driver Door</span>
                 </div>
                 <button
                   onClick={() => onChange({ doorOpen: !customization.doorOpen })}
                   className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all ${
                     customization.doorOpen
                       ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
-                      : "bg-slate-800 text-slate-400"
+                      : "bg-muted text-text-muted hover:bg-muted/80 dark:bg-slate-800 dark:text-slate-400"
                   }`}
                 >
                   {customization.doorOpen ? "OPEN" : "CLOSED"}
@@ -548,10 +548,10 @@ export function SupercarConfiguratorOverlay({
       )}
 
       {/* Standby Status Footer */}
-      <div className="mt-4 pt-3 border-t border-slate-800 text-[10px] text-slate-400 flex items-center justify-between">
+      <div className="mt-4 pt-3 border-t border-border-hairline text-[10px] text-text-muted dark:text-slate-400 flex items-center justify-between">
         <span>Location: Staff Office VIP Bay</span>
-        <span className="flex items-center gap-1 text-emerald-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           {customization.isDriving ? "Active Circuit" : "Standby Showcase"}
         </span>
       </div>

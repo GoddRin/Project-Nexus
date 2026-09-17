@@ -54,7 +54,7 @@ export function IncidentListClient({ initialIncidents }: { initialIncidents: any
             placeholder="Search incidents, facilities, personnel..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-white/5 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-flow-teal"
+            className="w-full rounded-xl border border-border-hairline bg-card dark:bg-black/40 py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-flow-teal"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export function IncidentListClient({ initialIncidents }: { initialIncidents: any
                 "rounded-full px-4 py-1.5 text-xs font-medium transition-all border",
                 filterType === t
                   ? "bg-flow-teal text-white border-flow-teal"
-                  : "bg-transparent text-text-muted border-white/10 hover:border-white/20 hover:text-white"
+                  : "bg-transparent text-text-muted border-border-hairline hover:border-border hover:text-text-primary"
               )}
             >
               {t}
@@ -89,7 +89,7 @@ export function IncidentListClient({ initialIncidents }: { initialIncidents: any
             return (
               <div
                 key={inc.id}
-                className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-white/5 bg-black/40 p-4 transition-colors hover:bg-white/[0.02]"
+                className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-border-hairline bg-card dark:bg-black/40 p-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
               >
                 <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border", SEVERITY_COLORS[inc.severity as keyof typeof SEVERITY_COLORS])}>
                   <Icon className="h-6 w-6" />
@@ -97,7 +97,7 @@ export function IncidentListClient({ initialIncidents }: { initialIncidents: any
                 
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-white truncate">{inc.type} INCIDENT</h3>
+                    <h3 className="text-sm font-semibold text-text-primary truncate">{inc.type} INCIDENT</h3>
                     <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border", SEVERITY_COLORS[inc.severity as keyof typeof SEVERITY_COLORS])}>
                       {inc.severity}
                     </span>

@@ -130,12 +130,12 @@ export default async function TicketsPage({
           <div className="divide-y divide-border-hairline">
             {tickets.map((ticket) => (
               <Link key={ticket.id} href={`/dashboard/tickets/${ticket.id}`} className="block group">
-                <div className="flex flex-col gap-4 p-5 transition-all duration-150 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-5 transition-all duration-150 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] md:flex-row md:items-center md:justify-between">
                   <div className="space-y-1.5">
                     <h3 className="font-display text-base font-bold tracking-wide text-text-primary transition-colors group-hover:text-scic-blue dark:group-hover:text-scic-cyan">
                       {ticket.title}
                     </h3>
-                    <div className="flex items-center gap-3 text-xs text-text-muted font-mono tracking-tight">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-text-muted font-mono tracking-tight">
                       <span className="bg-black/[0.04] dark:bg-white/5 px-2 py-0.5 rounded text-text-primary border border-border-hairline font-bold">
                         #{ticket.id.slice(-6).toUpperCase()}
                       </span>

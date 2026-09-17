@@ -36,14 +36,14 @@ export function PageHeader({
               SCIC · Tumauini HEPP
             </span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+          <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-text-primary">
             {title}
           </h1>
           {subtitle && (
             <p className="mt-1 text-xs sm:text-sm text-text-muted font-medium max-w-3xl">{subtitle}</p>
           )}
         </div>
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center flex-wrap gap-2 sm:gap-2.5 shrink-0">
           {actionLabel && actionHref && (
             <Link href={actionHref}>
               <Button 

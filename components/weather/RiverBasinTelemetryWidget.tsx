@@ -99,9 +99,9 @@ export default function RiverBasinTelemetryWidget() {
 
   if (isLoading && !data) {
     return (
-      <div className="bg-[#0D161A] border border-border-hairline rounded-2xl p-4 shadow-lg flex items-center justify-center h-[120px]">
+      <div className="bg-card dark:bg-[#0D161A] border border-border-hairline rounded-2xl p-4 shadow-lg flex items-center justify-center h-[120px]">
         <div className="flex items-center gap-2 text-xs text-text-muted">
-          <Activity className="h-4 w-4 text-cyan-400 animate-spin" />
+          <Activity className="h-4 w-4 text-cyan-600 dark:text-cyan-400 animate-spin" />
           <span>Fetching live DOST-PAGASA & Copernicus GloFAS hydrological telemetry...</span>
         </div>
       </div>
@@ -110,14 +110,14 @@ export default function RiverBasinTelemetryWidget() {
 
   if (isError && !data) {
     return (
-      <div className="bg-[#0D161A] border border-border-hairline rounded-2xl p-4 shadow-lg flex items-center justify-between">
+      <div className="bg-card dark:bg-[#0D161A] border border-border-hairline rounded-2xl p-4 shadow-lg flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-400" />
+          <AlertTriangle className="h-4 w-4 text-amber-500 dark:text-amber-400" />
           <span className="text-xs text-text-muted">River Basin Hydrological Telemetry Offline</span>
         </div>
         <button
           onClick={() => loadRiverBasinData(true)}
-          className="text-[10px] text-amber-400 font-mono px-2 py-0.5 bg-amber-500/10 hover:bg-amber-500/20 rounded border border-amber-500/20 flex items-center gap-1 cursor-pointer transition-colors"
+          className="text-[10px] text-amber-600 dark:text-amber-400 font-mono px-2 py-0.5 bg-amber-500/10 hover:bg-amber-500/20 rounded border border-amber-500/20 flex items-center gap-1 cursor-pointer transition-colors"
         >
           <RefreshCw className="w-3 h-3" />
           Retry Connection
@@ -130,15 +130,15 @@ export default function RiverBasinTelemetryWidget() {
   const isWatch = data?.cagayanStatus.toLowerCase().includes("flood watch") && !data?.cagayanStatus.toLowerCase().includes("non-flood");
 
   return (
-    <div className="bg-[#0D161A] border border-border-hairline rounded-2xl p-5 shadow-lg relative overflow-hidden transition-all duration-300">
+    <div className="bg-card dark:bg-[#0D161A] border border-border-hairline rounded-2xl p-5 shadow-lg relative overflow-hidden transition-all duration-300">
       {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between border-b border-border-hairline/60 pb-3 mb-3 gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <Waves className="h-4 w-4 text-cyan-400 shrink-0" />
+          <Waves className="h-4 w-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
           <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
             Cagayan River Basin & Tailrace Outflow Telemetry
           </span>
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
             <ShieldCheck className="w-3 h-3" />
             {data?.cagayanStatus || "Non-Flood Watch"}
           </span>
@@ -150,7 +150,7 @@ export default function RiverBasinTelemetryWidget() {
             target="_blank"
             rel="noopener noreferrer"
             title="Cross-check official DOST-PAGASA Flood Forecasting Portal"
-            className="text-[10px] font-mono text-text-muted hover:text-cyan-400 bg-black/40 hover:bg-black/60 px-2 py-0.5 rounded border border-border-hairline/60 flex items-center gap-1 transition-colors"
+            className="text-[10px] font-mono text-text-muted hover:text-cyan-600 dark:hover:text-cyan-400 bg-slate-100 dark:bg-black/40 hover:bg-slate-200 dark:hover:bg-black/60 px-2 py-0.5 rounded border border-border-hairline/60 flex items-center gap-1 transition-colors"
           >
             <span>Verify PAGASA</span>
             <ExternalLink className="w-2.5 h-2.5" />
@@ -159,7 +159,7 @@ export default function RiverBasinTelemetryWidget() {
           {data?.allDams && data.allDams.length > 0 && (
             <button
               onClick={() => setShowAllDams((prev) => !prev)}
-              className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/50 px-2 py-0.5 rounded border border-cyan-800/40 flex items-center gap-1 transition-colors cursor-pointer"
+              className="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 px-2 py-0.5 rounded border border-cyan-200 dark:border-cyan-800/40 flex items-center gap-1 transition-colors cursor-pointer"
             >
               <span>{showAllDams ? "Hide Dams Table" : "Regional Dams (Luzon)"}</span>
               {showAllDams ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -170,7 +170,7 @@ export default function RiverBasinTelemetryWidget() {
             onClick={() => loadRiverBasinData(true)}
             disabled={isRefreshing}
             title="Trigger instant live refresh of hydrological feeds"
-            className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/20 flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+            className="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/20 flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={cn("w-3 h-3", isRefreshing && "animate-spin")} />
             <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
@@ -180,8 +180,8 @@ export default function RiverBasinTelemetryWidget() {
             className={cn(
               "text-[10px] font-mono px-2 py-0.5 rounded border flex items-center gap-1",
               isWatch
-                ? "text-amber-400 bg-amber-500/10 border-amber-500/30"
-                : "text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
+                ? "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30"
+                : "text-cyan-700 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
             )}
           >
             <span
@@ -203,14 +203,14 @@ export default function RiverBasinTelemetryWidget() {
           return (
             <div
               key={`station-${g.site_id}`}
-              className="bg-black/30 hover:bg-black/40 transition-colors p-3.5 rounded-xl border border-border-hairline/40 flex flex-col justify-between"
+              className="bg-slate-50/70 dark:bg-black/30 hover:bg-slate-100/80 dark:hover:bg-black/40 transition-colors p-3.5 rounded-xl border border-slate-200/60 dark:border-border-hairline/40 flex flex-col justify-between"
             >
               {/* Station Header */}
               <div className="flex items-start justify-between mb-1.5">
                 <span className="text-xs font-semibold text-text-primary line-clamp-1 pr-1" title={g.site_name}>
                   {g.site_name}
                 </span>
-                <span className="text-[10px] font-mono text-cyan-400 shrink-0">
+                <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 shrink-0">
                   {g.distKm === 0 ? "Site Outflow" : `${g.distKm} km`}
                 </span>
               </div>
@@ -223,15 +223,15 @@ export default function RiverBasinTelemetryWidget() {
                     className={cn(
                       "text-[9px] font-semibold px-1.5 py-0.2 rounded border",
                       isNormal
-                        ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
-                        : "text-amber-400 bg-amber-500/10 border-amber-500/30"
+                        ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                        : "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30"
                     )}
                   >
                     {g.status_label}
                   </span>
                 </div>
                 <div className="flex items-baseline gap-1 mt-0.5">
-                  <span className="text-base font-bold font-mono tracking-tight text-cyan-300">
+                  <span className="text-base font-bold font-mono tracking-tight text-cyan-700 dark:text-cyan-300">
                     {g.value}
                   </span>
                   <span className="text-[10px] font-mono text-text-muted truncate">
@@ -245,7 +245,7 @@ export default function RiverBasinTelemetryWidget() {
                 <span
                   className={cn(
                     "font-semibold text-[8px] uppercase tracking-wider",
-                    g.isLive ? "text-emerald-400" : "text-cyan-400/80"
+                    g.isLive ? "text-emerald-600 dark:text-emerald-400" : "text-cyan-600 dark:text-cyan-400/80"
                   )}
                 >
                   {g.status_badge}
@@ -264,7 +264,7 @@ export default function RiverBasinTelemetryWidget() {
         <div className="mt-4 pt-3 border-t border-border-hairline/60 animate-in fade-in duration-200">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-xs text-text-primary font-semibold">
-              <Droplets className="w-3.5 h-3.5 text-cyan-400" />
+              <Droplets className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
               <span>DOST-PAGASA Major Luzon Reservoirs Telemetry</span>
             </div>
             <span className="text-[9px] font-mono text-text-muted">
@@ -294,8 +294,8 @@ export default function RiverBasinTelemetryWidget() {
                     <tr
                       key={dam.name}
                       className={cn(
-                        "hover:bg-white/[0.02] transition-colors",
-                        isMagat && "bg-cyan-950/20 text-cyan-200 font-semibold"
+                        "hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors",
+                        isMagat && "bg-cyan-50 dark:bg-cyan-950/20 text-cyan-800 dark:text-cyan-200 font-semibold"
                       )}
                     >
                       <td className="py-1.5 px-2">
@@ -310,7 +310,7 @@ export default function RiverBasinTelemetryWidget() {
                       <td
                         className={cn(
                           "py-1.5 px-2 text-right",
-                          dam.deviationNhwl < 0 ? "text-emerald-400" : "text-amber-400"
+                          dam.deviationNhwl < 0 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"
                         )}
                       >
                         {dam.deviationNhwl !== 0 ? `${dam.deviationNhwl.toFixed(2)} m` : "—"}
@@ -321,7 +321,7 @@ export default function RiverBasinTelemetryWidget() {
                       <td
                         className={cn(
                           "py-1.5 px-2 text-center",
-                          hasGates ? "text-amber-400 font-bold" : "text-text-muted"
+                          hasGates ? "text-amber-600 dark:text-amber-400 font-bold" : "text-text-muted"
                         )}
                       >
                         {hasGates ? `${dam.gatesOpen} Open` : "Closed"}

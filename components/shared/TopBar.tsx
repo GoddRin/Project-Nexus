@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Bell, Check, Clock, Ticket, Shield, Wrench, Info } from "lucide-react";
+import { Search, Bell, Check, Clock, Ticket, Shield, Wrench, Info, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import type { NotificationItem } from "@/lib/actions/notifications";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useMobileNav } from "./MobileNavContext";
+import { StaClaraLogo } from "./StaClaraLogo";
 
 interface TopBarProps {
  className?: string;
@@ -16,6 +18,7 @@ interface TopBarProps {
  * TopBar — Elevated Glass: frosted top bar with cmd+k search trigger and notification bell.
  */
 export function TopBar({ className }: TopBarProps) {
+  const { toggleMobileNav } = useMobileNav();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [lastReadAt, setLastReadAt] = useState<number>(0);
@@ -74,21 +77,42 @@ export function TopBar({ className }: TopBarProps) {
  return (
   <header
   className={cn(
-  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-[#0B131B] dark:to-[#070D12] from-white/90 to-slate-50/90 shell-blur px-6 print:hidden",
+  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-[#0B131B] dark:to-[#070D12] from-white/90 to-slate-50/90 shell-blur px-3.5 sm:px-6 print:hidden",
   className
   )}
   >
-  {/* Left: Search trigger + Project Ticker */}
-  <div className="flex items-center gap-3">
+  {/* Left: Mobile hamburger + Mobile Brand + Search trigger + Project Ticker */}
+  <div className="flex items-center gap-2 sm:gap-3">
+    {/* Mobile drawer toggle */}
     <button
-    className="group relative flex h-9 w-64 md:w-72 items-center gap-2.5 rounded-xl dark:bg-white/[0.04] bg-black/[0.04] px-3.5 text-xs text-text-muted border border-border-hairline shadow-sm transition-all duration-200 dark:hover:bg-white/[0.07] hover:bg-black/[0.07] hover:text-text-primary"
+      type="button"
+      onClick={toggleMobileNav}
+      className="md:hidden flex h-9 w-9 items-center justify-center rounded-xl border border-border-hairline bg-black/[0.03] dark:bg-white/[0.03] text-text-muted hover:text-text-primary active:scale-95 transition-all shrink-0"
+      aria-label="Open navigation menu"
+    >
+      <Menu className="h-4 w-4" />
+    </button>
+
+    {/* Mobile Brand Pill */}
+    <div className="flex items-center gap-1.5 md:hidden">
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white dark:bg-[#0B131B] border border-border-hairline p-0.5 shadow-sm">
+        <StaClaraLogo className="h-full w-full" />
+      </div>
+      <span className="font-display font-bold text-xs tracking-wider text-text-primary">
+        NEXUS
+      </span>
+    </div>
+
+    <button
+    className="group relative flex h-9 w-9 sm:w-64 md:w-72 items-center justify-center sm:justify-start gap-2.5 rounded-xl dark:bg-white/[0.04] bg-black/[0.04] px-0 sm:px-3.5 text-xs text-text-muted border border-border-hairline shadow-sm transition-all duration-200 dark:hover:bg-white/[0.07] hover:bg-black/[0.07] hover:text-text-primary"
     onClick={() => {
       // cmd+k shortcut trigger
     }}
+    title="Search SCIC Nexus"
     >
     <Search className="h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-all duration-200 group-hover:text-scic-blue dark:group-hover:text-scic-cyan" />
     <span className="hidden truncate sm:inline font-medium">Search SCIC Nexus...</span>
-    <div className="absolute right-2 flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[9px] font-semibold text-text-muted border border-border-hairline">
+    <div className="absolute right-2 hidden sm:flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[9px] font-semibold text-text-muted border border-border-hairline">
     <span>Ctrl</span>
     <span className="ml-0.5">K</span>
     </div>

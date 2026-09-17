@@ -29,7 +29,7 @@ const CustomHourlyTooltip = ({ active, payload, label }: any) => {
     const condition = dataPoint?.condition || "";
 
     return (
-      <div className="rounded-xl border border-border-hairline bg-slate-950/95 p-3 shadow-2xl backdrop-blur-md min-w-[170px]">
+      <div className="rounded-xl border border-border-hairline bg-card/95 dark:bg-slate-950/95 p-3 shadow-2xl backdrop-blur-md min-w-[170px]">
         <p className="mb-1.5 font-bold text-xs text-text-primary border-b border-border-hairline pb-1">
           {label}
         </p>

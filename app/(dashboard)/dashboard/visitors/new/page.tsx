@@ -47,7 +47,7 @@ export default async function NewVisitorPage() {
  name="fullName"
  type="text"
  required
- className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card dark:bg-white/[0.03] border border-border-hairline px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  placeholder="Juan dela Cruz"
  />
  </div>
@@ -58,7 +58,7 @@ export default async function NewVisitorPage() {
  id="organization"
  name="organization"
  type="text"
- className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card dark:bg-white/[0.03] border border-border-hairline px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  placeholder="e.g. Supplier Inc."
  />
  </div>
@@ -84,7 +84,7 @@ export default async function NewVisitorPage() {
  name="purpose"
  type="text"
  required
- className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card dark:bg-white/[0.03] border border-border-hairline px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  placeholder="e.g. Delivery of materials"
  />
  </div>
@@ -95,7 +95,7 @@ export default async function NewVisitorPage() {
  id="vehicle"
  name="vehicle"
  type="text"
- className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card dark:bg-white/[0.03] border border-border-hairline px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  placeholder="e.g. ABC 1234"
  />
  </div>
@@ -105,7 +105,7 @@ export default async function NewVisitorPage() {
  <select
  id="idType"
  name="idType"
- className="w-full rounded-xl bg-[#0f1115] border border-white/[0.08] px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card dark:bg-[#0f1115] border border-border-hairline px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  >
  <option value="">None</option>
  <option value="Driver's License">Driver&apos;s License</option>
@@ -121,13 +121,13 @@ export default async function NewVisitorPage() {
  id="remarks"
  name="remarks"
  type="text"
- className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card dark:bg-white/[0.03] border border-border-hairline px-4 py-3 text-sm text-text-primary focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  placeholder="Optional notes"
  />
  </div>
  </div>
 
- <div className="flex justify-end pt-4 border-t border-white/[0.05]">
+ <div className="flex justify-end pt-4 border-t border-border-hairline">
  <Button type="submit" className="bg-flow-teal hover:bg-flow-teal/90 text-white min-w-[140px]">
  <UserCheck className="w-4 h-4 mr-2" />
  Check In

@@ -63,38 +63,38 @@ export function FacilityHolographicBeaconLabel({
     switch (themeColor) {
       case "emerald":
         return {
-          primary: "#10b981",
-          secondary: "#059669",
-          glow: "rgba(16, 185, 129, 0.45)",
-          border: "border-emerald-500/50",
-          borderHover: "border-emerald-400",
-          bg: "bg-emerald-950/90",
-          text: "text-emerald-400",
-          badgeBg: "bg-emerald-950/70 border-emerald-500/40 text-emerald-300",
-          threeColor: new THREE.Color("#10b981"),
+          primary: "#01770B",
+          secondary: "#10A51D",
+          glow: "rgba(1, 119, 11, 0.35)",
+          border: "border-scic-green/40 dark:border-scic-green/50",
+          borderHover: "border-scic-green",
+          bg: "bg-card/95 dark:bg-emerald-950/90",
+          text: "text-scic-green dark:text-emerald-400",
+          badgeBg: "bg-muted/80 dark:bg-emerald-950/70 border-border-hairline dark:border-emerald-500/40 text-text-primary dark:text-emerald-300",
+          threeColor: new THREE.Color("#01770B"),
         };
       case "amber":
         return {
           primary: "#f59e0b",
           secondary: "#d97706",
-          glow: "rgba(245, 158, 11, 0.45)",
-          border: "border-amber-500/50",
+          glow: "rgba(245, 158, 11, 0.35)",
+          border: "border-amber-500/40 dark:border-amber-500/50",
           borderHover: "border-amber-400",
-          bg: "bg-amber-950/90",
-          text: "text-amber-400",
-          badgeBg: "bg-amber-950/70 border-amber-500/40 text-amber-300",
+          bg: "bg-card/95 dark:bg-amber-950/90",
+          text: "text-amber-600 dark:text-amber-400",
+          badgeBg: "bg-muted/80 dark:bg-amber-950/70 border-border-hairline dark:border-amber-500/40 text-text-primary dark:text-amber-300",
           threeColor: new THREE.Color("#f59e0b"),
         };
       case "blue":
         return {
           primary: "#3b82f6",
           secondary: "#2563eb",
-          glow: "rgba(59, 130, 246, 0.45)",
-          border: "border-blue-500/50",
+          glow: "rgba(59, 130, 246, 0.35)",
+          border: "border-blue-500/40 dark:border-blue-500/50",
           borderHover: "border-blue-400",
-          bg: "bg-blue-950/90",
-          text: "text-blue-400",
-          badgeBg: "bg-blue-950/70 border-blue-500/40 text-blue-300",
+          bg: "bg-card/95 dark:bg-blue-950/90",
+          text: "text-blue-600 dark:text-blue-400",
+          badgeBg: "bg-muted/80 dark:bg-blue-950/70 border-border-hairline dark:border-blue-500/40 text-text-primary dark:text-blue-300",
           threeColor: new THREE.Color("#3b82f6"),
         };
       case "cyan":
@@ -102,12 +102,12 @@ export function FacilityHolographicBeaconLabel({
         return {
           primary: "#06b6d4",
           secondary: "#0891b2",
-          glow: "rgba(6, 182, 212, 0.45)",
-          border: "border-cyan-500/50",
+          glow: "rgba(6, 182, 212, 0.35)",
+          border: "border-cyan-500/40 dark:border-cyan-500/50",
           borderHover: "border-cyan-400",
-          bg: "bg-cyan-950/90",
-          text: "text-cyan-400",
-          badgeBg: "bg-cyan-950/70 border-cyan-500/40 text-cyan-300",
+          bg: "bg-card/95 dark:bg-cyan-950/90",
+          text: "text-cyan-600 dark:text-cyan-400",
+          badgeBg: "bg-muted/80 dark:bg-cyan-950/70 border-border-hairline dark:border-cyan-500/40 text-text-primary dark:text-cyan-300",
           threeColor: new THREE.Color("#06b6d4"),
         };
     }
@@ -304,23 +304,23 @@ export function FacilityHolographicBeaconLabel({
           >
             {/* Outer Cyberpunk Frame with Wide Landscape Geometry */}
             <div
-              className={`relative w-[480px] max-w-[90vw] overflow-hidden rounded-xl border ${
+              className={`relative w-[calc(100vw-32px)] sm:w-[480px] max-w-[480px] overflow-hidden rounded-xl border ${
                 hovered ? colors.borderHover : colors.border
-              } bg-[#060a0ecc]/95 p-3.5 shadow-2xl backdrop-blur-xl transition-all duration-300 ring-1 ring-white/10`}
+              } bg-card/95 dark:bg-[#060a0ecc]/95 p-3 sm:p-3.5 shadow-2xl backdrop-blur-xl transition-all duration-300 ring-1 ring-border-hairline dark:ring-white/10`}
               style={{
                 boxShadow: hovered
-                  ? `0 0 35px ${colors.glow}, 0 20px 30px -5px rgba(0, 0, 0, 0.85)`
-                  : `0 0 20px ${colors.glow}, 0 10px 20px -3px rgba(0, 0, 0, 0.75)`,
+                  ? `0 0 35px ${colors.glow}, 0 20px 30px -5px rgba(0, 0, 0, 0.4)`
+                  : `0 0 20px ${colors.glow}, 0 10px 20px -3px rgba(0, 0, 0, 0.3)`,
               }}
             >
               {/* Corner Cyber Brackets */}
-              <div className="absolute top-1.5 left-2 text-[9px] font-mono text-white/50 select-none">⌜</div>
-              <div className="absolute top-1.5 right-2 text-[9px] font-mono text-white/50 select-none">⌝</div>
-              <div className="absolute bottom-1.5 left-2 text-[9px] font-mono text-white/50 select-none">⌞</div>
-              <div className="absolute bottom-1.5 right-2 text-[9px] font-mono text-white/50 select-none">⌟</div>
+              <div className="absolute top-1.5 left-2 text-[9px] font-mono text-text-muted/40 dark:text-white/50 select-none">⌜</div>
+              <div className="absolute top-1.5 right-2 text-[9px] font-mono text-text-muted/40 dark:text-white/50 select-none">⌝</div>
+              <div className="absolute bottom-1.5 left-2 text-[9px] font-mono text-text-muted/40 dark:text-white/50 select-none">⌞</div>
+              <div className="absolute bottom-1.5 right-2 text-[9px] font-mono text-text-muted/40 dark:text-white/50 select-none">⌟</div>
 
               {/* ─── ROW 1: TOP SYSTEM META RIBBON (Horizontal Alignment) ─── */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
+              <div className="flex items-center justify-between border-b border-border-hairline dark:border-white/10 pb-2 mb-2">
                 {/* Facility Code with Pulsing LED */}
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2.5 w-2.5">
@@ -333,21 +333,21 @@ export function FacilityHolographicBeaconLabel({
                       style={{ backgroundColor: colors.primary }}
                     />
                   </span>
-                  <span className="font-mono text-[10.5px] font-black tracking-widest uppercase text-white/95">
+                  <span className="font-mono text-[10.5px] font-black tracking-widest uppercase text-text-primary dark:text-white/95">
                     {facilityCode}
                   </span>
-                  <span className="text-white/30 text-[10px]">|</span>
+                  <span className="text-text-muted/40 dark:text-white/30 text-[10px]">|</span>
                   <span className={`font-mono text-[9.5px] font-bold ${colors.text} tracking-wider`}>
                     ONLINE 24/7
                   </span>
                 </div>
 
                 {/* Elevation & Real GPS Coordinates */}
-                <div className="flex items-center gap-2 font-mono text-[9px] text-white/70">
-                  <span className="px-2 py-0.5 rounded bg-white/10 border border-white/15 text-white font-semibold">
+                <div className="flex items-center gap-2 font-mono text-[9px] text-text-muted dark:text-white/70">
+                  <span className="px-2 py-0.5 rounded bg-muted dark:bg-white/10 border border-border-hairline dark:border-white/15 text-text-primary dark:text-white font-semibold">
                     {elevation}
                   </span>
-                  <span className="text-white/50 font-mono text-[8.5px]">
+                  <span className="text-text-muted dark:text-white/50 font-mono text-[8.5px]">
                     {coordinates}
                   </span>
                 </div>
@@ -356,30 +356,30 @@ export function FacilityHolographicBeaconLabel({
               {/* ─── ROW 2: PRIMARY FACILITY TITLE & SUBTITLE ─── */}
               <div className="flex flex-col mb-2.5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-sans text-[14px] font-black tracking-wide text-white uppercase drop-shadow-sm flex items-center gap-2">
+                  <h3 className="font-sans text-[14px] font-black tracking-wide text-text-primary dark:text-white uppercase drop-shadow-sm flex items-center gap-2">
                     <span>{title}</span>
                   </h3>
-                  <span className={`text-[9.5px] font-mono font-bold uppercase ${colors.text} bg-white/5 px-2 py-0.5 rounded border border-white/10`}>
+                  <span className={`text-[9.5px] font-mono font-bold uppercase ${colors.text} bg-muted/60 dark:bg-white/5 px-2 py-0.5 rounded border border-border-hairline dark:border-white/10`}>
                     FACILITY BEACON
                   </span>
                 </div>
-                <p className="font-mono text-[10px] text-white/70 tracking-tight mt-0.5">
+                <p className="font-mono text-[10px] text-text-muted dark:text-white/70 tracking-tight mt-0.5">
                   {subtitle}
                 </p>
               </div>
 
-              {/* ─── ROW 3: HORIZONTAL 4-COLUMN TELEMETRY GRID ─── */}
-              <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/10">
+              {/* ─── ROW 3: HORIZONTAL TELEMETRY GRID (2-col mobile, 4-col desktop) ─── */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 pt-2 border-t border-border-hairline dark:border-white/10">
                 {badges.map((b, idx) => (
                   <div
                     key={`badge-${idx}`}
-                    className={`flex flex-col items-center justify-center p-1.5 rounded-lg border text-center ${colors.badgeBg} transition-all duration-200 hover:brightness-125`}
+                    className={`flex flex-col items-center justify-center p-1.5 rounded-lg border text-center ${colors.badgeBg} transition-all duration-200 hover:brightness-105 dark:hover:brightness-125`}
                   >
-                    <div className="flex items-center gap-1 text-[9px] text-white/70 font-mono">
+                    <div className="flex items-center gap-1 text-[9px] text-text-muted dark:text-white/70 font-mono">
                       {b.icon && <span className="text-[10px]">{b.icon}</span>}
                       <span className="text-[8px] uppercase tracking-wider">{b.label}</span>
                     </div>
-                    <span className="text-[10.5px] font-bold text-white tracking-tight mt-0.5">
+                    <span className="text-[10.5px] font-bold text-text-primary dark:text-white tracking-tight mt-0.5">
                       {b.value}
                     </span>
                   </div>
@@ -387,12 +387,12 @@ export function FacilityHolographicBeaconLabel({
               </div>
 
               {/* ─── ROW 4: INTERACTIVE BOTTOM STATUS & CLICK HINT ─── */}
-              <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between text-[8px] font-mono text-white/40">
-                <span className="flex items-center gap-1 text-white/50">
-                  <span className="w-1 h-1 rounded-full bg-white/40" />
+              <div className="mt-2 pt-1.5 border-t border-border-hairline dark:border-white/5 flex items-center justify-between text-[8px] font-mono text-text-muted dark:text-white/40">
+                <span className="flex items-center gap-1 text-text-muted dark:text-white/50">
+                  <span className="w-1 h-1 rounded-full bg-text-muted/50 dark:bg-white/40" />
                   [ SPATIAL DIGITAL TWIN ACTIVE ]
                 </span>
-                <span className={`font-semibold tracking-wider flex items-center gap-1 ${colors.text} group-hover:text-white transition-colors`}>
+                <span className={`font-semibold tracking-wider flex items-center gap-1 ${colors.text} hover:underline transition-colors`}>
                   CLICK TO FOCUS CAMERA ➜
                 </span>
               </div>

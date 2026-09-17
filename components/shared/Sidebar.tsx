@@ -148,8 +148,8 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  return (
   <aside
     className={cn(
-      "flex h-screen flex-col border-r border-border-hairline bg-gradient-to-b from-[#0B2545]/[0.03] to-transparent dark:from-[#0B131B] dark:to-[#060B10] shell-blur transition-[width] duration-200 ease-in-out print:hidden",
-      collapsed ? "w-16" : "max-md:w-16 md:w-64"
+      "hidden md:flex h-screen flex-col border-r border-border-hairline bg-gradient-to-b from-[#0B2545]/[0.03] to-transparent dark:from-[#0B131B] dark:to-[#060B10] shell-blur transition-[width] duration-200 ease-in-out print:hidden",
+      collapsed ? "w-16" : "w-64"
     )}
   >
  {/* SCIC Corporate & Project Header */}
@@ -168,15 +168,15 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  <>
  <div className="min-w-0 flex-1 max-md:hidden">
  <div className="flex items-center gap-1.5">
-   <span className="font-display text-[10px] font-bold tracking-wider uppercase text-scic-blue dark:text-scic-cyan">
+   <span className="font-display text-[10px] font-bold tracking-wider uppercase text-scic-green dark:text-scic-green-energy">
      STA. CLARA INTL
    </span>
  </div>
  <p className="truncate font-display text-xs font-bold text-text-primary">
    Tumauini HEPP
  </p>
- <p className="truncate font-mono text-[10px] text-text-muted">
-   11.3 MW · EPC Contract
+ <p className="truncate font-mono text-[10px] text-text-muted" title="Client: Philnew Hydro Power Corporation (PHPC)">
+   Client: PHPC · 11.3 MW
  </p>
  </div>
  <ChevronDown
@@ -215,9 +215,9 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  </AnimatePresence>
  </div>
 
- {/* Navigation */}
- <nav className="flex-1 overflow-y-auto p-2">
-  <div className="space-y-4">
+  {/* Navigation */}
+  <nav className="flex-1 overflow-y-auto p-2 scrollbar-thin">
+   <div className="space-y-4 pb-6">
     {/* Core Navigation */}
     <ul className="space-y-1">
       {navItems.map((item) => {

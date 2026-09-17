@@ -92,7 +92,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
   const activePhoto = activeIdx !== null ? photos[activeIdx] : null;
 
   return (
-    <div className="p-6 rounded-2xl bg-bg-panel border border-white/5 shadow-lg min-h-[300px]">
+    <div className="p-6 rounded-2xl bg-card border border-border-hairline shadow-lg min-h-[300px]">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-sm font-semibold text-text-muted uppercase tracking-wider flex items-center gap-2">
           <Camera className="h-4 w-4" /> Site Photos
@@ -100,7 +100,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
       </div>
 
       {photos.length === 0 ? (
-        <div className="h-48 w-full rounded-xl border border-dashed border-white/10 flex flex-col items-center justify-center text-text-muted space-y-2">
+        <div className="h-48 w-full rounded-xl border border-dashed border-border-hairline flex flex-col items-center justify-center text-text-muted space-y-2">
           <Camera className="h-8 w-8 opacity-20" />
           <p className="text-sm">No photos uploaded for this zone.</p>
         </div>
@@ -110,7 +110,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
             <div
               key={photo.id}
               onClick={() => setActiveIdx(idx)}
-              className="group relative aspect-square rounded-xl overflow-hidden bg-black cursor-pointer border border-white/5 hover:border-white/20 transition-all shadow-md"
+              className="group relative aspect-square rounded-xl overflow-hidden bg-muted cursor-pointer border border-border-hairline hover:border-border transition-all shadow-md"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

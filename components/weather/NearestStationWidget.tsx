@@ -117,7 +117,7 @@ export default function NearestStationWidget() {
 
   if (isLoading) {
     return (
-      <div className="bg-[#0D161A] border border-border-hairline rounded-2xl p-5 shadow-lg flex items-center justify-center h-[140px]">
+      <div className="bg-card dark:bg-[#0D161A] border border-border-hairline rounded-2xl p-5 shadow-lg flex items-center justify-center h-[140px]">
         <div className="flex items-center gap-2 text-xs text-text-muted">
           <Activity className="h-4 w-4 text-flow-teal animate-spin" />
           <span>Locating nearest PAGASA weather station...</span>
@@ -128,12 +128,12 @@ export default function NearestStationWidget() {
 
   if (isError || (!nearestAws && !nearestSynop)) {
     return (
-      <div className="bg-[#0D161A] border border-border-hairline rounded-2xl p-4 shadow-lg flex items-center justify-between">
+      <div className="bg-card dark:bg-[#0D161A] border border-border-hairline rounded-2xl p-4 shadow-lg flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-400" />
+          <AlertTriangle className="h-4 w-4 text-amber-500 dark:text-amber-400" />
           <span className="text-xs text-text-muted">PAGASA Station Data Unavailable</span>
         </div>
-        <span className="text-[10px] text-amber-400 font-mono px-2 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">
+        <span className="text-[10px] text-amber-600 dark:text-amber-400 font-mono px-2 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">
           Layer Unavailable
         </span>
       </div>
@@ -141,7 +141,7 @@ export default function NearestStationWidget() {
   }
 
   return (
-    <div className="bg-[#0D161A] border border-border-hairline rounded-2xl p-5 shadow-lg relative overflow-hidden">
+    <div className="bg-card dark:bg-[#0D161A] border border-border-hairline rounded-2xl p-5 shadow-lg relative overflow-hidden">
       <div className="flex items-center justify-between border-b border-border-hairline/60 pb-3 mb-3">
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-flow-teal" />
@@ -149,7 +149,7 @@ export default function NearestStationWidget() {
             Nearest PAGASA Site Weather Station
           </span>
         </div>
-        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+        <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
           PAGASA PANaHON Live
         </span>
       </div>
@@ -157,7 +157,7 @@ export default function NearestStationWidget() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Nearest Automatic Weather Station (AWS) */}
         {nearestAws && (
-          <div className="bg-black/30 rounded-xl p-3.5 border border-border-hairline/40">
+          <div className="bg-slate-50/70 dark:bg-black/30 rounded-xl p-3.5 border border-slate-200/60 dark:border-border-hairline/40">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-xs font-semibold text-text-primary truncate max-w-[200px]">
                 {nearestAws.site_name}
@@ -171,8 +171,8 @@ export default function NearestStationWidget() {
             </p>
 
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#131E24] p-2 rounded-lg border border-border-hairline/30 flex items-center gap-2">
-                <CloudRain className="h-4 w-4 text-cyan-400 shrink-0" />
+              <div className="bg-white dark:bg-[#131E24] p-2 rounded-lg border border-slate-200/80 dark:border-border-hairline/30 flex items-center gap-2">
+                <CloudRain className="h-4 w-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                 <div>
                   <div className="text-[10px] text-text-muted">1-Hr Rain</div>
                   <div className="text-xs font-bold text-text-primary font-mono">
@@ -181,8 +181,8 @@ export default function NearestStationWidget() {
                 </div>
               </div>
 
-              <div className="bg-[#131E24] p-2 rounded-lg border border-border-hairline/30 flex items-center gap-2">
-                <Droplets className="h-4 w-4 text-blue-400 shrink-0" />
+              <div className="bg-white dark:bg-[#131E24] p-2 rounded-lg border border-slate-200/80 dark:border-border-hairline/30 flex items-center gap-2">
+                <Droplets className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <div>
                   <div className="text-[10px] text-text-muted">24-Hr Accu.</div>
                   <div className="text-xs font-bold text-text-primary font-mono">
@@ -196,7 +196,7 @@ export default function NearestStationWidget() {
 
         {/* Nearest Synoptic Station (SYNOP) */}
         {nearestSynop && (
-          <div className="bg-black/30 rounded-xl p-3.5 border border-border-hairline/40 flex flex-col justify-between">
+          <div className="bg-slate-50/70 dark:bg-black/30 rounded-xl p-3.5 border border-slate-200/60 dark:border-border-hairline/40 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-semibold text-text-primary truncate max-w-[200px]">
@@ -211,7 +211,7 @@ export default function NearestStationWidget() {
               </p>
             </div>
 
-            <div className="bg-[#131E24] p-2.5 rounded-lg border border-border-hairline/30 flex items-center justify-between">
+            <div className="bg-white dark:bg-[#131E24] p-2.5 rounded-lg border border-slate-200/80 dark:border-border-hairline/30 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {nearestSynop.icon ? (
                   <img src={nearestSynop.icon} alt="Weather" className="w-7 h-7 object-contain" />

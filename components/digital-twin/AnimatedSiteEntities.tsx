@@ -2630,7 +2630,7 @@ function DaytimeExecutiveAndAdminStaff({ onSelectPerson }: { onSelectPerson?: (i
         bodyScale={[1.05, 1.0, 1.05]}
       />
 
-      {/* 📋 HR & Administrative Head (Rovigail Abellar) on Main Office Front Veranda */}
+      {/* 📋 HR Officer / HR Lead (Rovigail Joy G. Abellar) on Main Office Front Veranda */}
       <HydroProjectPersonMesh
         personnelId="HR_ROVIGAIL_ABELLAR"
         onSelectPerson={onSelectPerson}
@@ -5381,8 +5381,8 @@ export function AnimatedSiteEntities({
       />
 
       {/* ═══ 7. TIME-BASED WORKFORCE ROUTINES & GATHERINGS ═══ */}
-      {/* Morning & Day: Safety Toolbox Meeting on the basketball court stage with full workforce formation */}
-      {(normalizedTime === "morning" || normalizedTime === "day") && (
+      {/* Morning ONLY: Safety Toolbox Meeting on the basketball court stage with full workforce formation */}
+      {normalizedTime === "morning" && (
         <CourtToolboxMeetingDirector onSelectPerson={onSelectPerson} />
       )}
 

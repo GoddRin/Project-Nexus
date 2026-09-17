@@ -181,15 +181,15 @@ export function TemfacilFacility({
       setIsNearTemfacil(nearCompound);
     }
 
-    // 2. Office interior proximity threshold (120m radius across any inspection angle/altitude)
+    // 2. Office interior proximity threshold (25m radius for entering the office)
     const officeDistSq = camera.position.distanceToSquared(OFFICE_WORLD_CENTER);
-    const nearOffice = officeDistSq < 14400; // 120m radius
+    const nearOffice = officeDistSq < 625; // 25m radius
     if (nearOffice !== isNearOffice) {
       setIsNearOffice(nearOffice);
     }
   });
 
-  const isOfficeInteriorVisible = isTemfacilFocused || isNearOffice;
+  const isOfficeInteriorVisible = Boolean(activePreset && activePreset.startsWith("temfacil-office")) || isNearOffice;
 
   return (
     <group position={[118, 14.0, -95]} rotation={[0, 0, 0]}>
@@ -776,7 +776,7 @@ function TemfacilHeadquartersWorkforce({
         accessory="CLIPBOARD"
       />
 
-      {/* HR Admin (Joshua) on Main Office Front Veranda Reception Counter */}
+      {/* Admin Officer (Joshua) on Main Office Front Veranda Reception Counter */}
       <HydroProjectPersonMesh
         personnelId="HR_JOSHUA_ADMIN"
         onSelectPerson={onSelectPerson}
@@ -792,7 +792,7 @@ function TemfacilHeadquartersWorkforce({
         accessory="BINDER"
       />
 
-      {/* HR Assistant (Randy Gamboa) on Timekeeping Walkway */}
+      {/* Admin Assistant (Randy Gamboa) on Timekeeping Walkway */}
       <HydroProjectPersonMesh
         personnelId="HR_RANDY_GAMBOA"
         onSelectPerson={onSelectPerson}

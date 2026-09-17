@@ -26,20 +26,23 @@
   --bg-panel-raised: #F1F5F9;
   --bg-panel-subtle: #E2E8F0;
 
-  /* SCIC Corporate Brand Palette */
+  /* SCIC Corporate Brand Palette ("Renew Your Energy") */
+  --scic-green: #01770B;       /* SCIC Corporate Forest/Emerald Green (Primary Official Brand) */
+  --scic-green-energy: #10A51D;/* SCIC Energy Green / Renewable Accent */
+  --scic-green-leaf: #39813E;  /* SCIC Pine / Secondary Logo Mark */
+  --scic-green-bright: #42BC4A;/* SCIC Bright Energy Leaf */
   --scic-navy: #0B2545;        /* SCIC Corporate Deep Navy */
   --scic-navy-dark: #081B33;
   --scic-navy-light: #133E68;
-  --scic-blue: #0077CC;        /* SCIC Hydro Electric Blue */
+  --scic-blue: #0284C7;        /* SCIC Hydro Electric Blue */
   --scic-cyan: #00A3E0;        /* SCIC Energy / River Cyan */
   --scic-red: #C8102E;         /* SCIC Safety / Alert Red */
   --scic-amber: #D97706;       /* SCIC Industrial Machinery Amber */
-  --scic-green: #059669;       /* SCIC Eco / Hydropower Green */
   --scic-slate: #0F172A;       /* SCIC Heavy Titanium Slate */
 
   /* Legacy & Semantic Mapping */
-  --flow-teal: #0077CC;
-  --brand-green: #0B2545;
+  --flow-teal: #0284C7;
+  --brand-green: #01770B;      /* Primary Corporate Brand */
   --signal-amber: #D97706;
   --signal-red: #C8102E;
 
@@ -108,6 +111,9 @@
   --color-scic-red: var(--scic-red);
   --color-scic-amber: var(--scic-amber);
   --color-scic-green: var(--scic-green);
+  --color-scic-green-energy: var(--scic-green-energy);
+  --color-scic-green-leaf: var(--scic-green-leaf);
+  --color-scic-green-bright: var(--scic-green-bright);
   --color-scic-slate: var(--scic-slate);
 
   --color-flow-teal: var(--flow-teal);
@@ -261,6 +267,10 @@ code, pre, kbd, samp,
   --bg-panel-subtle: #182635;  /* Accent Inset Panel */
 
   /* SCIC Corporate Brand Palette (High Contrast / Glow Optimized) */
+  --scic-green: #10A51D;       /* Glowing SCIC Renewable Energy Green */
+  --scic-green-energy: #22C55E;/* Vibrant Electric Emerald */
+  --scic-green-leaf: #16A34A;  /* Deep Leaf */
+  --scic-green-bright: #4ADE80;/* High-Vis Luminous Green */
   --scic-navy: #133E68;
   --scic-navy-dark: #09192B;
   --scic-navy-light: #1E5285;
@@ -268,12 +278,11 @@ code, pre, kbd, samp,
   --scic-cyan: #00D2FF;        /* Electric Pure Cyan for Telemetry */
   --scic-red: #EF4444;         /* High-Vis Safety Red */
   --scic-amber: #F59E0B;       /* Industrial Amber Warning */
-  --scic-green: #10B981;       /* Active Power Eco Green */
   --scic-slate: #1E293B;       /* Titanium Graphite */
 
   /* Semantic Mapping */
   --flow-teal: #00D2FF;        /* River Cyan for live hydro metrics */
-  --brand-green: #0284C7;      /* SCIC Blue */
+  --brand-green: #10A51D;      /* SCIC Energy Green in Dark Mode */
   --signal-amber: #F59E0B;
   --signal-red: #EF4444;
 
@@ -550,4 +559,39 @@ code, pre, kbd, samp,
   font-weight: 600 !important;
   display: block !important;
   line-height: 1.35 !important;
+}
+
+/* ============================================================
+   Sta. Clara International Corporation (SCIC) Corporate Brand Signatures
+   "Renew Your Energy" Corporate Green (#01770B) & Energy Accent (#10A51D)
+   ============================================================ */
+.scic-gradient-btn {
+  background: linear-gradient(135deg, #01770b 0%, #10a51d 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(16, 165, 29, 0.4);
+  box-shadow: 0 2px 8px rgba(1, 119, 11, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+.scic-gradient-btn:hover {
+  opacity: 0.95;
+  box-shadow: 0 4px 16px rgba(16, 165, 29, 0.35);
+  transform: translateY(-0.5px);
+}
+.dark .scic-gradient-btn {
+  border-color: rgba(16, 165, 29, 0.5);
+  box-shadow: 0 0 20px rgba(16, 165, 29, 0.25);
+}
+.dark .scic-gradient-btn:hover {
+  box-shadow: 0 0 25px rgba(16, 165, 29, 0.45);
+}
+
+.scic-pill-active {
+  background: rgba(1, 119, 11, 0.08);
+  color: #01770b;
+  border: 1px solid rgba(1, 119, 11, 0.25);
+}
+.dark .scic-pill-active {
+  background: rgba(16, 165, 29, 0.15);
+  color: #22c55e;
+  border-color: rgba(16, 165, 29, 0.35);
 }

@@ -24,54 +24,54 @@ export default function DashboardPage() {
 
       <PageHeader
         title="Command & Operations Center"
-        subtitle="Tumauini Hydroelectric Power Plant (11.3 MW Run-of-River EPC Construction Project)"
+        subtitle="Tumauini Hydroelectric Power Plant (11.3 MW Run-of-River EPC Project · Client: Philnew Hydro Power Corporation)"
         actionLabel="Site Overview"
         actionHref="/dashboard/sitemap"
       />
 
       {/* SCIC Executive Quick Metric Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-        <div className="glass-scic-card p-4 flex items-center gap-3.5 scic-card-accent-blue">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-scic-blue/10 dark:bg-scic-cyan/10 border border-scic-blue/20 dark:border-scic-cyan/20">
-            <Zap className="h-5 w-5 text-scic-blue dark:text-scic-cyan" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
+        <div className="glass-scic-card p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3.5 scic-card-accent-blue">
+          <div className="flex h-9 sm:h-10 w-9 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-scic-blue/10 dark:bg-scic-cyan/10 border border-scic-blue/20 dark:border-scic-cyan/20">
+            <Zap className="h-4 sm:h-5 w-4 sm:h-5 text-scic-blue dark:text-scic-cyan" />
           </div>
-          <div>
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted">Target Capacity</p>
-            <p className="font-display text-lg font-bold text-text-primary">11.3 MW</p>
-            <p className="text-[10px] text-scic-blue dark:text-scic-cyan font-medium">Clean Run-of-River</p>
-          </div>
-        </div>
-
-        <div className="glass-scic-card p-4 flex items-center gap-3.5 scic-card-accent-green">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <div>
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted">Safety Milestone</p>
-            <p className="font-display text-lg font-bold text-emerald-600 dark:text-emerald-400">1.42M hrs</p>
-            <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium">Zero Lost Time Injury</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Target Capacity</p>
+            <p className="font-display text-base sm:text-lg font-bold text-text-primary">11.3 MW</p>
+            <p className="text-[10px] text-scic-blue dark:text-scic-cyan font-medium truncate">Clean Run-of-River</p>
           </div>
         </div>
 
-        <div className="glass-scic-card p-4 flex items-center gap-3.5 scic-card-accent-cyan">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-scic-cyan/10 border border-scic-cyan/25">
-            <Waves className="h-5 w-5 text-scic-cyan" />
+        <div className="glass-scic-card p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3.5 scic-card-accent-green">
+          <div className="flex h-9 sm:h-10 w-9 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <ShieldCheck className="h-4 sm:h-5 w-4 sm:h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <div>
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted">Hydrology Status</p>
-            <p className="font-display text-lg font-bold text-text-primary">Normal Head</p>
-            <p className="text-[10px] text-text-muted font-medium">Pinacanauan River</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Safety Milestone</p>
+            <p className="font-display text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">1.42M hrs</p>
+            <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium truncate">Zero Lost Time Injury</p>
           </div>
         </div>
 
-        <div className="glass-scic-card p-4 flex items-center gap-3.5 scic-card-accent-amber">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20">
-            <HardHat className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+        <div className="glass-scic-card p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3.5 scic-card-accent-cyan">
+          <div className="flex h-9 sm:h-10 w-9 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-scic-cyan/10 border border-scic-cyan/25">
+            <Waves className="h-4 sm:h-5 w-4 sm:h-5 text-scic-cyan" />
           </div>
-          <div>
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted">Contractor</p>
-            <p className="font-display text-lg font-bold text-text-primary">SCIC AAAA</p>
-            <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">General Engineering</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Hydrology Status</p>
+            <p className="font-display text-base sm:text-lg font-bold text-text-primary truncate">Normal Head</p>
+            <p className="text-[10px] text-text-muted font-medium truncate">Pinacanauan River</p>
+          </div>
+        </div>
+
+        <div className="glass-scic-card p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3.5 scic-card-accent-amber">
+          <div className="flex h-9 sm:h-10 w-9 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20">
+            <HardHat className="h-4 sm:h-5 w-4 sm:h-5 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Contractor</p>
+            <p className="font-display text-base sm:text-lg font-bold text-text-primary truncate">SCIC AAAA</p>
+            <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium truncate">General Engineering</p>
           </div>
         </div>
       </div>

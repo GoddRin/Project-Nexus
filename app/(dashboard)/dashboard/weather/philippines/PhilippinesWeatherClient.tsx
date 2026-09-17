@@ -31,7 +31,7 @@ import { isRelevantToPhilippines } from "@/lib/weather/storms";
 const TyphoonMap = dynamic(() => import("@/components/weather/TyphoonMap"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[550px] bg-[#0B1418] rounded-2xl border border-border-hairline flex items-center justify-center">
+    <div className="w-full h-[550px] bg-card dark:bg-[#0B1418] rounded-2xl border border-border-hairline flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <Activity className="h-8 w-8 text-flow-teal animate-pulse" />
         <span className="text-xs text-text-muted">Loading satellite tracker...</span>
@@ -444,7 +444,7 @@ export default function PhilippinesWeatherClient({
                                 </span>
                                 <span className={cn(
                                   "text-[9px] px-1.5 py-0.2 rounded font-mono font-bold uppercase",
-                                  fcInPAR ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-slate-800 text-slate-400"
+                                  fcInPAR ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-transparent"
                                 )}>
                                   {fcInPAR ? "Inside PAR" : "NWPAC"}
                                 </span>
@@ -751,7 +751,7 @@ export default function PhilippinesWeatherClient({
           </div>
 
           {/* Iframe element (cropped to hide watermarks) */}
-          <div className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-lg bg-[#0B1418]">
+          <div className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-lg bg-card dark:bg-[#0B1418]">
             <iframe
               key={currentLayer} // Force iframe reload when overlay parameter updates
               src={getWindyEmbedUrl()}
@@ -766,7 +766,7 @@ export default function PhilippinesWeatherClient({
             ></iframe>
             
             {/* Watermark Obfuscator */}
-            <div className="absolute bottom-[16px] right-0 w-[400px] h-[24px] bg-gradient-to-r from-transparent via-[#0B1418]/80 to-[#0B1418] backdrop-blur-[2px] pointer-events-none z-10" />
+            <div className="absolute bottom-[16px] right-0 w-[400px] h-[24px] bg-gradient-to-r from-transparent via-card/80 to-card dark:via-[#0B1418]/80 dark:to-[#0B1418] backdrop-blur-[2px] pointer-events-none z-10" />
           </div>
         </div>
 

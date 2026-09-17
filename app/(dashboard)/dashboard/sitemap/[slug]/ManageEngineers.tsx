@@ -72,7 +72,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
   };
 
   return (
-    <div className="p-6 rounded-2xl bg-bg-panel border border-white/5 shadow-lg space-y-4">
+    <div className="p-6 rounded-2xl bg-card border border-border-hairline shadow-lg space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-text-muted uppercase tracking-wider flex items-center gap-2">
           Assigned Crew & Heads
@@ -82,7 +82,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
             variant="ghost"
             size="sm"
             onClick={() => setShowAddForm(true)}
-            className="text-xs text-flow-teal hover:text-flow-teal/80 hover:bg-white/[0.02] flex items-center gap-1.5 p-0 px-2 h-7"
+            className="text-xs text-flow-teal hover:text-flow-teal/80 hover:bg-muted flex items-center gap-1.5 p-0 px-2 h-7"
           >
             <Plus className="h-3.5 w-3.5" /> Add
           </Button>
@@ -111,7 +111,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
             return (
               <li key={eng.id} className="flex items-center justify-between gap-3 group">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/[0.08] border border-white/5 flex items-center justify-center text-xs font-semibold text-text-primary uppercase tracking-wide">
+                  <div className="w-8 h-8 rounded-full bg-muted border border-border-hairline flex items-center justify-center text-xs font-semibold text-text-primary uppercase tracking-wide">
                     {initials}
                   </div>
                   <div>
@@ -124,7 +124,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
                 <button
                   onClick={() => handleRemove(eng.userId)}
                   disabled={isPending}
-                  className="p-1.5 rounded-lg hover:bg-white/[0.04] text-text-muted hover:text-alert-red opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all disabled:opacity-30"
+                  className="p-1.5 rounded-lg hover:bg-muted text-text-muted hover:text-alert-red opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all disabled:opacity-30"
                   title="Remove Engineer"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -137,7 +137,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
 
       {/* Add engineer form */}
       {showAddForm && (
-        <form onSubmit={handleAssign} className="pt-4 border-t border-white/5 space-y-4">
+        <form onSubmit={handleAssign} className="pt-4 border-t border-border-hairline space-y-4">
           <div className="space-y-1.5">
             <label className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Select User</label>
             <UserCombobox
@@ -155,7 +155,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
               placeholder="e.g. Assigned Head, Lead Civil Engineer"
               value={roleText}
               onChange={(e) => setRoleText(e.target.value)}
-              className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-muted/40 focus:border-flow-teal transition-colors"
+              className="w-full rounded-xl bg-card border border-border-hairline px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-muted/40 focus:border-flow-teal transition-colors"
             />
           </div>
 
@@ -175,7 +175,7 @@ export function ManageEngineers({ locationId, assignedEngineers, users }: Manage
             <Button
               type="submit"
               disabled={isPending}
-              className="text-xs font-semibold rounded-xl bg-flow-teal text-bg-panel hover:bg-flow-teal/90"
+              className="text-xs font-semibold rounded-xl scic-gradient-btn text-white"
             >
               Assign
             </Button>

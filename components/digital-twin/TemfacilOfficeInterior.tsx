@@ -3302,13 +3302,14 @@ function TemfacilOfficeInteriorContent({
       ))}
 
       {/* ═══════════════════════════════════════════════════════════════════
-           5A: HR / ADMIN OFFICE  (Photo 1)
+           5A: HUMAN RESOURCES & ADMINISTRATION OFFICES (Photo 1)
            Room bounds: X ∈ [1.20, 7.00], Z ∈ [6.80, 10.80]
            Door: X=1.20, Z=8.80.  POV: standing at door looking East.
-           LEFT (North) = Z > 8.80,  RIGHT (South) = Z < 8.80
+           LEFT (North, Z > 8.80) = Human Resources Office (HR Officer Rovigail Joy G. Abellar)
+           RIGHT (South, Z < 8.80) = Administration Office (Admin Officer Joshua & Admin Assistant Randy Gamboa)
            ═══════════════════════════════════════════════════════════════════ */}
       {roomVis.r5a && (
-        <group name="Zone5A_HROffice">
+        <group name="Zone5A_HR_and_Admin_Offices">
 
           {/* ── LEFT / NORTH SIDE (Z > 8.80) ─────────────────────────────── */}
 
@@ -3473,14 +3474,14 @@ function TemfacilOfficeInteriorContent({
             </mesh>
           ))}
 
-          {/* Staff #1 seated at counter (black shirt, facing south into counter) */}
+          {/* Admin Officer (Joshua) seated at counter (navy shirt, facing south into counter) */}
           <mesh geometry={geoMonoblocChair} position={[3.80, 0.05, 7.70]} rotation={[0, Math.PI, 0]} material={MAT_MONOBLOC_WHITE} />
           <RealisticHumanoidMesh
-            role="HR_OFFICER"
+            role="ADMIN_OFFICER"
             personnelId="HR_JOSHUA_ADMIN"
             onSelectPerson={onSelectPerson}
-            skinTone="MEDIUM"
-            hairStyle="WOMAN_BOB"
+            skinTone="LIGHT"
+            hairStyle="SHORT"
             customShirtMat={MAT_SHIRT_NAVY}
             customPantsMat={MAT_PANTS_CARGO_DARK}
             hasHardhat={false}
@@ -3490,13 +3491,16 @@ function TemfacilOfficeInteriorContent({
             rotation={[0, Math.PI, 0]}
           />
 
-          {/* Staff #2 seated further along counter */}
+          {/* Admin Assistant (Randy Gamboa) seated further along counter */}
           <mesh geometry={geoMonoblocChair} position={[5.00, 0.05, 7.70]} rotation={[0, Math.PI, 0]} material={MAT_MONOBLOC_WHITE} />
           <RealisticHumanoidMesh
-            role="HR_OFFICER"
+            role="ADMIN_ASSISTANT"
             personnelId="HR_RANDY_GAMBOA"
             onSelectPerson={onSelectPerson}
             skinTone="MEDIUM"
+            hairStyle="SHORT"
+            facialHair="GOATEE"
+            hasGlasses
             customShirtMat={MAT_SHIRT_NAVY}
             customPantsMat={MAT_PANTS_CARGO_DARK}
             hasHardhat={false}
@@ -3883,10 +3887,12 @@ function TemfacilOfficeInteriorContent({
             rotation={[0, Math.PI, 0]}
           />
 
-          {/* Safety Officer #2 seated beside #1 */}
+          {/* Pollution Control Officer Jon-Jon Bucsit (PCO) seated beside Safety Officer Alfredo Ariz */}
           <mesh geometry={geoMonoblocChair} position={[1.50, 0.05, -1.90]} rotation={[0, Math.PI, 0]} material={MAT_MONOBLOC_WHITE} />
           <RealisticHumanoidMesh
             role="SAFETY_OFFICER"
+            personnelId="PCO_JONJON_BUCSIT"
+            onSelectPerson={onSelectPerson}
             skinTone="MEDIUM"
             hasHardhat={false}
             hasVest={true}

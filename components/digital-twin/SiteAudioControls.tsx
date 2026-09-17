@@ -36,7 +36,7 @@ export function SiteAudioControls({ timeMode, isStormActive = false }: SiteAudio
         className={cn(
           "h-7 px-2.5 font-mono text-[11px] font-semibold rounded-lg shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5",
           isMuted
-            ? "border-white/10 bg-black/85 text-text-muted hover:text-white hover:border-white/20"
+            ? "border-border-hairline bg-card/90 dark:bg-black/85 text-text-muted hover:text-text-primary dark:hover:text-white"
             : "border-flow-teal/50 bg-flow-teal/20 text-flow-teal ring-1 ring-flow-teal/40 hover:bg-flow-teal/30"
         )}
         title={isMuted ? "Unmute Sierra Madre 3D Soundscape" : "Mute Soundscape"}

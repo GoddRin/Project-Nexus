@@ -34,6 +34,7 @@ function CategoryBadge({ category }: { category: KbCategory }) {
 }
 
 interface MarkdownProps {
+ node?: any;
  children?: React.ReactNode;
 }
 
@@ -59,11 +60,30 @@ const markdownComponents = {
  {children}
  </h3>
  ),
- p: ({ children }: MarkdownProps) => (
- <p className="text-sm leading-relaxed text-text-primary/95 mb-4 font-normal">
- {children}
- </p>
- ),
+ p: ({ node, children }: MarkdownProps) => {
+  // Prevent invalid HTML nesting: in HTML, <div> (from custom img/table/pre) cannot be a child of <p>.
+  const hasBlockChild = (node as any)?.children?.some(
+   (child: any) =>
+    child.tagName === "img" ||
+    child.tagName === "table" ||
+    child.tagName === "pre" ||
+    child.tagName === "div"
+  );
+
+  if (hasBlockChild) {
+   return (
+    <div className="text-sm leading-relaxed text-text-primary/95 mb-4 font-normal">
+     {children}
+    </div>
+   );
+  }
+
+  return (
+   <p className="text-sm leading-relaxed text-text-primary/95 mb-4 font-normal">
+    {children}
+   </p>
+  );
+ },
  ul: ({ children }: MarkdownProps) => (
  <ul className="list-disc pl-6 space-y-1.5 mb-4 text-sm text-text-primary/90">
  {children}

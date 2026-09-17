@@ -50,7 +50,7 @@ export function SearchInput({ placeholder = "Search..." }: SearchInputProps) {
  value={value}
  onChange={(e) => setValue(e.target.value)}
  placeholder={placeholder}
- className="w-full rounded-xl bg-white/[0.03] border border-white/[0.08] pl-10 pr-4 py-2 text-xs text-text-primary placeholder:text-text-muted/50 focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
+ className="w-full rounded-xl bg-card border border-border-hairline pl-10 pr-4 py-2 text-xs text-text-primary placeholder:text-text-muted/50 focus:border-flow-teal focus:ring-1 focus:ring-flow-teal outline-none transition-colors"
  />
  <SearchIcon className="absolute left-3.5 top-2.5 h-4 w-4 text-text-muted/60" />
  </div>

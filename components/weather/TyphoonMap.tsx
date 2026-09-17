@@ -127,10 +127,10 @@ function createLetterBadgeIcon(
     : "";
 
   const nameBadge = stormName
-    ? `<div class="absolute left-7 whitespace-nowrap bg-slate-950/95 font-sans font-bold text-[10px] px-2 py-0.5 rounded-md border ${
-        inPAR ? "border-red-500/50 text-red-400" : "border-sky-400/50 text-sky-300"
+    ? `<div class="absolute left-7 whitespace-nowrap bg-card/95 dark:bg-slate-950/95 font-sans font-bold text-[10px] px-2 py-0.5 rounded-md border ${
+        inPAR ? "border-red-500/50 text-red-600 dark:text-red-400" : "border-sky-500/50 text-sky-600 dark:text-sky-300"
       } shadow-xl flex items-center gap-1.5 backdrop-blur-md">
-        <span class="w-1.5 h-1.5 rounded-full ${inPAR ? "bg-red-500" : "bg-sky-400"} animate-pulse"></span>
+        <span class="w-1.5 h-1.5 rounded-full ${inPAR ? "bg-red-500" : "bg-sky-500"} animate-pulse"></span>
         <span>${stormName}</span>
       </div>`
     : "";
@@ -217,7 +217,7 @@ function createForecastBadgeIcon(
       <div class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[7.5px] border ${bgGradient} ${borderPar} transition-transform duration-200 group-hover:scale-125">
         ${badgeLetter}
       </div>
-      <div class="mt-0.5 whitespace-nowrap bg-slate-950/90 text-slate-300 font-mono text-[7.5px] px-1 py-0.2 rounded border border-slate-700/60 shadow pointer-events-none">
+      <div class="mt-0.5 whitespace-nowrap bg-card/95 dark:bg-slate-950/90 text-text-primary dark:text-slate-300 font-mono text-[7.5px] px-1 py-0.2 rounded border border-border-hairline shadow pointer-events-none">
         ${offsetTime}
       </div>
     </div>
@@ -719,7 +719,7 @@ export default function TyphoonMap({
       </MapContainer>
 
       {/* Status Badge Overlay — Top Left (above zoom buttons) */}
-      <div className="absolute top-2.5 left-3 z-[1000] bg-slate-950/95 backdrop-blur-md border border-slate-800/80 px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xl pointer-events-auto max-w-[50%] sm:max-w-[58%]">
+      <div className="absolute top-2.5 left-3 z-[1000] bg-card/90 dark:bg-slate-950/95 backdrop-blur-md border border-border-hairline px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xl pointer-events-auto max-w-[50%] sm:max-w-[58%]">
         <div className={cn("w-2 h-2 rounded-full shrink-0", parStorms.length > 0 ? "bg-red-500 animate-ping" : "bg-[#1FB6A6] animate-pulse")}></div>
         <span className="text-[10px] font-bold text-text-primary tracking-wide truncate">
           {parStorms.length > 0
@@ -738,21 +738,21 @@ export default function TyphoonMap({
           className={cn(
             "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-sans font-semibold backdrop-blur-md border shadow-xl transition-all cursor-pointer select-none whitespace-nowrap",
             showParBoundary
-              ? "bg-slate-950/95 text-cyan-400 border-cyan-500/40 hover:bg-slate-900 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
-              : "bg-slate-950/95 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-900"
+              ? "bg-card/90 dark:bg-slate-950/95 text-cyan-600 dark:text-cyan-400 border-cyan-500/40 hover:bg-slate-100 dark:hover:bg-slate-900 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+              : "bg-card/90 dark:bg-slate-950/95 text-text-muted border-border-hairline hover:text-text-primary hover:bg-slate-100 dark:hover:bg-slate-900"
           )}
           title={showParBoundary ? "Click to hide PAR boundary" : "Click to show PAR boundary"}
         >
           {showParBoundary ? (
-            <Eye className="w-3 h-3 text-cyan-400 shrink-0" />
+            <Eye className="w-3 h-3 text-cyan-600 dark:text-cyan-400 shrink-0" />
           ) : (
-            <EyeOff className="w-3 h-3 text-slate-400 shrink-0" />
+            <EyeOff className="w-3 h-3 text-text-muted shrink-0" />
           )}
-          <span className={cn("w-2.5 h-[2px] border-t-2 border-dashed inline-block shrink-0", showParBoundary ? "border-cyan-400" : "border-slate-500")}></span>
+          <span className={cn("w-2.5 h-[2px] border-t-2 border-dashed inline-block shrink-0", showParBoundary ? "border-cyan-500 dark:border-cyan-400" : "border-slate-400 dark:border-slate-500")}></span>
           <span>PAR Border</span>
           <span className={cn(
             "text-[8px] font-mono px-1 py-0.2 rounded font-bold uppercase shrink-0",
-            showParBoundary ? "bg-cyan-500/20 text-cyan-300" : "bg-slate-800 text-slate-400"
+            showParBoundary ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
           )}>
             {showParBoundary ? "ON" : "OFF"}
           </span>
@@ -760,13 +760,13 @@ export default function TyphoonMap({
       </div>
 
       {/* Bottom Map Legend & Intensity Overlay Card */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md border border-border-hairline p-2.5 rounded-xl shadow-xl space-y-2 pointer-events-auto text-[10px] font-sans max-w-[calc(100%-24px)] sm:max-w-xs">
+      <div className="absolute bottom-3 left-3 z-[1000] bg-card/90 dark:bg-slate-950/90 backdrop-blur-md border border-border-hairline p-2.5 rounded-xl shadow-xl space-y-2 pointer-events-auto text-[10px] font-sans max-w-[calc(100%-24px)] sm:max-w-xs">
         {/* Row 1: Live Telemetry + Track Info */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           {lastUpdate && (
             <div className="flex items-center gap-1.5 shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-[9px] font-semibold text-green-400">Live</span>
+              <span className="text-[9px] font-semibold text-green-600 dark:text-green-400">Live</span>
               <span className="text-[9px] text-text-muted">{lastUpdate}</span>
             </div>
           )}
@@ -781,15 +781,15 @@ export default function TyphoonMap({
         </div>
 
         {/* Row 2: Intensity Scales */}
-        <div className="pt-1.5 border-t border-slate-800/80 flex items-center gap-2 text-[9px]">
-          <span className="font-bold text-slate-400 uppercase tracking-wider text-[8px] shrink-0">Intensity</span>
+        <div className="pt-1.5 border-t border-border-hairline flex items-center gap-2 text-[9px]">
+          <span className="font-bold text-text-muted uppercase tracking-wider text-[8px] shrink-0">Intensity</span>
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-700 text-white flex items-center justify-center font-bold text-[7px] border border-blue-300">L</span> <span className="text-slate-300 text-[9px]">LPA</span></span>
-            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-sky-400 to-cyan-700 text-white flex items-center justify-center font-bold text-[7px] border border-sky-300">D</span> <span className="text-slate-300 text-[9px]">TD</span></span>
-            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 flex items-center justify-center font-bold text-[7px] border border-yellow-200">TS</span> <span className="text-slate-300 text-[9px]">TS</span></span>
-            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 text-white flex items-center justify-center font-bold text-[7px] border border-orange-200">STS</span> <span className="text-slate-300 text-[9px]">STS</span></span>
-            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-red-500 to-rose-700 text-white flex items-center justify-center font-bold text-[7px] border border-red-200">TY</span> <span className="text-slate-300 text-[9px]">TY</span></span>
-            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-pink-500 to-purple-800 text-white flex items-center justify-center font-bold text-[7px] border border-pink-200">STY</span> <span className="text-slate-300 text-[9px]">STY</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-700 text-white flex items-center justify-center font-bold text-[7px] border border-blue-300">L</span> <span className="text-text-secondary text-[9px]">LPA</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-sky-400 to-cyan-700 text-white flex items-center justify-center font-bold text-[7px] border border-sky-300">D</span> <span className="text-text-secondary text-[9px]">TD</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 flex items-center justify-center font-bold text-[7px] border border-yellow-200">TS</span> <span className="text-text-secondary text-[9px]">TS</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 text-white flex items-center justify-center font-bold text-[7px] border border-orange-200">STS</span> <span className="text-text-secondary text-[9px]">STS</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-red-500 to-rose-700 text-white flex items-center justify-center font-bold text-[7px] border border-red-200">TY</span> <span className="text-text-secondary text-[9px]">TY</span></span>
+            <span className="flex items-center gap-0.5"><span className="w-3 h-3 rounded-full bg-gradient-to-br from-pink-500 to-purple-800 text-white flex items-center justify-center font-bold text-[7px] border border-pink-200">STY</span> <span className="text-text-secondary text-[9px]">STY</span></span>
           </div>
         </div>
       </div>

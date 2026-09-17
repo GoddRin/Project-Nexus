@@ -79,11 +79,11 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
       <Html position={[0, 2.15, 0]} center className="pointer-events-auto select-none z-30">
         <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
           <div
-            className="relative flex items-center gap-3 bg-slate-950/95 border-2 border-cyan-400 shadow-2xl shadow-cyan-500/50 rounded-2xl px-3.5 py-2.5 backdrop-blur-xl text-white max-w-[340px] shrink-0"
+            className="relative flex items-center gap-3 bg-card/95 dark:bg-slate-950/95 border-2 border-cyan-500 shadow-2xl shadow-cyan-500/25 rounded-2xl px-3.5 py-2.5 backdrop-blur-xl text-text-primary dark:text-white max-w-[340px] shrink-0"
             style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
           >
             {/* High-definition Avatar thumbnail */}
-            <div className="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-cyan-400 shadow-md shadow-cyan-500/30 shrink-0 bg-slate-900 ring-1 ring-cyan-300/40">
+            <div className="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-cyan-500 shadow-md shadow-cyan-500/30 shrink-0 bg-muted dark:bg-slate-900 ring-1 ring-cyan-400/40">
               <Image
                 src={person.avatarUrl}
                 alt={person.name}
@@ -93,18 +93,18 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
                 className="object-cover"
                 style={{ imageRendering: "auto" }}
               />
-              <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-xl pointer-events-none" />
+              <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/20 rounded-xl pointer-events-none" />
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-[9.5px] font-mono uppercase font-bold text-cyan-300 tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-cyan-500 animate-ping" />
+                <span className="text-[9.5px] font-mono uppercase font-bold text-cyan-600 dark:text-cyan-300 tracking-wider">
                   TARGET LOCATED
                 </span>
               </div>
-              <div className="text-sm font-extrabold text-white leading-tight drop-shadow-sm truncate">{person.nickname}</div>
-              <div className="text-[11px] font-medium text-cyan-100/90 leading-snug line-clamp-2">{person.role}</div>
+              <div className="text-sm font-extrabold text-text-primary dark:text-white leading-tight drop-shadow-sm truncate">{person.nickname}</div>
+              <div className="text-[11px] font-medium text-text-muted dark:text-cyan-100/90 leading-snug line-clamp-2">{person.role}</div>
             </div>
 
             {onDismiss && (
@@ -113,7 +113,7 @@ export function PersonnelLocatorBeacon({ personnelId, onDismiss }: PersonnelLoca
                   e.stopPropagation();
                   onDismiss();
                 }}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800/90 text-slate-300 hover:text-white hover:bg-cyan-600 hover:scale-105 border border-slate-700 hover:border-cyan-400 text-xs ml-1 shrink-0 transition"
+                className="w-6 h-6 flex items-center justify-center rounded-full bg-muted/80 dark:bg-slate-800/90 text-text-muted hover:text-text-primary dark:text-slate-300 dark:hover:text-white hover:bg-cyan-500/20 border border-border-hairline hover:border-cyan-400 text-xs ml-1 shrink-0 transition"
                 title="Dismiss Locator"
               >
                 ✕

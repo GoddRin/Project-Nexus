@@ -70,7 +70,9 @@ export function getPersonnelZoneName(id: string): string {
     case "SURVEYOR_JOHNNY_FARONGEY":
       return "Penstock Ridge Geodetic Sighting Station";
     case "GEO_AMOR_FLORESCA":
-      return "Mountain Slope Rock Cut (Geotechnical & RMR Station)";
+      return "Mountain Slope Rock Cut (Geotechnical & Geomapper Station)";
+    case "PCO_JONJON_BUCSIT":
+      return "TEMFACIL ESH Command & Environmental Operations Center (Pollution Control Desk)";
     case "CIVIL_JAIME_CANO":
       return "Powerhouse Entrance Apron & Access Area";
     case "CIVIL_HENRY_ESTRADA":
@@ -90,11 +92,11 @@ export function getPersonnelZoneName(id: string): string {
     case "SEC_RONALD_MALTO":
       return "TEMFACIL Perimeter Security Checkpoint Gate";
     case "HR_ROVIGAIL_ABELLAR":
-      return "TEMFACIL HR & Administration Wing Entrance";
+      return "TEMFACIL Human Resources Office";
     case "HR_JOSHUA_ADMIN":
-      return "TEMFACIL HR Administration Office";
+      return "TEMFACIL Administration Office";
     case "HR_RANDY_GAMBOA":
-      return "TEMFACIL Timekeeping & Labor Relations Walkway";
+      return "TEMFACIL Administration Office";
     case "IT_MARC_SALVA":
       return "TEMFACIL Communications & IT Server Facility";
     case "EQUIP_HOWELL_SAMSON":
@@ -218,6 +220,16 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
         floorY: 14.05,
         target: [109.58, 15.20, -108.80],
         camPos: [113.50, 15.80, -105.00],
+        zoneName: zone,
+      };
+
+    case "PCO_JONJON_BUCSIT":
+      // Office interior ESH & Environmental Operations desk: seated beside Alfredo Ariz in ESH Command
+      return {
+        id,
+        floorY: 14.05,
+        target: [115.50, 15.10, -108.90],
+        camPos: [113.80, 15.70, -106.50],
         zoneName: zone,
       };
 
@@ -368,7 +380,7 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
 
 
-    // ─── 7. ADMIN, HR & IT SYSTEMS ───
+    // ─── 7. ADMINISTRATION, HR & IT SYSTEMS ───
     case "HR_ROVIGAIL_ABELLAR":
       // Office interior HR Station: [1.8, 0.05, 9.8] -> [115.80, 14.05, -97.20]
       return {
@@ -380,7 +392,7 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
 
     case "HR_JOSHUA_ADMIN":
-      // Office interior HR Admin: [3.8, 0.05, 7.7] -> [117.80, 14.05, -99.30]
+      // Office interior Admin Officer Station: [3.8, 0.05, 7.7] -> [117.80, 14.05, -99.30]
       return {
         id,
         floorY: 14.05,
@@ -390,7 +402,7 @@ export function getPersonnelLocationTarget(id: string): PersonnelLocationTarget 
       };
 
     case "HR_RANDY_GAMBOA":
-      // Office interior Timekeeping: [5.0, 0.05, 7.7] -> [119.00, 14.05, -99.30]
+      // Office interior Admin Assistant Station: [5.0, 0.05, 7.7] -> [119.00, 14.05, -99.30]
       return {
         id,
         floorY: 14.05,

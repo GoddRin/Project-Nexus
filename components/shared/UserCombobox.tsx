@@ -95,7 +95,7 @@ export function UserCombobox({
       {/* Combobox input */}
       <div
         className={cn(
-          "flex items-center gap-2 w-full rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 text-sm text-text-primary transition-colors",
+          "flex items-center gap-2 w-full rounded-xl bg-card border border-border-hairline px-3 py-2.5 text-sm text-text-primary transition-colors",
           open && "border-flow-teal ring-1 ring-flow-teal"
         )}
       >
@@ -131,7 +131,7 @@ export function UserCombobox({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl border border-white/[0.08] bg-bg-panel shadow-xl overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full rounded-xl border border-border-hairline bg-card shadow-xl overflow-hidden">
           {/* Unassigned option */}
           {!required && (
             <button
@@ -142,9 +142,9 @@ export function UserCombobox({
               setSelectedId("");
               setOpen(false);
             }}
-            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-muted hover:bg-white/[0.04] transition-colors"
+            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-muted hover:bg-muted/50 transition-colors"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.05]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
               <User className="h-3.5 w-3.5 text-text-muted" />
             </div>
             <span>Unassigned</span>
@@ -152,7 +152,7 @@ export function UserCombobox({
           )}
 
           {filtered.length > 0 ? (
-            <div className="border-t border-white/[0.05] max-h-52 overflow-y-auto">
+            <div className="border-t border-border-hairline max-h-52 overflow-y-auto">
               {filtered.map((user) => (
                 <button
                   key={user.id}
@@ -163,7 +163,7 @@ export function UserCombobox({
                     "flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition-colors",
                     selectedId === user.id
                       ? "bg-flow-teal/10 text-flow-teal"
-                      : "text-text-primary hover:bg-white/[0.04]"
+                      : "text-text-primary hover:bg-muted/50"
                   )}
                 >
                   {/* Avatar initials */}
@@ -172,7 +172,7 @@ export function UserCombobox({
                       "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold",
                       selectedId === user.id
                         ? "bg-flow-teal/20 text-flow-teal"
-                        : "bg-white/[0.08] text-text-muted"
+                        : "bg-muted text-text-muted"
                     )}
                   >
                     {user.name
@@ -194,7 +194,7 @@ export function UserCombobox({
               ))}
             </div>
           ) : query.trim().length > 0 ? (
-            <div className="border-t border-white/[0.05] px-3 py-3 text-xs text-text-muted">
+            <div className="border-t border-border-hairline px-3 py-3 text-xs text-text-muted">
               No matching users.{" "}
               <span className="text-flow-teal">
                 &ldquo;{query}&rdquo; will be left unassigned.
