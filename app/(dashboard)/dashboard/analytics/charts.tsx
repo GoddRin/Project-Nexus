@@ -146,7 +146,7 @@ interface HeatmapClientProps {
   siteLocationPhotos: { createdAt: string; locationId: string }[];
 }
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { HelpCircle } from "lucide-react";
 
 export function ConstructionHeatmapClient({
@@ -157,6 +157,19 @@ export function ConstructionHeatmapClient({
   siteLocationPhotos,
 }: HeatmapClientProps) {
   const [daysRange, setDaysRange] = useState(30);
+  const [selectedCell, setSelectedCell] = useState<{
+    locationName: string;
+    col: {
+      date: Date;
+      dateStr: string;
+      total: number;
+      reports: number;
+      tickets: number;
+      tasks: number;
+      photos: number;
+    };
+    score: number;
+  } | null>(null);
 
   const { dateArray, rows } = useMemo(() => {
     const today = new Date();
@@ -283,21 +296,21 @@ export function ConstructionHeatmapClient({
         </div>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        <div className="flex flex-col gap-1 pr-2 pt-6 w-36 shrink-0 justify-between">
+      <div className="flex gap-0 overflow-x-auto pb-4 relative scrollbar-thin">
+        <div className="flex flex-col gap-1 pr-3 pt-6 w-36 sm:w-44 shrink-0 justify-between sticky left-0 bg-card/95 dark:bg-[#0B1418]/95 backdrop-blur-md z-20 border-r border-border-hairline shadow-[4px_0_12px_rgba(0,0,0,0.1)]">
           {rows.map((row, idx) => (
-            <div key={idx} className="h-7 flex items-center text-xs font-mono text-text-muted truncate animate-fade-in" title={row.location.name}>
+            <div key={idx} className="h-7 flex items-center text-xs font-mono text-text-muted truncate" title={row.location.name}>
               {row.location.name}
             </div>
           ))}
         </div>
 
-        <div className="flex-grow min-w-[650px] space-y-1">
+        <div className="flex-grow min-w-[650px] space-y-1 pl-3">
           <div className="grid gap-1 mb-1" style={{ gridTemplateColumns: `repeat(${daysRange}, minmax(0, 1fr))` }}>
             {dateArray.map((date, idx) => {
-              const isEvery5th = idx % 5 === 0;
-              const showLabel = daysRange > 45 ? (idx % 15 === 0) : isEvery5th;
-              const label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+              const isEvery7th = idx % 7 === 0;
+              const showLabel = daysRange > 45 ? (idx % 14 === 0) : isEvery7th;
+              const label = date.toLocaleDateString("en-US", { month: "numeric", day: "numeric" });
               return (
                 <div key={idx} className="text-[9px] font-mono text-text-muted text-center truncate h-5">
                   {showLabel ? label : ""}
@@ -320,15 +333,15 @@ export function ConstructionHeatmapClient({
                   return (
                     <div
                       key={colIdx}
+                      onClick={() => setSelectedCell({ locationName: row.location.name, col, score })}
                       className={cn(
-                        "h-7 rounded-sm transition-all duration-100 cursor-pointer hover:scale-130 relative group",
+                        "h-7 rounded-sm transition-colors cursor-pointer sm:hover:scale-125 sm:transition-transform relative group",
                         bgColor
                       )}
-                      style={{ willChange: "transform" }}
                     >
                       <div
                         className={cn(
-                          "absolute left-1/2 -translate-x-1/2 w-48 p-3 rounded-lg border border-white/10 bg-black/90 shadow-2xl backdrop-blur-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 z-50 text-[11px] space-y-1.5 text-left font-sans",
+                          "absolute left-1/2 -translate-x-1/2 w-48 p-3 rounded-lg border border-white/10 bg-black/90 shadow-2xl backdrop-blur-md opacity-0 pointer-events-none sm:group-hover:opacity-100 transition-opacity duration-150 z-50 text-[11px] space-y-1.5 text-left font-sans",
                           rowIdx < 3 ? "top-full mt-2" : "bottom-full mb-2"
                         )}
                       >
@@ -355,6 +368,24 @@ export function ConstructionHeatmapClient({
           </div>
         </div>
       </div>
+
+      {selectedCell && (
+        <div className="sm:hidden p-3 rounded-xl border border-white/10 bg-black/90 backdrop-blur-md text-xs space-y-1.5 animate-in fade-in">
+          <div className="flex items-center justify-between font-bold text-text-primary">
+            <span>{selectedCell.locationName}</span>
+            <span className="text-flow-teal font-mono">{selectedCell.score} pts</span>
+          </div>
+          <p className="font-mono text-text-muted text-[10px]">
+            {selectedCell.col.date.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+          </p>
+          <div className="grid grid-cols-2 gap-1 font-mono text-[10px] text-text-muted pt-1 border-t border-white/10">
+            <span>• {selectedCell.col.reports} reports</span>
+            <span>• {selectedCell.col.tickets} tickets</span>
+            <span>• {selectedCell.col.tasks} tasks</span>
+            <span>• {selectedCell.col.photos} photos</span>
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center gap-4 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-text-muted flex-wrap">
         <span>Legend:</span>
@@ -397,6 +428,17 @@ interface WeatherCorrelationClientProps {
 }
 
 export function WeatherCorrelationClient({ reports, weatherData }: WeatherCorrelationClientProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState<"chart" | "table">("chart");
+  const [tableFilter, setTableFilter] = useState<"adverse" | "all">("adverse");
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const { chartData, stats, typhoonDays, hasData } = useMemo(() => {
     if (!weatherData || !weatherData.daily) {
       return { chartData: [], stats: null, typhoonDays: [], hasData: false };
@@ -499,6 +541,14 @@ export function WeatherCorrelationClient({ reports, weatherData }: WeatherCorrel
     };
   }, [reports, weatherData]);
 
+  const tableRows = useMemo(() => {
+    const list = [...chartData].reverse();
+    if (tableFilter === "adverse") {
+      return list.filter((d) => d.rain >= 10 || d.isTyphoon || (d.rain > 5 && d.reports === 0));
+    }
+    return list;
+  }, [chartData, tableFilter]);
+
   if (!hasData || !stats) {
     return <EmptyChartState message="Weather data archive is currently unavailable." />;
   }
@@ -548,190 +598,340 @@ export function WeatherCorrelationClient({ reports, weatherData }: WeatherCorrel
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="font-display text-lg font-bold text-text-primary">Weather vs Construction Activity</h3>
-        <p className="text-xs text-text-muted mt-1">90-day correlation — rainfall impact on daily progress (Open-Meteo Archive + Report Logs)</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h3 className="font-display text-lg font-bold text-text-primary">Weather vs Construction Activity</h3>
+          <p className="text-xs text-text-muted mt-1">90-day correlation — rainfall impact on daily progress (Open-Meteo Archive + Report Logs)</p>
+        </div>
+        <div className="flex items-center gap-1 bg-white/[0.04] p-1 rounded-lg border border-white/[0.08] self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab("chart")}
+            className={cn(
+              "px-3 py-1 rounded-md font-mono text-xs transition-all",
+              activeTab === "chart"
+                ? "bg-flow-teal/20 text-flow-teal font-semibold shadow-sm"
+                : "text-text-muted hover:text-text-primary"
+            )}
+          >
+            Chart
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("table")}
+            className={cn(
+              "px-3 py-1 rounded-md font-mono text-xs transition-all",
+              activeTab === "table"
+                ? "bg-flow-teal/20 text-flow-teal font-semibold shadow-sm"
+                : "text-text-muted hover:text-text-primary"
+            )}
+          >
+            Data Table
+          </button>
+        </div>
       </div>
 
-      <div className="h-80 w-full relative">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={chartData} margin={{ top: 20, right: 25, left: -20, bottom: 5 }}>
-            <XAxis
-              dataKey="date"
-              tickFormatter={(t) => {
-                const date = new Date(t);
-                return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-              }}
-              stroke="var(--text-muted)"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              interval={14}
-            />
-            <YAxis
-              yAxisId="left"
-              stroke="var(--signal-amber)"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: "Rainfall (mm)", angle: -90, position: "insideLeft", offset: 10, fill: "var(--signal-amber)", fontSize: 10, fontFamily: "monospace" }}
-            />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              stroke="var(--flow-teal)"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: "Reports Filed", angle: -90, position: "insideRight", offset: 15, fill: "var(--flow-teal)", fontSize: 10, fontFamily: "monospace" }}
-            />
-            <Tooltip content={customTooltip} />
-            <Legend
-              verticalAlign="top"
-              height={36}
-              iconType="circle"
-              iconSize={8}
-              wrapperStyle={{ fontSize: 10, fontFamily: "monospace" }}
-            />
+      {activeTab === "table" ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
+            <span className="text-text-muted font-mono text-[11px]">
+              Showing {tableRows.length} {tableFilter === "adverse" ? "adverse weather" : "logged"} days
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setTableFilter("adverse")}
+                className={cn(
+                  "px-2 py-0.5 rounded text-[10px] font-mono transition-colors",
+                  tableFilter === "adverse" ? "bg-signal-amber/20 text-signal-amber font-semibold" : "text-text-muted hover:text-text-primary"
+                )}
+              >
+                Adverse Only ({chartData.filter(d => d.rain >= 10 || d.isTyphoon).length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setTableFilter("all")}
+                className={cn(
+                  "px-2 py-0.5 rounded text-[10px] font-mono transition-colors",
+                  tableFilter === "all" ? "bg-white/10 text-text-primary font-semibold" : "text-text-muted hover:text-text-primary"
+                )}
+              >
+                All 90 Days
+              </button>
+            </div>
+          </div>
 
-            {chartData
-              .filter((d) => d.rain > 50 && d.reports === 0)
-              .map((d) => (
-                <ReferenceArea
-                  key={`band-${d.date}`}
+          <div className="max-h-80 overflow-y-auto overflow-x-auto rounded-xl border border-white/[0.08] bg-white/[0.01] scrollbar-thin">
+            <table className="w-full text-left text-xs font-mono border-collapse">
+              <thead className="sticky top-0 bg-black/95 backdrop-blur-md text-[10px] uppercase text-text-muted border-b border-white/[0.08] z-10">
+                <tr>
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3 text-right">Rainfall</th>
+                  <th className="py-2.5 px-3 text-right hidden sm:table-cell">Max Wind</th>
+                  <th className="py-2.5 px-3 text-center">Reports</th>
+                  <th className="py-2.5 px-3 text-right">Impact Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.04]">
+                {tableRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-text-muted text-xs">
+                      No adverse weather days recorded in the last 90 days.
+                    </td>
+                  </tr>
+                ) : (
+                  tableRows.map((row) => {
+                    let statusBadge = (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-sans font-medium bg-flow-teal/15 text-flow-teal">
+                        Normal
+                      </span>
+                    );
+                    if (row.isTyphoon) {
+                      statusBadge = (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-sans font-bold bg-signal-red/20 text-signal-red">
+                          🌀 Typhoon Alert
+                        </span>
+                      );
+                    } else if (row.rain > 50) {
+                      statusBadge = (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-sans font-bold bg-signal-red/20 text-signal-red">
+                          Work Suspended
+                        </span>
+                      );
+                    } else if (row.rain > 25) {
+                      statusBadge = (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-sans font-medium bg-signal-amber/20 text-signal-amber">
+                          Caution
+                        </span>
+                      );
+                    }
+
+                    return (
+                      <tr key={row.date} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="py-2 px-3 text-text-primary text-[11px] whitespace-nowrap">
+                          {row.formattedDate}
+                        </td>
+                        <td className="py-2 px-3 text-right text-[11px] font-semibold text-signal-amber whitespace-nowrap">
+                          {Math.round(row.rain * 10) / 10} mm
+                        </td>
+                        <td className="py-2 px-3 text-right text-[11px] text-text-muted hidden sm:table-cell whitespace-nowrap">
+                          {Math.round(row.wind)} kph
+                        </td>
+                        <td className="py-2 px-3 text-center text-[11px] whitespace-nowrap">
+                          <span className={cn(
+                            "font-bold",
+                            row.reports > 0 ? "text-flow-teal" : row.rain > 25 ? "text-signal-red" : "text-text-muted"
+                          )}>
+                            {row.reports}
+                          </span>
+                        </td>
+                        <td className="py-2 px-3 text-right whitespace-nowrap">
+                          {statusBadge}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="h-80 w-full relative">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={chartData}
+              margin={isMobile ? { top: 15, right: 10, left: -25, bottom: 5 } : { top: 20, right: 25, left: -20, bottom: 5 }}
+            >
+              <XAxis
+                dataKey="date"
+                tickFormatter={(t) => {
+                  const date = new Date(t);
+                  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                }}
+                stroke="var(--text-muted)"
+                fontSize={isMobile ? 9 : 10}
+                tickLine={false}
+                axisLine={false}
+                interval={isMobile ? 20 : 14}
+              />
+              <YAxis
+                yAxisId="left"
+                stroke="var(--signal-amber)"
+                fontSize={isMobile ? 9 : 10}
+                tickLine={false}
+                axisLine={false}
+                label={isMobile ? undefined : { value: "Rainfall (mm)", angle: -90, position: "insideLeft", offset: 10, fill: "var(--signal-amber)", fontSize: 10, fontFamily: "monospace" }}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                stroke="var(--flow-teal)"
+                fontSize={isMobile ? 9 : 10}
+                tickLine={false}
+                axisLine={false}
+                label={isMobile ? undefined : { value: "Reports Filed", angle: -90, position: "insideRight", offset: 15, fill: "var(--flow-teal)", fontSize: 10, fontFamily: "monospace" }}
+              />
+              <Tooltip content={customTooltip} />
+              <Legend
+                verticalAlign="top"
+                height={36}
+                iconType="circle"
+                iconSize={8}
+                wrapperStyle={{ fontSize: 10, fontFamily: "monospace" }}
+              />
+
+              {chartData
+                .filter((d) => d.rain > 50 && d.reports === 0)
+                .map((d) => (
+                  <ReferenceArea
+                    key={`band-${d.date}`}
+                    yAxisId="left"
+                    x1={d.date}
+                    x2={d.date}
+                    fill="var(--signal-red)"
+                    fillOpacity={0.12}
+                  />
+                ))}
+
+              {typhoonDays.map((d) => (
+                <ReferenceLine
+                  key={`typhoon-${d.date}`}
                   yAxisId="left"
-                  x1={d.date}
-                  x2={d.date}
-                  fill="var(--signal-red)"
-                  fillOpacity={0.12}
+                  x={d.date}
+                  stroke="var(--signal-red)"
+                  strokeWidth={1.5}
+                  strokeDasharray="4 4"
+                  label={{
+                    value: "🌀 Signal 1",
+                    position: "top",
+                    fill: "var(--signal-red)",
+                    fontSize: 9,
+                    fontWeight: "bold",
+                  }}
                 />
               ))}
 
-            {typhoonDays.map((d) => (
               <ReferenceLine
-                key={`typhoon-${d.date}`}
                 yAxisId="left"
-                x={d.date}
-                stroke="var(--signal-red)"
-                strokeWidth={1.5}
-                strokeDasharray="4 4"
+                y={25}
+                stroke="var(--signal-amber)"
+                strokeDasharray="3 3"
+                strokeWidth={1}
                 label={{
-                  value: "🌀 Signal 1",
-                  position: "top",
-                  fill: "var(--signal-red)",
+                  value: isMobile ? "Caution 25mm" : "Caution threshold (25mm)",
+                  position: "insideBottomLeft",
+                  fill: "var(--signal-amber)",
                   fontSize: 9,
-                  fontWeight: "bold",
+                  fontFamily: "monospace",
                 }}
               />
-            ))}
+              <ReferenceLine
+                yAxisId="left"
+                y={50}
+                stroke="var(--signal-red)"
+                strokeDasharray="3 3"
+                strokeWidth={1}
+                label={{
+                  value: isMobile ? "Suspension 50mm" : "Work suspension (50mm)",
+                  position: "insideBottomLeft",
+                  fill: "var(--signal-red)",
+                  fontSize: 9,
+                  fontFamily: "monospace",
+                }}
+              />
 
-            <ReferenceLine
-              yAxisId="left"
-              y={25}
-              stroke="var(--signal-amber)"
-              strokeDasharray="3 3"
-              strokeWidth={1}
-              label={{ value: "Caution threshold (25mm)", position: "insideBottomLeft", fill: "var(--signal-amber)", fontSize: 9, fontFamily: "monospace" }}
-            />
-            <ReferenceLine
-              yAxisId="left"
-              y={50}
-              stroke="var(--signal-red)"
-              strokeDasharray="3 3"
-              strokeWidth={1}
-              label={{ value: "Work suspension (50mm)", position: "insideBottomLeft", fill: "var(--signal-red)", fontSize: 9, fontFamily: "monospace" }}
-            />
+              <Bar
+                yAxisId="left"
+                dataKey="rain"
+                name="Rainfall (mm)"
+                fill="var(--signal-amber)"
+                radius={[2, 2, 0, 0]}
+              >
+                {chartData.map((entry, index) => {
+                  const color = entry.rain > 50 ? "var(--signal-red)" : "var(--signal-amber)";
+                  return <Cell key={`cell-${index}`} fill={color} />;
+                })}
+              </Bar>
 
-            <Bar
-              yAxisId="left"
-              dataKey="rain"
-              name="Rainfall (mm)"
-              fill="var(--signal-amber)"
-              radius={[2, 2, 0, 0]}
-            >
-              {chartData.map((entry, index) => {
-                const color = entry.rain > 50 ? "var(--signal-red)" : "var(--signal-amber)";
-                return <Cell key={`cell-${index}`} fill={color} />;
-              })}
-            </Bar>
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="reports"
+                name="Reports Filed"
+                stroke="var(--flow-teal)"
+                strokeWidth={2}
+                dot={{ r: 2, fill: "var(--flow-teal)", strokeWidth: 0 }}
+                activeDot={{ r: 4, fill: "var(--flow-teal)" }}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="reports"
-              name="Reports Filed"
-              stroke="var(--flow-teal)"
-              strokeWidth={2}
-              dot={{ r: 2, fill: "var(--flow-teal)", strokeWidth: 0 }}
-              activeDot={{ r: 4, fill: "var(--flow-teal)" }}
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 flex flex-col justify-between">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Estimated Lost Days</span>
-            <p className="text-xs text-text-muted">Weather-affected work days</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mt-6">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-3 sm:p-4 flex flex-col justify-between">
+          <div className="space-y-0.5 sm:space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase tracking-wider">Estimated Lost Days</span>
+            <p className="text-[11px] sm:text-xs text-text-muted truncate">Weather-affected work</p>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
             <p className={cn(
-              "text-3xl font-display font-bold",
+              "text-2xl sm:text-3xl font-display font-bold",
               stats.lostDays > 10 ? "text-signal-red" : stats.lostDays >= 5 ? "text-signal-amber" : "text-flow-teal"
             )}>
               {stats.lostDays}
             </p>
-            <span className="text-[10px] font-mono text-text-muted">days (Rain &gt; 25mm & no reports)</span>
+            <span className="text-[9px] sm:text-[10px] font-mono text-text-muted">days (Rain &gt; 25mm)</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 flex flex-col justify-between">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Correlation Score</span>
-            <p className="text-xs text-text-muted">Rain-Activity Relationship</p>
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-3 sm:p-4 flex flex-col justify-between">
+          <div className="space-y-0.5 sm:space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase tracking-wider">Correlation Score</span>
+            <p className="text-[11px] sm:text-xs text-text-muted truncate">Rain vs Activity</p>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <p className="text-3xl font-display font-bold text-text-primary">
+          <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+            <p className="text-2xl sm:text-3xl font-display font-bold text-text-primary">
               {stats.correlation.pct}%
             </p>
             <div className="flex flex-col">
-              <span className="text-[10px] font-mono text-text-muted uppercase">Negative Correlation</span>
-              <span className="text-[9px] font-bold text-flow-teal font-sans">{stats.correlation.label}</span>
+              <span className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase">Negative</span>
+              <span className="text-[8px] sm:text-[9px] font-bold text-flow-teal font-sans truncate">{stats.correlation.label}</span>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 flex flex-col justify-between">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Wettest Active Day</span>
-            <p className="text-xs text-text-muted">Team resilience indicator</p>
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-3 sm:p-4 flex flex-col justify-between">
+          <div className="space-y-0.5 sm:space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase tracking-wider">Wettest Active Day</span>
+            <p className="text-[11px] sm:text-xs text-text-muted truncate">Resilience indicator</p>
           </div>
-          <div className="mt-3">
+          <div className="mt-2 sm:mt-3">
             {stats.wettestActive.rain > 0 ? (
               <div className="space-y-0.5">
-                <p className="text-md font-bold text-text-primary">{stats.wettestActive.date}</p>
-                <p className="text-xs text-text-muted">
+                <p className="text-sm sm:text-md font-bold text-text-primary">{stats.wettestActive.date}</p>
+                <p className="text-[10px] sm:text-xs text-text-muted leading-tight">
                   <span className="text-signal-amber font-mono font-semibold">{stats.wettestActive.rain} mm</span> rain,{" "}
-                  <span className="text-flow-teal font-mono font-semibold">{stats.wettestActive.reports} reports</span> filed
+                  <span className="text-flow-teal font-mono font-semibold">{stats.wettestActive.reports} reports</span>
                 </p>
               </div>
             ) : (
-              <p className="text-xs text-text-muted">No rainy work days logged</p>
+              <p className="text-[10px] sm:text-xs text-text-muted">No rainy work days</p>
             )}
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 flex flex-col justify-between">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Consecutive Dry Work Days</span>
-            <p className="text-xs text-text-muted">Current progress momentum</p>
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-3 sm:p-4 flex flex-col justify-between">
+          <div className="space-y-0.5 sm:space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase tracking-wider">Consecutive Dry Days</span>
+            <p className="text-[11px] sm:text-xs text-text-muted truncate">Momentum streak</p>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <p className="text-3xl font-display font-bold text-flow-teal">
+          <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+            <p className="text-2xl sm:text-3xl font-display font-bold text-flow-teal">
               {stats.streak}
             </p>
-            <span className="text-[10px] font-mono text-text-muted">days current streak</span>
+            <span className="text-[9px] sm:text-[10px] font-mono text-text-muted">days streak</span>
           </div>
         </div>
       </div>

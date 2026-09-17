@@ -1835,12 +1835,24 @@ function CameraController({
     // Handle preset animation
     if (!isFreeNav && isAnimatingRef.current) {
       const active = presets[activePreset];
+      const isMobilePortrait = state.size.width < state.size.height || state.size.width < 768;
+      let targetPos = active.pos;
+
+      // On mobile portrait, adjust camera distance so the site model isn't cropped or overly zoomed
+      if (isMobilePortrait && activePreset === "overview") {
+        const aspect = Math.max(0.4, Math.min(1.0, state.size.width / state.size.height));
+        const distanceMultiplier = Math.max(1.35, Math.min(1.85, 0.75 / aspect));
+        const offset = new THREE.Vector3().subVectors(active.pos, active.target).multiplyScalar(distanceMultiplier);
+        targetPos = new THREE.Vector3().addVectors(active.target, offset);
+        targetPos.y += 14; // slightly higher angle for mobile portrait to capture the valley & tailrace
+      }
+
       const step = Math.min(delta * 4.5, 0.15);
-      state.camera.position.lerp(active.pos, step);
+      state.camera.position.lerp(targetPos, step);
       controlsRef.current.target.lerp(active.target, step);
       controlsRef.current.update();
 
-      const distPos = state.camera.position.distanceTo(active.pos);
+      const distPos = state.camera.position.distanceTo(targetPos);
       const distTarget = controlsRef.current.target.distanceTo(active.target);
       if (distPos < 0.08 && distTarget < 0.08) {
         isAnimatingRef.current = false;
@@ -2578,7 +2590,12 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   const [activePersonnelCardId, setActivePersonnelCardId] = useState<string | null>(null);
   const [focusedPersonnelId, setFocusedPersonnelId] = useState<string | null>(null);
   const [hideSiteLabels, setHideSiteLabels] = useState<boolean>(false);
-  const [isNavDrawerMinimized, setIsNavDrawerMinimized] = useState<boolean>(false);
+  const [isNavDrawerMinimized, setIsNavDrawerMinimized] = useState<boolean>(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return true;
+    }
+    return false;
+  });
 
   // Auto-minimize nav panel on mobile screens (< 768px) on initial mount
   useEffect(() => {
@@ -2829,9 +2846,9 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
       </Suspense>
 
       {/* ─── HUD Top Bar: Status Chips (Left) & Alerts Panel (Right) ─── */}
-      <div className="absolute top-20 left-6 right-6 z-20 pointer-events-none flex items-start justify-between gap-4">
+      <div className="absolute top-16 sm:top-20 left-2.5 sm:left-6 right-2.5 sm:right-6 z-20 pointer-events-none flex items-start justify-between gap-4">
         {/* Left Side: Real-time Telemetry & Navigation Status Chips */}
-        <div className="pointer-events-auto flex flex-wrap items-center gap-2 flex-1 min-w-0 pr-2">
+        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 sm:gap-2 flex-1 min-w-0 pr-2">
           {/* 🇵🇭 Real-Time Philippine Time & Time-of-Day Status Chip */}
           <PhilippineTimeChip effectiveTime={timeMode} />
 
@@ -2841,7 +2858,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           {/* Environmental Weather Status Chip */}
           <div
             className={cn(
-              "rounded-lg border px-2.5 py-1 font-mono text-[11px] font-medium backdrop-blur-md flex items-center gap-1.5 shadow-xl transition-all shrink-0",
+              "rounded-lg border px-2.5 py-1 font-mono text-[10px] sm:text-[11px] font-medium backdrop-blur-md flex items-center gap-1.5 shadow-xl transition-all shrink-0 max-w-[200px] sm:max-w-none",
               isStormActive
                 ? isSignalHoisted
                   ? "border-red-500/50 bg-card/90 dark:bg-black/85 text-red-600 dark:text-red-400 shadow-red-500/20 ring-1 ring-red-500/30"
@@ -2863,21 +2880,21 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
                   : "bg-emerald-500 dark:bg-emerald-400"
               )}
             />
-            <span>
+            <span className="truncate">
               {devStormToggle
-                ? "TYPHOON SIMULATION • TCWS #2"
+                ? "TYPHOON SIMULATION"
                 : isSignalHoisted
-                ? `TYPHOON: ${weatherData?.tcName} • TCWS #${weatherData?.siteSignalNumber}`
+                ? `TYPHOON: ${weatherData?.tcName}`
                 : isStormInPar
-                ? `TYPHOON: ${weatherData?.tcName} (PAR) • MONITORING`
+                ? `TYPHOON: ${weatherData?.tcName}`
                 : weatherData?.hasActiveBulletin
-                ? `PAR CLEAR • TRACKING ${weatherData?.tcName || "OBET"}`
-                : "ATMOSPHERE: CLEAR • PAR CLEAR"}
+                ? `TRACKING ${weatherData?.tcName || "OBET"}`
+                : "ATMOSPHERE: CLEAR"}
             </span>
           </div>
 
           {/* Live Commissioning % & Output Gauge Chip */}
-          <div className="rounded-lg border border-border-hairline bg-card/90 dark:bg-black/85 text-text-primary dark:text-white px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-2 shrink-0">
+          <div className="hidden md:flex rounded-lg border border-border-hairline bg-card/90 dark:bg-black/85 text-text-primary dark:text-white px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md items-center gap-2 shrink-0">
             <div className="flex items-center gap-1 text-scic-green dark:text-flow-teal font-semibold">
               <Gauge className="h-3 w-3" />
               <span>{commissionPct}%</span>
@@ -2891,7 +2908,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           </div>
 
           {/* Equipment Status Count Summary Chip */}
-          <div className="rounded-lg border border-border-hairline bg-card/90 dark:bg-black/85 text-text-primary dark:text-white px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md flex items-center gap-1.5 shrink-0">
+          <div className="hidden lg:flex rounded-lg border border-border-hairline bg-card/90 dark:bg-black/85 text-text-primary dark:text-white px-2.5 py-1 font-mono text-[11px] shadow-xl backdrop-blur-md items-center gap-1.5 shrink-0">
             <span className="text-scic-green dark:text-flow-teal font-semibold flex items-center gap-1">
               <CheckCircle2 className="h-3 w-3" />
               {onlineCount} Online
@@ -2917,7 +2934,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           {/* Navigation Mode Status Indicator Chip */}
           <div
             className={cn(
-              "rounded-lg border px-2.5 py-1 font-mono text-[11px] font-semibold backdrop-blur-md flex items-center gap-1.5 shadow-xl transition-all cursor-pointer shrink-0",
+              "hidden sm:flex rounded-lg border px-2.5 py-1 font-mono text-[11px] font-semibold backdrop-blur-md items-center gap-1.5 shadow-xl transition-all cursor-pointer shrink-0",
               isFreeNav
                 ? "border-flow-teal/50 bg-card/90 dark:bg-black/85 text-scic-green dark:text-flow-teal shadow-flow-teal/20 ring-1 ring-flow-teal/40"
                 : "border-border-hairline bg-card/90 dark:bg-black/75 text-text-muted hover:text-text-primary dark:hover:text-white"
@@ -2940,7 +2957,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
         </div>
 
         {/* Right Side: Collapsible Equipment Alerts Feed Panel or Equipment Detail Drawer */}
-        <div className="pointer-events-auto shrink-0">
+        <div className="pointer-events-auto shrink-0 hidden md:block">
           {!selectedEquipment && <AlertsFeedPanel equipments={equipments} />}
           {selectedEquipment && (
             <EquipmentDetailDrawer
@@ -3306,17 +3323,17 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
         </div>
 
         {/* Right Side: Real-time Hardware Performance Telemetry HUD Chip */}
-        <div className="pointer-events-none select-none flex items-center gap-2.5 bg-card/90 dark:bg-black/80 backdrop-blur-md border border-emerald-500/30 rounded-lg px-3 py-1.5 font-mono text-[11px] text-emerald-700 dark:text-emerald-400 shadow-xl mb-0.5 shrink-0">
+        <div className="pointer-events-none select-none flex items-center gap-1.5 sm:gap-2.5 bg-card/90 dark:bg-black/80 backdrop-blur-md border border-emerald-500/30 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 font-mono text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-400 shadow-xl mb-0.5 shrink-0">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             <span id="perf-hud-fps" className="font-bold">60 FPS</span>
           </div>
-          <span className="text-border-hairline dark:text-gray-600">|</span>
-          <span id="perf-hud-ms" className="text-text-muted dark:text-gray-300">16.6 ms</span>
-          <span className="text-border-hairline dark:text-gray-600">|</span>
-          <span id="perf-hud-calls" className="text-cyan-700 dark:text-cyan-400">-- Calls</span>
-          <span className="text-border-hairline dark:text-gray-600">|</span>
-          <span id="perf-hud-tris" className="text-cyan-700 dark:text-cyan-400">--k Tris</span>
+          <span className="hidden sm:inline text-border-hairline dark:text-gray-600">|</span>
+          <span id="perf-hud-ms" className="hidden sm:inline text-text-muted dark:text-gray-300">16.6 ms</span>
+          <span className="hidden sm:inline text-border-hairline dark:text-gray-600">|</span>
+          <span id="perf-hud-calls" className="hidden sm:inline text-cyan-700 dark:text-cyan-400">-- Calls</span>
+          <span className="hidden sm:inline text-border-hairline dark:text-gray-600">|</span>
+          <span id="perf-hud-tris" className="hidden sm:inline text-cyan-700 dark:text-cyan-400">--k Tris</span>
         </div>
       </div>
 

@@ -124,15 +124,19 @@ const markdownComponents = {
     );
   },
   table: ({ children }: any) => (
-    <div className="overflow-x-auto my-3 rounded-xl border border-white/10 bg-black/20 shadow-md">
-      <table className="w-full border-collapse text-xs text-left">{children}</table>
+    <div className="my-3 rounded-xl border border-white/10 bg-black/25 shadow-md overflow-hidden">
+      <div className="overflow-x-auto scrollbar-thin">
+        <table className="w-full border-collapse text-xs text-left table-auto">
+          {children}
+        </table>
+      </div>
     </div>
   ),
-  thead: ({ children }: any) => <thead className="bg-white/[0.04] border-b border-white/10">{children}</thead>,
+  thead: ({ children }: any) => <thead className="bg-white/[0.06] border-b border-white/10">{children}</thead>,
   tbody: ({ children }: any) => <tbody className="divide-y divide-white/5">{children}</tbody>,
-  tr: ({ children }: any) => <tr className="hover:bg-white/[0.02] transition-colors">{children}</tr>,
-  th: ({ children }: any) => <th className="px-3 py-2 font-semibold text-text-primary text-[11px] uppercase tracking-wider">{children}</th>,
-  td: ({ children }: any) => <td className="px-3 py-2 text-text-primary/80 font-normal">{children}</td>,
+  tr: ({ children }: any) => <tr className="hover:bg-white/[0.03] transition-colors even:bg-white/[0.015]">{children}</tr>,
+  th: ({ children }: any) => <th className="px-2.5 sm:px-3 py-2 font-semibold text-text-primary text-[10px] sm:text-[11px] uppercase tracking-wider whitespace-nowrap sm:whitespace-normal">{children}</th>,
+  td: ({ children }: any) => <td className="px-2.5 sm:px-3 py-2 text-text-primary/85 font-normal text-[11px] sm:text-xs leading-relaxed whitespace-normal break-words">{children}</td>,
   a: ({ href, children }: any) => (
     <a
       href={href}
@@ -588,20 +592,20 @@ export function AssistantChatClient({
                     {msg.role === "ASSISTANT" && msg.clientAction && (
                       <div className="mt-3.5 pt-3 border-t border-white/10">
                         {msg.clientAction.type === "NAVIGATE_3D" ? (
-                          <div className="rounded-xl border border-flow-teal/30 bg-gradient-to-r from-flow-teal/15 via-cyan-950/30 to-black/50 p-3.5 shadow-[0_0_20px_rgba(31,182,166,0.15)]">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex items-center gap-2.5">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-flow-teal/20 text-flow-teal border border-flow-teal/30 shadow-[0_0_10px_rgba(31,182,166,0.3)]">
+                          <div className="rounded-xl border border-flow-teal/30 bg-gradient-to-r from-flow-teal/15 via-cyan-950/30 to-black/50 p-3 sm:p-3.5 shadow-[0_0_20px_rgba(31,182,166,0.15)]">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-flow-teal/20 text-flow-teal border border-flow-teal/30 shadow-[0_0_10px_rgba(31,182,166,0.3)] shrink-0">
                                   <Box className="h-5 w-5 animate-pulse" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-flow-teal">
+                                    <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-flow-teal truncate">
                                       3D Digital Twin Co-Pilot
                                     </span>
-                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-flow-teal animate-ping" />
+                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-flow-teal animate-ping shrink-0" />
                                   </div>
-                                  <h4 className="text-xs font-semibold text-text-primary font-display">
+                                  <h4 className="text-xs font-semibold text-text-primary font-display truncate">
                                     {msg.clientAction.title}
                                   </h4>
                                 </div>
@@ -617,7 +621,7 @@ export function AssistantChatClient({
                                     );
                                   }
                                 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-flow-teal hover:bg-flow-teal/90 text-white font-medium text-xs shadow-md transition-all group flex-shrink-0"
+                                className="flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg bg-flow-teal hover:bg-flow-teal/90 text-white font-medium text-xs shadow-md transition-all group w-full sm:w-auto shrink-0"
                               >
                                 <span>Fly Camera</span>
                                 <Compass className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
@@ -628,23 +632,23 @@ export function AssistantChatClient({
                             </p>
                           </div>
                         ) : (
-                          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-flow-teal">
+                          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-flow-teal shrink-0">
                                 <Layers className="h-4 w-4" />
                               </div>
-                              <div>
-                                <span className="text-[10px] font-mono text-text-muted uppercase">
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[10px] font-mono text-text-muted uppercase truncate block">
                                   {msg.clientAction.badgeText || "Module Action"}
                                 </span>
-                                <h4 className="text-xs font-semibold text-text-primary">
+                                <h4 className="text-xs font-semibold text-text-primary truncate">
                                   {msg.clientAction.title}
                                 </h4>
                               </div>
                             </div>
                             <Link
                               href={msg.clientAction.url}
-                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-text-primary text-xs font-medium border border-white/15 transition-all"
+                              className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-text-primary text-xs font-medium border border-white/15 transition-all w-full sm:w-auto shrink-0"
                             >
                               <span>Open Module</span>
                               <ArrowUpRight className="h-3 w-3" />

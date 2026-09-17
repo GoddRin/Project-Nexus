@@ -412,7 +412,7 @@ export function SiteMapClient({ locations, allEquipments = [], tickets, equipmen
               animate={{ translateX: 0 }}
               exit={{ translateX: "100%" }}
               transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
-              className="fixed top-0 right-0 h-full w-[420px] bg-bg-panel dark:bg-bg-panel border-l border-border-hairline z-50 shadow-2xl pt-6 px-6 pb-24 overflow-y-auto flex flex-col gap-6"
+              className="fixed top-0 right-0 h-full w-full sm:w-[420px] max-w-full bg-bg-panel dark:bg-bg-panel border-l border-border-hairline z-50 shadow-2xl pt-5 sm:pt-6 px-4 sm:px-6 pb-28 md:pb-24 overflow-y-auto flex flex-col gap-5 sm:gap-6"
             >
               {/* Close button */}
               <button 

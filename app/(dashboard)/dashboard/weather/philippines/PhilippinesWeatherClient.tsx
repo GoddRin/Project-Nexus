@@ -534,36 +534,38 @@ export default function PhilippinesWeatherClient({
 
       {/* 1.1 REGIONAL MONITORING & HABAGAT ADVISORY NOTICE (Calm status when PAR is clear) */}
       {showRegionalNotice && (
-        <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
-              <Compass className="h-6 w-6 text-sky-400" />
+        <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
+          <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
+              <Compass className="h-5 w-5 sm:h-6 sm:w-6 text-sky-400" />
             </div>
-            <div>
-              <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
-                <span>PAR CLEAR • REGIONAL MONITORING</span>
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded uppercase tracking-wider">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h2 className="font-display font-bold text-sm sm:text-base text-text-primary">
+                  PAR CLEAR • REGIONAL MONITORING
+                </h2>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded uppercase tracking-wider shrink-0">
                   Outside PAR ({regionalStorms.length} System{regionalStorms.length > 1 ? "s" : ""})
                 </span>
-              </h2>
-              <p className="text-sm text-text-muted mt-0.5">
+              </div>
+              <p className="text-xs sm:text-sm text-text-muted mt-1 leading-relaxed">
                 No active tropical cyclones inside the Philippine Area of Responsibility (PAR). All TCWS wind signals are lifted. Tracking {regionalStorms.map(s => `${s.category === "Low Pressure Area" ? "Low Pressure Area" : `${s.category} ${s.name}`} (${s.distanceKm} km away)`).join(", ")} in the Northwest Pacific.
               </p>
               {pagasaSignals.tcName && (
-                <p className="mt-1 text-xs text-sky-300/90 font-medium">
+                <p className="mt-1.5 text-xs text-sky-300/90 font-medium">
                   🌧️ <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
                 </p>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-end">
             {regionalStorms.length > 0 && (
               <button
                 onClick={() => {
                   setExpandedStormId(regionalStorms[0].id);
                   document.getElementById("storm-details")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Analyze Track
               </button>
@@ -573,16 +575,16 @@ export default function PhilippinesWeatherClient({
       )}
 
       {/* Developer helper toggle to preview mock/real data */}
-      <div className="flex justify-between items-center bg-bg-panel/40 border border-border-hairline p-3 rounded-2xl">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-flow-teal animate-pulse"></div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-bg-panel/40 border border-border-hairline p-3 sm:p-3.5 rounded-2xl gap-3">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 bg-black/[0.03] dark:bg-white/[0.02] sm:bg-transparent px-2.5 py-1.5 sm:p-0 rounded-lg border border-border-hairline sm:border-0">
+            <div className="w-2.5 h-2.5 rounded-full bg-flow-teal animate-pulse shrink-0"></div>
             <span className="text-xs text-text-muted">
               Storms: <span className="font-semibold text-text-primary uppercase">{forceMock ? "Demo Mock" : `JTWC Live (${storms.length} NWPAC)`}</span>
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={cn("w-2.5 h-2.5 rounded-full", pagasaSignals.source === "pagasa" ? "bg-green-500 animate-pulse" : "bg-signal-amber")}></div>
+          <div className="flex items-center gap-2 bg-black/[0.03] dark:bg-white/[0.02] sm:bg-transparent px-2.5 py-1.5 sm:p-0 rounded-lg border border-border-hairline sm:border-0">
+            <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", pagasaSignals.source === "pagasa" ? "bg-green-500 animate-pulse" : "bg-signal-amber")}></div>
             <span className="text-xs text-text-muted">
               Signals: <span className={cn("font-semibold uppercase", pagasaSignals.source === "pagasa" ? "text-green-500" : "text-signal-amber")}>
                 {pagasaSignals.source === "pagasa" ? (pagasaSignals.hasActiveBulletin ? `PAGASA Live (${pagasaSignals.tcName})` : "PAGASA Live (PAR Clear)") : "Unavailable"}
@@ -590,12 +592,12 @@ export default function PhilippinesWeatherClient({
             </span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
           <button
             onClick={() => handleRefresh(false)}
             disabled={isRefreshing}
             className={cn(
-              "px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer",
+              "px-3 py-2 sm:py-1.5 rounded-xl sm:rounded-lg border text-xs font-semibold transition-all cursor-pointer text-center",
               !forceMock 
                 ? "bg-flow-teal/10 border-flow-teal/30 text-flow-teal" 
                 : "bg-transparent border-border-hairline text-text-muted hover:text-text-primary"
@@ -607,7 +609,7 @@ export default function PhilippinesWeatherClient({
             onClick={() => handleRefresh(true)}
             disabled={isRefreshing}
             className={cn(
-              "px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer",
+              "px-3 py-2 sm:py-1.5 rounded-xl sm:rounded-lg border text-xs font-semibold transition-all cursor-pointer text-center",
               forceMock 
                 ? "bg-flow-teal/10 border-flow-teal/30 text-flow-teal" 
                 : "bg-transparent border-border-hairline text-text-muted hover:text-text-primary"
