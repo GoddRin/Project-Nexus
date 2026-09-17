@@ -84,12 +84,16 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { MotionConfig } from "framer-motion";
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
-      <ThemeAwareComponents>
-        {children}
-      </ThemeAwareComponents>
+      <MotionConfig reducedMotion="never">
+        <ThemeAwareComponents>
+          {children}
+        </ThemeAwareComponents>
+      </MotionConfig>
     </NextThemesProvider>
   );
 }
