@@ -34,7 +34,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { StaClaraLogo } from "./StaClaraLogo";
+import { HydroPowerLogo } from "./HydroPowerLogo";
 import { useMobileNav } from "./MobileNavContext";
 
 const CORE_NAV_ITEMS = [
@@ -145,7 +145,7 @@ export function MobileNavDrawer({
             <div className="flex items-center justify-between border-b border-border-hairline p-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline overflow-hidden shadow-sm p-1">
-                  <StaClaraLogo className="h-full w-full" />
+                  <HydroPowerLogo className="h-full w-full" size={40} />
                 </div>
                 <div className="min-w-0">
                   <span className="font-display text-[10px] font-bold tracking-wider uppercase text-scic-blue dark:text-scic-cyan">

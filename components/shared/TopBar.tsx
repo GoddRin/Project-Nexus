@@ -8,7 +8,7 @@ import type { NotificationItem } from "@/lib/actions/notifications";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useMobileNav } from "./MobileNavContext";
-import { StaClaraLogo } from "./StaClaraLogo";
+import { HydroPowerLogo } from "./HydroPowerLogo";
 
 interface TopBarProps {
  className?: string;
@@ -94,13 +94,18 @@ export function TopBar({ className }: TopBarProps) {
     </button>
 
     {/* Mobile Brand Pill */}
-    <div className="flex items-center gap-1.5 md:hidden">
-      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white dark:bg-[#0B131B] border border-border-hairline p-0.5 shadow-sm">
-        <StaClaraLogo className="h-full w-full" />
+    <div className="flex items-center gap-2 md:hidden">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline p-1 shadow-sm overflow-hidden shrink-0">
+        <HydroPowerLogo className="h-full w-full" size={32} priority />
       </div>
-      <span className="font-display font-bold text-xs tracking-wider text-text-primary">
-        NEXUS
-      </span>
+      <div className="flex flex-col min-w-0">
+        <span className="font-display font-bold text-xs sm:text-sm tracking-tight text-text-primary leading-tight truncate">
+          Tumauini HEPP
+        </span>
+        <span className="font-mono text-[9px] font-bold text-scic-blue dark:text-scic-cyan uppercase tracking-wider leading-none mt-0.5 truncate">
+          Sta. Clara Intl
+        </span>
+      </div>
     </div>
 
     <button
@@ -108,10 +113,10 @@ export function TopBar({ className }: TopBarProps) {
     onClick={() => {
       // cmd+k shortcut trigger
     }}
-    title="Search SCIC Nexus"
+    title="Search Tumauini HEPP"
     >
     <Search className="h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-all duration-200 group-hover:text-scic-blue dark:group-hover:text-scic-cyan" />
-    <span className="hidden truncate sm:inline font-medium">Search SCIC Nexus...</span>
+    <span className="hidden truncate sm:inline font-medium">Search Tumauini HEPP...</span>
     <div className="absolute right-2 hidden sm:flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[9px] font-semibold text-text-muted border border-border-hairline">
     <span>Ctrl</span>
     <span className="ml-0.5">K</span>

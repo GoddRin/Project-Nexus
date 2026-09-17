@@ -34,7 +34,7 @@ import {
   Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { StaClaraLogo } from "./StaClaraLogo";
+import { HydroPowerLogo } from "./HydroPowerLogo";
 
 const CORE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -162,7 +162,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
       )}
  >
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline overflow-hidden shadow-sm p-1">
-          <StaClaraLogo className="h-full w-full" />
+          <HydroPowerLogo className="h-full w-full" size={40} />
         </div>
  {!collapsed && (
  <>
