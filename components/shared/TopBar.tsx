@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useMobileNav } from "./MobileNavContext";
 import { HydroPowerLogo } from "./HydroPowerLogo";
+import { GlobalSearchModal } from "./GlobalSearchModal";
 
 interface TopBarProps {
  className?: string;
@@ -21,8 +22,21 @@ export function TopBar({ className }: TopBarProps) {
   const { toggleMobileNav } = useMobileNav();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [lastReadAt, setLastReadAt] = useState<number>(0);
   const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Global keyboard shortcut for search (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Fetch notifications and initialize read state
   useEffect(() => {
@@ -109,18 +123,18 @@ export function TopBar({ className }: TopBarProps) {
     </div>
 
     <button
-    className="group relative flex h-9 w-9 sm:w-64 md:w-72 items-center justify-center sm:justify-start gap-2.5 rounded-xl dark:bg-white/[0.04] bg-black/[0.04] px-0 sm:px-3.5 text-xs text-text-muted border border-border-hairline shadow-sm transition-all duration-200 dark:hover:bg-white/[0.07] hover:bg-black/[0.07] hover:text-text-primary"
-    onClick={() => {
-      // cmd+k shortcut trigger
-    }}
-    title="Search Tumauini HEPP"
+      type="button"
+      onClick={() => setIsSearchOpen(true)}
+      className="group relative flex h-9 w-9 sm:w-64 md:w-72 items-center justify-center sm:justify-start gap-2.5 rounded-xl dark:bg-white/[0.04] bg-black/[0.04] px-0 sm:px-3.5 text-xs text-text-muted border border-border-hairline shadow-sm transition-all duration-200 dark:hover:bg-white/[0.07] hover:bg-black/[0.07] hover:text-text-primary active:scale-95"
+      title="Search Tumauini HEPP (Ctrl+K)"
+      aria-label="Search Tumauini HEPP"
     >
-    <Search className="h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-all duration-200 group-hover:text-scic-blue dark:group-hover:text-scic-cyan" />
-    <span className="hidden truncate sm:inline font-medium">Search Tumauini HEPP...</span>
-    <div className="absolute right-2 hidden sm:flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[9px] font-semibold text-text-muted border border-border-hairline">
-    <span>Ctrl</span>
-    <span className="ml-0.5">K</span>
-    </div>
+      <Search className="h-3.5 w-3.5 flex-shrink-0 text-text-muted transition-all duration-200 group-hover:text-scic-green dark:group-hover:text-scic-green-energy" />
+      <span className="hidden truncate sm:inline font-medium">Search Tumauini HEPP...</span>
+      <div className="absolute right-2 hidden sm:flex h-5 items-center gap-0.5 rounded-md dark:bg-white/[0.06] bg-black/[0.06] px-1.5 font-mono text-[9px] font-semibold text-text-muted border border-border-hairline">
+        <span>Ctrl</span>
+        <span className="ml-0.5">K</span>
+      </div>
     </button>
 
     {/* SCIC Hydro Telemetry Ticker (Desktop) */}
@@ -250,7 +264,13 @@ export function TopBar({ className }: TopBarProps) {
             )}
           </AnimatePresence>
         </div>
-  </div>
-  </header>
+      </div>
+
+      {/* Global Command / Search Palette Modal */}
+      <GlobalSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
+    </header>
  );
 }
