@@ -388,7 +388,7 @@ export default function TyphoonMap({
   const lastUpdate = getLastUpdateLabel();
 
   return (
-    <div ref={mapContainerRef} className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner">
+    <div ref={mapContainerRef} className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner isolate z-0">
       <MapContainer
         center={[14.8, 124.8]}
         zoom={4.6}
@@ -719,7 +719,7 @@ export default function TyphoonMap({
       </MapContainer>
 
       {/* Status Badge Overlay — Top Left (above zoom buttons) */}
-      <div className="absolute top-2.5 left-3 z-[1000] bg-card/90 dark:bg-slate-950/95 backdrop-blur-md border border-border-hairline px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xl pointer-events-auto max-w-[50%] sm:max-w-[58%]">
+      <div className="absolute top-2.5 left-3 z-20 bg-card/90 dark:bg-slate-950/95 backdrop-blur-md border border-border-hairline px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xl pointer-events-auto max-w-[50%] sm:max-w-[58%]">
         <div className={cn("w-2 h-2 rounded-full shrink-0", parStorms.length > 0 ? "bg-red-500 animate-ping" : "bg-[#1FB6A6] animate-pulse")}></div>
         <span className="text-[10px] font-bold text-text-primary tracking-wide truncate">
           {parStorms.length > 0
@@ -731,7 +731,7 @@ export default function TyphoonMap({
       </div>
 
       {/* PAR Border Toggle Button — Top Right */}
-      <div className="absolute top-2.5 right-3 z-[1000] pointer-events-auto">
+      <div className="absolute top-2.5 right-3 z-20 pointer-events-auto">
         <button
           type="button"
           onClick={() => setShowParBoundary((prev) => !prev)}
@@ -760,7 +760,7 @@ export default function TyphoonMap({
       </div>
 
       {/* Bottom Map Legend & Intensity Overlay Card */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-card/90 dark:bg-slate-950/90 backdrop-blur-md border border-border-hairline p-2.5 rounded-xl shadow-xl space-y-2 pointer-events-auto text-[10px] font-sans max-w-[calc(100%-24px)] sm:max-w-xs">
+      <div className="absolute bottom-3 left-3 z-20 bg-card/90 dark:bg-slate-950/90 backdrop-blur-md border border-border-hairline p-2.5 rounded-xl shadow-xl space-y-2 pointer-events-auto text-[10px] font-sans max-w-[calc(100%-24px)] sm:max-w-xs">
         {/* Row 1: Live Telemetry + Track Info */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           {lastUpdate && (

@@ -2801,7 +2801,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
   const effectiveHideSiteLabels = hideSiteLabels || isAnyModalOpen;
 
   return (
-    <div className="relative h-full w-full bg-[var(--bg-base,#0B1013)] overflow-hidden">
+    <div className="relative h-full w-full bg-[var(--bg-base,#0B1013)] overflow-hidden isolate z-0">
       <Suspense fallback={<PlantSceneLoading />}>
         <Canvas
           shadows={false}

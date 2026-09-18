@@ -294,7 +294,7 @@ function MapMouseCoordinates() {
   }, [map]);
 
   return (
-    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[999] px-4 py-1.5 bg-black/80 border border-white/10 rounded-full shadow-lg backdrop-blur-sm text-[10px] text-text-muted font-mono tracking-wider flex items-center gap-3">
+    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 bg-black/80 border border-white/10 rounded-full shadow-lg backdrop-blur-sm text-[10px] text-text-muted font-mono tracking-wider flex items-center gap-3">
       <span className="flex items-center gap-1">
         <span className="text-flow-teal font-sans">LAT:</span> {coords.lat.toFixed(5)}
       </span>
@@ -631,9 +631,9 @@ export function LeafletRegionalMap({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+3rem)] -m-6 bg-bg-base overflow-hidden print-map-container">
+    <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+3rem)] -m-6 bg-bg-base overflow-hidden isolate z-0 print-map-container">
       {/* PAGE HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-white/[0.04] bg-bg-panel/50 relative z-[1000] print:hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-white/[0.04] bg-bg-panel/50 relative z-20 print:hidden">
         <div>
           <div className="flex items-center gap-2">
             <Map className="h-5 w-5 text-flow-teal" />
@@ -674,7 +674,7 @@ export function LeafletRegionalMap({
 
             {/* Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-10 left-0 w-full z-[1000] border border-white/10 bg-black/95 rounded-xl shadow-2xl p-1 max-h-48 overflow-y-auto backdrop-blur-md">
+              <div className="absolute top-10 left-0 w-full z-30 border border-white/10 bg-black/95 rounded-xl shadow-2xl p-1 max-h-48 overflow-y-auto backdrop-blur-md">
                 {suggestions.map((m, idx) => (
                   <button
                     key={`${m.name}-${idx}`}
@@ -734,7 +734,7 @@ export function LeafletRegionalMap({
             >
               <Camera className="h-4 w-4" />
             </button>
-            <div className="absolute right-0 top-11 scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[1000] w-64 p-3 bg-black/95 border border-white/10 rounded-xl shadow-2xl text-[10px] text-text-muted backdrop-blur-md font-sans">
+            <div className="absolute right-0 top-11 scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-30 w-64 p-3 bg-black/95 border border-white/10 rounded-xl shadow-2xl text-[10px] text-text-muted backdrop-blur-md font-sans">
               <p className="font-bold text-text-primary mb-1">Export Map Reference</p>
               Use your browser&apos;s print function <kbd className="bg-white/10 px-1 rounded">Ctrl+P</kbd> to save this map as PDF for offline use during site emergencies.
             </div>
@@ -1218,7 +1218,7 @@ Major River: ${isMajor ? "YES" : "NO"}`,
         {layers.emergency && (
           <div
             className={cn(
-              "absolute top-4 left-4 z-[999] w-80 border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden font-sans print:hidden",
+              "absolute top-4 left-4 z-20 w-80 border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden font-sans print:hidden",
               !isEmergencyPanelExpanded && "h-11"
             )}
           >
@@ -1327,7 +1327,7 @@ Major River: ${isMajor ? "YES" : "NO"}`,
         )}
 
         {/* FLOATING PANEL: MINI INFO PANEL (BOTTOM LEFT) */}
-        <div className="absolute bottom-6 left-6 z-[999] w-80 border border-white/10 bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans text-xs print:hidden">
+        <div className="absolute bottom-6 left-6 z-20 w-80 border border-white/10 bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans text-xs print:hidden">
           {selectedItem ? (
             <div className="space-y-3 relative animate-in fade-in slide-in-from-bottom-2 duration-200">
               {selectedImage && (
@@ -1397,7 +1397,7 @@ Major River: ${isMajor ? "YES" : "NO"}`,
         </div>
 
         {/* FLOATING PANEL: LAYER TOGGLE CONTROLS (TOP RIGHT) */}
-        <div className="absolute top-4 right-4 z-[999] max-w-sm border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans print:hidden">
+        <div className="absolute top-4 right-4 z-20 max-w-sm border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans print:hidden">
           <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/[0.04]">
             <Layers className="h-4 w-4 text-flow-teal" />
             <span className="text-xs font-bold text-text-primary uppercase tracking-wider">

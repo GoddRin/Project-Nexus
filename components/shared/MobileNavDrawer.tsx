@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
@@ -95,6 +96,7 @@ export function MobileNavDrawer({
   role = "EMPLOYEE",
 }: MobileNavDrawerProps) {
   const { isOpen, closeMobileNav } = useMobileNav();
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { signOut } = useClerk();
   const [signingOut, setSigningOut] = useState(false);
@@ -103,6 +105,10 @@ export function MobileNavDrawer({
     resources: false,
     admin: false,
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleGroup = (id: string) => {
     setExpandedGroups((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -119,10 +125,12 @@ export function MobileNavDrawer({
       : []),
   ];
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[9990] md:hidden">
           {/* Backdrop Blur Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -298,6 +306,7 @@ export function MobileNavDrawer({
           </motion.aside>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

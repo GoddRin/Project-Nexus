@@ -595,3 +595,11 @@ code, pre, kbd, samp,
   color: #22c55e;
   border-color: rgba(16, 165, 29, 0.35);
 }
+
+/* ============================================================
+   Map & WebGL Canvas Stacking Context Isolation
+   ============================================================ */
+.leaflet-container {
+  isolation: isolate !important;
+  z-index: 0 !important;
+}

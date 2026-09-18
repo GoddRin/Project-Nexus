@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -307,9 +308,14 @@ const SEARCH_ITEMS: SearchItem[] = [
 
 export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Focus input on open
   useEffect(() => {
@@ -373,10 +379,12 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
     }
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[99999] flex items-start justify-center p-3 sm:p-4 overflow-y-auto">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -530,6 +538,7 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
