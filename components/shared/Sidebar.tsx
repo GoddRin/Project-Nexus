@@ -232,10 +232,10 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
                 handleNavClick(item.href);
               }}
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-[background-color,border-color,color] duration-150",
+                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-150",
                 collapsed ? "justify-center px-0" : "max-md:justify-center max-md:px-0",
                 active
-                  ? "bg-white text-text-primary dark:bg-white/[0.08] dark:text-white border border-black/[0.08] dark:border-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(0,0,0,0.2)]"
+                  ? "bg-scic-green/15 text-scic-green dark:text-emerald-400 font-semibold shadow-sm border border-scic-green/30"
                   : "text-text-muted hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary border border-transparent"
               )}
               title={item.label}
@@ -243,7 +243,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
               <Icon
                 className={cn(
                   "h-4.5 w-4.5 flex-shrink-0 transition-[color] duration-150",
-                  active ? "text-flow-teal drop-shadow-[0_0_10px_rgba(31,182,166,0.5)]" : "text-text-muted group-hover:text-text-primary"
+                  active ? "text-scic-green dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,165,29,0.35)]" : "text-text-muted group-hover:text-text-primary"
                 )}
               />
               {!collapsed && (
@@ -272,7 +272,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
               className={cn(
                 "flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors rounded-lg",
                 collapsed ? "hidden" : "max-md:hidden",
-                isActiveGroup ? "text-flow-teal" : "text-text-muted hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                isActiveGroup ? "text-scic-green dark:text-emerald-400" : "text-text-muted hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
               )}
             >
               <span>{group.title}</span>
@@ -311,7 +311,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
                             "group flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs transition-all duration-150",
                             collapsed ? "justify-center px-0 py-2" : "max-md:justify-center max-md:px-0",
                             active
-                              ? "bg-scic-blue/10 text-scic-blue dark:bg-scic-cyan/10 dark:text-scic-cyan border border-scic-blue/20 dark:border-scic-cyan/25 shadow-sm font-semibold"
+                              ? "bg-scic-green/15 text-scic-green dark:text-emerald-400 border border-scic-green/30 shadow-sm font-semibold"
                               : "text-text-secondary dark:text-text-muted hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary border border-transparent font-normal"
                           )}
                           title={item.label}
@@ -319,7 +319,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
                           <Icon
                             className={cn(
                               "h-4 w-4 flex-shrink-0 transition-colors duration-150",
-                              active ? "text-scic-blue dark:text-scic-cyan" : "text-text-muted group-hover:text-text-primary"
+                              active ? "text-scic-green dark:text-emerald-400" : "text-text-muted group-hover:text-text-primary"
                             )}
                           />
                           {!collapsed && (
