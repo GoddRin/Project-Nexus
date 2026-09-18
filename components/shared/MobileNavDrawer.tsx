@@ -148,7 +148,7 @@ export function MobileNavDrawer({
                   <HydroPowerLogo className="h-full w-full" size={40} />
                 </div>
                 <div className="min-w-0">
-                  <span className="font-display text-[10px] font-bold tracking-wider uppercase text-scic-blue dark:text-scic-cyan">
+                  <span className="font-display text-[10px] font-bold tracking-wider uppercase text-scic-green dark:text-scic-green-energy">
                     STA. CLARA INTL
                   </span>
                   <p className="truncate font-display text-sm font-bold text-text-primary leading-tight">

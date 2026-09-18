@@ -102,7 +102,7 @@ export function TopBar({ className }: TopBarProps) {
         <span className="font-display font-bold text-xs sm:text-sm tracking-tight text-text-primary leading-tight truncate">
           Tumauini HEPP
         </span>
-        <span className="font-mono text-[9px] font-bold text-scic-blue dark:text-scic-cyan uppercase tracking-wider leading-none mt-0.5 truncate">
+        <span className="font-mono text-[9px] font-bold text-scic-green dark:text-scic-green-energy uppercase tracking-wider leading-none mt-0.5 truncate">
           Sta. Clara Intl
         </span>
       </div>
