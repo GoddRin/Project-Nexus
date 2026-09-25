@@ -49,6 +49,7 @@ import {
 } from "./AtlasMarkerIcons";
 import { useAtlasMap } from "./AtlasMapContext";
 import { ProjectTimeline } from "./ProjectTimeline";
+import { getProjectGeometry } from "@/lib/data/scicProjectGeometries";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -74,6 +75,8 @@ export function ProjectInspectionDrawer({
     mapStyle,
     setMapStyle,
     mapInstance,
+    activeGisLayers,
+    toggleGisLayer,
   } = useAtlasMap();
 
   // Local UI presentation states
@@ -180,7 +183,35 @@ export function ProjectInspectionDrawer({
   const catConfig = CATEGORY_ICON_REGISTRY[canonicalCat];
   const status = ATLAS_STATUSES[project.status] || ATLAS_STATUSES.ONGOING;
 
+  // Resolve verified geometry if available for this project
+  const projectGeometry = useMemo(() => {
+    if (!project) return null;
+    return getProjectGeometry(project.id) || getProjectGeometry(project.code);
+  }, [project]);
+
   // Map Quick Actions (Directives 13–18)
+  const handleInspectFootprint = () => {
+    if (!activeGisLayers.has("project-footprints")) {
+      toggleGisLayer("project-footprints");
+    }
+    if (mapInstance) {
+      const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+      mapInstance.flyTo({
+        center: [project.coordinates.lng, project.coordinates.lat],
+        zoom: 14.5,
+        bearing: 15,
+        pitch: 45,
+        duration: 1800,
+        essential: true,
+        padding: isDesktop ? { top: 60, bottom: 60, left: 60, right: 480 } : { top: 40, bottom: 260, left: 20, right: 20 },
+      });
+    } else if (onFocusCoordinates) {
+      onFocusCoordinates(project.coordinates.lat, project.coordinates.lng, 14.5);
+    }
+    toast.success("Focusing on site footprint", {
+      description: projectGeometry?.metadata.notes || "Displaying verified engineering perimeter.",
+    });
+  };
   const handleCenterOnProject = () => {
     if (onFocusCoordinates) {
       onFocusCoordinates(project.coordinates.lat, project.coordinates.lng);
@@ -589,6 +620,28 @@ export function ProjectInspectionDrawer({
                   <span className="text-[10px] font-mono">Open in Maps</span>
                 </a>
               </div>
+
+              {/* 6. Inspect Engineering Footprint (Directives & Phase 13) */}
+              {projectGeometry && (
+                <button
+                  onClick={handleInspectFootprint}
+                  className="w-full mt-2.5 flex items-center justify-between px-3 py-2 rounded-xl bg-cyan-50/80 dark:bg-cyan-950/40 border border-cyan-500/30 text-cyan-800 dark:text-cyan-200 hover:bg-cyan-100 dark:hover:bg-cyan-900/40 transition-colors shadow-2xs group cursor-pointer"
+                  title="Zoom and focus on verified engineering footprint"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Layers className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:scale-110 transition-transform shrink-0" />
+                    <div className="text-left">
+                      <span className="block text-xs font-semibold leading-tight text-slate-900 dark:text-white">
+                        Inspect Engineering Footprint
+                      </span>
+                      <span className="block text-[9px] font-mono text-cyan-700 dark:text-cyan-400 mt-0.5">
+                        {projectGeometry.metadata.sourceType.replace(/_/g, " ")} &bull; {projectGeometry.metadata.confidence}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-cyan-700 dark:text-cyan-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                </button>
+              )}
             </div>
 
             {/* ============================================================

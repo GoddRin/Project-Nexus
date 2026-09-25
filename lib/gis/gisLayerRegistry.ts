@@ -132,11 +132,11 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
     id: "project-footprints",
     label: "Project Footprints",
     group: "boundaries",
-    description: "Verified engineering footprints, concession bounds, and compound perimeters.",
+    description: "Verified engineering footprints, concession bounds, and compound perimeters across the Philippines.",
     sourceId: "scic-project-footprints",
     sourceType: "geojson",
     defaultVisible: false,
-    minzoom: 11,
+    minzoom: 6,
     layerIds: [
       "project-footprints-fill",
       "project-footprints-line",
@@ -148,21 +148,21 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         id: "project-footprints-fill",
         type: "fill",
         source: "scic-project-footprints",
-        minzoom: 11,
+        minzoom: 6,
         paint: {
           "fill-color": "#06b6d4",
-          "fill-opacity": 0.12,
+          "fill-opacity": 0.15,
         },
       },
       {
         id: "project-footprints-line",
         type: "line",
         source: "scic-project-footprints",
-        minzoom: 11,
+        minzoom: 6,
         paint: {
-          "line-color": "#06b6d4",
-          "line-width": 2,
-          "line-opacity": 0.8,
+          "line-color": "#00E5FF",
+          "line-width": 2.2,
+          "line-opacity": 0.85,
           "line-dasharray": [4, 2],
         },
       },
@@ -170,7 +170,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         id: "project-footprints-selected-highlight",
         type: "line",
         source: "scic-project-footprints",
-        minzoom: 11,
+        minzoom: 6,
         paint: {
           "line-color": "#38bdf8",
           "line-width": 3.5,
@@ -182,12 +182,13 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         id: "project-footprints-label",
         type: "symbol",
         source: "scic-project-footprints",
-        minzoom: 13,
+        minzoom: 8.5,
         layout: {
           "text-field": ["get", "projectName"],
-          "text-font": ["Open Sans Regular"],
-          "text-size": 11,
+          "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+          "text-size": 10,
           "text-offset": [0, 1.2],
+          "text-max-width": 10,
         },
         paint: {
           "text-color": "#38bdf8",
@@ -198,39 +199,67 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
     ],
   },
 
-  // 4. Infrastructure Context (Roads & Rivers)
+  // 4. Infrastructure Context (National Highways, River Basins & Power Grid)
   "infrastructure-context": {
     id: "infrastructure-context",
     label: "Infrastructure Context",
     group: "infrastructure",
-    description: "Regional road networks and primary river waterways (visually subordinate).",
+    description: "National Highway Arterials (AH26), Major River Basins, and Power Grid Corridors.",
     sourceId: "scic-infrastructure-roads",
     sourceType: "geojson",
     dataUrl: "/api/regional-map/roads",
     defaultVisible: false,
-    minzoom: 9,
-    layerIds: ["infrastructure-rivers-line", "infrastructure-roads-line"],
+    minzoom: 5,
+    layerIds: ["infrastructure-rivers-line", "infrastructure-roads-line", "infrastructure-label"],
     layers: [
       {
         id: "infrastructure-rivers-line",
         type: "line",
         source: "scic-infrastructure-rivers",
-        minzoom: 9,
+        minzoom: 5,
         paint: {
-          "line-color": "#38bdf8",
-          "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1.0, 15, 2.5],
-          "line-opacity": 0.35,
+          "line-color": "#00E5FF",
+          "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.2, 10, 2.5, 14, 4.0],
+          "line-opacity": 0.55,
         },
       },
       {
         id: "infrastructure-roads-line",
         type: "line",
         source: "scic-infrastructure-roads",
-        minzoom: 9,
+        minzoom: 5,
         paint: {
-          "line-color": "#f59e0b",
-          "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1.0, 15, 2.2],
-          "line-opacity": 0.35,
+          "line-color": [
+            "match",
+            ["get", "category"],
+            "power",
+            "#10b981",
+            "expressway",
+            "#fbbf24",
+            "#f59e0b",
+          ],
+          "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.2, 10, 2.2, 14, 3.8],
+          "line-opacity": 0.65,
+        },
+      },
+      {
+        id: "infrastructure-label",
+        type: "symbol",
+        source: "scic-infrastructure-roads",
+        minzoom: 7.5,
+        layout: {
+          "symbol-placement": "line",
+          "text-field": ["get", "name"],
+          "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+          "text-size": 9,
+          "text-letter-spacing": 0.05,
+          "text-max-angle": 30,
+        },
+        paint: {
+          "text-color": "#e2e8f0",
+          "text-halo-color": "#020617",
+          "text-halo-width": 1.5,
+          "text-opacity": 0.8,
         },
       },
     ],
@@ -241,6 +270,9 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
  * Helper to convert Overpass OSM JSON elements to standard GeoJSON FeatureCollection
  */
 export function convertOverpassOsmToGeoJson(osmData: any): GeoJSON.FeatureCollection {
+  if (osmData && osmData.type === "FeatureCollection") {
+    return osmData;
+  }
   if (!osmData || !Array.isArray(osmData.elements)) {
     return { type: "FeatureCollection", features: [] };
   }

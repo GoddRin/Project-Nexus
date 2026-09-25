@@ -853,20 +853,24 @@ export function ProjectAtlasMap({
         }
       }
 
-      // 3. Project Footprints Layer (Verified geometries)
+      // 3. Project Footprints Layer (Verified geometries across Luzon, Visayas, Mindanao)
       // Spec: The boundary should only appear when the project is selected or when the user enables the layer.
       const footprintsDef = GIS_LAYER_REGISTRY["project-footprints"];
       const isFootprintLayerActive = layers.has("project-footprints");
-      const selectedHasFootprint = !!selectedId && !!getProjectGeometry(selectedId);
+      const activeGeom = getProjectGeometry(selectedId);
+      const selectedHasFootprint = !!selectedId && !!activeGeom;
       const shouldShowFootprints = isFootprintLayerActive || selectedHasFootprint;
+      const targetGeomId = activeGeom ? activeGeom.projectId : (selectedId || "__NONE__");
 
       if (shouldShowFootprints) {
+        const footprintsGeoJson = getVerifiedProjectGeometriesGeoJson();
         if (!map.getSource(footprintsDef.sourceId)) {
-          const footprintsGeoJson = getVerifiedProjectGeometriesGeoJson();
           map.addSource(footprintsDef.sourceId, {
             type: "geojson",
             data: footprintsGeoJson,
           });
+        } else {
+          (map.getSource(footprintsDef.sourceId) as maplibregl.GeoJSONSource).setData(footprintsGeoJson);
         }
         for (const layer of footprintsDef.layers) {
           if (!map.getLayer(layer.id)) {
@@ -878,13 +882,13 @@ export function ProjectAtlasMap({
         // If layer is NOT toggled globally, restrict fill/line/label to the selected project only
         if (!isFootprintLayerActive && selectedId) {
           if (map.getLayer("project-footprints-fill")) {
-            map.setFilter("project-footprints-fill", ["==", ["get", "projectId"], selectedId]);
+            map.setFilter("project-footprints-fill", ["==", ["get", "projectId"], targetGeomId]);
           }
           if (map.getLayer("project-footprints-line")) {
-            map.setFilter("project-footprints-line", ["==", ["get", "projectId"], selectedId]);
+            map.setFilter("project-footprints-line", ["==", ["get", "projectId"], targetGeomId]);
           }
           if (map.getLayer("project-footprints-label")) {
-            map.setFilter("project-footprints-label", ["==", ["get", "projectId"], selectedId]);
+            map.setFilter("project-footprints-label", ["==", ["get", "projectId"], targetGeomId]);
           }
         } else {
           // Layer is enabled globally -> show all footprints
@@ -904,7 +908,7 @@ export function ProjectAtlasMap({
           map.setFilter("project-footprints-selected-highlight", [
             "==",
             ["get", "projectId"],
-            selectedId || "__NONE__",
+            targetGeomId,
           ]);
         }
       } else {

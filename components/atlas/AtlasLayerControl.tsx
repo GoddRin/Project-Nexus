@@ -281,7 +281,7 @@ export function AtlasLayerControl({
                       Project Footprints
                     </span>
                     <span className="block text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                      Verified Engineering Bounds
+                      15 Verified Site Perimeters
                     </span>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export function AtlasLayerControl({
                       Infrastructure Context
                     </span>
                     <span className="block text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                      Road Network & Major Rivers
+                      AH26, Expressways, Rivers & Grid
                     </span>
                   </div>
                 </div>

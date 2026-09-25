@@ -19,6 +19,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/mobile(.*)",
   "/api/notifications(.*)",
   "/api/projects(.*)",
+  "/api/regional-map(.*)",
   "/models/(.*)",
   "/maplibre-gl-worker(.*)",
   "/maplibre-gl-shared(.*)",
