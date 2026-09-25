@@ -172,17 +172,6 @@ export function ProjectInspectionDrawer({
     [galleryImages.length]
   );
 
-  if (!project) return null;
-
-  // Canonical Phase 2 category & status resolution (Directives 7 & 9)
-  const canonicalCat = toCanonicalCategory(
-    project.sector,
-    project.name,
-    project.description
-  );
-  const catConfig = CATEGORY_ICON_REGISTRY[canonicalCat];
-  const status = ATLAS_STATUSES[project.status] || ATLAS_STATUSES.ONGOING;
-
   // Resolve verified geometry if available for this project
   const projectGeometry = useMemo(() => {
     if (!project) return null;
@@ -199,6 +188,17 @@ export function ProjectInspectionDrawer({
       project.name.toLowerCase().includes("tumauini")
     );
   }, [project]);
+
+  if (!project) return null;
+
+  // Canonical Phase 2 category & status resolution (Directives 7 & 9)
+  const canonicalCat = toCanonicalCategory(
+    project.sector,
+    project.name,
+    project.description
+  );
+  const catConfig = CATEGORY_ICON_REGISTRY[canonicalCat];
+  const status = ATLAS_STATUSES[project.status] || ATLAS_STATUSES.ONGOING;
 
   // Map Quick Actions (Directives 13–18)
   const handleInspectFootprint = () => {
