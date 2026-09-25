@@ -411,6 +411,31 @@ function ScicNationalMapContent() {
     }
   }, [debouncedSearchQuery, filteredProjects, selectProject, flyToProject]);
 
+  // Reversibility & Keyboard Shortcut: ESC immediately reverses camera transitions or resets to National view
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (selectedProjectId) {
+          selectProject(null);
+        } else if (geographicScope.region !== "ALL" || discoveryScope.level !== "national") {
+          handleResetNationalScope();
+        } else if (isMobileDirectoryOpen) {
+          setIsMobileDirectoryOpen(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    selectedProjectId,
+    selectProject,
+    geographicScope.region,
+    discoveryScope.level,
+    handleResetNationalScope,
+    isMobileDirectoryOpen,
+  ]);
+
   // Project Selection Handler from Directory Sidebar
   const handleSelectProject = useCallback(
     (projectId: string) => {
