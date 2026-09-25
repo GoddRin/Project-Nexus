@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AtlasTourStepData } from "@/lib/atlas-ai/tools/projectReadTools";
+import { AtlasTourStepData } from "@/lib/atlas-ai/portfolioTours";
 
 export interface ActiveTourState {
   tourId: string;

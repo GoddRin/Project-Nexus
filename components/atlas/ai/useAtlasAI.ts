@@ -3,6 +3,10 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { AtlasAIAction, AtlasAISource } from "@/lib/atlas-ai/tools/types";
 import { AtlasContextPayload } from "@/lib/atlas-ai/identity";
+import {
+  getGuidedTourData,
+  AtlasTourStepData,
+} from "@/lib/atlas-ai/portfolioTours";
 
 export interface AtlasAIMessage {
   id: string;
@@ -83,9 +87,9 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
     stepIndex: number;
     totalSteps: number;
     isPlaying: boolean;
-    currentStep: any;
+    currentStep: AtlasTourStepData;
   } | null>(null);
-  const [cachedTourSteps, setCachedTourSteps] = useState<any[]>([]);
+  const [cachedTourSteps, setCachedTourSteps] = useState<AtlasTourStepData[]>([]);
 
   // References to latest state
   const stateRef = useRef(options);
@@ -166,11 +170,9 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
   }, []);
 
   // Tour Controller Methods
-  const startTour = useCallback(async (tourId: string = "national-flagship-tour", initialStep: number = 0) => {
+  const startTour = useCallback((tourId: string = "national-flagship-tour", initialStep: number = 0) => {
     try {
-      // Dynamic import to avoid circular dependency in SSR
-      const { getGuidedTour } = await import("@/lib/atlas-ai/tools/projectReadTools");
-      const tourData = await getGuidedTour({ tourId });
+      const tourData = getGuidedTourData(tourId);
       const validIndex = Math.max(0, Math.min(initialStep, tourData.steps.length - 1));
       const step = tourData.steps[validIndex];
 
