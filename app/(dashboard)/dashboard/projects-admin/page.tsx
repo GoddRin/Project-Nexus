@@ -165,17 +165,11 @@ export default function ProjectsAdminPage() {
       {/* Top Banner & Primary Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              Project Atlas Management
-            </span>
-            <span className="text-xs text-slate-400">• Single Source of Truth: PostgreSQL</span>
-          </div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-1 flex items-center gap-2.5">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <Building2 className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
             Project Atlas Administration
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Maintain Sta. Clara corporate project portfolio, locations, leadership, imagery, and audit records with real-time map synchronization.
           </p>
         </div>
@@ -207,13 +201,13 @@ export default function ProjectsAdminPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            Total Projects in DB
+            Total Projects
           </span>
           <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
             {total}
           </div>
           <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-            PostgreSQL Authoritative
+            Active Corporate Registry
           </span>
         </div>
 

@@ -270,7 +270,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
           <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-white/5">
             <div
               onClick={handleCopyId}
-              title="Click to copy canonical PostgreSQL Project.id"
+              title="Click to copy canonical Project.id"
               className="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-[#0284C7]/50 transition-colors cursor-pointer"
             >
               <span className="text-[10px] font-mono text-slate-400">ID:</span>
@@ -282,10 +282,6 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
               ) : (
                 <Copy className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />
               )}
-            </div>
-
-            <div className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
-              Source of Truth: PostgreSQL &bull; Prisma Multi-Project Schema
             </div>
           </div>
         </div>

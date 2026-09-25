@@ -241,7 +241,7 @@ export function ProjectAdminForm({
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {isEditing
               ? `Internal ID: ${initialData?.id} • Last Updated: ${initialData?.updatedAt ? new Date(initialData.updatedAt).toLocaleString() : "Unknown"}`
-              : "PostgreSQL will assign an immutable ID and record a CREATE audit log on submission."}
+              : "An immutable ID will be assigned and recorded to the project registry upon submission."}
           </p>
         </div>
 
@@ -833,7 +833,7 @@ export function ProjectAdminForm({
       {/* Footer Submission Bar */}
       <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
         <span className="text-xs text-slate-500">
-          All modifications are transactionally logged to PostgreSQL with field-level diffs.
+          All modifications are recorded with field-level audit trails.
         </span>
 
         <div className="flex items-center gap-2">
