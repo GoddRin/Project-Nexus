@@ -51,18 +51,23 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
     layers: [], // Handled by core setupSourceAndLayers in ProjectAtlasMap
   },
 
-  // 2. Administrative Boundaries
+  // 2. Administrative Boundaries (Nationwide: 82 Provinces + 1,647 Municipalities & Cities)
   "admin-boundaries": {
     id: "admin-boundaries",
     label: "Administrative Boundaries",
     group: "boundaries",
-    description: "Provincial & municipal administrative boundary polygons with restrained linework.",
+    description: "Provincial & municipal administrative boundary polygons covering the entire Philippines.",
     sourceId: "scic-admin-boundaries",
     sourceType: "geojson",
     dataUrl: "/api/regional-map/boundary",
     defaultVisible: false,
-    minzoom: 6,
-    layerIds: ["admin-boundaries-fill", "admin-boundaries-line", "admin-boundaries-label"],
+    minzoom: 5,
+    layerIds: [
+      "admin-boundaries-fill",
+      "admin-boundaries-province-line",
+      "admin-boundaries-muni-line",
+      "admin-boundaries-label",
+    ],
     layers: [
       {
         id: "admin-boundaries-fill",
@@ -71,18 +76,31 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         minzoom: 7,
         paint: {
           "fill-color": "#38bdf8",
-          "fill-opacity": 0.03,
+          "fill-opacity": 0.025,
         },
       },
       {
-        id: "admin-boundaries-line",
+        id: "admin-boundaries-province-line",
         type: "line",
         source: "scic-admin-boundaries",
-        minzoom: 6,
+        minzoom: 5,
+        filter: ["==", ["get", "level"], 2],
         paint: {
           "line-color": "#94a3b8",
-          "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.8, 12, 1.8],
-          "line-opacity": 0.45,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 5, 0.9, 10, 1.8],
+          "line-opacity": 0.55,
+        },
+      },
+      {
+        id: "admin-boundaries-muni-line",
+        type: "line",
+        source: "scic-admin-boundaries",
+        minzoom: 7.5,
+        filter: ["==", ["get", "level"], 3],
+        paint: {
+          "line-color": "#64748b",
+          "line-width": ["interpolate", ["linear"], ["zoom"], 7.5, 0.6, 12, 1.2],
+          "line-opacity": 0.4,
           "line-dasharray": [3, 2],
         },
       },
@@ -90,11 +108,11 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         id: "admin-boundaries-label",
         type: "symbol",
         source: "scic-admin-boundaries",
-        minzoom: 9,
+        minzoom: 8.5,
         layout: {
-          "text-field": ["get", "adm3_en"],
-          "text-font": ["Open Sans Regular"],
-          "text-size": 10,
+          "text-field": ["coalesce", ["get", "name"], ["get", "adm3_en"]],
+          "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+          "text-size": ["interpolate", ["linear"], ["zoom"], 8.5, 9, 12, 11],
           "text-transform": "uppercase",
           "text-letter-spacing": 0.1,
           "text-max-width": 8,
@@ -103,7 +121,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
           "text-color": "#94a3b8",
           "text-halo-color": "#020617",
           "text-halo-width": 1.5,
-          "text-opacity": 0.7,
+          "text-opacity": 0.75,
         },
       },
     ],
