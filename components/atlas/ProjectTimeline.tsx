@@ -408,72 +408,96 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
       {/* 2. Visual Chronological Horizon Rail (Desktop & Tablet) */}
       <div className="pt-1 pb-1">
         {/* Horizontal Continuous Track Container */}
-        <div className="relative flex items-center justify-between w-full py-2">
-          {/* Background Connecting Rail */}
-          <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-0.5 bg-slate-200 dark:bg-white/15" />
+        {(() => {
+          const currentIndex = nodes.findIndex((n) => n.isCurrentIndicator);
+          const progressPercent =
+            project.status === "COMPLETED"
+              ? 100
+              : currentIndex >= 0 && nodes.length > 1
+              ? (currentIndex / (nodes.length - 1)) * 100
+              : 25;
 
-          {/* Achieved Segment Overlay */}
-          <div
-            className="absolute left-2 top-1/2 -translate-y-1/2 h-0.5 bg-emerald-500/70 transition-all duration-500"
-            style={{
-              width:
-                project.status === "COMPLETED"
-                  ? "calc(100% - 16px)"
-                  : hasCurrentMarker
-                  ? "60%"
-                  : "25%",
-            }}
-          />
+          return (
+            <div className="relative flex items-center justify-between w-full min-w-[320px] px-1 py-1">
+              {/* Background Connecting Rail: Exactly centered through the middle dot slot (28px top slot + 12px middle center = 40px) */}
+              <div className="absolute left-3 right-3 top-[40px] -translate-y-1/2 h-0.5 bg-slate-200 dark:bg-white/15" />
 
-          {/* Milestone Nodes on Horizon */}
-          {nodes.map((node, idx) => {
-            const isFirst = idx === 0;
-            const isLast = idx === nodes.length - 1;
-
-            return (
+              {/* Achieved Segment Overlay */}
               <div
-                key={node.id}
-                className="relative z-10 flex flex-col items-center group cursor-default"
-              >
-                {/* Node Dot / Glyph */}
-                <div
-                  className={cn(
-                    "flex items-center justify-center transition-transform group-hover:scale-125 duration-200",
-                    node.isCurrentIndicator
-                      ? "h-5 w-5 rounded-full bg-[#0284C7] ring-4 ring-[#0284C7]/30 text-white shadow-sm"
-                      : node.status === "ACHIEVED"
-                      ? "h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30 text-slate-950"
-                      : node.status === "IN_PROGRESS"
-                      ? "h-4 w-4 rounded-full bg-sky-500 ring-4 ring-sky-500/30 animate-pulse text-white"
-                      : "h-3 w-3 rounded-full bg-slate-300 dark:bg-slate-700 border border-slate-400 dark:border-slate-500"
-                  )}
-                  title={`${node.dateDisplay}: ${node.title} (${node.status})`}
-                >
-                  {node.isCurrentIndicator ? (
-                    <CircleDot className="h-3 w-3 text-white" />
-                  ) : node.status === "ACHIEVED" ? (
-                    <CheckCircle2 className="h-2.5 w-2.5 text-slate-950" />
-                  ) : null}
-                </div>
+                className="absolute left-3 top-[40px] -translate-y-1/2 h-0.5 bg-emerald-500/80 transition-all duration-500"
+                style={{
+                  width: `calc(${progressPercent}% - 6px)`,
+                }}
+              />
 
-                {/* Date Tag */}
-                <span
-                  className={cn(
-                    "text-[9px] font-mono mt-1 select-none whitespace-nowrap",
-                    node.isCurrentIndicator
-                      ? "font-bold text-[#0284C7] dark:text-[#00E5FF] -mt-6 mb-1 bg-white/90 dark:bg-slate-900/90 px-1 rounded border border-[#0284C7]/30"
-                      : node.status === "ACHIEVED"
-                      ? "text-emerald-700 dark:text-emerald-400 font-semibold"
-                      : "text-slate-500 dark:text-slate-400 font-medium",
-                    isFirst ? "text-left self-start" : isLast ? "text-right self-end" : "text-center"
-                  )}
-                >
-                  {node.isCurrentIndicator ? `● CURRENT` : node.dateDisplay}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+              {/* Milestone Nodes on Horizon */}
+              {nodes.map((node, idx) => {
+                const isFirst = idx === 0;
+                const isLast = idx === nodes.length - 1;
+
+                return (
+                  <div
+                    key={node.id}
+                    className="relative z-10 flex flex-col items-center group cursor-default"
+                  >
+                    {/* Top Tier (h-7): Floating CURRENT pill badge or reserved clearance */}
+                    <div className="h-7 flex items-center justify-center">
+                      {node.isCurrentIndicator ? (
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/90 border border-sky-400/50 dark:border-[#00E5FF]/50 text-[#0284C7] dark:text-[#00E5FF] text-[9px] font-mono font-bold shadow-xs whitespace-nowrap">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0284C7] dark:bg-[#00E5FF] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#0284C7] dark:bg-[#00E5FF]"></span>
+                          </span>
+                          <span>CURRENT</span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {/* Middle Tier (h-6): Node Dot / Glyph on Track */}
+                    <div className="h-6 flex items-center justify-center">
+                      <div
+                        className={cn(
+                          "flex items-center justify-center transition-transform group-hover:scale-125 duration-200",
+                          node.isCurrentIndicator
+                            ? "h-4 w-4 rounded-full bg-[#0284C7] dark:bg-[#00E5FF] ring-4 ring-[#0284C7]/20 dark:ring-[#00E5FF]/20 shadow-sm"
+                            : node.status === "ACHIEVED"
+                            ? "h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30 text-slate-950"
+                            : node.status === "IN_PROGRESS"
+                            ? "h-3.5 w-3.5 rounded-full bg-sky-500 ring-4 ring-sky-500/30 animate-pulse text-white"
+                            : "h-3 w-3 rounded-full bg-slate-300 dark:bg-slate-700 border border-slate-400 dark:border-slate-500"
+                        )}
+                        title={`${node.dateDisplay}: ${node.title} (${node.status})`}
+                      >
+                        {node.isCurrentIndicator ? (
+                          <div className="h-1.5 w-1.5 rounded-full bg-white dark:bg-slate-950" />
+                        ) : node.status === "ACHIEVED" ? (
+                          <CheckCircle2 className="h-2.5 w-2.5 text-slate-950" />
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {/* Bottom Tier: Date Tag aligned on consistent horizontal baseline */}
+                    <div className="pt-1 flex flex-col items-center">
+                      <span
+                        className={cn(
+                          "text-[9px] font-mono select-none whitespace-nowrap",
+                          node.isCurrentIndicator
+                            ? "font-bold text-[#0284C7] dark:text-[#00E5FF]"
+                            : node.status === "ACHIEVED"
+                            ? "text-emerald-700 dark:text-emerald-400 font-semibold"
+                            : "text-slate-500 dark:text-slate-400 font-medium",
+                          isFirst ? "text-left self-start" : isLast ? "text-right self-end" : "text-center"
+                        )}
+                      >
+                        {node.dateDisplay}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
 
       {/* 3. Detailed Chronological Milestone Ledger (Vertical Track) */}
