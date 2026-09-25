@@ -39,11 +39,16 @@ import { RegionIntelligenceCard } from "@/components/atlas/RegionIntelligenceCar
 import {
   AtlasDiscoveryScope,
   getRegionDiscoveryDetail,
+  CANONICAL_REGIONS,
 } from "@/components/atlas/AtlasDiscoveryUtils";
 import { Search, X, SlidersHorizontal, Loader2, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-
+import {
+  AtlasCommandBar,
+  AtlasAssistantDrawer,
+  AtlasAIFloatingTrigger,
+  useAtlasAI,
+} from "@/components/atlas/ai";
 
 function ScicNationalMapContent() {
   const {
@@ -55,6 +60,9 @@ function ScicNationalMapContent() {
     resetToNationalView,
     zoomToBounds,
     isFullscreen,
+    activeGisLayers,
+    toggleGisLayer,
+    viewport,
   } = useAtlasMap();
 
   const searchParams = useSearchParams();
@@ -342,6 +350,145 @@ function ScicNationalMapContent() {
     setSelectedProvince("ALL");
   }, []);
 
+  // ─── SCIC Atlas AI Assistant Integration (Phase 16) ─────────────
+  const atlasAI = useAtlasAI({
+    selectedProjectId,
+    mapZoom: viewport?.zoom ?? 5.8,
+    sidebarMode,
+    activeFilters: {
+      category: selectedCategory !== "ALL" ? selectedCategory : undefined,
+      status: selectedStatus !== "ALL" ? selectedStatus : undefined,
+      region: selectedRegion !== "ALL" ? selectedRegion : undefined,
+      province: selectedProvince !== "ALL" ? selectedProvince : undefined,
+      islandGroup: selectedIsland !== "ALL" ? selectedIsland : undefined,
+      searchQuery: debouncedSearchQuery || undefined,
+    },
+    geographicScope,
+    mapStyle,
+    activeGisLayers,
+    allProjectsCount: activeProjects.length,
+    onSelectProject: (id) => {
+      selectProject(id);
+      if (id) {
+        const p = activeProjects.find((x) => x.id === id || x.code === id);
+        if (p) {
+          flyToProject({
+            coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+            id: p.id,
+          });
+        }
+      }
+    },
+    onFlyToProject: (target) => {
+      if (target.id) {
+        const p = activeProjects.find((x) => x.id === target.id || x.code === target.id);
+        if (p) {
+          selectProject(p.id);
+          flyToProject({
+            coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+            id: p.id,
+            zoom: target.zoom,
+            pitch: target.pitch,
+          });
+        }
+      } else if (target.coordinates) {
+        flyToProject({
+          coordinates: target.coordinates,
+          zoom: target.zoom,
+          pitch: target.pitch,
+        });
+      }
+    },
+    onZoomToBounds: (bounds) => {
+      zoomToBounds(bounds);
+    },
+    onApplyFilters: (filters) => {
+      if (filters.category !== undefined) {
+        setSelectedCategory(filters.category === "ALL" ? "ALL" : (filters.category as any));
+      }
+      if (filters.status !== undefined) {
+        setSelectedStatus(filters.status === "ALL" ? "ALL" : (filters.status as any));
+      }
+      if (filters.region !== undefined) {
+        handleRegionChange(filters.region);
+      }
+      if (filters.province !== undefined) {
+        setSelectedProvince(filters.province);
+      }
+      if (filters.islandGroup !== undefined) {
+        setSelectedIsland(filters.islandGroup as any);
+      }
+      if (filters.searchQuery !== undefined) {
+        setSearchInputValue(filters.searchQuery);
+      }
+    },
+    onClearFilters: () => {
+      handleResetFilters();
+    },
+    onSetMapStyle: (style) => {
+      setMapStyle(style);
+    },
+    onToggleGisLayer: (layerId, visible) => {
+      if (visible !== undefined) {
+        const isCurrent = activeGisLayers.has(layerId);
+        if (isCurrent !== visible) toggleGisLayer(layerId);
+      } else {
+        toggleGisLayer(layerId);
+      }
+    },
+    onInspectFootprint: (projId) => {
+      const p = activeProjects.find((x) => x.id === projId || x.code === projId);
+      if (p) {
+        selectProject(p.id);
+        flyToProject({
+          coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+          id: p.id,
+          zoom: 14.5,
+          pitch: 45,
+        });
+        if (!activeGisLayers.has("project-footprints")) {
+          toggleGisLayer("project-footprints");
+        }
+      }
+    },
+    onEnterDiscoveryScope: (scope, targetName) => {
+      setSidebarMode("DISCOVERY");
+      if (scope === "national") {
+        setDiscoveryScope({ level: "national" });
+      } else if (scope === "region" && targetName) {
+        const canonical = CANONICAL_REGIONS.find(
+          (c) =>
+            c.match(targetName) ||
+            c.shortName === targetName ||
+            c.key === targetName ||
+            c.displayName.includes(targetName)
+        );
+        if (canonical) {
+          setDiscoveryScope({
+            level: "region",
+            regionKey: canonical.key,
+            regionDisplayName: canonical.displayName,
+            islandGroup: canonical.islandGroup,
+          });
+        }
+      } else if (scope === "province" && targetName) {
+        const p = activeProjects.find((x) => x.province === targetName);
+        if (p) {
+          const canonical = CANONICAL_REGIONS.find((c) => c.match(p.region));
+          if (canonical) {
+            setDiscoveryScope({
+              level: "province",
+              regionKey: canonical.key,
+              regionDisplayName: canonical.displayName,
+              province: targetName,
+              islandGroup: canonical.islandGroup,
+            });
+          }
+        }
+      }
+    },
+  });
+
   // 7. Construct GeoJSON FeatureCollection for MapLibre
   // (Directive 6: Map ALWAYS receives ALL filtered projects, plus active selectedProject if excluded by filters)
   const currentGeoJson: AtlasFeatureCollection = useMemo(() => {
@@ -575,6 +722,26 @@ function ScicNationalMapContent() {
             />
           </div>
 
+          {/* ✦ SCIC Atlas Command Bar: Top-Center on Map Canvas */}
+          <div className="absolute top-14 lg:top-3 left-1/2 -translate-x-1/2 z-30 w-full max-w-sm sm:max-w-md lg:max-w-xl px-3 pointer-events-none flex justify-center">
+            <AtlasCommandBar
+              onSend={atlasAI.sendMessage}
+              onOpenDrawer={() => atlasAI.setIsOpen(true)}
+              suggestions={atlasAI.suggestions}
+              isGenerating={atlasAI.isGenerating}
+              selectedProjectName={selectedProject?.name}
+              activeRegion={geographicScope.region}
+            />
+          </div>
+
+          {/* ✦ Floating Atlas AI Entry Point Button */}
+          <div className="absolute bottom-5 left-3 sm:left-4 z-20 pointer-events-auto">
+            <AtlasAIFloatingTrigger
+              onClick={() => atlasAI.setIsOpen(!atlasAI.isOpen)}
+              isOpen={atlasAI.isOpen}
+            />
+          </div>
+
           {/* Region Intelligence Card (Floats when in regional scope, no project selected, and sidebar is not in Discovery mode) */}
           {geographicScope.region !== "ALL" && !selectedProjectId && sidebarMode !== "DISCOVERY" && (
             <div className="absolute top-26 lg:top-14 left-3 z-20 pointer-events-auto">
@@ -682,6 +849,26 @@ function ScicNationalMapContent() {
           }}
           isExcludedByFilters={isSelectedProjectFilteredOut}
           onResetFilters={handleResetFilters}
+        />
+
+        {/* ✦ SCIC ATLAS ASSISTANT CONVERSATION DRAWER */}
+        <AtlasAssistantDrawer
+          isOpen={atlasAI.isOpen}
+          onClose={() => atlasAI.setIsOpen(false)}
+          messages={atlasAI.messages}
+          isGenerating={atlasAI.isGenerating}
+          currentToolEvents={atlasAI.currentToolEvents}
+          onSendMessage={atlasAI.sendMessage}
+          onClearChat={atlasAI.clearChat}
+          suggestions={atlasAI.suggestions}
+          onExecuteAction={atlasAI.executeAction}
+          onUndoAction={atlasAI.undoLastAction}
+          canUndo={atlasAI.canUndo}
+          lastAppliedAction={atlasAI.lastAppliedAction}
+          selectedProjectName={selectedProject?.name}
+          selectedProjectId={selectedProject?.id}
+          activeRegion={geographicScope.region}
+          totalProjectsCount={activeProjects.length}
         />
       </div>
     </div>

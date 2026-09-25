@@ -13,14 +13,16 @@ export async function POST(request: NextRequest) {
 
     // 2. Parse and validate request body
     const body = await request.json();
-    const { query, history = [], context, stream = true } = body;
+    const rawQuery = body.query || body.message;
+    const { history = [], context, stream = true } = body;
 
-    if (!query || typeof query !== "string" || !query.trim()) {
+    if (!rawQuery || typeof rawQuery !== "string" || !rawQuery.trim()) {
       return NextResponse.json(
         { error: "Missing or invalid 'query' parameter." },
         { status: 400 }
       );
     }
+    const query = rawQuery.trim();
 
     const wantsStream =
       stream === true || request.headers.get("accept")?.includes("text/event-stream");

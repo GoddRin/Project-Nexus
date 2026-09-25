@@ -72,6 +72,9 @@ export interface AtlasMapContextValue {
     latitude?: number;
     longitude?: number;
     id?: string;
+    zoom?: number;
+    pitch?: number;
+    bearing?: number;
   }) => void;
   resetToNationalView: () => void;
   setIslandPreset: (preset: AtlasIslandPreset) => void;
@@ -196,6 +199,9 @@ export function AtlasMapProvider({
       latitude?: number;
       longitude?: number;
       id?: string;
+      zoom?: number;
+      pitch?: number;
+      bearing?: number;
     }) => {
       if (target.id) {
         setSelectedProjectId(target.id);
@@ -211,9 +217,9 @@ export function AtlasMapProvider({
         const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
         map.flyTo({
           center: [lng, lat],
-          zoom: Math.max(map.getZoom(), 13.5),
-          bearing: 0,
-          pitch: 0,
+          zoom: target.zoom ?? Math.max(map.getZoom(), 13.5),
+          bearing: target.bearing ?? 0,
+          pitch: target.pitch ?? 0,
           duration: 1400,
           essential: true,
           padding: isDesktop ? { top: 0, bottom: 0, left: 0, right: 430 } : undefined,

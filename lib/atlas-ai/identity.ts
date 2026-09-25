@@ -24,6 +24,7 @@ export interface AtlasContextPayload {
   };
   activeLayers?: string[];
   sidebarMode?: "DIRECTORY" | "DISCOVERY";
+  visibleProjectIds?: string[];
 }
 
 /**
