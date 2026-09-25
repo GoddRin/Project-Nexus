@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Globe,
   ChevronRight,
@@ -13,6 +14,7 @@ import {
   Compass,
   Building2,
   ChevronDown,
+  FileText,
 } from "lucide-react";
 import { SCICProject } from "@/lib/data/scicProjectsData";
 import {
@@ -304,11 +306,21 @@ export function AtlasDiscoveryMode({
                             {project.municipality}, {project.province}
                           </span>
                         </div>
-                        {project.metrics?.capacity && (
-                          <span className="font-bold text-[#0284C7] dark:text-[#38BDF8] shrink-0">
-                            {project.metrics.capacity}
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {project.metrics?.capacity && (
+                            <span className="font-bold text-[#0284C7] dark:text-[#38BDF8]">
+                              {project.metrics.capacity}
+                            </span>
+                          )}
+                          <Link
+                            href={`/dashboard/projects/${project.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            title="Open Project Profile"
+                            className="p-1 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-[#0284C7] dark:hover:text-[#38BDF8] transition-colors"
+                          >
+                            <FileText className="h-3 w-3" />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   );

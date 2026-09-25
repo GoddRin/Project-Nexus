@@ -22,6 +22,7 @@ import {
   Layers,
   X,
   XCircle,
+  FileText,
 } from "lucide-react";
 import {
   PROJECT_CATEGORIES,
@@ -478,6 +479,14 @@ export default function ProjectsAdminPage() {
                             className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors"
                           >
                             <Eye className="w-4 h-4" />
+                          </Link>
+
+                          <Link
+                            href={`/dashboard/projects/${p.id}`}
+                            title="View Project Profile"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#0284C7] hover:bg-[#0284C7]/10 dark:hover:text-[#00E5FF] transition-colors"
+                          >
+                            <FileText className="w-4 h-4" />
                           </Link>
 
                           <button

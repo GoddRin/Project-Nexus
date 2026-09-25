@@ -189,6 +189,17 @@ export function ProjectInspectionDrawer({
     return getProjectGeometry(project.id) || getProjectGeometry(project.code);
   }, [project]);
 
+  // Determine if this project is integrated with Project Nexus Operational Workspace
+  const isOperationalNexusProject = useMemo(() => {
+    if (!project) return false;
+    return (
+      project.id === "scic-thepp-isabela" ||
+      project.id === "cmqvwzn750000r8w1zidk116i" ||
+      project.code === "SCIC-HEPP-01" ||
+      project.name.toLowerCase().includes("tumauini")
+    );
+  }, [project]);
+
   // Map Quick Actions (Directives 13–18)
   const handleInspectFootprint = () => {
     if (!activeGisLayers.has("project-footprints")) {
@@ -547,6 +558,39 @@ export function ProjectInspectionDrawer({
                 Center · Site View · Satellite · Copy Coordinates · Open in Maps
                 ============================================================ */}
             <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/80 p-2.5">
+              {/* Primary Architecture Action: Open Full Project Profile */}
+              <div className="space-y-1.5 mb-2.5">
+                <Link
+                  href={`/dashboard/projects/${project.id}`}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 via-[#0284C7]/15 to-emerald-500/10 dark:from-sky-500/20 dark:via-[#00E5FF]/20 dark:to-emerald-500/15 border border-[#0284C7]/40 dark:border-[#00E5FF]/40 text-[#0284C7] dark:text-[#00E5FF] hover:border-[#0284C7] dark:hover:border-[#00E5FF] transition-all group font-mono text-xs font-bold shadow-2xs cursor-pointer"
+                  title="Open full authoritative Project Profile"
+                >
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:scale-110 transition-transform shrink-0" />
+                    <span>Open Project Profile</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:translate-x-0.5 transition-transform shrink-0" />
+                </Link>
+
+                {/* If project has active Nexus operations (Tumauini HEPP) */}
+                {isOperationalNexusProject && (
+                  <Link
+                    href="/dashboard"
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 transition-all group font-mono text-xs font-bold shadow-2xs cursor-pointer"
+                    title="Open live Project Nexus site operations command center"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      </span>
+                      <span>Open Nexus Operations</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                  </Link>
+                )}
+              </div>
+
               <span className="block text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
                 Map Quick Actions
               </span>

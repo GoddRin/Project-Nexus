@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Sparkles,
   MapPin,
   ArrowRight,
+  FileText,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -427,14 +429,24 @@ export function AtlasProjectSpotlight({
           )}
 
           {/* 3. GLOWING ACTION CTA (Explore Project on Map) */}
-          <button
-            type="button"
-            onClick={() => onExploreProject(project)}
-            className="w-full mt-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#0284C7] via-[#0ea5e9] to-emerald-500 hover:from-[#0369a1] hover:to-emerald-400 text-white font-mono text-xs font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(2,132,199,0.35)] hover:shadow-[0_0_25px_rgba(16,185,129,0.45)] cursor-pointer active:scale-[0.99]"
-          >
-            <span>Explore in 3D Map</span>
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+            <button
+              type="button"
+              onClick={() => onExploreProject(project)}
+              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#0284C7] via-[#0ea5e9] to-emerald-500 hover:from-[#0369a1] hover:to-emerald-400 text-white font-mono text-xs font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(2,132,199,0.35)] hover:shadow-[0_0_25px_rgba(16,185,129,0.45)] cursor-pointer active:scale-[0.99]"
+            >
+              <span>Explore on Map</span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </button>
+
+            <Link
+              href={`/dashboard/projects/${project.id}`}
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 hover:border-sky-400/50 text-white font-mono text-xs font-semibold transition-all shadow-xs"
+            >
+              <FileText className="h-3.5 w-3.5 text-sky-400" />
+              <span>Full Profile</span>
+            </Link>
+          </div>
 
           {/* 4. SCROLL DOWN ACTION BUTTON (Scrolls smoothly to Directory Filters & Cards) */}
           {onScrollToDirectory && (

@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { MapPin, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { MapPin, ChevronRight, FileText } from "lucide-react";
 import { SCICProject } from "@/lib/data/scicProjectsData";
 import { ATLAS_STATUSES } from "./AtlasTokens";
 import {
@@ -159,16 +160,28 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
               {primarySpec}
             </span>
           </div>
-          <div
-            className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9.5px] font-mono font-semibold transition-all shrink-0",
-              isSelected
-                ? "bg-[#0284C7]/15 dark:bg-[#00E5FF]/15 text-[#0284C7] dark:text-[#00E5FF] border border-[#0284C7]/30 dark:border-[#00E5FF]/30 shadow-xs"
-                : "bg-slate-200/50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/10 group-hover:bg-[#0284C7]/10 dark:group-hover:bg-sky-500/15 group-hover:text-[#0284C7] dark:group-hover:text-sky-300 group-hover:border-[#0284C7]/30 dark:group-hover:border-sky-500/30"
-            )}
-          >
-            <span>{isSelected ? "Selected" : "Inspect"}</span>
-            <ChevronRight className="h-2.5 w-2.5" />
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Link
+              href={`/dashboard/projects/${project.id}`}
+              onClick={(e) => e.stopPropagation()}
+              title="Open full Project Profile"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-mono font-medium text-slate-500 hover:text-[#0284C7] dark:hover:text-[#00E5FF] hover:bg-[#0284C7]/10 transition-colors"
+            >
+              <FileText className="h-2.5 w-2.5" />
+              <span>Profile</span>
+            </Link>
+
+            <div
+              className={cn(
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9.5px] font-mono font-semibold transition-all shrink-0",
+                isSelected
+                  ? "bg-[#0284C7]/15 dark:bg-[#00E5FF]/15 text-[#0284C7] dark:text-[#00E5FF] border border-[#0284C7]/30 dark:border-[#00E5FF]/30 shadow-xs"
+                  : "bg-slate-200/50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/10 group-hover:bg-[#0284C7]/10 dark:group-hover:bg-sky-500/15 group-hover:text-[#0284C7] dark:group-hover:text-sky-300 group-hover:border-[#0284C7]/30 dark:group-hover:border-sky-500/30"
+              )}
+            >
+              <span>{isSelected ? "Selected" : "Inspect"}</span>
+              <ChevronRight className="h-2.5 w-2.5" />
+            </div>
           </div>
         </div>
       </div>

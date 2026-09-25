@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-out(.*)",
   "/digital-twin(.*)",
   "/dashboard/projects-map(.*)",
+  "/dashboard/projects(.*)",
   "/api/webhook(.*)",
   "/api/assistant/reindex(.*)",
   // Mobile app public routes — no Clerk session available on the device
