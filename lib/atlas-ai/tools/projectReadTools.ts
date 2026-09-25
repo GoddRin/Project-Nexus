@@ -927,3 +927,669 @@ export async function searchAtlasKnowledge(args: {
     },
   };
 }
+
+// ─── Tool 12: compare_projects ─────────────────────────────────
+
+export interface ProjectComparisonRow {
+  attribute: string;
+  values: Record<string, string | number | null>;
+}
+
+export async function compareProjects(args: {
+  projectIds?: string[];
+  queryA?: string;
+  queryB?: string;
+  category?: string;
+  region?: string;
+  islandGroup?: string;
+  limit?: number;
+}): Promise<{
+  comparedProjects: Array<{
+    id: string;
+    code: string | null;
+    name: string;
+    category: string;
+    status: string;
+    region: string;
+    province: string;
+    municipality: string;
+    coordinates: { lat: number; lng: number };
+  }>;
+  matrix: ProjectComparisonRow[];
+  omittedAttributes: string[];
+  source: AtlasAISource;
+}> {
+  const targetProjects: SCICProject[] = [];
+
+  // 1. Resolve explicit IDs
+  if (args.projectIds && args.projectIds.length > 0) {
+    for (const rawId of args.projectIds) {
+      const q = rawId.toLowerCase().trim();
+      const match = SCIC_PROJECTS.find(
+        (p) => p.id.toLowerCase() === q || p.code.toLowerCase() === q || p.name.toLowerCase().includes(q)
+      );
+      if (match && !targetProjects.some((tp) => tp.id === match.id)) {
+        targetProjects.push(match);
+      }
+    }
+  }
+
+  // 2. Resolve queryA and queryB
+  if (args.queryA) {
+    const qA = args.queryA.toLowerCase().trim();
+    const matchA = SCIC_PROJECTS.find(
+      (p) => p.id.toLowerCase() === qA || p.code.toLowerCase() === qA || p.name.toLowerCase().includes(qA)
+    );
+    if (matchA && !targetProjects.some((tp) => tp.id === matchA.id)) {
+      targetProjects.push(matchA);
+    }
+  }
+  if (args.queryB) {
+    const qB = args.queryB.toLowerCase().trim();
+    const matchB = SCIC_PROJECTS.find(
+      (p) => p.id.toLowerCase() === qB || p.code.toLowerCase() === qB || p.name.toLowerCase().includes(qB)
+    );
+    if (matchB && !targetProjects.some((tp) => tp.id === matchB.id)) {
+      targetProjects.push(matchB);
+    }
+  }
+
+  // 3. Resolve multi-project category or regional comparison
+  if (targetProjects.length < 2 && (args.category || args.region || args.islandGroup)) {
+    let pool = [...SCIC_PROJECTS];
+    if (args.islandGroup && args.islandGroup !== "ALL") {
+      pool = pool.filter((p) => p.islandGroup?.toUpperCase() === args.islandGroup?.toUpperCase());
+    }
+    if (args.region && args.region !== "ALL") {
+      pool = pool.filter((p) => p.region?.toLowerCase().includes(args.region!.toLowerCase()));
+    }
+    if (args.category && args.category !== "ALL") {
+      pool = pool.filter((p) => {
+        const cat = toCanonicalCategory(p.sector, p.name, p.description);
+        return cat.toLowerCase() === args.category!.toLowerCase();
+      });
+    }
+    for (const p of pool.slice(0, args.limit || 6)) {
+      if (!targetProjects.some((tp) => tp.id === p.id)) {
+        targetProjects.push(p);
+      }
+    }
+  }
+
+  // Fallback defaults if still less than 2
+  if (targetProjects.length === 0) {
+    targetProjects.push(SCIC_PROJECTS[0], SCIC_PROJECTS[1]);
+  } else if (targetProjects.length === 1) {
+    const second = SCIC_PROJECTS.find((p) => p.id !== targetProjects[0].id) || SCIC_PROJECTS[1];
+    targetProjects.push(second);
+  }
+
+  // Candidates for comparison
+  const attributeDefinitions: Array<{
+    key: string;
+    label: string;
+    extract: (p: SCICProject) => string | number | null;
+  }> = [
+    {
+      key: "category",
+      label: "Category / Sector",
+      extract: (p) => toCanonicalCategory(p.sector, p.name, p.description),
+    },
+    {
+      key: "status",
+      label: "Status",
+      extract: (p) => p.status || null,
+    },
+    {
+      key: "region",
+      label: "Region",
+      extract: (p) => p.region || null,
+    },
+    {
+      key: "province",
+      label: "Province",
+      extract: (p) => p.province || null,
+    },
+    {
+      key: "municipality",
+      label: "Municipality",
+      extract: (p) => p.municipality || null,
+    },
+    {
+      key: "client",
+      label: "Client / Owner",
+      extract: (p) => p.client || null,
+    },
+    {
+      key: "capacity",
+      label: "Capacity / Output",
+      extract: (p) => p.metrics?.capacity || null,
+    },
+    {
+      key: "projectValue",
+      label: "Contract / Project Value",
+      extract: (p) => p.metrics?.contractValue || null,
+    },
+    {
+      key: "targetCod",
+      label: "Target COD / Completion",
+      extract: (p) => p.targetCodDate ? p.targetCodDate.slice(0, 10) : null,
+    },
+    {
+      key: "engineeringScope",
+      label: "Engineering Scope",
+      extract: (p) => (p.engineeringScope && p.engineeringScope.length > 0 ? p.engineeringScope.slice(0, 3).join(", ") : null),
+    },
+    {
+      key: "footprint",
+      label: "Verified Site Boundary",
+      extract: (p) => {
+        const geom = getProjectGeometry(p.id) || getProjectGeometry(p.code);
+        return geom ? "Verified Perimeter" : "Point Coordinates";
+      },
+    },
+  ];
+
+  const matrix: ProjectComparisonRow[] = [];
+  const omittedAttributes: string[] = [];
+
+  for (const def of attributeDefinitions) {
+    const rowValues: Record<string, string | number | null> = {};
+    let hasAnyData = false;
+
+    for (const p of targetProjects) {
+      const val = def.extract(p);
+      rowValues[p.name] = val;
+      if (val !== null && val !== undefined && val !== "") {
+        hasAnyData = true;
+      }
+    }
+
+    if (hasAnyData) {
+      matrix.push({
+        attribute: def.label,
+        values: rowValues,
+      });
+    } else {
+      omittedAttributes.push(def.label);
+    }
+  }
+
+  return {
+    comparedProjects: targetProjects.map((p) => ({
+      id: p.id,
+      code: p.code,
+      name: p.name,
+      category: toCanonicalCategory(p.sector, p.name, p.description),
+      status: p.status,
+      region: p.region,
+      province: p.province,
+      municipality: p.municipality,
+      coordinates: p.coordinates,
+    })),
+    matrix,
+    omittedAttributes,
+    source: {
+      name: "Project Atlas Multi-Project Comparator",
+      sourceType: "DATABASE",
+      provenance: "Verified",
+    },
+  };
+}
+
+// ─── Tool 13: get_portfolio_brief ──────────────────────────────
+
+export async function getPortfolioBrief(args?: {
+  islandGroup?: string;
+  region?: string;
+}): Promise<{
+  portfolioSummary: {
+    totalProjects: number;
+    status: {
+      ongoing: number;
+      completed: number;
+      upcoming: number;
+      planning: number;
+      onHold: number;
+    };
+    islandGroups: {
+      luzon: { total: number; ongoing: number; completed: number; upcoming: number };
+      visayas: { total: number; ongoing: number; completed: number; upcoming: number };
+      mindanao: { total: number; ongoing: number; completed: number; upcoming: number };
+    };
+    sectors: Array<{ sector: string; count: number; sampleProjects: string[] }>;
+    cleanEnergy: {
+      totalRenewableCapacityMw: number;
+      hydropowerCount: number;
+      windCount: number;
+      solarCount: number;
+    };
+    topRegions: Array<{ region: string; count: number; ongoing: number }>;
+  };
+  source: AtlasAISource;
+}> {
+  let pool = [...SCIC_PROJECTS];
+  if (args?.islandGroup && args.islandGroup !== "ALL") {
+    pool = pool.filter((p) => p.islandGroup?.toUpperCase() === args.islandGroup?.toUpperCase());
+  }
+  if (args?.region && args.region !== "ALL") {
+    pool = pool.filter((p) => p.region?.toLowerCase().includes(args.region!.toLowerCase()));
+  }
+
+  const status = {
+    ongoing: pool.filter((p) => p.status?.toUpperCase() === "ONGOING").length,
+    completed: pool.filter((p) => p.status?.toUpperCase() === "COMPLETED").length,
+    upcoming: pool.filter((p) => p.status?.toUpperCase() === "UPCOMING").length,
+    planning: pool.filter((p) => p.status?.toUpperCase() === "PLANNING").length,
+    onHold: pool.filter((p) => p.status?.toUpperCase() === "ON_HOLD").length,
+  };
+
+  const getIslandStats = (ig: string) => {
+    const sub = pool.filter((p) => p.islandGroup?.toUpperCase() === ig);
+    return {
+      total: sub.length,
+      ongoing: sub.filter((p) => p.status?.toUpperCase() === "ONGOING").length,
+      completed: sub.filter((p) => p.status?.toUpperCase() === "COMPLETED").length,
+      upcoming: sub.filter((p) => p.status?.toUpperCase() === "UPCOMING" || p.status?.toUpperCase() === "PLANNING").length,
+    };
+  };
+
+  // Group by sector
+  const sectorMap = new Map<string, SCICProject[]>();
+  for (const p of pool) {
+    const cat = toCanonicalCategory(p.sector, p.name, p.description);
+    if (!sectorMap.has(cat)) sectorMap.set(cat, []);
+    sectorMap.get(cat)!.push(p);
+  }
+
+  const sectors = Array.from(sectorMap.entries())
+    .map(([sec, projs]) => ({
+      sector: sec,
+      count: projs.length,
+      sampleProjects: projs.slice(0, 3).map((p) => p.name),
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Clean energy stats
+  let totalMw = 0;
+  let hydroCount = 0;
+  let windCount = 0;
+  let solarCount = 0;
+
+  for (const p of pool) {
+    const cat = toCanonicalCategory(p.sector, p.name, p.description).toLowerCase();
+    if (cat.includes("hydro")) {
+      hydroCount++;
+      const match = p.metrics?.capacity?.match(/([0-9.]+)\s*MW/i);
+      if (match) totalMw += parseFloat(match[1]);
+    } else if (cat.includes("wind")) {
+      windCount++;
+      const match = p.metrics?.capacity?.match(/([0-9.]+)\s*MW/i);
+      if (match) totalMw += parseFloat(match[1]);
+    } else if (cat.includes("solar")) {
+      solarCount++;
+      const match = p.metrics?.capacity?.match(/([0-9.]+)\s*MW/i);
+      if (match) totalMw += parseFloat(match[1]);
+    }
+  }
+
+  // Top regions
+  const regionMap = new Map<string, { count: number; ongoing: number }>();
+  for (const p of pool) {
+    const reg = p.region || "Unassigned";
+    const cur = regionMap.get(reg) || { count: 0, ongoing: 0 };
+    cur.count++;
+    if (p.status?.toUpperCase() === "ONGOING") cur.ongoing++;
+    regionMap.set(reg, cur);
+  }
+
+  const topRegions = Array.from(regionMap.entries())
+    .map(([reg, data]) => ({ region: reg, ...data }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    portfolioSummary: {
+      totalProjects: pool.length,
+      status,
+      islandGroups: {
+        luzon: getIslandStats("LUZON"),
+        visayas: getIslandStats("VISAYAS"),
+        mindanao: getIslandStats("MINDANAO"),
+      },
+      sectors,
+      cleanEnergy: {
+        totalRenewableCapacityMw: Math.round(totalMw * 10) / 10,
+        hydropowerCount: hydroCount,
+        windCount,
+        solarCount,
+      },
+      topRegions,
+    },
+    source: {
+      name: "SCIC National Portfolio Executive Intelligence",
+      sourceType: "DATABASE",
+      provenance: "Verified",
+    },
+  };
+}
+
+// ─── Tool 14: explain_current_view ─────────────────────────────
+
+export async function explainCurrentView(args?: {
+  context?: AtlasContextPayload;
+  topic?: "overview" | "clusters" | "footprints" | "filters";
+}): Promise<{
+  title: string;
+  geographicScope: string;
+  zoomLevel: string;
+  filtersActive: Record<string, string>;
+  matchingProjectCount: number;
+  statusBreakdown: Record<string, number>;
+  categoryBreakdown: Record<string, number>;
+  selectedProjectDetail?: {
+    id: string;
+    code: string | null;
+    name: string;
+    category: string;
+    status: string;
+    location: string;
+    hasVerifiedFootprint: boolean;
+  };
+  technicalExplanation: string;
+  source: AtlasAISource;
+}> {
+  const ctx = args?.context;
+  const zoom = ctx?.mapZoom || 6.0;
+  const region = ctx?.activeFilters?.region || "ALL";
+  const category = ctx?.activeFilters?.category || "ALL";
+  const status = ctx?.activeFilters?.status || "ALL";
+  const island = ctx?.activeFilters?.islandGroup || "ALL";
+
+  let filtered = [...SCIC_PROJECTS];
+  if (island !== "ALL") filtered = filtered.filter((p) => p.islandGroup?.toUpperCase() === island.toUpperCase());
+  if (region !== "ALL") filtered = filtered.filter((p) => p.region?.toLowerCase().includes(region.toLowerCase()));
+  if (category !== "ALL") {
+    filtered = filtered.filter((p) => {
+      const cat = toCanonicalCategory(p.sector, p.name, p.description);
+      return cat.toLowerCase() === category.toLowerCase();
+    });
+  }
+  if (status !== "ALL") filtered = filtered.filter((p) => p.status?.toUpperCase() === status.toUpperCase());
+
+  const statusBreakdown: Record<string, number> = {};
+  const categoryBreakdown: Record<string, number> = {};
+  for (const p of filtered) {
+    const s = p.status || "UNKNOWN";
+    statusBreakdown[s] = (statusBreakdown[s] || 0) + 1;
+    const c = toCanonicalCategory(p.sector, p.name, p.description);
+    categoryBreakdown[c] = (categoryBreakdown[c] || 0) + 1;
+  }
+
+  let selectedDetail: any = undefined;
+  if (ctx?.selectedProjectId) {
+    const found = SCIC_PROJECTS.find(
+      (p) => p.id === ctx.selectedProjectId || p.code === ctx.selectedProjectId
+    );
+    if (found) {
+      const geom = getProjectGeometry(found.id) || getProjectGeometry(found.code);
+      selectedDetail = {
+        id: found.id,
+        code: found.code,
+        name: found.name,
+        category: toCanonicalCategory(found.sector, found.name, found.description),
+        status: found.status,
+        location: `${found.municipality}, ${found.province} (${found.region})`,
+        hasVerifiedFootprint: !!geom,
+      };
+    }
+  }
+
+  // Provide deterministic explanation based on topic
+  let technicalExplanation = "";
+  if (args?.topic === "clusters") {
+    technicalExplanation =
+      "Atlas uses MapLibre supercluster point-clustering at zoom levels below 9 to prevent visual overlap across dense provincial hubs. Expanding your zoom past 9 disaggregates markers into individual engineering pins.";
+  } else if (args?.topic === "footprints") {
+    technicalExplanation =
+      "Project site footprints are calibrated for high-resolution inspection at zoom ≥ 6. Sixteen flagship projects currently feature verified engineering cadastral boundaries; other facilities are represented by authoritative geodetic intake/powerhouse centroids.";
+  } else if (args?.topic === "filters") {
+    technicalExplanation = `Currently, ${filtered.length} of ${SCIC_PROJECTS.length} projects match the active filter criteria (Category: ${category}, Status: ${status}, Region: ${region}, Island: ${island}).`;
+  } else {
+    technicalExplanation =
+      zoom < 7.5
+        ? `You are viewing the national Philippine overview with ${filtered.length} project markers displayed.`
+        : zoom < 11
+        ? `You are focused on regional corridor context with ${filtered.length} visible project sites.`
+        : `You are in high-magnification engineering vicinity view (Zoom ${zoom.toFixed(1)}).`;
+  }
+
+  return {
+    title: region !== "ALL" ? `Regional Scope: ${region}` : "National Philippine View",
+    geographicScope: region !== "ALL" ? region : "Philippines (National)",
+    zoomLevel: zoom.toFixed(1),
+    filtersActive: {
+      category,
+      status,
+      region,
+      islandGroup: island,
+    },
+    matchingProjectCount: filtered.length,
+    statusBreakdown,
+    categoryBreakdown,
+    selectedProjectDetail: selectedDetail,
+    technicalExplanation,
+    source: {
+      name: "Atlas GIS Runtime Context Engine",
+      sourceType: "GIS_CALCULATION",
+      provenance: "Verified",
+    },
+  };
+}
+
+// ─── Tool 15: get_guided_tour ──────────────────────────────────
+
+export interface AtlasTourStepData {
+  step: number;
+  totalSteps: number;
+  id: string;
+  title: string;
+  subtitle: string;
+  narration: string;
+  camera: {
+    center: [number, number]; // [lng, lat]
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  };
+  highlightProjectIds: string[];
+  selectedProjectId?: string;
+  discoveryScope?: {
+    scope: "national" | "island" | "region" | "province";
+    targetName?: string;
+  };
+  keyMetrics: Record<string, string>;
+}
+
+export async function getGuidedTour(args?: {
+  tourId?: string;
+}): Promise<{
+  tourId: string;
+  tourTitle: string;
+  totalSteps: number;
+  steps: AtlasTourStepData[];
+  source: AtlasAISource;
+}> {
+  const steps: AtlasTourStepData[] = [
+    {
+      step: 1,
+      totalSteps: 7,
+      id: "tour-step-1-national",
+      title: "The Philippine Archipelago — National Portfolio",
+      subtitle: "65+ Major Civil, Energy & Water Projects",
+      narration:
+        "Welcome to the SCIC National Project Atlas. Sta. Clara International Corporation operates 65+ major heavy civil engineering, clean energy, and public infrastructure works spanning Luzon, Visayas, and Mindanao.",
+      camera: {
+        center: [121.7740, 12.8797],
+        zoom: 5.8,
+        pitch: 0,
+        bearing: 0,
+      },
+      highlightProjectIds: ["scic-thepp-isabela", "scic-sabangan-hydro", "scic-morong-discovery", "scic-cclex-cebu", "scic-davao-wtp"],
+      discoveryScope: { scope: "national" },
+      keyMetrics: {
+        "Total Projects": "65+",
+        "Clean Energy Capacity": "140+ MW",
+        "Geographic Span": "Luzon, Visayas, Mindanao",
+      },
+    },
+    {
+      step: 2,
+      totalSteps: 7,
+      id: "tour-step-2-region-ii",
+      title: "Region II (Cagayan Valley) — Clean Energy & River Basins",
+      subtitle: "Tumauini HEPP (11.3 MW) & Irrigation Synergy",
+      narration:
+        "In Northern Luzon's Cagayan River Basin, Sta. Clara is constructing the 11.3 MW Tumauini Hydroelectric Power Project (THEPP), utilizing run-of-river civil engineering to harness the Pinacanauan de Tumauini River.",
+      camera: {
+        center: [121.9749, 17.3188],
+        zoom: 8.8,
+        pitch: 35,
+        bearing: 15,
+      },
+      highlightProjectIds: ["scic-thepp-isabela"],
+      selectedProjectId: "scic-thepp-isabela",
+      discoveryScope: { scope: "region", targetName: "Region II" },
+      keyMetrics: {
+        "Project": "Tumauini HEPP",
+        "Capacity": "11.3 MW",
+        "River Basin": "Cagayan River Basin",
+        "Status": "Ongoing Construction",
+      },
+    },
+    {
+      step: 3,
+      totalSteps: 7,
+      id: "tour-step-3-car",
+      title: "Cordillera Administrative Region (CAR) — High-Head Hydro",
+      subtitle: "Sabangan (14 MW) & Bakun AC (70 MW)",
+      narration:
+        "In the rugged Cordillera mountain range, SCIC completed the 14.0 MW Sabangan HEPP along the Chico River and the 70 MW Bakun AC Hydroelectric Plant, navigating steep granite geology with advanced rock tunneling and Pelton impulse turbines.",
+      camera: {
+        center: [120.9167, 17.0000],
+        zoom: 9.0,
+        pitch: 42,
+        bearing: -10,
+      },
+      highlightProjectIds: ["scic-sabangan-hydro", "scic-bakun-hydro"],
+      selectedProjectId: "scic-sabangan-hydro",
+      discoveryScope: { scope: "region", targetName: "CAR" },
+      keyMetrics: {
+        "Sabangan HEPP": "14.0 MW (Completed)",
+        "Bakun AC HEPP": "70.0 MW (Completed)",
+        "Topography": "High-altitude Cordillera granite",
+      },
+    },
+    {
+      step: 4,
+      totalSteps: 7,
+      id: "tour-step-4-central-luzon",
+      title: "Central Luzon — Strategic Corridors, Water & Expressways",
+      subtitle: "Morong WTP, SFEx Mountain Tunnels & Balog-Balog Dam",
+      narration:
+        "Across Central Luzon, SCIC delivers critical lifelines: the Subic Freeport Expressway (SFEx) Mountain Tunnels, the Morong Discovery Park Water Treatment Plant in Bataan, and the Balog-Balog Multipurpose Dam in Tarlac.",
+      camera: {
+        center: [120.5500, 15.0000],
+        zoom: 8.5,
+        pitch: 30,
+        bearing: 5,
+      },
+      highlightProjectIds: ["scic-morong-discovery", "scic-sfex-tunnels", "scic-balog-balog-dam"],
+      selectedProjectId: "scic-morong-discovery",
+      discoveryScope: { scope: "region", targetName: "Region III" },
+      keyMetrics: {
+        "Morong WTP": "Water Treatment & Distribution",
+        "SFEx Tunnels": "Dual-lane mountain portals",
+        "Balog-Balog": "Irrigation & flood storage",
+      },
+    },
+    {
+      step: 5,
+      totalSteps: 7,
+      id: "tour-step-5-visayas",
+      title: "Visayas Archipelago — Landmark Connectivity & Maritime Logistics",
+      subtitle: "CCLEX Bridge Works, BCIB Geotechnical & Regional Hubs",
+      narration:
+        "In the Visayas, SCIC contributed to the landmark Cebu-Cordova Link Expressway (CCLEX), Bataan-Cavite Interlink Bridge geotechnical packages, and modern logistics hubs connecting Cebu and Bohol.",
+      camera: {
+        center: [123.9000, 10.3000],
+        zoom: 8.0,
+        pitch: 35,
+        bearing: 20,
+      },
+      highlightProjectIds: ["scic-cclex-cebu", "scic-bcib-bataan", "scic-snr-cebu"],
+      selectedProjectId: "scic-cclex-cebu",
+      discoveryScope: { scope: "island", targetName: "VISAYAS" },
+      keyMetrics: {
+        "CCLEX": "Iconic 8.9 km expressway bridge",
+        "Logistics Hubs": "Cebu & Mandaue cold-chain / retail",
+        "Inter-Island Scope": "Bohol PRDP & coastal roads",
+      },
+    },
+    {
+      step: 6,
+      totalSteps: 7,
+      id: "tour-step-6-mindanao",
+      title: "Mindanao — Industrial Lifelines & Potable Water Security",
+      subtitle: "Davao City Bulk Water (300 MLD) & Siguil Hydro",
+      narration:
+        "In Southern Philippines, Sta. Clara built the civil works for the Davao City Bulk Water Supply Project—delivering 300 MLD of potable water—alongside industrial tailings storage and renewable hydropower in SOCCSKSARGEN.",
+      camera: {
+        center: [125.6000, 7.1907],
+        zoom: 8.2,
+        pitch: 35,
+        bearing: -15,
+      },
+      highlightProjectIds: ["scic-davao-wtp", "scic-apex-maco-tsf", "scic-siguil-hydro"],
+      selectedProjectId: "scic-davao-wtp",
+      discoveryScope: { scope: "island", targetName: "MINDANAO" },
+      keyMetrics: {
+        "Davao Bulk Water": "300 MLD treatment & transmission",
+        "Apex Maco TSF": "High-durability tailings dam",
+        "Siguil HEPP": "Renewable run-of-river hydro",
+      },
+    },
+    {
+      step: 7,
+      totalSteps: 7,
+      id: "tour-step-7-conclusion",
+      title: "National Strategic Horizon",
+      subtitle: "Exploration & Executive GIS Complete",
+      narration:
+        "This concludes the Guided Portfolio Tour. You can now freely explore the map, filter by category or status, inspect verified engineering site boundaries, or ask the assistant any specific project question.",
+      camera: {
+        center: [121.7740, 12.8797],
+        zoom: 5.8,
+        pitch: 0,
+        bearing: 0,
+      },
+      highlightProjectIds: [],
+      discoveryScope: { scope: "national" },
+      keyMetrics: {
+        "Exploration": "Interactive & Free",
+        "Next Steps": "Filter projects, search nearby, or inspect footprints",
+      },
+    },
+  ];
+
+  return {
+    tourId: args?.tourId || "national-flagship-tour",
+    tourTitle: "SCIC National Portfolio Guided Tour",
+    totalSteps: steps.length,
+    steps,
+    source: {
+      name: "SCIC National Tour Directory",
+      sourceType: "DATABASE",
+      provenance: "Verified",
+    },
+  };
+}

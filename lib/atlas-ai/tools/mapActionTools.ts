@@ -218,7 +218,55 @@ export function createEnterDiscoveryScopeAction(args: {
       scope: args.scope,
       targetName: args.targetName,
     },
-    summary: `Entered Discovery Mode at ${args.scope} scope${args.targetName ? ` (${args.targetName})` : ""}.`,
+    summary: `Entered Discovery Mode: ${args.scope}${args.targetName ? ` (${args.targetName})` : ""}`,
   };
 }
 
+// ─── Tool 10: highlight_projects ────────────────────────────
+
+export function createHighlightProjectsAction(args: {
+  projectIds: string[];
+  fitBounds?: boolean;
+}): {
+  action: AtlasAIAction;
+  summary: string;
+} {
+  const resolvedIds = args.projectIds.map((id) => {
+    const q = id.toLowerCase().trim();
+    const match = SCIC_PROJECTS.find(
+      (p) => p.id.toLowerCase() === q || p.code.toLowerCase() === q || p.name.toLowerCase().includes(q)
+    );
+    return match ? match.id : id;
+  });
+
+  return {
+    action: {
+      type: "HIGHLIGHT_PROJECTS",
+      projectIds: resolvedIds,
+      fitBounds: args.fitBounds ?? true,
+    },
+    summary: `Highlighted ${resolvedIds.length} project(s) on the map${args.fitBounds !== false ? " and adjusted camera bounds" : ""}.`,
+  };
+}
+
+// ─── Tool 11: start_portfolio_tour ─────────────────────────────
+
+export function createStartTourAction(args?: {
+  tourId?: string;
+  stepIndex?: number;
+}): {
+  action: AtlasAIAction;
+  summary: string;
+} {
+  const tourId = args?.tourId || "national-flagship-tour";
+  const stepIndex = args?.stepIndex ?? 0;
+
+  return {
+    action: {
+      type: "START_TOUR",
+      tourId,
+      stepIndex,
+    },
+    summary: `Started AI Guided Portfolio Tour (${tourId}, Step ${stepIndex + 1}).`,
+  };
+}

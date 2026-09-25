@@ -62,6 +62,16 @@ export type AtlasAIAction =
       type: "ENTER_DISCOVERY_SCOPE";
       scope: "national" | "island" | "region" | "province";
       targetName?: string;
+    }
+  | {
+      type: "HIGHLIGHT_PROJECTS";
+      projectIds: string[];
+      fitBounds?: boolean;
+    }
+  | {
+      type: "START_TOUR";
+      tourId?: string;
+      stepIndex?: number;
     };
 
 export interface AtlasAIMetadata {

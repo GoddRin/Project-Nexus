@@ -47,6 +47,7 @@ import {
   AtlasCommandBar,
   AtlasAssistantDrawer,
   AtlasAIFloatingTrigger,
+  AtlasTourController,
   useAtlasAI,
 } from "@/components/atlas/ai";
 
@@ -137,6 +138,9 @@ function ScicNationalMapContent() {
     region: "ALL",
     province: "ALL",
   });
+
+  // AI-driven visual highlight on project markers (Phase 17)
+  const [highlightedProjectIds, setHighlightedProjectIds] = useState<string[]>([]);
 
   // Phase 10: Project Discovery Mode state (Geographic Storytelling & Regional Exploration)
   const [sidebarMode, setSidebarMode] = useState<"DIRECTORY" | "DISCOVERY">("DIRECTORY");
@@ -484,6 +488,31 @@ function ScicNationalMapContent() {
               islandGroup: canonical.islandGroup,
             });
           }
+        }
+      }
+    },
+    onHighlightProjects: (projectIds, fitBounds = true) => {
+      setHighlightedProjectIds(projectIds);
+      if (fitBounds && projectIds.length > 0) {
+        const matching = activeProjects.filter(
+          (x) => projectIds.includes(x.id) || projectIds.includes(x.code)
+        );
+        if (matching.length === 1) {
+          const p = matching[0];
+          flyToProject({
+            coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+            id: p.id,
+            zoom: 12,
+          });
+        } else if (matching.length > 1) {
+          let minLng = 180, minLat = 90, maxLng = -180, maxLat = -90;
+          matching.forEach((p) => {
+            if (p.coordinates.lng < minLng) minLng = p.coordinates.lng;
+            if (p.coordinates.lat < minLat) minLat = p.coordinates.lat;
+            if (p.coordinates.lng > maxLng) maxLng = p.coordinates.lng;
+            if (p.coordinates.lat > maxLat) maxLat = p.coordinates.lat;
+          });
+          zoomToBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 60 });
         }
       }
     },
@@ -869,6 +898,16 @@ function ScicNationalMapContent() {
           selectedProjectId={selectedProject?.id}
           activeRegion={geographicScope.region}
           totalProjectsCount={activeProjects.length}
+        />
+
+        {/* ✦ SCIC ATLAS GUIDED PORTFOLIO TOUR CONTROLLER HUD */}
+        <AtlasTourController
+          tour={atlasAI.activeTour}
+          onNext={atlasAI.nextTourStep}
+          onPrev={atlasAI.prevTourStep}
+          onTogglePlay={atlasAI.togglePlayPauseTour}
+          onExit={atlasAI.exitTour}
+          onStepSelect={atlasAI.jumpToTourStep}
         />
       </div>
     </div>

@@ -37,6 +37,10 @@ import {
   calculateDistance,
   getMapContext,
   searchAtlasKnowledge,
+  compareProjects,
+  getPortfolioBrief,
+  explainCurrentView,
+  getGuidedTour,
 } from "./projectReadTools";
 import {
   createSelectProjectAction,
@@ -48,6 +52,8 @@ import {
   createToggleGisLayerAction,
   createInspectFootprintAction,
   createEnterDiscoveryScopeAction,
+  createHighlightProjectsAction,
+  createStartTourAction,
 } from "./mapActionTools";
 import { AtlasAIAction, AtlasAISource } from "./types";
 import { AtlasContextPayload } from "../identity";
@@ -349,6 +355,88 @@ export const ATLAS_TOOL_DECLARATIONS: AIToolDeclaration[] = [
       required: ["scope"],
     },
   },
+
+  // 21. READ TOOL: compare_projects
+  {
+    name: "compare_projects",
+    description: "Compare two or more Sta. Clara projects side-by-side across factual database metrics (category, status, region, province, capacity, contract value, engineering scope, client, COD date). Only returns fields verified in the record, omitting unavailable attributes.",
+    parameters: {
+      type: "object",
+      properties: {
+        projectIds: { type: "array", items: { type: "string" }, description: "Array of project IDs or codes to compare" },
+        queryA: { type: "string", description: "Name or code of first project" },
+        queryB: { type: "string", description: "Name or code of second project" },
+        category: { type: "string", description: "Optional category filter for multi-project comparison" },
+        region: { type: "string", description: "Optional region filter" },
+        islandGroup: { type: "string", description: "Optional island group filter" },
+        limit: { type: "number", description: "Max projects to compare (default: 6)" },
+      },
+    },
+  },
+
+  // 22. READ TOOL: get_portfolio_brief
+  {
+    name: "get_portfolio_brief",
+    description: "Generate an authoritative executive portfolio briefing from live database records: total projects, status breakdown (ongoing, completed, upcoming), island group breakdown (Luzon, Visayas, Mindanao), sector breakdown (hydropower, wind, solar, water treatment, tunnels, highways), and top regional hubs.",
+    parameters: {
+      type: "object",
+      properties: {
+        islandGroup: { type: "string", description: "Optional island group filter" },
+        region: { type: "string", description: "Optional region filter" },
+      },
+    },
+  },
+
+  // 23. READ TOOL: explain_current_view
+  {
+    name: "explain_current_view",
+    description: "Analyze and explain what is currently displayed on the map: active geographic scope, filters applied, project count, status/category distribution, visible GIS layers, and why elements (like clusters or footprints) behave as they do.",
+    parameters: {
+      type: "object",
+      properties: {
+        topic: { type: "string", enum: ["overview", "clusters", "footprints", "filters"], description: "Optional specific topic or question" },
+      },
+    },
+  },
+
+  // 24. READ TOOL: get_guided_tour
+  {
+    name: "get_guided_tour",
+    description: "Retrieve the curated multi-step national portfolio tour across the Philippines with camera coordinates, regional scopes, featured projects, and factual narrations.",
+    parameters: {
+      type: "object",
+      properties: {
+        tourId: { type: "string", description: "Tour ID (default: 'national-flagship-tour')" },
+      },
+    },
+  },
+
+  // 25. MAP ACTION: highlight_projects
+  {
+    name: "highlight_projects",
+    description: "Highlight one or more projects on the map and fit camera bounds to show them simultaneously.",
+    parameters: {
+      type: "object",
+      properties: {
+        projectIds: { type: "array", items: { type: "string" }, description: "Array of project IDs to highlight" },
+        fitBounds: { type: "boolean", description: "Whether to fit camera bounds to highlighted projects (default: true)" },
+      },
+      required: ["projectIds"],
+    },
+  },
+
+  // 26. MAP ACTION: start_portfolio_tour
+  {
+    name: "start_portfolio_tour",
+    description: "Launch the interactive AI Guided Portfolio Tour starting at step 1 or a specific step.",
+    parameters: {
+      type: "object",
+      properties: {
+        tourId: { type: "string", description: "Tour ID (default: 'national-flagship-tour')" },
+        stepIndex: { type: "number", description: "Starting step index (0-based, default: 0)" },
+      },
+    },
+  },
 ];
 
 // ─── Dispatcher Execution ───────────────────────────────────────
@@ -508,6 +596,51 @@ export async function dispatchAtlasTool(
     // 20. enter_discovery_scope
     case "enter_discovery_scope": {
       const { action, summary } = createEnterDiscoveryScopeAction(args as any);
+      context.actions.push(action);
+      return { status: "success", summary, action };
+    }
+
+    // 21. compare_projects
+    case "compare_projects": {
+      const res = await compareProjects(args as any);
+      context.sources.push(res.source);
+      return res;
+    }
+
+    // 22. get_portfolio_brief
+    case "get_portfolio_brief": {
+      const res = await getPortfolioBrief(args as any);
+      context.sources.push(res.source);
+      return res;
+    }
+
+    // 23. explain_current_view
+    case "explain_current_view": {
+      const res = await explainCurrentView({
+        context: context.runtimeContext,
+        topic: (args as any)?.topic,
+      });
+      context.sources.push(res.source);
+      return res;
+    }
+
+    // 24. get_guided_tour
+    case "get_guided_tour": {
+      const res = await getGuidedTour(args as any);
+      context.sources.push(res.source);
+      return res;
+    }
+
+    // 25. highlight_projects
+    case "highlight_projects": {
+      const { action, summary } = createHighlightProjectsAction(args as any);
+      context.actions.push(action);
+      return { status: "success", summary, action };
+    }
+
+    // 26. start_portfolio_tour
+    case "start_portfolio_tour": {
+      const { action, summary } = createStartTourAction(args as any);
       context.actions.push(action);
       return { status: "success", summary, action };
     }

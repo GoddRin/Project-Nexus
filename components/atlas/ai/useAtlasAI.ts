@@ -65,6 +65,7 @@ export interface UseAtlasAIOptions {
   onToggleGisLayer?: (layerId: string, visible?: boolean) => void;
   onInspectFootprint?: (projectId: string) => void;
   onEnterDiscoveryScope?: (scope: "national" | "island" | "region" | "province", targetName?: string) => void;
+  onHighlightProjects?: (projectIds: string[], fitBounds?: boolean) => void;
 }
 
 export function useAtlasAI(options: UseAtlasAIOptions) {
@@ -75,32 +76,44 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
   const [undoStack, setUndoStack] = useState<ReversibleStateSnapshot[]>([]);
   const [lastAppliedAction, setLastAppliedAction] = useState<string | null>(null);
 
+  // Active Portfolio Tour State
+  const [activeTour, setActiveTour] = useState<{
+    tourId: string;
+    tourTitle: string;
+    stepIndex: number;
+    totalSteps: number;
+    isPlaying: boolean;
+    currentStep: any;
+  } | null>(null);
+  const [cachedTourSteps, setCachedTourSteps] = useState<any[]>([]);
+
   // References to latest state
   const stateRef = useRef(options);
   useEffect(() => {
     stateRef.current = options;
   }, [options]);
 
-  // Context-Aware Suggestions based on current runtime view
+  // Context-Aware Suggestions based on current runtime view (Phase 17 Requirement 22)
   const suggestions = useCallback((): string[] => {
     const opts = stateRef.current;
     if (opts.selectedProjectId) {
       return [
-        "What is this project?",
-        "What's nearby within 50 km?",
-        "Show its timeline and milestones",
-        "Inspect verified engineering footprint",
-        "Open in Project Nexus",
+        "Summarize this project",
+        "What's around here?",
+        "When did this project start and what's next?",
+        "Inspect engineering footprint",
+        "Compare with Sabangan HEPP",
       ];
     }
 
     if (opts.geographicScope?.region && opts.geographicScope.region !== "ALL") {
       const reg = opts.geographicScope.region;
       return [
-        `Summarize ${reg}`,
+        `Explain this region (${reg})`,
         `Show ongoing projects in ${reg}`,
+        `Compare projects in ${reg}`,
         `Which projects have tunneling in ${reg}?`,
-        "Show nearby river basins",
+        "Show nearby river basins and transmission grid",
       ];
     }
 
@@ -109,18 +122,145 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
         `How many ${opts.activeFilters.category} projects are ongoing?`,
         "Show geographic bounds for these projects",
         "Clear active filters",
+        "Explain Current View",
       ];
     }
 
     // Default National View
     return [
+      "Start Portfolio Tour",
+      "Generate Portfolio Brief",
       "Explore Region II (Cagayan Valley)",
       "Show ongoing hydropower projects",
-      "How many total projects across the Philippines?",
-      "Which projects have tunneling scope?",
-      "Show major river basins and high-voltage grid",
+      "Which region has the most projects?",
+      "What am I looking at?",
     ];
   }, []);
+
+  // Execute a tour step on map canvas
+  const executeTourStep = useCallback((step: any) => {
+    const opts = stateRef.current;
+    if (!step) return;
+
+    if (step.camera?.center) {
+      opts.onFlyToProject?.({
+        coordinates: { lat: step.camera.center[1], lng: step.camera.center[0] },
+        zoom: step.camera.zoom,
+        pitch: step.camera.pitch,
+      });
+    }
+
+    if (step.discoveryScope) {
+      opts.onEnterDiscoveryScope?.(step.discoveryScope.scope, step.discoveryScope.targetName);
+    }
+
+    if (step.selectedProjectId) {
+      opts.onSelectProject?.(step.selectedProjectId);
+    } else {
+      opts.onSelectProject?.(null);
+    }
+
+    if (step.highlightProjectIds && step.highlightProjectIds.length > 0) {
+      opts.onHighlightProjects?.(step.highlightProjectIds, false);
+    }
+  }, []);
+
+  // Tour Controller Methods
+  const startTour = useCallback(async (tourId: string = "national-flagship-tour", initialStep: number = 0) => {
+    try {
+      // Dynamic import to avoid circular dependency in SSR
+      const { getGuidedTour } = await import("@/lib/atlas-ai/tools/projectReadTools");
+      const tourData = await getGuidedTour({ tourId });
+      const validIndex = Math.max(0, Math.min(initialStep, tourData.steps.length - 1));
+      const step = tourData.steps[validIndex];
+
+      setCachedTourSteps(tourData.steps);
+      setActiveTour({
+        tourId: tourData.tourId,
+        tourTitle: tourData.tourTitle,
+        stepIndex: validIndex,
+        totalSteps: tourData.totalSteps,
+        isPlaying: false,
+        currentStep: step,
+      });
+
+      executeTourStep(step);
+      setLastAppliedAction(`Started Portfolio Tour: Step ${validIndex + 1} of ${tourData.totalSteps}`);
+    } catch (err) {
+      console.error("[useAtlasAI] Failed to start guided tour:", err);
+    }
+  }, [executeTourStep]);
+
+  const nextTourStep = useCallback(() => {
+    setActiveTour((prev) => {
+      if (!prev || cachedTourSteps.length === 0) return null;
+      if (prev.stepIndex >= prev.totalSteps - 1) {
+        // Completed
+        stateRef.current.onEnterDiscoveryScope?.("national");
+        stateRef.current.onSelectProject?.(null);
+        return null;
+      }
+      const nextIdx = prev.stepIndex + 1;
+      const nextStep = cachedTourSteps[nextIdx];
+      executeTourStep(nextStep);
+      return {
+        ...prev,
+        stepIndex: nextIdx,
+        currentStep: nextStep,
+      };
+    });
+  }, [cachedTourSteps, executeTourStep]);
+
+  const prevTourStep = useCallback(() => {
+    setActiveTour((prev) => {
+      if (!prev || cachedTourSteps.length === 0) return null;
+      if (prev.stepIndex <= 0) return prev;
+      const prevIdx = prev.stepIndex - 1;
+      const prevStep = cachedTourSteps[prevIdx];
+      executeTourStep(prevStep);
+      return {
+        ...prev,
+        stepIndex: prevIdx,
+        currentStep: prevStep,
+      };
+    });
+  }, [cachedTourSteps, executeTourStep]);
+
+  const togglePlayPauseTour = useCallback(() => {
+    setActiveTour((prev) => (prev ? { ...prev, isPlaying: !prev.isPlaying } : null));
+  }, []);
+
+  const exitTour = useCallback(() => {
+    setActiveTour(null);
+    stateRef.current.onEnterDiscoveryScope?.("national");
+    stateRef.current.onSelectProject?.(null);
+    setLastAppliedAction("Exited Portfolio Tour");
+  }, []);
+
+  const jumpToTourStep = useCallback((index: number) => {
+    setActiveTour((prev) => {
+      if (!prev || cachedTourSteps.length === 0) return null;
+      const validIndex = Math.max(0, Math.min(index, prev.totalSteps - 1));
+      const targetStep = cachedTourSteps[validIndex];
+      executeTourStep(targetStep);
+      return {
+        ...prev,
+        stepIndex: validIndex,
+        currentStep: targetStep,
+      };
+    });
+  }, [cachedTourSteps, executeTourStep]);
+
+  // Keyboard shortcut listener: ESC exits tour if active
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && activeTour) {
+        exitTour();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeTour, exitTour]);
 
   // Execute a single validated AtlasAIAction
   const executeAction = useCallback((action: AtlasAIAction) => {
@@ -202,10 +342,22 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
         setLastAppliedAction(`Entered Discovery Mode: ${action.scope} ${action.targetName ? `(${action.targetName})` : ""}`);
         break;
       }
+
+      case "HIGHLIGHT_PROJECTS": {
+        opts.onHighlightProjects?.(action.projectIds, action.fitBounds);
+        setLastAppliedAction(`Highlighted ${action.projectIds.length} project(s) on the map`);
+        break;
+      }
+
+      case "START_TOUR": {
+        startTour(action.tourId, action.stepIndex);
+        setLastAppliedAction(`Started Guided Portfolio Tour`);
+        break;
+      }
     }
 
     setUndoStack((prev) => [snapshot, ...prev].slice(0, 10));
-  }, []);
+  }, [startTour]);
 
   // Revert last action
   const undoLastAction = useCallback(() => {
@@ -449,5 +601,13 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
     undoLastAction,
     canUndo: undoStack.length > 0,
     lastAppliedAction,
+    // AI Guided Portfolio Tour
+    activeTour,
+    startTour,
+    nextTourStep,
+    prevTourStep,
+    togglePlayPauseTour,
+    exitTour,
+    jumpToTourStep,
   };
 }

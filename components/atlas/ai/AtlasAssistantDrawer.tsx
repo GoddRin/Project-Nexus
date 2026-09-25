@@ -215,6 +215,29 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
         )}
       </div>
 
+      {/* ─── Executive Quick Modes Bar ──────────────────────── */}
+      <div className="px-3 py-1.5 bg-[#091522] border-b border-white/5 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+        {[
+          { label: "Portfolio Tour", prompt: "Start Portfolio Tour", icon: Compass },
+          { label: "Portfolio Brief", prompt: "Generate Portfolio Brief", icon: FileText },
+          { label: "Explain View", prompt: "Explain Current View", icon: Layers },
+          { label: "Nearby", prompt: "What's around here?", icon: MapPin },
+        ].map((mode, idx) => {
+          const Icon = mode.icon;
+          return (
+            <button
+              key={idx}
+              onClick={() => onSendMessage(mode.prompt)}
+              disabled={isGenerating}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-sky-500/20 text-slate-300 hover:text-white border border-white/5 hover:border-sky-500/30 text-[10px] font-mono tracking-tight transition-all shrink-0 cursor-pointer disabled:opacity-50"
+            >
+              <Icon className="w-3 h-3 text-sky-400" />
+              <span>{mode.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* ─── 2. Message History Area ─────────────────────────── */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 font-sans text-xs scroll-smooth">
         {/* Initial Empty State */}
@@ -345,12 +368,21 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                         } else if (act.type === "INSPECT_FOOTPRINT") {
                           label = "Inspect Engineering Footprint";
                           icon = <Layers className="w-3 h-3 text-cyan-400" />;
+                        } else if (act.type === "HIGHLIGHT_PROJECTS") {
+                          label = `Highlight ${act.projectIds.length} Projects`;
+                          icon = <Sparkles className="w-3 h-3 text-amber-400" />;
+                        } else if (act.type === "START_TOUR") {
+                          label = "Launch Guided Portfolio Tour";
+                          icon = <Compass className="w-3 h-3 text-sky-400" />;
                         } else if (act.type === "CLEAR_FILTERS") {
                           label = "Clear Filters";
                           icon = <RotateCcw className="w-3 h-3 text-slate-400" />;
                         } else if (act.type === "SET_MAP_STYLE") {
                           label = `Set Basemap: ${act.style}`;
                           icon = <Layers className="w-3 h-3 text-purple-400" />;
+                        } else if (act.type === "ENTER_DISCOVERY_SCOPE") {
+                          label = `Enter Discovery: ${act.scope}`;
+                          icon = <Compass className="w-3 h-3 text-emerald-400" />;
                         }
 
                         return (
