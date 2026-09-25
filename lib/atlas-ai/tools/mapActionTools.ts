@@ -202,3 +202,23 @@ export function createInspectFootprintAction(args: { projectId: string }): {
       : `Focused on approximate concession zone for "${proj?.name || resolvedId}".`,
   };
 }
+
+// ─── Tool 9: enter_discovery_scope ─────────────────────────────
+
+export function createEnterDiscoveryScopeAction(args: {
+  scope: "national" | "island" | "region" | "province";
+  targetName?: string;
+}): {
+  action: AtlasAIAction;
+  summary: string;
+} {
+  return {
+    action: {
+      type: "ENTER_DISCOVERY_SCOPE",
+      scope: args.scope,
+      targetName: args.targetName,
+    },
+    summary: `Entered Discovery Mode at ${args.scope} scope${args.targetName ? ` (${args.targetName})` : ""}.`,
+  };
+}
+

@@ -45,6 +45,7 @@ export async function generateAtlasAIAnswer(
     return await dispatchAtlasTool(name, args, {
       actions: collectedActions,
       sources: collectedSources,
+      runtimeContext: context,
     });
   };
 
@@ -81,7 +82,7 @@ export async function generateAtlasAIAnswer(
   const uniqueSources: AtlasAISource[] = [];
   const seenSourceKeys = new Set<string>();
   for (const s of collectedSources) {
-    const key = `${s.name}-${s.sourceType}-${s.provenance}`;
+    const key = `${s.name}-${s.sourceType}-${s.provenance}-${s.document || ""}-${s.section || ""}`;
     if (!seenSourceKeys.has(key)) {
       seenSourceKeys.add(key);
       uniqueSources.push(s);

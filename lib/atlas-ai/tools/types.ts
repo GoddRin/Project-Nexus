@@ -6,8 +6,11 @@ export type ProvenanceLevel = "Verified" | "Derived" | "Approximate" | "Unavaila
 
 export interface AtlasAISource {
   name: string;
-  sourceType: "DATABASE" | "GIS_CALCULATION" | "ENGINEERING_SPEC" | "REGULATORY_DOC";
+  sourceType: "DATABASE" | "GIS_CALCULATION" | "ENGINEERING_SPEC" | "REGULATORY_DOC" | "NARRATIVE_DOC";
   provenance: ProvenanceLevel;
+  document?: string;
+  projectId?: string;
+  section?: string;
   notes?: string;
 }
 
@@ -54,6 +57,11 @@ export type AtlasAIAction =
   | {
       type: "INSPECT_FOOTPRINT";
       projectId: string;
+    }
+  | {
+      type: "ENTER_DISCOVERY_SCOPE";
+      scope: "national" | "island" | "region" | "province";
+      targetName?: string;
     };
 
 export interface AtlasAIMetadata {

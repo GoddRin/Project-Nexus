@@ -239,7 +239,7 @@ async function runGemini(
 
   const startTime = Date.now();
   const genAI = new GoogleGenerativeAI(apiKey);
-  const geminiModels = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+  const geminiModels = ["gemini-2.5-flash", "gemini-2.5-pro"];
   const executedTools: string[] = [];
   const geminiTools = options.tools && options.tools.length > 0 ? convertToolsToGemini(options.tools) : undefined;
 

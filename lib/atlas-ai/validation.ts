@@ -14,10 +14,12 @@ const ALLOWED_ACTION_TYPES = new Set([
   "SET_MAP_STYLE",
   "TOGGLE_GIS_LAYER",
   "INSPECT_FOOTPRINT",
+  "ENTER_DISCOVERY_SCOPE",
 ]);
 
 const ALLOWED_MAP_STYLES = new Set(["DARK", "LIGHT", "SATELLITE"]);
 const ALLOWED_GIS_LAYERS = new Set(["boundary", "roads", "rivers", "project-footprints"]);
+const ALLOWED_DISCOVERY_SCOPES = new Set(["national", "island", "region", "province"]);
 
 export function validateAtlasAction(action: any): AtlasAIAction | null {
   if (!action || typeof action !== "object") return null;
@@ -101,6 +103,15 @@ export function validateAtlasAction(action: any): AtlasAIAction | null {
       };
     }
 
+    case "ENTER_DISCOVERY_SCOPE": {
+      if (!ALLOWED_DISCOVERY_SCOPES.has(action.scope)) return null;
+      return {
+        type: "ENTER_DISCOVERY_SCOPE",
+        scope: action.scope,
+        targetName: typeof action.targetName === "string" ? action.targetName.trim() : undefined,
+      };
+    }
+
     default:
       return null;
   }
@@ -130,6 +141,9 @@ export function validateAtlasResponse(raw: {
           name: s.name,
           sourceType: s.sourceType || "DATABASE",
           provenance: s.provenance || "Verified",
+          document: s.document,
+          projectId: s.projectId,
+          section: s.section,
           notes: s.notes,
         });
       }
