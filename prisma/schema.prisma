@@ -21,39 +21,83 @@ model Organization {
 }
 
 model Project {
-  id              String          @id @default(cuid())
-  organizationId  String
-  organization    Organization    @relation(fields: [organizationId], references: [id])
-  name            String // "Tumauini Hydroelectric Power Plant"
-  slug            String          @unique // "tumauini-hepp"
-  location        String? // "Barangay Antagan Uno, Tumauini, Isabela"
-  capacityMw      Float? // 11.3
-  plantType       String? // "Run-of-river"
-  percentComplete Float? // 79
-  status          String          @default("ACTIVE")
-  users           ProjectMember[]
-  tickets         Ticket[]
-  assets          Asset[]
-  knowledgeArticles KnowledgeArticle[]
-  documentFolders DocumentFolder[]
-  documents       Document[]
+  id                  String          @id @default(cuid())
+  organizationId      String
+  organization        Organization    @relation(fields: [organizationId], references: [id])
+  name                String // "Tumauini Hydroelectric Power Plant"
+  slug                String          @unique // "tumauini-hepp"
+  projectCode         String?         // e.g. "SCIC-HEPP-01"
+  category            String          @default("HYDROPOWER")
+  status              String          @default("ACTIVE") // ACTIVE / ONGOING / COMPLETED / UPCOMING / ON_HOLD / PLANNING
+  description         String?         @db.Text
+  latitude            Float?
+  longitude           Float?
+  islandGroup         String?         // "LUZON", "VISAYAS", "MINDANAO"
+  region              String?         // e.g. "Region II (Cagayan Valley)"
+  province            String?         // e.g. "Isabela"
+  municipality        String?         // e.g. "Tumauini"
+  barangay            String?         // e.g. "Antagan Uno"
+  locationDescription String?
+  location            String?         // Legacy text: "Barangay Antagan Uno, Tumauini, Isabela"
+  capacity            String?         // "11.3 MW"
+  capacityMw          Float?          // Legacy numeric capacity: 11.3
+  plantType           String?         // Legacy: "Run-of-river"
+  percentComplete     Float?          // Legacy: 79
+  projectStartDate    DateTime?
+  projectEndDate      DateTime?
+  client              String?
+  projectValue        String?
+  featuredImage       String?
+  gallery             String[]        @default([])
+  boundaryGeometry    Json?           // Optional GeoJSON Polygon/LineString geometry
+  leadPMName          String?
+  leadPMRole          String?
+  leadPMDivision      String?
+  leadPMLicense       String?
+  leadPMContact       String?
+  engineeringScope    String[]        @default([])
+  keyMilestones       Json?
+  metrics             Json?
+  featured            Boolean         @default(false)
+  targetCodDate       DateTime?
+  users               ProjectMember[]
+  tickets             Ticket[]
+  assets              Asset[]
+  knowledgeArticles   KnowledgeArticle[]
+  documentFolders     DocumentFolder[]
+  documents           Document[]
   accomplishmentReports AccomplishmentReport[]
-  dailyLogs       DailyLog[]
-  milestones      Milestone[]
-  progressSnapshots ProgressSnapshot[]
+  dailyLogs           DailyLog[]
+  milestones          Milestone[]
+  progressSnapshots   ProgressSnapshot[]
   maintenanceSchedules MaintenanceSchedule[]
-  inventoryItems  InventoryItem[]
+  inventoryItems      InventoryItem[]
   inventoryTransactions InventoryTransaction[]
-  visitors        Visitor[]
-  networkDevices  NetworkDevice[]
-  networkRacks    NetworkRack[]
-  networkSubnets  NetworkSubnet[]
-  siteLocations   SiteLocation[]
-  equipments      PlantEquipment[]
-  targetCodDate   DateTime?
-  codMilestones   CodMilestone[]
-  siteIncidents   SiteIncident[]
-  createdAt       DateTime        @default(now())
+  visitors            Visitor[]
+  networkDevices      NetworkDevice[]
+  networkRacks        NetworkRack[]
+  networkSubnets      NetworkSubnet[]
+  siteLocations       SiteLocation[]
+  equipments          PlantEquipment[]
+  codMilestones       CodMilestone[]
+  siteIncidents       SiteIncident[]
+  createdById         String?
+  createdBy           User?                   @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById         String?
+  updatedBy           User?                   @relation("ProjectUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedAt           DateTime?
+  deletedById         String?
+  deletedBy           User?                   @relation("ProjectDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+  auditLogs           ProjectAuditLog[]
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @default(now()) @updatedAt
+
+  @@index([latitude, longitude])
+  @@index([category])
+  @@index([status])
+  @@index([region])
+  @@index([province])
+  @@index([deletedAt])
 }
 
 model User {
@@ -86,7 +130,34 @@ model User {
   assistantConversations AssistantConversation[]
   loggedIncidents SiteIncident[]  @relation("IncidentLogger")
   loggedDailyLogs DailyLog[]      @relation("DailyLogLogger")
+  createdProjects Project[]       @relation("ProjectCreatedBy")
+  updatedProjects Project[]       @relation("ProjectUpdatedBy")
+  deletedProjects Project[]       @relation("ProjectDeletedBy")
+  projectAuditLogs ProjectAuditLog[] @relation("AuditUser")
   createdAt       DateTime        @default(now())
+}
+
+enum ProjectAuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model ProjectAuditLog {
+  id          String             @id @default(cuid())
+  projectId   String
+  project     Project            @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  userId      String?
+  user        User?              @relation("AuditUser", fields: [userId], references: [id], onDelete: SetNull)
+  action      ProjectAuditAction
+  diff        Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime           @default(now())
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model ProjectMember {

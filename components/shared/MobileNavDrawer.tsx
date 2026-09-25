@@ -41,6 +41,7 @@ import { useMobileNav } from "./MobileNavContext";
 const CORE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Digital Twin", href: "/digital-twin", icon: Box },
+  { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
   { label: "Site Map", href: "/dashboard/sitemap", icon: MapPin },
   { label: "Progress", href: "/dashboard/progress", icon: TrendingUp },
   { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
@@ -59,6 +60,7 @@ const ACCORDION_GROUPS = [
       { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
       { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
       { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: Globe },
+      { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
       { label: "Regional Map", href: "/dashboard/regional-map", icon: Map },
       { label: "Incidents", href: "/dashboard/incidents", icon: ShieldAlert },
     ],

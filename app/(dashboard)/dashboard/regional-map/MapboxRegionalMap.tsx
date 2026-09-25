@@ -10,7 +10,8 @@ import Map, { MapRef, Source, Layer, Marker, NavigationControl, ScaleControl } f
 import "mapbox-gl/dist/mapbox-gl.css";
 import * as turf from "@turf/turf";
 import { toast } from "sonner";
-import { Map as MapIcon, Camera, Layers, X, Search, Eye, EyeOff, ShieldAlert, Activity, Shield, Flame, Phone, MapPin, Waves, Navigation, Zap, CloudSun, Landmark, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { Map as MapIcon, Camera, Layers, X, Search, Eye, EyeOff, ShieldAlert, Activity, Shield, Flame, Phone, MapPin, Waves, Navigation, Zap, CloudSun, Landmark, AlertTriangle, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Interfaces for items ---
@@ -70,7 +71,7 @@ const OPEN_SATELLITE_3D_STYLE: any = {
     "carto-labels": {
       type: "raster",
       tiles: [
-        "https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
       ],
       tileSize: 256
     },
@@ -713,6 +714,15 @@ export function MapboxRegionalMap({
             </div>
           </div>
 
+          {/* NATIONAL ATLAS LINK */}
+          <Link
+            href="/dashboard/projects-map"
+            className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all text-xs font-semibold font-sans shadow-sm"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="hidden sm:inline">SCIC</span> National Map
+          </Link>
+
           {/* MAP MODE TOGGLE */}
           <button
             onClick={() => setMapMode("2D")}
@@ -845,11 +855,11 @@ export function MapboxRegionalMap({
             source="google-imagery"
           />
 
-          {/* Transparent CARTO City/Country Labels */}
+          {/* Transparent City/Country Labels */}
           <Source
             id="carto-labels"
             type="raster"
-            tiles={['https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png']}
+            tiles={['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}']}
             tileSize={256}
           />
           <Layer

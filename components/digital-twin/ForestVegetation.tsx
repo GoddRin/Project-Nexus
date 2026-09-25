@@ -246,14 +246,14 @@ function generateDenseTreePlacements(seed: number): TreePlacement[] {
 
       const dMain = rectSignedDist(x, z, PAD_X_MIN, PAD_X_MAX, PAD_Z_MIN, PAD_Z_MAX);
       const dPenstock = rectSignedDist(x, z, PENSTOCK_X_MIN, PENSTOCK_X_MAX, PENSTOCK_Z_MIN, PENSTOCK_Z_MAX);
-      
+
       // Full TEMFACIL Compound footprint (Site Office, Staff House, Canteen, Basketball Court, Barracks, Laydown Yard, Parking)
       const dTemfacilCompound = rectSignedDist(x, z, 65.0, 180.0, -165.0, -45.0);
-      
+
       // Pinacanauan River channel & tailrace discharge canal
       const riverDist = distToRiverChannel(x, z);
       const dTailrace = rectSignedDist(x, z, -16.0, 16.0, 4.0, 48.0);
-      
+
       const distFromAccessRoad = distToRoadCorridor(x, z);
 
       if (dMain < PAD_FALLOFF) continue;

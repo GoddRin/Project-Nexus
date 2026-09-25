@@ -19,6 +19,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import * as turf from "@turf/turf";
 import { toast } from "sonner";
+import Link from "next/link";
 import {
   AlertTriangle,
   Map,
@@ -41,6 +42,7 @@ import {
   Shield,
   Phone,
   Plus,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -740,6 +742,15 @@ export function LeafletRegionalMap({
             </div>
           </div>
 
+          {/* NATIONAL ATLAS LINK */}
+          <Link
+            href="/dashboard/projects-map"
+            className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all text-xs font-semibold font-sans shadow-sm"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="hidden sm:inline">SCIC</span> National Map
+          </Link>
+
           {/* MAP MODE TOGGLE */}
           <button
             onClick={() => setMapMode("3D")}
@@ -789,8 +800,8 @@ export function LeafletRegionalMap({
           />
           {/* Transparent Country & City Labels Overlay */}
           <TileLayer
-            attribution="&copy; CARTO"
-            url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
+            attribution="&copy; Esri Reference"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
           />
 
 

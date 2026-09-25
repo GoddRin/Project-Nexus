@@ -409,8 +409,8 @@ export default function TyphoonMap({
         />
         {/* Transparent Country & City Labels Overlay */}
         <TileLayer
-          attribution='&copy; CARTO'
-          url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+          attribution='&copy; Esri World Reference'
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
           className="satellite-label-tiles"
         />
 

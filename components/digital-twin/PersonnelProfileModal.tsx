@@ -157,7 +157,7 @@ export function PersonnelProfileModal({
             <div
               onClick={() => handleLocate()}
               className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-emerald-500/40 dark:border-sky-500/40 hover:border-scic-green dark:hover:border-cyan-400 shadow-xl shrink-0 group cursor-pointer transition-all transform hover:scale-[1.02] bg-slate-100 dark:bg-slate-900"
-              title="Click to fly to this personnel in 3D Site Twin"
+              title="Locate personnel in 3D Site Model"
             >
               <Image
                 src={currentPerson.avatarUrl}
@@ -268,7 +268,7 @@ export function PersonnelProfileModal({
             <div
               onClick={() => handleLocate()}
               className="bg-slate-50/80 dark:bg-slate-950/60 border border-border-hairline hover:border-emerald-500/50 dark:hover:border-cyan-500/50 hover:bg-emerald-50/20 dark:hover:bg-slate-900/80 p-3.5 rounded-xl space-y-1.5 sm:col-span-2 cursor-pointer transition-all group relative overflow-hidden"
-              title="Click to fly directly to this workstation in 3D"
+              title="Locate workstation in 3D Model"
             >
               <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-emerald-500/10 dark:from-cyan-500/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center justify-between">
@@ -277,7 +277,7 @@ export function PersonnelProfileModal({
                   <span>Assigned Workstation / Facility Location</span>
                 </div>
                 <span className="text-[11px] font-mono text-scic-green dark:text-cyan-400 flex items-center gap-1 opacity-80 group-hover:opacity-100 font-bold">
-                  <span>Fly to location</span>
+                  <span>Focus location</span>
                   <span className="group-hover:translate-x-1 transition-transform">➔</span>
                 </span>
               </div>

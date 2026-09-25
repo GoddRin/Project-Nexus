@@ -39,6 +39,7 @@ import { HydroPowerLogo } from "./HydroPowerLogo";
 const CORE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Digital Twin", href: "/digital-twin", icon: Box },
+  { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
   { label: "Site Map", href: "/dashboard/sitemap", icon: MapPin },
   { label: "Progress", href: "/dashboard/progress", icon: TrendingUp },
   { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
@@ -57,6 +58,7 @@ const ACCORDION_GROUPS = [
       { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
       { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
       { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: Globe },
+      { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
       { label: "Regional Map", href: "/dashboard/regional-map", icon: Map },
       { label: "Incidents", href: "/dashboard/incidents", icon: ShieldAlert },
     ],
@@ -78,6 +80,7 @@ const ACCORDION_GROUPS = [
       { label: "Knowledge Base", href: "/dashboard/knowledge-base", icon: BookOpen },
       { label: "Visitors", href: "/dashboard/visitors", icon: Shield },
       { label: "Network", href: "/dashboard/network", icon: Server },
+      { label: "Project Atlas Admin", href: "/dashboard/projects-admin", icon: Settings },
     ],
   },
 ];
