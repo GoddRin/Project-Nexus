@@ -25,6 +25,7 @@ export interface SCICProject {
   id: string;
   name: string;
   code: string;
+  slug?: string;
   shortName: string;
   sector: ProjectSector;
   status: ProjectStatus;

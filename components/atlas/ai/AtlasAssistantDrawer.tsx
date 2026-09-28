@@ -74,12 +74,20 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isGenerating, currentToolEvents]);
 
-  // Focus input when drawer opens
+  // Focus input when drawer opens & bind global Escape listener (Phase 19 A11y)
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 150);
+      const handleGlobalKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          onClose();
+        }
+      };
+      window.addEventListener("keydown", handleGlobalKeyDown);
+      return () => window.removeEventListener("keydown", handleGlobalKeyDown);
     }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   // Handle Enter to submit
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -104,13 +112,14 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
   return (
     <div
       role="dialog"
+      aria-modal="true"
       aria-label="SCIC Atlas Assistant"
       className={cn(
         "fixed z-50 transition-all duration-300 flex flex-col pointer-events-auto",
         // Desktop: Docked right slide-over panel
         "hidden md:flex top-12 right-3 bottom-3 rounded-2xl border border-white/10 bg-[#0B1726]/95 backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden",
         isExpanded ? "w-[680px]" : "w-[460px] lg:w-[480px]",
-        // Mobile: Bottom sheet slide-up
+        // Mobile: Bottom sheet slide-up (390x844 responsive)
         "max-md:flex max-md:inset-x-0 max-md:bottom-0 max-md:top-14 max-md:rounded-t-2xl max-md:border-t max-md:border-white/15 max-md:bg-[#0B1726]/98 max-md:backdrop-blur-3xl"
       )}
     >
@@ -123,7 +132,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
       <div className="flex flex-col border-b border-white/10 bg-slate-900/60 px-4 py-3 shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30">
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
@@ -172,7 +181,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
         {/* ─── Active Map Context Pill ─────────────────────────── */}
         <div className="mt-2.5 flex items-center justify-between text-[11px] font-mono px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-slate-300">
           <div className="flex items-center gap-1.5 truncate">
-            <Compass className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+            <Compass className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="text-slate-400">Context:</span>
             <span className="font-semibold text-white truncate">
               {selectedProjectName ? (
@@ -229,9 +238,9 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
               key={idx}
               onClick={() => onSendMessage(mode.prompt)}
               disabled={isGenerating}
-              className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-sky-500/20 text-slate-300 hover:text-white border border-white/5 hover:border-sky-500/30 text-[10px] font-mono tracking-tight transition-all shrink-0 cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-white border border-white/5 hover:border-emerald-500/30 text-[10px] font-mono tracking-tight transition-all shrink-0 cursor-pointer disabled:opacity-50"
             >
-              <Icon className="w-3 h-3 text-sky-400" />
+              <Icon className="w-3 h-3 text-emerald-400" />
               <span>{mode.label}</span>
             </button>
           );
@@ -239,11 +248,16 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
       </div>
 
       {/* ─── 2. Message History Area ─────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 font-sans text-xs scroll-smooth">
+      <div
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions text"
+        className="flex-1 overflow-y-auto p-4 space-y-4 font-sans text-xs scroll-smooth"
+      >
         {/* Initial Empty State */}
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center text-center py-6 px-3 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 flex items-center justify-center text-sky-400 border border-sky-500/30 shadow-lg shadow-sky-950/40">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 flex items-center justify-center text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-950/40">
               <Sparkles className="w-6 h-6" />
             </div>
             <div className="space-y-1">
@@ -265,10 +279,10 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                   <button
                     key={idx}
                     onClick={() => onSendMessage(prompt)}
-                    className="w-full text-left text-xs px-3 py-2 rounded-xl bg-white/5 hover:bg-sky-500/15 text-slate-200 hover:text-white border border-white/5 hover:border-sky-500/30 transition-all cursor-pointer flex items-center justify-between group"
+                    className="w-full text-left text-xs px-3 py-2 rounded-xl bg-white/5 hover:bg-emerald-500/15 text-slate-200 hover:text-white border border-white/5 hover:border-emerald-500/30 transition-all cursor-pointer flex items-center justify-between group"
                   >
                     <span>{prompt}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                   </button>
                 ))}
               </div>
@@ -312,7 +326,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
               className={cn(
                 "rounded-2xl px-3.5 py-2.5 max-w-[92%] leading-relaxed shadow-md",
                 msg.role === "user"
-                  ? "bg-sky-600 text-white font-sans text-xs ml-8"
+                  ? "bg-emerald-600 text-white font-sans text-xs ml-8"
                   : "bg-slate-900/90 border border-white/10 text-slate-200 mr-4 w-full"
               )}
             >
@@ -320,13 +334,13 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                 <div className="space-y-2.5">
                   {/* Tool execution event ticker during streaming */}
                   {msg.isStreaming && msg.toolEvents && msg.toolEvents.length > 0 && (
-                    <div className="flex flex-col gap-1 pb-1 border-b border-white/10 text-[10px] font-mono text-sky-400">
+                    <div className="flex flex-col gap-1 pb-1 border-b border-white/10 text-[10px] font-mono text-emerald-400">
                       {msg.toolEvents.map((ev, i) => (
                         <div key={i} className="flex items-center gap-1.5">
                           {ev.status === "completed" ? (
                             <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                           ) : (
-                            <Loader2 className="w-3 h-3 animate-spin text-sky-400" />
+                            <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
                           )}
                           <span>
                             {ev.status === "completed" ? "Verified" : "Querying"}: {ev.toolName}
@@ -341,7 +355,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                     <AtlasMarkdownRenderer content={msg.content} />
                   ) : msg.isStreaming ? (
                     <div className="flex items-center gap-2 text-slate-400 py-1">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
                       <span className="font-mono text-[11px]">Reasoning with Project Atlas GIS...</span>
                     </div>
                   ) : null}
@@ -351,14 +365,14 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                     <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/10">
                       {msg.actions.map((act, actIdx) => {
                         let label = "Execute Action";
-                        let icon = <MapPin className="w-3 h-3 text-sky-400" />;
+                        let icon = <MapPin className="w-3 h-3 text-emerald-400" />;
 
                         if (act.type === "FLY_TO_PROJECT") {
                           label = `Center on ${act.projectId}`;
-                          icon = <Compass className="w-3 h-3 text-sky-400" />;
+                          icon = <Compass className="w-3 h-3 text-emerald-400" />;
                         } else if (act.type === "SELECT_PROJECT") {
                           label = `Open ${act.projectName || act.projectId}`;
-                          icon = <MapPin className="w-3 h-3 text-sky-400" />;
+                          icon = <MapPin className="w-3 h-3 text-emerald-400" />;
                         } else if (act.type === "ZOOM_TO_REGION") {
                           label = `Explore ${act.region}`;
                           icon = <Compass className="w-3 h-3 text-amber-400" />;
@@ -373,7 +387,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                           icon = <Sparkles className="w-3 h-3 text-amber-400" />;
                         } else if (act.type === "START_TOUR") {
                           label = "Launch Guided Portfolio Tour";
-                          icon = <Compass className="w-3 h-3 text-sky-400" />;
+                          icon = <Compass className="w-3 h-3 text-emerald-400" />;
                         } else if (act.type === "CLEAR_FILTERS") {
                           label = "Clear Filters";
                           icon = <RotateCcw className="w-3 h-3 text-slate-400" />;
@@ -383,13 +397,23 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
                         } else if (act.type === "ENTER_DISCOVERY_SCOPE") {
                           label = `Enter Discovery: ${act.scope}`;
                           icon = <Compass className="w-3 h-3 text-emerald-400" />;
+                        } else if (act.type === "OPEN_NEXUS_OPERATIONS") {
+                          label = act.label || "Open Nexus Operations ↗";
+                          icon = <ExternalLink className="w-3 h-3 text-emerald-400" />;
                         }
+
+                        const isNexusAction = act.type === "OPEN_NEXUS_OPERATIONS";
 
                         return (
                           <button
                             key={actIdx}
                             onClick={() => onExecuteAction(act)}
-                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/25 text-sky-300 hover:text-white border border-sky-500/30 text-[11px] font-mono transition-all cursor-pointer"
+                            className={cn(
+                              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all cursor-pointer",
+                              isNexusAction
+                                ? "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 hover:text-white border border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.2)]"
+                                : "bg-emerald-500/10 hover:bg-emerald-500/25 text-emerald-300 hover:text-white border border-emerald-500/30"
+                            )}
                           >
                             {icon}
                             <span>{label}</span>
@@ -460,16 +484,17 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
       </div>
 
       {/* ─── 3. Input & Prompt Controls ──────────────────────── */}
-      <div className="border-t border-white/10 bg-slate-900/80 p-3 shrink-0 space-y-2">
+      <div className="border-t border-white/10 bg-slate-900/80 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0 space-y-2">
         {/* Suggestion Chips above input */}
         {messages.length > 0 && (
-          <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-            {suggestions.slice(0, 3).map((prompt, idx) => (
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar scroll-smooth [mask-image:linear-gradient(to_right,black_calc(100%-20px),transparent_100%)]">
+            {suggestions.slice(0, 4).map((prompt, idx) => (
               <button
                 key={idx}
                 onClick={() => onSendMessage(prompt)}
                 disabled={isGenerating}
-                className="whitespace-nowrap text-[10px] px-2 py-0.5 rounded-md bg-white/5 hover:bg-sky-500/20 text-slate-300 hover:text-white border border-white/5 hover:border-sky-500/30 transition-colors cursor-pointer shrink-0"
+                title={prompt}
+                className="whitespace-nowrap max-w-[170px] truncate text-[10px] px-2.5 py-1 rounded-full bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-white border border-white/10 hover:border-emerald-500/40 transition-all cursor-pointer shrink-0 shadow-xs"
               >
                 ✦ {prompt}
               </button>
@@ -478,7 +503,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
         )}
 
         {/* Input Bar */}
-        <div className="flex items-center gap-2 bg-[#08121E] border border-white/10 focus-within:border-sky-500/50 focus-within:ring-2 focus-within:ring-sky-500/20 rounded-xl px-3 py-1.5 transition-all">
+        <div className="flex items-center gap-2 bg-[#08121E] border border-white/10 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 rounded-xl px-3 py-1.5 transition-all">
           <textarea
             ref={inputRef}
             rows={1}
@@ -487,10 +512,10 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
             onKeyDown={handleKeyDown}
             placeholder={
               selectedProjectName
-                ? `Ask about ${selectedProjectName}... (e.g. "What's nearby?")`
+                ? `Ask about ${selectedProjectName.length > 28 ? selectedProjectName.slice(0, 28) + "…" : selectedProjectName}...`
                 : "Ask Atlas anything about Sta. Clara projects..."
             }
-            className="w-full bg-transparent text-xs text-white placeholder-slate-400 focus:outline-hidden resize-none max-h-24 py-1"
+            className="w-full bg-transparent text-xs text-white placeholder-slate-400 focus:outline-hidden resize-none max-h-24 py-1 leading-relaxed"
           />
 
           <button
@@ -499,14 +524,14 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
             className={cn(
               "p-2 rounded-lg transition-all shrink-0 cursor-pointer",
               inputText.trim() && !isGenerating
-                ? "bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-950/50"
+                ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950/50"
                 : "bg-white/5 text-slate-500 cursor-not-allowed"
             )}
             title="Send query to Atlas Assistant (Enter)"
             aria-label="Send message"
           >
             {isGenerating ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
             ) : (
               <Send className="w-3.5 h-3.5" />
             )}
@@ -516,7 +541,7 @@ export const AtlasAssistantDrawer: React.FC<AtlasAssistantDrawerProps> = ({
         {/* Footer Shortcut Info */}
         <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 px-1">
           <span>Enter to send · Shift+Enter for new line · Esc to close</span>
-          <span className="text-sky-500/80">Authoritative Project GIS</span>
+          <span className="text-emerald-500/80">Authoritative Project GIS</span>
         </div>
       </div>
     </div>

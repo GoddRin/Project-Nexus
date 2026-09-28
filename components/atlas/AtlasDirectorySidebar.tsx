@@ -259,7 +259,7 @@ export function AtlasDirectorySidebar({
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-mono font-medium transition-all cursor-pointer",
               sidebarMode === "DIRECTORY"
-                ? "bg-white dark:bg-[#0284C7] text-slate-900 dark:text-white font-bold shadow-xs"
+                ? "bg-white dark:bg-emerald-600 text-slate-900 dark:text-white font-bold shadow-xs"
                 : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             )}
           >
@@ -272,7 +272,7 @@ export function AtlasDirectorySidebar({
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-mono font-medium transition-all cursor-pointer",
               sidebarMode === "DISCOVERY"
-                ? "bg-white dark:bg-[#0284C7] text-slate-900 dark:text-white font-bold shadow-xs"
+                ? "bg-white dark:bg-emerald-600 text-slate-900 dark:text-white font-bold shadow-xs"
                 : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             )}
           >

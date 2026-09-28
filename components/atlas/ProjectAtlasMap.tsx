@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as maplibregl from "maplibre-gl";
+import * as turf from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@/app/(dashboard)/dashboard/projects-map/ProjectRadarMarker.css";
 import {
@@ -62,6 +63,17 @@ export interface ProjectAtlasMapProps {
   isMeasuring?: boolean;
   onToggleMeasuring?: (measuring: boolean) => void;
   className?: string;
+  transitCorridor?: {
+    fromProject: { id: string; name: string; coordinates: { lat: number; lng: number } };
+    toProject: { id: string; name: string; coordinates: { lat: number; lng: number } };
+    distanceKm: number;
+  } | null;
+  bufferZone?: {
+    center: { lat: number; lng: number };
+    radiusKm: number;
+    label: string;
+    projectIdsInside?: string[];
+  } | null;
 }
 
 // Standardized Corporate Infrastructure GIS Basemap Style Specifications
@@ -301,6 +313,8 @@ export function ProjectAtlasMap({
   isMeasuring: propIsMeasuring,
   onToggleMeasuring: propOnToggleMeasuring,
   className,
+  transitCorridor,
+  bufferZone,
 }: ProjectAtlasMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -355,6 +369,148 @@ export function ProjectAtlasMap({
       : { top: 48, bottom: 48, left: 48, right: 48 };
   }, []);
 
+  // ─── Dynamic AI Transit Corridor Layer ────────────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const sourceId = "atlas-ai-transit-corridor-source";
+    const layerId = "atlas-ai-transit-corridor-layer";
+    const glowLayerId = "atlas-ai-transit-corridor-glow";
+
+    const updateLayer = () => {
+      if (!map.isStyleLoaded()) return;
+
+      if (!transitCorridor) {
+        if (map.getLayer(glowLayerId)) map.removeLayer(glowLayerId);
+        if (map.getLayer(layerId)) map.removeLayer(layerId);
+        if (map.getSource(sourceId)) map.removeSource(sourceId);
+        return;
+      }
+
+      const geoData: GeoJSON.FeatureCollection = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {
+              title: `Corridor: ${transitCorridor.fromProject.name} → ${transitCorridor.toProject.name}`,
+              distanceKm: transitCorridor.distanceKm,
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [transitCorridor.fromProject.coordinates.lng, transitCorridor.fromProject.coordinates.lat],
+                [transitCorridor.toProject.coordinates.lng, transitCorridor.toProject.coordinates.lat],
+              ],
+            },
+          },
+        ],
+      };
+
+      if (map.getSource(sourceId)) {
+        (map.getSource(sourceId) as maplibregl.GeoJSONSource).setData(geoData);
+      } else {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: geoData,
+        });
+
+        map.addLayer({
+          id: glowLayerId,
+          type: "line",
+          source: sourceId,
+          paint: {
+            "line-color": "#10B981",
+            "line-width": 8,
+            "line-opacity": 0.45,
+            "line-blur": 3,
+          },
+        });
+
+        map.addLayer({
+          id: layerId,
+          type: "line",
+          source: sourceId,
+          paint: {
+            "line-color": "#34D399",
+            "line-width": 3,
+            "line-dasharray": [2, 2],
+          },
+        });
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      updateLayer();
+    } else {
+      map.once("style.load", updateLayer);
+    }
+  }, [transitCorridor, isMapLoaded]);
+
+  // ─── Dynamic AI Buffer Zone (Geofence Catchment) Layer ────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const sourceId = "atlas-ai-buffer-zone-source";
+    const fillLayerId = "atlas-ai-buffer-zone-fill";
+    const lineLayerId = "atlas-ai-buffer-zone-line";
+
+    const updateLayer = () => {
+      if (!map.isStyleLoaded()) return;
+
+      if (!bufferZone) {
+        if (map.getLayer(fillLayerId)) map.removeLayer(fillLayerId);
+        if (map.getLayer(lineLayerId)) map.removeLayer(lineLayerId);
+        if (map.getSource(sourceId)) map.removeSource(sourceId);
+        return;
+      }
+
+      const circlePoly = turf.circle(
+        [bufferZone.center.lng, bufferZone.center.lat],
+        bufferZone.radiusKm,
+        { units: "kilometers", steps: 64 }
+      );
+
+      if (map.getSource(sourceId)) {
+        (map.getSource(sourceId) as maplibregl.GeoJSONSource).setData(circlePoly);
+      } else {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: circlePoly,
+        });
+
+        map.addLayer({
+          id: fillLayerId,
+          type: "fill",
+          source: sourceId,
+          paint: {
+            "fill-color": "#10B981",
+            "fill-opacity": 0.15,
+          },
+        });
+
+        map.addLayer({
+          id: lineLayerId,
+          type: "line",
+          source: sourceId,
+          paint: {
+            "line-color": "#10B981",
+            "line-width": 2,
+            "line-dasharray": [3, 2],
+          },
+        });
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      updateLayer();
+    } else {
+      map.once("style.load", updateLayer);
+    }
+  }, [bufferZone, isMapLoaded]);
+
   // Add / Re-attach Source and Layers
   const setupSourceAndLayers = useCallback(
     async (
@@ -406,7 +562,7 @@ export function ProjectAtlasMap({
         type: "geojson",
         data: featureData,
         cluster: true,
-        clusterMaxZoom: 14,
+        clusterMaxZoom: 13,
         clusterRadius: 50,
       });
 
@@ -443,11 +599,11 @@ export function ProjectAtlasMap({
           "circle-color": [
             "step",
             ["get", "point_count"],
-            "#0284c7", // < 5 Projects: Sky Blue
+            "#10B981", // < 5 Projects: Sta. Clara Vibrant Emerald
             5,
-            "#0369a1", // 5-15 Projects: Ocean Blue
+            "#059669", // 5-15 Projects: Corporate SCIC Green
             15,
-            "#075985", // > 15 Projects: Deep Navy
+            "#047857", // > 15 Projects: Deep Sta. Clara Forest Green
           ],
           "circle-radius": [
             "step",
@@ -650,7 +806,7 @@ export function ProjectAtlasMap({
             26,
           ],
           "circle-stroke-width": 3,
-          "circle-stroke-color": "#00E5FF",
+          "circle-stroke-color": "#10B981",
           "circle-stroke-opacity": 0.95,
         },
       });
@@ -1380,8 +1536,8 @@ export function ProjectAtlasMap({
           el.className = "scic-selected-reticle-container";
           el.innerHTML = `
             ${ATLAS_EFFECTS_CONFIG.enableSelectedGroundDropBeacon ? '<div class="scic-ground-drop-beacon"></div>' : ""}
-            <div class="scic-radar-wave-1" style="color: #00E5FF;"></div>
-            <div class="scic-radar-wave-2" style="color: #00E5FF;"></div>
+            <div class="scic-radar-wave-1" style="color: #10B981;"></div>
+            <div class="scic-radar-wave-2" style="color: #10B981;"></div>
             <div class="scic-selected-reticle">
               <span class="scic-pip-n"></span>
               <span class="scic-pip-s"></span>
@@ -1614,12 +1770,12 @@ export function ProjectAtlasMap({
             className={cn(
               "p-2 transition-colors border-b border-slate-200 dark:border-white/10 flex items-center justify-center cursor-pointer",
               isMeasuring
-                ? "bg-[#0284C7] text-white"
+                ? "bg-emerald-600 text-white"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10"
             )}
             aria-label="Toggle distance and area measurement tools"
           >
-            <Ruler className={cn("h-4 w-4", isMeasuring ? "text-white" : "text-[#0284C7] dark:text-[#38BDF8]")} />
+            <Ruler className={cn("h-4 w-4", isMeasuring ? "text-white" : "text-emerald-600 dark:text-emerald-400")} />
           </button>
           <button
             onClick={handleZoomIn}
@@ -1641,7 +1797,7 @@ export function ProjectAtlasMap({
             onClick={handleResetNorth}
             title="Reset North Orientation"
             style={{ transform: `rotate(${-bearing}deg)` }}
-            className="p-2 text-slate-600 hover:text-[#0284C7] hover:bg-slate-100 dark:text-slate-300 dark:hover:text-[#0284C7] dark:hover:bg-white/10 transition-all flex items-center justify-center border-b border-slate-200 dark:border-white/10 cursor-pointer"
+            className="p-2 text-slate-600 hover:text-emerald-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-emerald-400 dark:hover:bg-white/10 transition-all flex items-center justify-center border-b border-slate-200 dark:border-white/10 cursor-pointer"
             aria-label="Reset map bearing to north"
           >
             <Compass className="h-4 w-4" />
@@ -1658,8 +1814,8 @@ export function ProjectAtlasMap({
             onClick={handleLocateUser}
             title="Locate Current Position"
             className={cn(
-              "p-2 text-slate-600 hover:text-sky-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-sky-400 dark:hover:bg-white/10 transition-colors border-b border-slate-200 dark:border-white/10 flex items-center justify-center cursor-pointer",
-              isLocating && "animate-spin text-sky-500 dark:text-sky-400"
+              "p-2 text-slate-600 hover:text-emerald-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-emerald-400 dark:hover:bg-white/10 transition-colors border-b border-slate-200 dark:border-white/10 flex items-center justify-center cursor-pointer",
+              isLocating && "animate-spin text-emerald-500 dark:text-emerald-400"
             )}
             aria-label="Locate my current position on map"
           >

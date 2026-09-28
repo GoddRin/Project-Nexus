@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -127,6 +127,49 @@ export function AtlasProjectSpotlight({
   const statusConfig = ATLAS_STATUSES[project.status] || ATLAS_STATUSES.ONGOING;
   const isSelected = selectedProjectId === project.id;
 
+  // Auto-sync spotlight when selectedProjectId changes to a featured project
+  useEffect(() => {
+    if (!selectedProjectId || !sorted.length) return;
+    const matchIndex = sorted.findIndex(
+      (p) => p.id === selectedProjectId || p.code === selectedProjectId || (p as any).slug === selectedProjectId
+    );
+    if (matchIndex !== -1 && matchIndex !== currentIndex) {
+      setPhotoIndex(0);
+      setCurrentIndex(matchIndex);
+    }
+  }, [selectedProjectId, sorted, currentIndex]);
+
+  // Listen to AI drive_spotlight custom event
+  useEffect(() => {
+    const handleDriveSpotlight = (e: Event) => {
+      const customEvent = e as CustomEvent<{ projectId?: string; direction?: "next" | "prev" }>;
+      const { projectId, direction } = customEvent.detail || {};
+
+      if (direction === "next") {
+        setPhotoIndex(0);
+        setCurrentIndex((prev) => (prev < sorted.length - 1 ? prev + 1 : 0));
+      } else if (direction === "prev") {
+        setPhotoIndex(0);
+        setCurrentIndex((prev) => (prev > 0 ? prev - 1 : sorted.length - 1));
+      } else if (projectId) {
+        const idx = sorted.findIndex(
+          (p) =>
+            p.id === projectId ||
+            p.code?.toLowerCase() === projectId.toLowerCase() ||
+            (p as any).slug?.toLowerCase() === projectId.toLowerCase() ||
+            p.name.toLowerCase().includes(projectId.toLowerCase())
+        );
+        if (idx !== -1) {
+          setPhotoIndex(0);
+          setCurrentIndex(idx);
+        }
+      }
+    };
+
+    window.addEventListener("atlas:drive_spotlight", handleDriveSpotlight);
+    return () => window.removeEventListener("atlas:drive_spotlight", handleDriveSpotlight);
+  }, [sorted]);
+
   const handlePrevProject = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPhotoIndex(0);
@@ -169,7 +212,7 @@ export function AtlasProjectSpotlight({
             >
               <ChevronLeft className="h-3 w-3" />
             </button>
-            <span className="px-1 font-bold text-sky-600 dark:text-sky-400 select-none">
+            <span className="px-1 font-bold text-emerald-600 dark:text-emerald-400 select-none">
               {safeIndex + 1} / {sorted.length}
             </span>
             <button
@@ -375,7 +418,7 @@ export function AtlasProjectSpotlight({
             </h3>
 
             <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
-              <MapPin className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+              <MapPin className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
               <span className="truncate">
                 {project.municipality}, {project.province}
               </span>
@@ -389,7 +432,7 @@ export function AtlasProjectSpotlight({
               <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">
                 Capacity
               </span>
-              <span className="text-xs font-mono font-bold text-sky-300 truncate mt-0.5">
+              <span className="text-xs font-mono font-bold text-emerald-300 truncate mt-0.5">
                 {project.metrics?.capacity || "Flagship"}
               </span>
             </div>
@@ -433,7 +476,7 @@ export function AtlasProjectSpotlight({
             <button
               type="button"
               onClick={() => onExploreProject(project)}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#0284C7] via-[#0ea5e9] to-emerald-500 hover:from-[#0369a1] hover:to-emerald-400 text-white font-mono text-xs font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(2,132,199,0.35)] hover:shadow-[0_0_25px_rgba(16,185,129,0.45)] cursor-pointer active:scale-[0.99]"
+              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:to-teal-400 text-white font-mono text-xs font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_25px_rgba(16,185,129,0.55)] cursor-pointer active:scale-[0.99]"
             >
               <span>Explore on Map</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -441,9 +484,9 @@ export function AtlasProjectSpotlight({
 
             <Link
               href={`/dashboard/projects/${project.id}`}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 hover:border-sky-400/50 text-white font-mono text-xs font-semibold transition-all shadow-xs"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 hover:border-emerald-400/50 text-white font-mono text-xs font-semibold transition-all shadow-xs"
             >
-              <FileText className="h-3.5 w-3.5 text-sky-400" />
+              <FileText className="h-3.5 w-3.5 text-emerald-400" />
               <span>Full Profile</span>
             </Link>
           </div>

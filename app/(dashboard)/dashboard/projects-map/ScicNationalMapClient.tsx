@@ -16,6 +16,7 @@ import {
 } from "@/lib/validations/projectAtlasSchema";
 import { convertDtoToScicProject } from "@/lib/data/scicProjectAdapter";
 import { AtlasHeader } from "@/components/atlas/AtlasHeader";
+import AtlasNewsModal from "@/components/atlas/AtlasNewsModal";
 import { AtlasDirectorySidebar } from "@/components/atlas/AtlasDirectorySidebar";
 import { ProjectAtlasMap } from "@/components/atlas/ProjectAtlasMap";
 import { ProjectInspectionDrawer } from "./ProjectInspectionDrawer";
@@ -33,6 +34,7 @@ import {
   extractUniqueRegions,
   extractUniqueProvinces,
   getBoundsForProjects,
+  findProjectInDataset,
 } from "@/components/atlas/AtlasSearchUtils";
 import { AtlasGeographicBreadcrumb } from "@/components/atlas/AtlasGeographicBreadcrumb";
 import { RegionIntelligenceCard } from "@/components/atlas/RegionIntelligenceCard";
@@ -142,6 +144,19 @@ function ScicNationalMapContent() {
   // AI-driven visual highlight on project markers (Phase 17)
   const [highlightedProjectIds, setHighlightedProjectIds] = useState<string[]>([]);
 
+  // AI-driven dynamic GIS overlays (transit corridor & buffer zones)
+  const [transitCorridor, setTransitCorridor] = useState<{
+    fromProject: { id: string; name: string; coordinates: { lat: number; lng: number } };
+    toProject: { id: string; name: string; coordinates: { lat: number; lng: number } };
+    distanceKm: number;
+  } | null>(null);
+  const [bufferZone, setBufferZone] = useState<{
+    center: { lat: number; lng: number };
+    radiusKm: number;
+    label: string;
+    projectIdsInside?: string[];
+  } | null>(null);
+
   // Phase 10: Project Discovery Mode state (Geographic Storytelling & Regional Exploration)
   const [sidebarMode, setSidebarMode] = useState<"DIRECTORY" | "DISCOVERY">("DIRECTORY");
   const [discoveryScope, setDiscoveryScope] = useState<AtlasDiscoveryScope>({
@@ -151,6 +166,7 @@ function ScicNationalMapContent() {
   // Layout presentation states
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileDirectoryOpen, setIsMobileDirectoryOpen] = useState(false);
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
 
   // 2. Debounce search input by 250ms (Directive 7 & 21)
   useEffect(() => {
@@ -298,10 +314,17 @@ function ScicNationalMapContent() {
   useEffect(() => {
     if (!selectedProjectId) return;
     const exists = activeProjects.some(
-      (p) => p.id === selectedProjectId || p.code === selectedProjectId
+      (p) => p.id === selectedProjectId || p.code === selectedProjectId || p.slug === selectedProjectId
     );
     if (!exists && activeProjects.length > 0) {
-      selectProject(null);
+      const matched = findProjectInDataset(activeProjects, selectedProjectId);
+      if (matched) {
+        if (matched.id !== selectedProjectId) {
+          selectProject(matched.id);
+        }
+      } else {
+        selectProject(null);
+      }
     }
   }, [activeProjects, selectedProjectId, selectProject]);
 
@@ -372,34 +395,42 @@ function ScicNationalMapContent() {
     activeGisLayers,
     allProjectsCount: activeProjects.length,
     onSelectProject: (id) => {
-      selectProject(id);
-      if (id) {
-        const p = activeProjects.find((x) => x.id === id || x.code === id);
-        if (p) {
-          flyToProject({
-            coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
-            id: p.id,
-          });
-        }
+      if (!id) {
+        selectProject(null);
+        return;
+      }
+      const p = findProjectInDataset(activeProjects, id);
+      if (p) {
+        selectProject(p.id);
+        flyToProject({
+          coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+          id: p.id,
+        });
+      } else {
+        selectProject(id);
       }
     },
     onFlyToProject: (target) => {
-      if (target.id) {
-        const p = activeProjects.find((x) => x.id === target.id || x.code === target.id);
-        if (p) {
-          selectProject(p.id);
-          flyToProject({
-            coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
-            id: p.id,
-            zoom: target.zoom,
-            pitch: target.pitch,
-          });
-        }
+      const p = target.id ? findProjectInDataset(activeProjects, target.id) : undefined;
+      if (p) {
+        selectProject(p.id);
+        flyToProject({
+          coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+          id: p.id,
+          zoom: target.zoom ?? 14.2,
+          pitch: target.pitch ?? 45,
+          bearing: target.bearing ?? 0,
+          padding: (target as any).padding,
+          duration: (target as any).duration,
+        });
       } else if (target.coordinates) {
         flyToProject({
           coordinates: target.coordinates,
           zoom: target.zoom,
           pitch: target.pitch,
+          bearing: target.bearing,
+          padding: (target as any).padding,
+          duration: (target as any).duration,
         });
       }
     },
@@ -441,7 +472,7 @@ function ScicNationalMapContent() {
       }
     },
     onInspectFootprint: (projId) => {
-      const p = activeProjects.find((x) => x.id === projId || x.code === projId);
+      const p = findProjectInDataset(activeProjects, projId);
       if (p) {
         selectProject(p.id);
         flyToProject({
@@ -455,48 +486,81 @@ function ScicNationalMapContent() {
         }
       }
     },
-    onEnterDiscoveryScope: (scope, targetName) => {
+    onEnterDiscoveryScope: (scope, targetName, adjustCamera = true) => {
       setSidebarMode("DISCOVERY");
       if (scope === "national") {
         setDiscoveryScope({ level: "national" });
+        setGeographicScope({ region: "ALL", province: "ALL" });
+        if (adjustCamera) {
+          selectProject(null);
+          resetToNationalView();
+        }
+      } else if (scope === "island" && targetName) {
+        const island = targetName.toUpperCase() as "LUZON" | "VISAYAS" | "MINDANAO";
+        setDiscoveryScope({ level: "island", islandGroup: island });
+        setGeographicScope({ region: "ALL", province: "ALL" });
+        if (adjustCamera) {
+          selectProject(null);
+          const islandProjects = activeProjects.filter((p) => p.islandGroup === island);
+          const bounds = getBoundsForProjects(islandProjects);
+          if (bounds) zoomToBounds(bounds);
+        }
       } else if (scope === "region" && targetName) {
-        const canonical = CANONICAL_REGIONS.find(
-          (c) =>
-            c.match(targetName) ||
-            c.shortName === targetName ||
-            c.key === targetName ||
-            c.displayName.includes(targetName)
-        );
-        if (canonical) {
-          setDiscoveryScope({
-            level: "region",
-            regionKey: canonical.key,
-            regionDisplayName: canonical.displayName,
-            islandGroup: canonical.islandGroup,
-          });
+        const detail = getRegionDiscoveryDetail(activeProjects, targetName);
+        setDiscoveryScope({
+          level: "region",
+          regionKey: detail?.key || targetName,
+          regionDisplayName: detail?.displayName || targetName,
+          islandGroup: detail?.islandGroup || "LUZON",
+        });
+        setGeographicScope({ region: targetName, province: "ALL" });
+        if (adjustCamera) {
+          selectProject(null);
+          const regionProjects = activeProjects.filter((p) => p.region === targetName);
+          const bounds = detail?.bounds || getBoundsForProjects(regionProjects);
+          if (bounds) zoomToBounds(bounds);
         }
       } else if (scope === "province" && targetName) {
-        const p = activeProjects.find((x) => x.province === targetName);
-        if (p) {
-          const canonical = CANONICAL_REGIONS.find((c) => c.match(p.region));
-          if (canonical) {
-            setDiscoveryScope({
-              level: "province",
-              regionKey: canonical.key,
-              regionDisplayName: canonical.displayName,
-              province: targetName,
-              islandGroup: canonical.islandGroup,
-            });
-          }
+        const provProject = activeProjects.find(
+          (p) =>
+            p.province.toLowerCase() === targetName.toLowerCase() ||
+            p.province.toLowerCase().includes(targetName.toLowerCase()) ||
+            targetName.toLowerCase().includes(p.province.toLowerCase())
+        );
+        const parentRegion = provProject ? provProject.region : undefined;
+        if (parentRegion) {
+          const detail = getRegionDiscoveryDetail(activeProjects, parentRegion);
+          setDiscoveryScope({
+            level: "region",
+            regionKey: detail?.key || parentRegion,
+            regionDisplayName: detail?.displayName || parentRegion,
+            islandGroup: detail?.islandGroup || provProject?.islandGroup || "LUZON",
+          });
+          setGeographicScope({ region: parentRegion, province: targetName });
+        } else {
+          setGeographicScope((prev) => ({ ...prev, province: targetName }));
+        }
+        if (adjustCamera) {
+          selectProject(null);
+          const provProjects = activeProjects.filter(
+            (p) =>
+              p.province.toLowerCase() === targetName.toLowerCase() ||
+              p.province.toLowerCase().includes(targetName.toLowerCase()) ||
+              targetName.toLowerCase().includes(p.province.toLowerCase())
+          );
+          const bounds = getBoundsForProjects(provProjects);
+          if (bounds) zoomToBounds(bounds);
         }
       }
     },
     onHighlightProjects: (projectIds, fitBounds = true) => {
-      setHighlightedProjectIds(projectIds);
-      if (fitBounds && projectIds.length > 0) {
-        const matching = activeProjects.filter(
-          (x) => projectIds.includes(x.id) || projectIds.includes(x.code)
-        );
+      const resolved = projectIds.map((id) => {
+        const p = findProjectInDataset(activeProjects, id);
+        return p ? p.id : id;
+      });
+      setHighlightedProjectIds(resolved);
+      if (fitBounds && resolved.length > 0) {
+        const matching = activeProjects.filter((x) => resolved.includes(x.id));
         if (matching.length === 1) {
           const p = matching[0];
           flyToProject({
@@ -505,16 +569,30 @@ function ScicNationalMapContent() {
             zoom: 12,
           });
         } else if (matching.length > 1) {
-          let minLng = 180, minLat = 90, maxLng = -180, maxLat = -90;
-          matching.forEach((p) => {
-            if (p.coordinates.lng < minLng) minLng = p.coordinates.lng;
-            if (p.coordinates.lat < minLat) minLat = p.coordinates.lat;
-            if (p.coordinates.lng > maxLng) maxLng = p.coordinates.lng;
-            if (p.coordinates.lat > maxLat) maxLat = p.coordinates.lat;
-          });
-          zoomToBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 60 });
+          const bounds = getBoundsForProjects(matching);
+          if (bounds) zoomToBounds(bounds, { padding: 60 });
         }
       }
+    },
+    onDrawTransitCorridor: (corridor) => {
+      setTransitCorridor(corridor);
+      const minLng = Math.min(corridor.fromProject.coordinates.lng, corridor.toProject.coordinates.lng);
+      const maxLng = Math.max(corridor.fromProject.coordinates.lng, corridor.toProject.coordinates.lng);
+      const minLat = Math.min(corridor.fromProject.coordinates.lat, corridor.toProject.coordinates.lat);
+      const maxLat = Math.max(corridor.fromProject.coordinates.lat, corridor.toProject.coordinates.lat);
+      zoomToBounds([[minLat, minLng], [maxLat, maxLng]], { padding: { top: 80, bottom: 80, left: 80, right: 80 } });
+    },
+    onDrawBufferZone: (zone) => {
+      setBufferZone(zone);
+      flyToProject({
+        coordinates: zone.center,
+        zoom: zone.radiusKm > 40 ? 9.5 : zone.radiusKm > 20 ? 10.5 : 11.5,
+        pitch: 35,
+      });
+    },
+    onClearGisOverlays: () => {
+      setTransitCorridor(null);
+      setBufferZone(null);
     },
   });
 
@@ -591,7 +669,11 @@ function ScicNationalMapContent() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (selectedProjectId) {
+        if (atlasAI.activeTour) {
+          atlasAI.exitTour();
+          selectProject(null);
+          handleResetNationalScope();
+        } else if (selectedProjectId) {
           selectProject(null);
         } else if (geographicScope.region !== "ALL" || discoveryScope.level !== "national") {
           handleResetNationalScope();
@@ -604,6 +686,7 @@ function ScicNationalMapContent() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
+    atlasAI,
     selectedProjectId,
     selectProject,
     geographicScope.region,
@@ -641,6 +724,7 @@ function ScicNationalMapContent() {
         waterCapacityMld={kpis.totalWaterCapacityMld}
         currentStyle={mapStyle}
         onStyleChange={setMapStyle}
+        onOpenNews={() => setIsNewsModalOpen(true)}
       />
 
       {/* 2. Composition: Desktop Sidebar + Central Map + Mobile Drawers */}
@@ -763,13 +847,15 @@ function ScicNationalMapContent() {
             />
           </div>
 
-          {/* ✦ Floating Atlas AI Entry Point Button */}
-          <div className="absolute bottom-5 left-3 sm:left-4 z-20 pointer-events-auto">
-            <AtlasAIFloatingTrigger
-              onClick={() => atlasAI.setIsOpen(!atlasAI.isOpen)}
-              isOpen={atlasAI.isOpen}
-            />
-          </div>
+          {/* ✦ Floating Atlas AI Entry Point Button (Bottom-Right, non-colliding with GIS Legend) */}
+          {!atlasAI.isOpen && (
+            <div className="absolute bottom-5 right-4 z-20 pointer-events-auto">
+              <AtlasAIFloatingTrigger
+                onClick={() => atlasAI.setIsOpen(true)}
+                isOpen={false}
+              />
+            </div>
+          )}
 
           {/* Region Intelligence Card (Floats when in regional scope, no project selected, and sidebar is not in Discovery mode) */}
           {geographicScope.region !== "ALL" && !selectedProjectId && sidebarMode !== "DISCOVERY" && (
@@ -799,6 +885,8 @@ function ScicNationalMapContent() {
             onSelectProject={selectProject}
             currentStyle={mapStyle}
             onStyleChange={setMapStyle}
+            transitCorridor={transitCorridor}
+            bufferZone={bufferZone}
           />
         </main>
 
@@ -878,6 +966,9 @@ function ScicNationalMapContent() {
           }}
           isExcludedByFilters={isSelectedProjectFilteredOut}
           onResetFilters={handleResetFilters}
+          isTourActive={!!atlasAI.activeTour}
+          tourSpokenWordIndex={atlasAI.spokenWordIndex}
+          isTourSpeaking={atlasAI.isSpeaking}
         />
 
         {/* ✦ SCIC ATLAS ASSISTANT CONVERSATION DRAWER */}
@@ -908,6 +999,19 @@ function ScicNationalMapContent() {
           onTogglePlay={atlasAI.togglePlayPauseTour}
           onExit={atlasAI.exitTour}
           onStepSelect={atlasAI.jumpToTourStep}
+          progressSeconds={atlasAI.progressSeconds}
+          tourSpeedSeconds={atlasAI.tourSpeedSeconds}
+          onSetSpeed={atlasAI.setTourSpeed}
+          voiceEnabled={atlasAI.voiceEnabled}
+          onToggleVoice={atlasAI.toggleVoiceNarration}
+          isSpeaking={atlasAI.isSpeaking}
+          spokenWordIndex={atlasAI.spokenWordIndex}
+        />
+
+        {/* ✦ PHILIPPINE WEATHER & TV NEWS DESK BRIEFING MODAL */}
+        <AtlasNewsModal
+          isOpen={isNewsModalOpen}
+          onClose={() => setIsNewsModalOpen(false)}
         />
       </div>
     </div>

@@ -5,6 +5,7 @@ export const INITIAL_ATLAS_PROJECTS: SCICProject[] = (initialProjectsData as any
   id: dto.id,
   name: dto.name,
   code: dto.projectCode || dto.slug,
+  slug: dto.slug,
   shortName: dto.name.length > 25 ? dto.name.slice(0, 22) + "..." : dto.name,
   sector: dto.category || "HYDRO_RENEWABLE",
   status: dto.status || "ONGOING",

@@ -60,6 +60,9 @@ export interface ProjectInspectionDrawerProps {
   isExcludedByFilters?: boolean;
   onResetFilters?: () => void;
   className?: string;
+  isTourActive?: boolean;
+  tourSpokenWordIndex?: number;
+  isTourSpeaking?: boolean;
 }
 
 export function ProjectInspectionDrawer({
@@ -69,6 +72,9 @@ export function ProjectInspectionDrawer({
   isExcludedByFilters = false,
   onResetFilters,
   className,
+  isTourActive = false,
+  tourSpokenWordIndex,
+  isTourSpeaking = false,
 }: ProjectInspectionDrawerProps) {
   const {
     flyToProject,
@@ -543,11 +549,59 @@ export function ProjectInspectionDrawer({
               {/* Short Project Overview / Description (Directive 19) */}
               {project.description && (
                 <div className="pt-1">
-                  <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                    Project Overview
-                  </h3>
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                      {isTourActive && isTourSpeaking ? (
+                        <>
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          </span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">Live Spoken Overview</span>
+                        </>
+                      ) : (
+                        <span>Project Overview</span>
+                      )}
+                    </h3>
+                  </div>
                   <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-200/95 font-sans">
-                    {project.description}
+                    {isTourActive && tourSpokenWordIndex !== undefined ? (
+                      (() => {
+                        const words = project.description.trim().split(/\s+/).filter(Boolean);
+                        const count = Math.min(words.length, Math.max(0, tourSpokenWordIndex));
+                        if (count === 0 && isTourSpeaking) {
+                          return (
+                            <span className="text-slate-400 italic text-xs flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
+                              Beginning spoken overview...
+                            </span>
+                          );
+                        }
+                        return (
+                          <>
+                            {words.slice(0, count).map((word, idx) => {
+                              const isLatest = idx === count - 1 && isTourSpeaking;
+                              return (
+                                <span
+                                  key={idx}
+                                  className={cn(
+                                    "inline-block mr-1 transition-all duration-100",
+                                    isLatest ? "text-emerald-600 dark:text-emerald-300 font-bold" : ""
+                                  )}
+                                >
+                                  {word}
+                                </span>
+                              );
+                            })}
+                            {isTourSpeaking && (
+                              <span className="inline-block w-1.5 h-3 bg-emerald-400 ml-0.5 animate-pulse rounded-xs align-middle" />
+                            )}
+                          </>
+                        );
+                      })()
+                    ) : (
+                      project.description
+                    )}
                   </p>
                 </div>
               )}
@@ -572,10 +626,10 @@ export function ProjectInspectionDrawer({
                   <ChevronRight className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Link>
 
-                {/* If project has active Nexus operations (Tumauini HEPP) */}
-                {isOperationalNexusProject && (
+                {/* Phase 18 Controlled Cross-System Action: Open Nexus Operations */}
+                {isOperationalNexusProject ? (
                   <Link
-                    href="/dashboard"
+                    href={`/dashboard?project=${project.id === "scic-thepp-isabela" ? "cmqvwzn750000r8w1zidk116i" : project.id}`}
                     className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 transition-all group font-mono text-xs font-bold shadow-2xs cursor-pointer"
                     title="Open live Project Nexus site operations command center"
                   >
@@ -588,6 +642,19 @@ export function ProjectInspectionDrawer({
                     </div>
                     <ChevronRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
                   </Link>
+                ) : (
+                  <div
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100/60 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/5 text-slate-400 dark:text-slate-500 font-mono text-[11px]"
+                    title="Atlas-only project: active Nexus field operations are not provisioned for this site."
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-600" />
+                      <span>Nexus Operations</span>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-400/80 dark:text-slate-600">
+                      Unavailable
+                    </span>
+                  </div>
                 )}
               </div>
 

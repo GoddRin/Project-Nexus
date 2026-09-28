@@ -203,19 +203,19 @@ export class ProjectProfileService {
 
     const operationalRoutes = hasNexusOperations
       ? {
-          dashboard: "/dashboard",
-          tickets: "/dashboard/tickets",
-          assets: "/dashboard/assets",
-          equipment: "/dashboard/equipment",
-          dailyLogs: "/dashboard/daily-logs",
-          sitemap: "/dashboard/sitemap",
-          digitalTwin: "/dashboard/digital-twin",
-          documents: "/dashboard/documents",
-          incidents: "/dashboard/incidents",
+          dashboard: `/dashboard?project=${project.id}`,
+          tickets: `/dashboard/tickets?project=${project.id}`,
+          assets: `/dashboard/assets?project=${project.id}`,
+          equipment: `/dashboard/equipment?project=${project.id}`,
+          dailyLogs: `/dashboard/daily-logs?project=${project.id}`,
+          sitemap: `/dashboard/sitemap?project=${project.id}`,
+          digitalTwin: `/dashboard/digital-twin?project=${project.id}`,
+          documents: `/dashboard/documents?project=${project.id}`,
+          incidents: `/dashboard/incidents?project=${project.id}`,
           weather: `/dashboard/weather?lat=${project.latitude}&lng=${project.longitude}&project=${project.id}`,
         }
       : {
-          dashboard: "/dashboard",
+          dashboard: `/dashboard?project=${project.id}`,
           weather: `/dashboard/weather?lat=${project.latitude}&lng=${project.longitude}&project=${project.id}`,
         };
 
@@ -245,6 +245,203 @@ export class ProjectProfileService {
       project: mapPrismaToPublicDTO(project),
       operational,
       verifiedGeometry,
+    };
+  }
+
+  /**
+   * Phase 18 Controlled Cross-System Intelligence:
+   * Retrieves a permission-aware operational summary from Project Nexus.
+   * Grounded in canonical Project.id.
+   * Operational records are NEVER copied into Atlas.
+   */
+  static async getNexusProjectSummary(
+    identifier: string,
+    isAuthorized: boolean = true
+  ): Promise<{
+    hasIntegration: boolean;
+    isAuthorized: boolean;
+    projectId?: string;
+    projectName?: string;
+    projectCode?: string | null;
+    summary?: {
+      tickets: {
+        total: number;
+        open: number;
+        inProgress: number;
+        priorityBreakdown?: Record<string, number>;
+      };
+      equipment: {
+        total: number;
+        installed: number;
+        commissioned: number;
+        underMaintenance: number;
+        keyUnits: Array<{ tag: string; name: string; status: string; condition: string }>;
+      };
+      dailyLogs: {
+        total: number;
+        recentCount: number;
+        latestDate: string | null;
+      };
+      incidents: {
+        total: number;
+        active: number;
+      };
+      assetsCount: number;
+      sitemapLocationsCount: number;
+      operationalRoutes: Record<string, string>;
+    };
+    message?: string;
+  }> {
+    const project = await this.resolveProject(identifier);
+    if (!project || project.deletedAt) {
+      return {
+        hasIntegration: false,
+        isAuthorized,
+        message: `Project "${identifier}" was not found in the database.`,
+      };
+    }
+
+    const isTumauini =
+      project.slug === "tumauini-hepp" ||
+      project.id === "cmqvwzn750000r8w1zidk116i" ||
+      project.projectCode === "SCIC-HEPP-01";
+
+    // Query counts to determine if Nexus operations are provisioned
+    const counts = await prisma.project.findUnique({
+      where: { id: project.id },
+      select: {
+        _count: {
+          select: {
+            tickets: true,
+            equipments: true,
+            dailyLogs: true,
+            assets: true,
+            siteIncidents: true,
+            siteLocations: true,
+          },
+        },
+      },
+    });
+
+    const totalTickets = counts?._count?.tickets || 0;
+    const totalEquipments = counts?._count?.equipments || 0;
+    const totalDailyLogs = counts?._count?.dailyLogs || 0;
+
+    const hasIntegration =
+      isTumauini || totalTickets > 0 || totalEquipments > 0 || totalDailyLogs > 0;
+
+    if (!hasIntegration) {
+      return {
+        hasIntegration: false,
+        isAuthorized,
+        projectId: project.id,
+        projectName: project.name,
+        projectCode: project.projectCode,
+        message: `Project "${project.name}" (${project.id}) is cataloged in the Atlas engineering portfolio. Active Nexus field operations are not provisioned for this site.`,
+      };
+    }
+
+    // Permission boundary check
+    if (!isAuthorized) {
+      return {
+        hasIntegration: true,
+        isAuthorized: false,
+        projectId: project.id,
+        projectName: project.name,
+        projectCode: project.projectCode,
+        message: "Operational information for this project is available in the Nexus workspace. Internal team members can access work tickets, equipment telematics, and daily site logs directly.",
+      };
+    }
+
+    // Authorized internal query — fetch live operational telematics & telemetry
+    const [tickets, equipments, recentLogs, incidents] = await Promise.all([
+      prisma.ticket.findMany({
+        where: { projectId: project.id },
+        select: { id: true, status: true, priority: true },
+      }),
+      prisma.plantEquipment.findMany({
+        where: { projectId: project.id },
+        select: {
+          equipmentTag: true,
+          name: true,
+          status: true,
+          condition: true,
+        },
+        take: 10,
+        orderBy: { equipmentTag: "asc" },
+      }),
+      prisma.dailyLog.findMany({
+        where: { projectId: project.id },
+        select: { id: true, logDate: true },
+        orderBy: { logDate: "desc" },
+        take: 5,
+      }),
+      prisma.siteIncident.findMany({
+        where: { projectId: project.id },
+        select: { id: true, status: true, severity: true },
+      }),
+    ]);
+
+    const openTickets = tickets.filter((t) => t.status === "OPEN").length;
+    const inProgressTickets = tickets.filter((t) => t.status === "IN_PROGRESS").length;
+    const priorityBreakdown: Record<string, number> = {};
+    for (const t of tickets) {
+      priorityBreakdown[t.priority] = (priorityBreakdown[t.priority] || 0) + 1;
+    }
+
+    const installedEquipment = equipments.filter((e) => e.status === "INSTALLED").length;
+    const commissionedEquipment = equipments.filter((e) => e.status === "COMMISSIONED").length;
+    const underMaintEquipment = equipments.filter((e) => e.status === "UNDER_MAINTENANCE").length;
+
+    const activeIncidents = incidents.filter((i) => i.status === "ACTIVE").length;
+
+    const latestLog = recentLogs[0];
+
+    return {
+      hasIntegration: true,
+      isAuthorized: true,
+      projectId: project.id,
+      projectName: project.name,
+      projectCode: project.projectCode,
+      summary: {
+        tickets: {
+          total: tickets.length,
+          open: openTickets,
+          inProgress: inProgressTickets,
+          priorityBreakdown,
+        },
+        equipment: {
+          total: totalEquipments,
+          installed: installedEquipment,
+          commissioned: commissionedEquipment,
+          underMaintenance: underMaintEquipment,
+          keyUnits: equipments.map((e) => ({
+            tag: e.equipmentTag,
+            name: e.name,
+            status: e.status,
+            condition: e.condition,
+          })),
+        },
+        dailyLogs: {
+          total: totalDailyLogs,
+          recentCount: recentLogs.length,
+          latestDate: latestLog ? new Date(latestLog.logDate).toISOString().split("T")[0] : null,
+        },
+        incidents: {
+          total: incidents.length,
+          active: activeIncidents,
+        },
+        assetsCount: counts?._count?.assets || 0,
+        sitemapLocationsCount: counts?._count?.siteLocations || 0,
+        operationalRoutes: {
+          dashboard: `/dashboard?project=${project.id}`,
+          tickets: `/dashboard/tickets?project=${project.id}`,
+          equipment: `/dashboard/equipment?project=${project.id}`,
+          dailyLogs: `/dashboard/daily-logs?project=${project.id}`,
+          sitemap: `/dashboard/sitemap?project=${project.id}`,
+          digitalTwin: `/dashboard/digital-twin?project=${project.id}`,
+        },
+      },
     };
   }
 }

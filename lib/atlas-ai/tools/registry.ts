@@ -41,6 +41,10 @@ import {
   getPortfolioBrief,
   explainCurrentView,
   getGuidedTour,
+  analyzePortfolioHealth,
+  analyzeTransitCorridor,
+  analyzeBufferZone,
+  getNexusProjectSummary,
 } from "./projectReadTools";
 import {
   createSelectProjectAction,
@@ -54,9 +58,15 @@ import {
   createEnterDiscoveryScopeAction,
   createHighlightProjectsAction,
   createStartTourAction,
+  createDriveSpotlightAction,
+  createControlTourAction,
+  createTransitCorridorAction,
+  createBufferZoneAction,
+  createClearGisOverlaysAction,
 } from "./mapActionTools";
 import { AtlasAIAction, AtlasAISource } from "./types";
 import { AtlasContextPayload } from "../identity";
+import { isWithinPhilippineBounds } from "../validation";
 
 // ─── Declarative Tool Schemas ───────────────────────────────────
 
@@ -428,13 +438,126 @@ export const ATLAS_TOOL_DECLARATIONS: AIToolDeclaration[] = [
   // 26. MAP ACTION: start_portfolio_tour
   {
     name: "start_portfolio_tour",
-    description: "Launch the interactive AI Guided Portfolio Tour starting at step 1 or a specific step.",
+    description: "Launch the interactive AI Guided Portfolio Tour across the Philippines or a specific region/theme with auto-advancing camera flight.",
     parameters: {
       type: "object",
       properties: {
-        tourId: { type: "string", description: "Tour ID (default: 'national-flagship-tour')" },
+        tourId: { type: "string", description: "Tour ID or theme (e.g. 'north-luzon-tour', 'clean-energy-tour', 'national-flagship-tour')" },
+        area: { type: "string", description: "Geographic area or region to tour (e.g. 'North Luzon', 'CAR', 'Mindanao', 'Visayas')" },
+        region: { type: "string", description: "Specific Philippine region to tour (e.g. 'CAR', 'Region II', 'Region XI')" },
+        category: { type: "string", description: "Category filter for the tour (e.g. 'HYDROPOWER', 'WATER_UTILITIES')" },
         stepIndex: { type: "number", description: "Starting step index (0-based, default: 0)" },
+        durationSeconds: { type: "number", description: "Dwell time per project in seconds before auto-advancing (default: 0 for AUTO mode, which completes speech and reading before advancing)" },
+        autoPlay: { type: "boolean", description: "Whether the tour automatically plays and advances from project to project (default: true)" },
       },
+    },
+  },
+
+  // 27. MAP/UI ACTION: control_portfolio_tour
+  {
+    name: "control_portfolio_tour",
+    description: "Control the currently active guided portfolio tour: play/pause, advance to next, return to previous, adjust speed/interval, or exit.",
+    parameters: {
+      type: "object",
+      properties: {
+        action: {
+          type: "string",
+          enum: ["play", "pause", "next", "prev", "set_speed", "exit"],
+          description: "Action to execute on the active tour controller",
+        },
+        speedSeconds: {
+          type: "number",
+          description: "Seconds per project when adjusting speed or resuming play (e.g. 5 for 5 seconds per project)",
+        },
+      },
+      required: ["action"],
+    },
+  },
+
+  // 28. MAP/UI ACTION: drive_spotlight
+  {
+    name: "drive_spotlight",
+    description: "Switch the Project Spotlight card on the sidebar to focus on a specific project, index, or direction (next/previous).",
+    parameters: {
+      type: "object",
+      properties: {
+        projectId: { type: "string", description: "Project ID, code, or name to spotlight" },
+        direction: { type: "string", enum: ["next", "prev"], description: "Slide spotlight to next or previous project" },
+      },
+    },
+  },
+
+  // 29. READ & SPATIAL TOOL: analyze_portfolio_health
+  {
+    name: "analyze_portfolio_health",
+    description: "Conduct executive portfolio health analysis: active works, completed flagships, upcoming pipeline, and critical path telemetry.",
+    parameters: {
+      type: "object",
+      properties: {
+        region: { type: "string", description: "Filter portfolio health analysis by region" },
+        category: { type: "string", description: "Filter portfolio health analysis by category" },
+      },
+    },
+  },
+
+  // 30. READ & SPATIAL ACTION: analyze_transit_corridor
+  {
+    name: "analyze_transit_corridor",
+    description: "Analyze logistics, transport routes, and distance corridor between two heavy civil project sites.",
+    parameters: {
+      type: "object",
+      properties: {
+        fromProjectId: { type: "string", description: "Origin project ID, code, or name" },
+        toProjectId: { type: "string", description: "Destination project ID, code, or name" },
+        drawCorridor: { type: "boolean", description: "Whether to render tactical glowing corridor on map (default: true)" },
+      },
+      required: ["fromProjectId", "toProjectId"],
+    },
+  },
+
+  // 31. READ & SPATIAL ACTION: analyze_buffer_zone
+  {
+    name: "analyze_buffer_zone",
+    description: "Perform spatial buffer zone and impact catchment analysis around a project site (default 25km radius).",
+    parameters: {
+      type: "object",
+      properties: {
+        projectId: { type: "string", description: "Target project ID, code, or name" },
+        radiusKm: { type: "number", description: "Buffer radius in kilometers (default: 25)" },
+        drawZone: { type: "boolean", description: "Whether to render buffer geofence on map (default: true)" },
+      },
+      required: ["projectId"],
+    },
+  },
+
+  // 32. MAP ACTION: clear_gis_overlays
+  {
+    name: "clear_gis_overlays",
+    description: "Clear dynamic GIS logistics corridors and impact buffer overlays from the map.",
+    parameters: {
+      type: "object",
+      properties: {},
+    },
+  },
+];
+
+// ─── Phase 18 Controlled Cross-System Nexus Tool Declarations ───
+// These tools are strictly decoupled from Atlas geographic tools and are only
+// exposed when: user is authenticated + authorized + selected project has Nexus integration.
+export const NEXUS_TOOL_DECLARATIONS: AIToolDeclaration[] = [
+  {
+    name: "get_nexus_project_summary",
+    description:
+      "Retrieve live, verified operational telemetry from Project Nexus (active work tickets, plant equipment health and maintenance status, recent daily shift logs, and site safety incidents). ONLY available for authenticated, authorized internal team members when a project has active Nexus operations (e.g. Tumauini HEPP).",
+    parameters: {
+      type: "object",
+      properties: {
+        projectId: {
+          type: "string",
+          description: "Canonical project ID (e.g. cmqvwzn750000r8w1zidk116i), code (e.g. SCIC-HEPP-01), or slug (tumauini-hepp)",
+        },
+      },
+      required: ["projectId"],
     },
   },
 ];
@@ -445,207 +568,413 @@ export interface ToolExecutionContext {
   actions: AtlasAIAction[];
   sources: AtlasAISource[];
   runtimeContext?: AtlasContextPayload;
+  isAuthorized?: boolean;
 }
+
+export const ALLOWED_ATLAS_TOOL_NAMES = new Set<string>([
+  "search_projects",
+  "get_project",
+  "get_project_details",
+  "get_project_statistics",
+  "get_portfolio_statistics",
+  "get_region_summary",
+  "get_province_summary",
+  "get_project_timeline",
+  "get_nearby_projects",
+  "get_geographic_bounds",
+  "calculate_distance",
+  "get_map_context",
+  "search_atlas_knowledge",
+  "select_project",
+  "fly_to_project",
+  "zoom_to_region",
+  "apply_project_filters",
+  "clear_project_filters",
+  "set_map_style",
+  "toggle_gis_layer",
+  "inspect_engineering_footprint",
+  "enter_discovery_scope",
+  "compare_projects",
+  "get_portfolio_brief",
+  "explain_current_view",
+  "get_guided_tour",
+  "highlight_projects",
+  "start_portfolio_tour",
+  "control_portfolio_tour",
+  "drive_spotlight",
+  "analyze_portfolio_health",
+  "analyze_transit_corridor",
+  "analyze_buffer_zone",
+  "clear_gis_overlays",
+  "get_nexus_project_summary",
+]);
 
 export async function dispatchAtlasTool(
   toolName: string,
   args: Record<string, unknown>,
   context: ToolExecutionContext
 ): Promise<unknown> {
-  switch (toolName) {
-    // 1. search_projects
-    case "search_projects": {
-      const res = await searchProjects(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+  // 1. Tool Allowlist Security Boundary
+  if (!ALLOWED_ATLAS_TOOL_NAMES.has(toolName)) {
+    return {
+      status: "error",
+      tool: toolName,
+      message: `Tool "${toolName}" is not registered in the Atlas AI tool registry. Administrative and unauthorized tools are forbidden.`,
+    };
+  }
 
-    // 2. get_project & alias get_project_details
-    case "get_project":
-    case "get_project_details": {
-      const res = await getProject(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
-
-    // 3. get_project_statistics
-    case "get_project_statistics":
-    case "get_portfolio_statistics": {
-      const res = await getProjectStatistics(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
-
-    // 4. get_region_summary
-    case "get_region_summary": {
-      const res = await getRegionSummary(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
-
-    // 5. get_province_summary
-    case "get_province_summary": {
-      const res = await getProvinceSummary(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
-
-    // 6. get_project_timeline
-    case "get_project_timeline": {
-      const res = await getProjectTimeline(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
-
-    // 7. get_nearby_projects
-    case "get_nearby_projects": {
-      // Auto-resolve selectedProjectId from runtimeContext if omitted by model
-      const nearbyArgs: any = { ...args };
-      if (!nearbyArgs.projectId && !nearbyArgs.lat && context.runtimeContext?.selectedProjectId) {
-        nearbyArgs.projectId = context.runtimeContext.selectedProjectId;
+  // 2. Safe execution wrapped in controlled error boundary
+  try {
+    switch (toolName) {
+      // 1. search_projects
+      case "search_projects": {
+        const cleanArgs: any = { ...args };
+        if (cleanArgs.limit && (typeof cleanArgs.limit !== "number" || isNaN(cleanArgs.limit) || cleanArgs.limit < 1)) {
+          cleanArgs.limit = 15;
+        } else if (cleanArgs.limit > 50) {
+          cleanArgs.limit = 50;
+        }
+        const res = await searchProjects(cleanArgs);
+        context.sources.push(res.source);
+        return res;
       }
-      const res = await getNearbyProjects(nearbyArgs);
-      context.sources.push(res.source);
-      return res;
-    }
 
-    // 8. get_geographic_bounds
-    case "get_geographic_bounds": {
-      const res = await getGeographicBounds(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 2. get_project & alias get_project_details
+      case "get_project":
+      case "get_project_details": {
+        const pid = typeof args.projectId === "string" ? args.projectId.trim() : "";
+        if (!pid) {
+          return { status: "error", message: "A valid non-empty project ID or code is required." };
+        }
+        const res = await getProject({ projectId: pid });
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 9. calculate_distance
-    case "calculate_distance": {
-      const res = await calculateDistance(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 3. get_project_statistics
+      case "get_project_statistics":
+      case "get_portfolio_statistics": {
+        const res = await getProjectStatistics(args as any);
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 10. get_map_context
-    case "get_map_context": {
-      const res = getMapContext(context.runtimeContext);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 4. get_region_summary
+      case "get_region_summary": {
+        const region = typeof args.region === "string" ? args.region.trim() : "";
+        if (!region) {
+          return { status: "error", message: "A valid region name is required." };
+        }
+        const res = await getRegionSummary({ region });
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 11. search_atlas_knowledge
-    case "search_atlas_knowledge": {
-      const res = await searchAtlasKnowledge(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 5. get_province_summary
+      case "get_province_summary": {
+        const province = typeof args.province === "string" ? args.province.trim() : "";
+        if (!province) {
+          return { status: "error", message: "A valid province name is required." };
+        }
+        const res = await getProvinceSummary({ province });
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 12. select_project
-    case "select_project": {
-      const { action, summary } = createSelectProjectAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 6. get_project_timeline
+      case "get_project_timeline": {
+        const pid = typeof args.projectId === "string" ? args.projectId.trim() : "";
+        if (!pid) {
+          return { status: "error", message: "A valid non-empty project ID or code is required." };
+        }
+        const res = await getProjectTimeline({ projectId: pid });
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 13. fly_to_project
-    case "fly_to_project": {
-      const { action, summary } = createFlyToProjectAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 7. get_nearby_projects
+      case "get_nearby_projects": {
+        const nearbyArgs: any = { ...args };
+        if (!nearbyArgs.projectId && !nearbyArgs.lat && context.runtimeContext?.selectedProjectId) {
+          nearbyArgs.projectId = context.runtimeContext.selectedProjectId;
+        }
 
-    // 14. zoom_to_region
-    case "zoom_to_region": {
-      const { action, summary } = createZoomToRegionAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+        // Clamp radius
+        if (typeof nearbyArgs.radiusKm !== "number" || isNaN(nearbyArgs.radiusKm) || nearbyArgs.radiusKm <= 0) {
+          nearbyArgs.radiusKm = 50;
+        } else {
+          nearbyArgs.radiusKm = Math.min(Math.max(nearbyArgs.radiusKm, 1), 500);
+        }
 
-    // 15. apply_project_filters
-    case "apply_project_filters": {
-      const { action, summary } = createApplyFiltersAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+        // Coordinate bounds check if lat/lng passed directly
+        if (typeof nearbyArgs.lat === "number" && typeof nearbyArgs.lng === "number") {
+          if (!isWithinPhilippineBounds(nearbyArgs.lat, nearbyArgs.lng)) {
+            return {
+              status: "error",
+              message: "Coordinates are outside the Philippine geographic envelope.",
+            };
+          }
+        }
 
-    // 16. clear_project_filters
-    case "clear_project_filters": {
-      const { action, summary } = createClearFiltersAction();
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+        const res = await getNearbyProjects(nearbyArgs);
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 17. set_map_style
-    case "set_map_style": {
-      const { action, summary } = createSetMapStyleAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 8. get_geographic_bounds
+      case "get_geographic_bounds": {
+        const res = await getGeographicBounds(args as any);
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 18. toggle_gis_layer
-    case "toggle_gis_layer": {
-      const { action, summary } = createToggleGisLayerAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 9. calculate_distance
+      case "calculate_distance": {
+        const pA = typeof args.projectA === "string" ? args.projectA.trim() : "";
+        const pB = typeof args.projectB === "string" ? args.projectB.trim() : "";
+        if (!pA || !pB) {
+          return {
+            status: "error",
+            message: "Both projectA and projectB identifiers are required for distance calculation.",
+          };
+        }
+        const res = await calculateDistance({ projectA: pA, projectB: pB });
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 19. inspect_engineering_footprint
-    case "inspect_engineering_footprint": {
-      const { action, summary } = createInspectFootprintAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 10. get_map_context
+      case "get_map_context": {
+        const res = getMapContext(context.runtimeContext);
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 20. enter_discovery_scope
-    case "enter_discovery_scope": {
-      const { action, summary } = createEnterDiscoveryScopeAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 11. search_atlas_knowledge
+      case "search_atlas_knowledge": {
+        const query = typeof args.query === "string" ? args.query.trim() : "";
+        if (!query) {
+          return { status: "error", message: "A valid search query is required." };
+        }
+        const res = await searchAtlasKnowledge({ ...args, query } as any);
+        context.sources.push(res.source);
+        return res;
+      }
 
-    // 21. compare_projects
-    case "compare_projects": {
-      const res = await compareProjects(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 12. select_project
+      case "select_project": {
+        const pid = typeof args.projectId === "string" ? args.projectId.trim() : "";
+        if (!pid) {
+          return { status: "error", message: "A valid non-empty project ID is required." };
+        }
+        const { action, summary } = createSelectProjectAction({ projectId: pid });
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
 
-    // 22. get_portfolio_brief
-    case "get_portfolio_brief": {
-      const res = await getPortfolioBrief(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 13. fly_to_project
+      case "fly_to_project": {
+        const pid = typeof args.projectId === "string" ? args.projectId.trim() : "";
+        if (!pid) {
+          return { status: "error", message: "A valid non-empty project ID is required." };
+        }
+        const { action, summary } = createFlyToProjectAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
 
-    // 23. explain_current_view
-    case "explain_current_view": {
-      const res = await explainCurrentView({
-        context: context.runtimeContext,
-        topic: (args as any)?.topic,
-      });
-      context.sources.push(res.source);
-      return res;
-    }
+      // 14. zoom_to_region
+      case "zoom_to_region": {
+        const region = typeof args.region === "string" ? args.region.trim() : "";
+        if (!region) {
+          return { status: "error", message: "A valid region name is required." };
+        }
+        const { action, summary } = createZoomToRegionAction({ region });
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
 
-    // 24. get_guided_tour
-    case "get_guided_tour": {
-      const res = await getGuidedTour(args as any);
-      context.sources.push(res.source);
-      return res;
-    }
+      // 15. apply_project_filters
+      case "apply_project_filters": {
+        const { action, summary } = createApplyFiltersAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
 
-    // 25. highlight_projects
-    case "highlight_projects": {
-      const { action, summary } = createHighlightProjectsAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 16. clear_project_filters
+      case "clear_project_filters": {
+        const { action, summary } = createClearFiltersAction();
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
 
-    // 26. start_portfolio_tour
-    case "start_portfolio_tour": {
-      const { action, summary } = createStartTourAction(args as any);
-      context.actions.push(action);
-      return { status: "success", summary, action };
-    }
+      // 17. set_map_style
+      case "set_map_style": {
+        const { action, summary } = createSetMapStyleAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
 
-    default:
-      throw new Error(`Unknown Atlas AI tool: "${toolName}"`);
+      // 18. toggle_gis_layer
+      case "toggle_gis_layer": {
+        const { action, summary } = createToggleGisLayerAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 19. inspect_engineering_footprint
+      case "inspect_engineering_footprint": {
+        const pid = typeof args.projectId === "string" ? args.projectId.trim() : "";
+        if (!pid) {
+          return { status: "error", message: "A valid project ID is required." };
+        }
+        const { action, summary } = createInspectFootprintAction({ projectId: pid });
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 20. enter_discovery_scope
+      case "enter_discovery_scope": {
+        const { action, summary } = createEnterDiscoveryScopeAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 21. compare_projects
+      case "compare_projects": {
+        const res = await compareProjects(args as any);
+        context.sources.push(res.source);
+        return res;
+      }
+
+      // 22. get_portfolio_brief
+      case "get_portfolio_brief": {
+        const res = await getPortfolioBrief(args as any);
+        context.sources.push(res.source);
+        return res;
+      }
+
+      // 23. explain_current_view
+      case "explain_current_view": {
+        const res = await explainCurrentView({
+          context: context.runtimeContext,
+          topic: (args as any)?.topic,
+        });
+        context.sources.push(res.source);
+        return res;
+      }
+
+      // 24. get_guided_tour
+      case "get_guided_tour": {
+        const res = await getGuidedTour(args as any);
+        context.sources.push(res.source);
+        return res;
+      }
+
+      // 25. highlight_projects
+      case "highlight_projects": {
+        const { action, summary } = createHighlightProjectsAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 26. start_portfolio_tour
+      case "start_portfolio_tour": {
+        const { action, summary } = createStartTourAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 27. control_portfolio_tour
+      case "control_portfolio_tour": {
+        const { action, summary } = createControlTourAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 28. drive_spotlight
+      case "drive_spotlight": {
+        const { action, summary } = createDriveSpotlightAction(args as any);
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 29. analyze_portfolio_health
+      case "analyze_portfolio_health": {
+        const res = await analyzePortfolioHealth(args as any);
+        context.sources.push(res.source);
+        return res;
+      }
+
+      // 30. analyze_transit_corridor
+      case "analyze_transit_corridor": {
+        const res = await analyzeTransitCorridor(args as any);
+        context.sources.push(res.source);
+        if ((args as any)?.drawCorridor !== false) {
+          const { action } = createTransitCorridorAction(args as any);
+          context.actions.push(action);
+        }
+        return res;
+      }
+
+      // 31. analyze_buffer_zone
+      case "analyze_buffer_zone": {
+        const res = await analyzeBufferZone(args as any);
+        context.sources.push(res.source);
+        if ((args as any)?.drawZone !== false) {
+          const { action } = createBufferZoneAction(args as any);
+          context.actions.push(action);
+        }
+        return res;
+      }
+
+      // 32. clear_gis_overlays
+      case "clear_gis_overlays": {
+        const { action, summary } = createClearGisOverlaysAction();
+        context.actions.push(action);
+        return { status: "success", summary, action };
+      }
+
+      // 33. get_nexus_project_summary (Controlled Cross-System Intelligence)
+      case "get_nexus_project_summary": {
+        if (!context.isAuthorized) {
+          return {
+            status: "error",
+            message: "Access restricted: User is not authorized to access Project Nexus operational telemetry.",
+          };
+        }
+        const res = await getNexusProjectSummary({
+          projectId: (args as any).projectId,
+          isAuthorized: context.isAuthorized,
+        });
+        context.sources.push(res.source);
+        if (res.hasIntegration && res.projectId) {
+          context.actions.push({
+            type: "OPEN_NEXUS_OPERATIONS",
+            projectId: res.projectId,
+            projectName: res.projectName,
+            destination: `/dashboard?project=${res.projectId}`,
+            label: "Open Nexus Operations",
+          });
+        }
+        return res;
+      }
+
+      default:
+        return {
+          status: "error",
+          tool: toolName,
+          message: `Tool "${toolName}" is not recognized.`,
+        };
+    }
+  } catch (err: unknown) {
+    const errorDetails = err instanceof Error ? err.message : String(err);
+    console.warn(`[AtlasAIToolRegistry] Controlled error executing tool "${toolName}":`, errorDetails);
+    return {
+      status: "error",
+      tool: toolName,
+      message: "The requested Atlas operation could not be completed with the provided parameters. Authoritative project records or GIS bounds may be unavailable.",
+    };
   }
 }
+

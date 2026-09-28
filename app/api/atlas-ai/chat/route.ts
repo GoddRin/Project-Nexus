@@ -4,8 +4,9 @@ import { generateAtlasAIAnswer } from "@/lib/atlas-ai/service";
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Authentication check
+    // 1. Authentication & Permission check (Phase 18)
     const { userId } = await auth();
+    const isAuthorized = Boolean(userId);
 
     // Determine client identifier for rate limiting & logging
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
               history,
               context,
               userId: clientId,
+              isAuthorized,
               onToolEvent: (event) => {
                 sendEvent({
                   type: event.type,
@@ -87,6 +89,7 @@ export async function POST(request: NextRequest) {
       history,
       context,
       userId: clientId,
+      isAuthorized,
     });
 
     return NextResponse.json(response);

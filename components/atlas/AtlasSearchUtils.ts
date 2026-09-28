@@ -222,3 +222,72 @@ export function computeRegionStatistics(
   };
 }
 
+/**
+ * Resiliently finds a project in a dataset by ID, CUID, project code, slug,
+ * or full/partial name. Handles case-insensitivity, whitespace, and 'scic-' prefix variations.
+ */
+export function findProjectInDataset(
+  projects: SCICProject[],
+  queryOrId: string | null | undefined
+): SCICProject | undefined {
+  if (!queryOrId || typeof queryOrId !== "string" || !queryOrId.trim()) return undefined;
+  const q = normalizeSearchText(queryOrId);
+  const qClean = q.replace(/^scic-/, "").trim();
+
+  // 1. Exact ID or CUID match
+  const exactId = projects.find((p) => p.id === queryOrId || p.id.toLowerCase() === q);
+  if (exactId) return exactId;
+
+  // 2. Exact code match
+  const exactCode = projects.find((p) => p.code?.toLowerCase() === q);
+  if (exactCode) return exactCode;
+
+  // 3. Slug match (with hyphens/underscores normalized to spaces)
+  const exactSlug = projects.find((p) => {
+    if (!p.slug) return false;
+    const s = p.slug.toLowerCase();
+    const sClean = s.replace(/[-_]/g, " ");
+    return s === q || s === qClean || sClean === q || sClean === qClean;
+  });
+  if (exactSlug) return exactSlug;
+
+  // 4. Code without scic- prefix match
+  const cleanCode = projects.find(
+    (p) => p.code && p.code.toLowerCase().replace(/^scic-/, "") === qClean
+  );
+  if (cleanCode) return cleanCode;
+
+  // 5. Exact name match
+  const exactName = projects.find((p) => normalizeSearchText(p.name) === q);
+  if (exactName) return exactName;
+
+  // 6. Name includes query or query includes project short name
+  const nameSub = projects.find((p) => {
+    const pName = normalizeSearchText(p.name);
+    const pShort = normalizeSearchText(p.shortName);
+    return (
+      pName.includes(q) ||
+      (qClean.length >= 3 && pName.includes(qClean)) ||
+      (pShort && (pShort.includes(q) || q.includes(pShort)))
+    );
+  });
+  if (nameSub) return nameSub;
+
+  // 7. Distinctive keyword & acronym matching (e.g. "Tumauini HEPP", "Sabangan Hydro", "Bakun Plant")
+  const stopWords = new Set(["hepp", "project", "power", "plant", "hydro", "mhp", "thepp", "scic", "dam", "substation"]);
+  const queryTokens = q.split(/[\s\-_,]+/).filter((t) => t.length >= 3);
+  const distinctiveTokens = queryTokens.filter((t) => !stopWords.has(t));
+
+  if (distinctiveTokens.length > 0) {
+    const keywordMatch = projects.find((p) => {
+      const pName = normalizeSearchText(p.name);
+      const pMuni = normalizeSearchText(p.municipality);
+      const pSlug = p.slug ? p.slug.toLowerCase().replace(/[-_]/g, " ") : "";
+      return distinctiveTokens.every((token) => pName.includes(token) || pMuni.includes(token) || pSlug.includes(token));
+    });
+    if (keywordMatch) return keywordMatch;
+  }
+
+  return undefined;
+}
+

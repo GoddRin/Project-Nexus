@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryWidget";
+import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
+import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -573,6 +575,21 @@ export default function PhilippinesWeatherClient({
           </div>
         </div>
       )}
+
+      {/* 1.2 AUTOMATED TYPHOON & SITE IMPACT ANNOUNCEMENT GENERATOR (For Staff & Group Chats) */}
+      <TyphoonAnnouncementWidget
+        storm={siteAlertStorm || (regionalStorms.length > 0 ? regionalStorms[0] : undefined)}
+        pagasaSignals={pagasaSignals}
+        siteWindSpeed={windSpeed}
+        sitePressure={pressure}
+        isInsidePar={isStormInsidePar}
+        defaultHidden={!isStormInsidePar && !isSignalHoisted}
+      />
+
+      {/* 1.3 PHILIPPINE TV WEATHER DESK (DOST-PAGASA, GMA, ABS-CBN, TV5) */}
+      <div id="tv-news-desk">
+        <TyphoonNewsDeskWidget />
+      </div>
 
       {/* Developer helper toggle to preview mock/real data */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-bg-panel/40 border border-border-hairline p-3 sm:p-3.5 rounded-2xl gap-3">

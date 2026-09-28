@@ -75,6 +75,8 @@ export interface AtlasMapContextValue {
     zoom?: number;
     pitch?: number;
     bearing?: number;
+    padding?: { top?: number; bottom?: number; left?: number; right?: number };
+    duration?: number;
   }) => void;
   resetToNationalView: () => void;
   setIslandPreset: (preset: AtlasIslandPreset) => void;
@@ -202,6 +204,8 @@ export function AtlasMapProvider({
       zoom?: number;
       pitch?: number;
       bearing?: number;
+      padding?: { top?: number; bottom?: number; left?: number; right?: number };
+      duration?: number;
     }) => {
       if (target.id) {
         setSelectedProjectId(target.id);
@@ -215,14 +219,24 @@ export function AtlasMapProvider({
 
       if (lng != null && lat != null) {
         const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+        const defaultPadding = isDesktop ? { top: 0, bottom: 0, left: 0, right: 430 } : undefined;
+        const resolvedPadding = target.padding
+          ? {
+              top: target.padding.top ?? 0,
+              bottom: target.padding.bottom ?? 0,
+              left: target.padding.left ?? 0,
+              right: target.padding.right ?? 0,
+            }
+          : defaultPadding;
+
         map.flyTo({
           center: [lng, lat],
           zoom: target.zoom ?? Math.max(map.getZoom(), 13.5),
           bearing: target.bearing ?? 0,
           pitch: target.pitch ?? 0,
-          duration: 1400,
+          duration: target.duration ?? 1400,
           essential: true,
-          padding: isDesktop ? { top: 0, bottom: 0, left: 0, right: 430 } : undefined,
+          padding: resolvedPadding,
         });
       }
     },

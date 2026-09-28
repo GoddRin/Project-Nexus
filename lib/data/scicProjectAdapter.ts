@@ -9,6 +9,7 @@ export function convertDtoToScicProject(dto: PublicProjectDTO): SCICProject {
     id: dto.id,
     name: dto.name,
     code: dto.projectCode || dto.slug,
+    slug: dto.slug,
     shortName: dto.name.length > 25 ? dto.name.slice(0, 22) + "..." : dto.name,
     sector: (dto.category as any) || "HYDRO_RENEWABLE",
     status: (dto.status as any) || "ONGOING",

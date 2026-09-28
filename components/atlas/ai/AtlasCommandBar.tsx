@@ -93,7 +93,7 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
         className={cn(
           "flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-xl border transition-all duration-200 shadow-xl",
           isFocused
-            ? "bg-[#0B1726]/95 border-sky-500/60 ring-2 ring-sky-500/20 shadow-sky-950/40"
+            ? "bg-[#0B1726]/95 border-emerald-500/60 ring-2 ring-emerald-500/20 shadow-emerald-950/40"
             : "bg-[#0B1726]/85 border-white/10 hover:border-white/20 shadow-black/40"
         )}
       >
@@ -102,9 +102,9 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
           type="button"
           onClick={onOpenDrawer}
           title="Open SCIC Atlas Assistant"
-          className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 transition-colors cursor-pointer group shrink-0"
+          className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer group shrink-0"
         >
-          <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:rotate-12 transition-transform" />
+          <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover:rotate-12 transition-transform" />
           <span className="text-[11px] font-mono font-bold tracking-wider hidden sm:inline">
             ATLAS AI
           </span>
@@ -143,7 +143,7 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
           <button
             type="submit"
             disabled={isGenerating}
-            className="flex items-center justify-center p-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center justify-center p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all cursor-pointer disabled:opacity-50"
             title="Execute Atlas Command (Enter)"
           >
             <CornerDownLeft className="w-3.5 h-3.5" />
@@ -161,7 +161,7 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
         <div className="absolute top-full left-0 right-0 mt-2 p-2.5 rounded-xl bg-[#0B1726]/95 backdrop-blur-2xl border border-white/10 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-150 space-y-2">
           {/* Active Context Header */}
           <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 px-1 border-b border-white/5 pb-1.5">
-            <span className="flex items-center gap-1.5 text-sky-400">
+            <span className="flex items-center gap-1.5 text-emerald-400">
               <Compass className="w-3 h-3" />
               {selectedProjectName
                 ? `Context: ${selectedProjectName}`
@@ -179,10 +179,10 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
                 key={idx}
                 type="button"
                 onMouseDown={() => handleSuggestionClick(prompt)}
-                className="text-left text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-sky-500/20 text-slate-300 hover:text-white border border-white/5 hover:border-sky-500/30 transition-all cursor-pointer flex items-center justify-between gap-2 group"
+                className="text-left text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-white border border-white/5 hover:border-emerald-500/30 transition-all cursor-pointer flex items-center justify-between gap-2 group"
               >
                 <span>{prompt}</span>
-                <ArrowRight className="w-3 h-3 text-slate-500 group-hover:text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                <ArrowRight className="w-3 h-3 text-slate-500 group-hover:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </button>
             ))}
           </div>

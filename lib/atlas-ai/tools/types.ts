@@ -6,7 +6,7 @@ export type ProvenanceLevel = "Verified" | "Derived" | "Approximate" | "Unavaila
 
 export interface AtlasAISource {
   name: string;
-  sourceType: "DATABASE" | "GIS_CALCULATION" | "ENGINEERING_SPEC" | "REGULATORY_DOC" | "NARRATIVE_DOC";
+  sourceType: "DATABASE" | "GIS_CALCULATION" | "ENGINEERING_SPEC" | "REGULATORY_DOC" | "NARRATIVE_DOC" | "NEXUS_TELEMETRY";
   provenance: ProvenanceLevel;
   document?: string;
   projectId?: string;
@@ -23,6 +23,9 @@ export type AtlasAIAction =
   | {
       type: "FLY_TO_PROJECT";
       projectId: string;
+      projectName?: string;
+      projectCode?: string;
+      coordinates?: { lat: number; lng: number };
       zoom?: number;
       pitch?: number;
     }
@@ -72,6 +75,41 @@ export type AtlasAIAction =
       type: "START_TOUR";
       tourId?: string;
       stepIndex?: number;
+      durationSeconds?: number;
+      autoPlay?: boolean;
+    }
+  | {
+      type: "CONTROL_TOUR";
+      action: "play" | "pause" | "next" | "prev" | "set_speed" | "exit";
+      speedSeconds?: number;
+    }
+  | {
+      type: "DRIVE_SPOTLIGHT";
+      projectId?: string;
+      direction?: "next" | "prev";
+    }
+  | {
+      type: "DRAW_TRANSIT_CORRIDOR";
+      fromProject: { id: string; name: string; coordinates: { lat: number; lng: number } };
+      toProject: { id: string; name: string; coordinates: { lat: number; lng: number } };
+      distanceKm: number;
+    }
+  | {
+      type: "DRAW_BUFFER_ZONE";
+      center: { lat: number; lng: number };
+      radiusKm: number;
+      label: string;
+      projectIdsInside: string[];
+    }
+  | {
+      type: "CLEAR_GIS_OVERLAYS";
+    }
+  | {
+      type: "OPEN_NEXUS_OPERATIONS";
+      projectId: string;
+      projectName?: string;
+      destination?: string;
+      label?: string;
     };
 
 export interface AtlasAIMetadata {
@@ -81,6 +119,12 @@ export interface AtlasAIMetadata {
   executedTools: string[];
   tokensPrompt?: number;
   tokensCompletion?: number;
+  assistantVersion?: string;
+  promptVersion?: string;
+  toolVersion?: string;
+  requestId?: string;
+  gatePassed?: boolean;
+  degradedMode?: boolean;
 }
 
 export interface AtlasAIResponse {

@@ -31,7 +31,7 @@ export function AtlasMapLegend({ className }: AtlasMapLegendProps) {
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-          <Layers className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
+          <Layers className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           <span>GIS Legend</span>
         </div>
         {isOpen ? (
