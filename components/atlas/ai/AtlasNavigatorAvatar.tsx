@@ -597,6 +597,14 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
         case "panel-open-left":
           fireReaction("presentLeft");
           break;
+        case "tour-start":
+          // a tour guide's hello
+          fireReaction("wave");
+          break;
+        case "tour-end":
+          // and a short bow to close
+          fireReaction("bow");
+          break;
         case "tour-step":
           // a small hard-hat tap as each tour stop completes
           fireReaction("salute");
@@ -1200,8 +1208,9 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
         onLostPointerCapture={endDrag}
         aria-label={`SCIC Atlas Navigator 3D Character (Status: ${statusLabel}). Tap to speak, drag to turn.`}
         className={cn(
-          "relative w-full h-full block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 rounded-xl overflow-hidden cursor-pointer touch-none",
-          !isBust && "transition-transform active:scale-[0.98]"
+          "relative w-full h-full block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 rounded-xl cursor-pointer touch-none",
+          // standing: his arms may reach past his own box (see the canvas below); the bust is framed
+          isBust ? "overflow-hidden" : "overflow-visible transition-transform active:scale-[0.98]"
         )}
       >
         {/* Soft ground shadow at his feet line, tuned to the map behind him */}
@@ -1215,7 +1224,14 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
             }}
           />
         )}
-        <div className="relative w-full h-full" aria-hidden="true">
+        {/* The drawing area is wider than his box: recorded gestures (a wave, an open-arm
+            "here it is") reach further out than his 190 px frame, and were cut off at its edge.
+            Same height and same camera, so he stays the same size and in the same place; the
+            extra width is see-through and lets clicks through to the map. */}
+        <div
+          className={cn(isBust ? "relative w-full h-full" : "pointer-events-none absolute inset-y-0 -left-[55%] -right-[55%]")}
+          aria-hidden="true"
+        >
           <Canvas
             dpr={[1, 2]}
             camera={cameraProp}

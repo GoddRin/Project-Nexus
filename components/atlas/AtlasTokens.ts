@@ -292,7 +292,7 @@ export type AtlasNavigatorGazeTarget =
 
 // ─── Atlas Navigator 3D asset ───────────────────────────────────────────────
 /** Active navigator character: photoreal field engineer with a full face blendshape set. */
-export const ATLAS_NAVIGATOR_MODEL_URL = "/models/characters/scic_atlas_navigator_pro.glb?v=4";
+export const ATLAS_NAVIGATOR_MODEL_URL = "/models/characters/scic_atlas_navigator_pro.glb?v=7";
 
 export type AtlasNavigatorDisplayMode = "auto" | "compact" | "disabled";
 

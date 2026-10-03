@@ -28,11 +28,18 @@ export interface NavigatorBus {
   dragYaw: number;
   /** For the answer being spoken: the stretches (character ranges in the spoken text) to stress */
   speechCues: { emphasis: Array<[number, number]> } | null;
+  /** What the current speech is: a guided tour stop, a chat answer, or one of his own lines */
+  activity: "tour" | "answer" | "line" | null;
+  /** Centre of the visible map (viewport px): where "the map" is from wherever he stands */
+  mapCenter: { x: number; y: number } | null;
+  /** Where the user last clicked, dragged or zoomed on the map (viewport px), and when */
+  attention: { x: number; y: number } | null;
+  attentionAt: number;
 }
 
 export type NavigatorBusEvent =
   | "voice-start" | "voice-end" | "chat-focus" | "chat-blur" | "map-interaction" | "chat-open" | "chat-close"
-  | "panel-open-right" | "panel-open-left" | "tour-step" | "weather-on" | "national-view";
+  | "panel-open-right" | "panel-open-left" | "tour-step" | "tour-start" | "tour-end" | "weather-on" | "national-view";
 
 export const navigatorBus: NavigatorBus = {
   peek: null,
@@ -45,7 +52,17 @@ export const navigatorBus: NavigatorBus = {
   voiceActive: false,
   dragYaw: 0,
   speechCues: null,
+  activity: null,
+  mapCenter: null,
+  attention: null,
+  attentionAt: 0,
 };
+
+/** The user is working at this point of the map (click, drag, zoom): he looks there */
+export function setNavigatorAttention(x: number, y: number): void {
+  navigatorBus.attention = { x, y };
+  navigatorBus.attentionAt = performance.now();
+}
 
 // Low-frequency event channel (a handful per session, safe to bridge into React state)
 const listeners = new Set<(e: NavigatorBusEvent) => void>();

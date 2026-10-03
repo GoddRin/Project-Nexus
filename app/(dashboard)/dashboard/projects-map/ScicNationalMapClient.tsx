@@ -55,7 +55,7 @@ import {
   useAtlasNavigatorState,
   useAtlasAI,
 } from "@/components/atlas/ai";
-import { navigatorBus, setNavigatorPeek, emitNavigatorEvent } from "@/components/atlas/ai/navigatorBus";
+import { navigatorBus, setNavigatorPeek, setNavigatorAttention, emitNavigatorEvent } from "@/components/atlas/ai/navigatorBus";
 import { AtlasMapEffects } from "@/components/atlas/effects/AtlasMapEffects";
 import { DayDuskTint } from "@/components/atlas/effects/DayDuskTint";
 import { AtlasIntro } from "@/components/atlas/effects/AtlasIntro";
@@ -806,13 +806,34 @@ function ScicNationalMapContent() {
   useEffect(() => {
     if (!mapInstance) return;
     const onInteract = () => emitNavigatorEvent("map-interaction");
+    // the navigator's eyes follow where the user is working on the map (throttled bus write)
+    let lastLook = 0;
+    const look = (e: { originalEvent?: Event; point?: { x: number; y: number } }) => {
+      const now = performance.now();
+      if (now - lastLook < 60) return;
+      lastLook = now;
+      const ev = e.originalEvent as (MouseEvent & TouchEvent) | undefined;
+      const touch = ev?.touches?.[0] ?? ev?.changedTouches?.[0];
+      if (touch) return setNavigatorAttention(touch.clientX, touch.clientY);
+      if (ev && typeof ev.clientX === "number") return setNavigatorAttention(ev.clientX, ev.clientY);
+      if (e.point) {
+        const rect = mapInstance.getContainer().getBoundingClientRect();
+        setNavigatorAttention(rect.left + e.point.x, rect.top + e.point.y);
+      }
+    };
     mapInstance.on("dragstart", onInteract);
     mapInstance.on("zoomstart", onInteract);
     mapInstance.on("click", onInteract);
+    mapInstance.on("click", look);
+    mapInstance.on("drag", look);
+    mapInstance.on("wheel", look);
     return () => {
       mapInstance.off("dragstart", onInteract);
       mapInstance.off("zoomstart", onInteract);
       mapInstance.off("click", onInteract);
+      mapInstance.off("click", look);
+      mapInstance.off("drag", look);
+      mapInstance.off("wheel", look);
     };
   }, [mapInstance]);
 

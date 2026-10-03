@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PROJECT_NAME_WORDS, fixProjectNames } from "@/lib/atlas-ai/projectVocabulary";
 
 export const dynamic = "force-dynamic";
 
@@ -8,9 +9,14 @@ export const dynamic = "force-dynamic";
  * sends it here; Groq's hosted Whisper (free tier) turns it into text in under a second.
  */
 const MAX_BYTES = 8 * 1024 * 1024;
-// Names Whisper should expect (it spells them right instead of guessing)
-const PROMPT =
-  "Sta. Clara International, SCIC, Project Atlas. Tour me on the Kapangan project. Luzon, Visayas, Mindanao, Benguet, Isabela, Bakun, Kalayaan, hydroelectric, megawatts.";
+// Names Whisper should expect, so it writes "Maladugao" instead of hearing "manager". Every project
+// name comes from the records (lib/atlas-ai/projectVocabulary.ts); Whisper reads about 220 tokens.
+const PROMPT = `Sta. Clara International (SCIC) Project Atlas. Tour me on the Maladugao project. Projects: ${PROJECT_NAME_WORDS.join(", ")}. Luzon, Visayas, Mindanao, hydroelectric, megawatts.`.slice(0, 850);
+
+/** Wake-up call, sent when the mic opens, so a cold start is over before the clip arrives */
+export async function GET() {
+  return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+}
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GROQ_API_KEY;
@@ -47,7 +53,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: res.status === 429 ? "Voice input is busy, try again in a moment." : "Transcription failed." }, { status: res.status === 429 ? 429 : 502 });
     }
     const json = (await res.json()) as { text?: string };
-    return NextResponse.json({ text: (json.text || "").trim() });
+    // names it still got slightly wrong are put right ("Kapanan" -> "Kapangan")
+    return NextResponse.json({ text: fixProjectNames((json.text || "").trim()) });
   } catch (err: unknown) {
     console.error("[Atlas Transcribe Route Error]:", err);
     return NextResponse.json({ error: "Transcription failed." }, { status: 500 });

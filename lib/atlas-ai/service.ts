@@ -4,6 +4,7 @@
  */
 
 import { executeAICascade } from "@/lib/ai/core/providerHarness";
+import { fixProjectNames } from "./projectVocabulary";
 import { AIChatMessage, AIToolStreamEvent } from "@/lib/ai/core/types";
 import { globalAIRateLimiter } from "@/lib/ai/core/rateLimiter";
 import { buildAtlasSystemInstruction, AtlasContextPayload, isCompanyQuestion } from "./identity";
@@ -73,10 +74,12 @@ export async function generateAtlasAIAnswer(
   }
 
   // 2. Input Limits & Sanitization (Phase 19 Requirement 13 & 36)
-  const query =
+  // (a misheard or mistyped project name is put right first: "Mala Dugo" -> "Maladugao")
+  const query = fixProjectNames(
     rawQuery.length > MAX_INPUT_CHARACTERS
       ? rawQuery.slice(0, MAX_INPUT_CHARACTERS)
-      : rawQuery;
+      : rawQuery
+  );
 
   // 3. Rate Limiting Check
   const rateLimitResult = globalAIRateLimiter.check(userId, query);

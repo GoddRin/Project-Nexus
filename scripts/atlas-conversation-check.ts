@@ -37,6 +37,7 @@ const CASES: Case[] = [
   { name: "Mindanao count, no history", history: [], question: "how many projects are there currently in mindanao", expect: /\b11\b|eleven/i },
   { name: "Follow-up: ongoing there", history: mindanao, question: "and how many of those are ongoing?", expect: /\b5\b|five/i },
   { name: "Chairman", history: [], question: "who is our chairman", expect: /Nicandro/i },
+  { name: "Misheard project name (voice)", history: [], question: "tell me about mala dugo project", expect: /Maladugao/i },
   { name: "Central office", history: company, question: "where is our central office located", expect: /Mandaluyong/i },
   { name: "Founding year", history: [], question: "when was the company founded?", expect: /1976/ },
   { name: "Ongoing hydro in Region II", history: company, question: "show ongoing hydropower in region II", expect: /Tumauini/i },

@@ -7,7 +7,7 @@ import {
   getGuidedTourData,
   AtlasTourStepData,
 } from "@/lib/atlas-ai/portfolioTours";
-import { navigatorBus } from "./navigatorBus";
+import { navigatorBus, emitNavigatorEvent } from "./navigatorBus";
 import { withTourAsides, getPersonality } from "./navigatorLines";
 import { buildSiteStory, findStoryProject, hasSiteStory, SITE_STORY_PREFIX } from "@/lib/atlas-ai/siteStories";
 import { buildSpokenAlignment, limitSpokenText, MAX_SPOKEN_CHARS, type AlignedSpokenResult } from "@/lib/atlas-ai/spokenText";
@@ -457,6 +457,7 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
       data?: AtlasTourData
     ) => {
       try {
+        if (initialStep === 0) emitNavigatorEvent("tour-start"); // the guide's hello
         let rawTour = data ?? getGuidedTourData(tourId);
         if (!data && rawTour.tourId.startsWith("dynamic-tour-")) {
           // "Tour Tumauini": one project. Its site story says far more than reading out the same
@@ -537,6 +538,7 @@ export function useAtlasAI(options: UseAtlasAIOptions) {
       if (!steps || steps.length === 0) return prev;
       if (prev.stepIndex >= prev.totalSteps - 1) {
         // Tour completed
+        emitNavigatorEvent("tour-end");
         return null;
       }
       const nextIdx = prev.stepIndex + 1;
@@ -1168,7 +1170,13 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
   // Sync contract: nothing "speaks" (lips, gestures, subtitle highlight, bubble text) until the
   // audio is actually audible, and everything afterwards is read from the audio clock.
   const speakSoothingNarration = useCallback(
-    async (rawInput: string, onSpeechEnd?: () => void, enginePromise?: Promise<SpeechEngine> | null) => {
+    async (
+      rawInput: string,
+      onSpeechEnd?: () => void,
+      enginePromise?: Promise<SpeechEngine> | null,
+      /** tour stop, chat answer or one of his own lines: decides his body language */
+      activity: "tour" | "answer" | "line" = "line"
+    ) => {
       // Marks that guide the eye (asterisks, table pipes, source tags...) are never pronounced:
       // anything written for the screen is first retold as plain sentences.
       const rawNarration = needsNarration(rawInput) ? toNarration(rawInput) : rawInput;
@@ -1193,6 +1201,7 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
 
       setSpeechText(spokenText);
       navigatorBus.narrationHint = classifyNarration(spokenText);
+      navigatorBus.activity = activity;
       setIsPreparingSpeech(true);
 
       /** spoken-text char index -> 1-based display word index */
@@ -1339,7 +1348,8 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
         () => {
           if (mine === answerSeqRef.current) navigatorBus.speechCues = null;
         },
-        engine
+        engine,
+        "answer"
       );
 
       if (mentions.length) {
@@ -1374,7 +1384,7 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
         playAtlasAudioChime("activate");
         const current = activeTourRef.current;
         if (current?.currentStep?.narration) {
-          speakSoothingNarration(current.currentStep.narration, undefined, tourEngineRef.current);
+          speakSoothingNarration(current.currentStep.narration, undefined, tourEngineRef.current, "tour");
         } else {
           speakSoothingNarration("SCIC Atlas Navigator online. Voice narration is active.");
         }
@@ -1469,7 +1479,7 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
               triggerAdvance();
             }, lingerMs);
           }
-        }, tourEngine);
+        }, tourEngine, "tour");
 
         // Safety timeout in case speech synthesis engine hangs or drops onend
         if (isPlaying && isAuto) {

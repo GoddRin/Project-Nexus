@@ -218,6 +218,7 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
     toggleListening: toggleVoiceListening,
     stopListening: stopVoiceListening,
     error: voiceInputError,
+    phase: voicePhase,
   } = useVoiceInput({
     // When you stop speaking, the request is sent straight away (the box already showed it live;
     // appending it again here is what doubled the text).
@@ -2333,7 +2334,7 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
                         />
                       ))}
                     </span>
-                    Listening. It sends when you stop talking.
+                    {voicePhase === "transcribing" ? "Got it, sending…" : "Listening. It sends when you stop talking."}
                   </div>
                 )}
                 <textarea

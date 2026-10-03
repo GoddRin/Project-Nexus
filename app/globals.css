@@ -250,9 +250,13 @@ code, pre, kbd, samp,
 /* ============================================================
    Focus Ring — accessible, matches theme
    ============================================================ */
-:focus-visible {
-  outline: 2px solid var(--brand-green);
-  outline-offset: 2px;
+/* In @layer base so a component's own focus style (a text box inside a styled frame uses
+   focus:outline-hidden) still wins; unlayered, this outline beat every Tailwind utility. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--brand-green);
+    outline-offset: 2px;
+  }
 }
 
 /* ============================================================

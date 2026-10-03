@@ -25,3 +25,17 @@ The clips inside the GLB (`idleSubtle`, `talk`, `greet`, `nod`, `yes`, `reject`,
 come from the Mesh2Motion human animation library (animations by Quaternius), released **CC0**
 (https://app.mesh2motion.org/). They were retargeted onto this character with
 `scripts/blender/retarget_m2m_animations.py`. No attribution is required; this note is for provenance.
+
+**2026-10-03:** only `idleSubtle` and `foldArms` remain from that library (the others were rejected for him).
+The rest are Mixamo (Adobe) motion-capture clips, exported on the male Y Bot figure and retargeted with
+`scripts/blender/add_mixamo_clips.py`: `idleBreathing`, `presentR`, `presentL`, `presentBoth`, `pointR`, `pointL`,
+`explainOne`, `explainTwo`, `shrug`, `nodFirm`, `acknowledge`, `wave`, `bow`. Mixamo animations are royalty-free for use
+in projects (including commercial ones) but the raw files may not be redistributed, so the downloaded FBX files
+live in `assets-src/mixamo/` and are git-ignored; only the baked animations inside the GLB ship.
+Review stills of each clip on him: `scripts/blender/render_clip_review.py`.
+
+**2026-10-03 (arm weights):** `scripts/blender/refine_arm_weights.py` reworks how the arms, sleeves and vest follow
+the skeleton (weights smoothed across the shoulder and elbow, at most four bones per point as glTF requires, the vest
+kept on the torso). Result saved as `scripts/blender/source/scic_atlas_navigator_pro_v4.blend`, now the file the GLB is exported from.
+
+**2026-10-03 (later):** `offer`, `nodListen` and `idleNeutral` (Mixamo) were added back; `wave` and `acknowledge` are in the GLB but not played.

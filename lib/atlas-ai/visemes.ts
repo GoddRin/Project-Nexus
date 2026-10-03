@@ -184,7 +184,9 @@ export function estimateSpeechDuration(text: string, rate = 1): number {
 /**
  * Lightweight content classifier used to pick matching body language for a narration.
  */
-export type NarrationHint = "number" | "list" | "warning" | "greeting" | "question" | "explain" | null;
+export type NarrationHint =
+  | "number" | "list" | "warning" | "greeting" | "question" | "explain"
+  | "location" | "compare" | "status" | "people" | "unknown" | "confirm" | null;
 
 export function classifyNarration(text: string): NarrationHint {
   const t = (text || "").toLowerCase();
@@ -192,6 +194,13 @@ export function classifyNarration(text: string): NarrationHint {
   if (/\b(warning|caution|alert|typhoon|delay|risk|issue|error|unable)\b/.test(t)) return "warning";
   if (/\b(hello|hi|good (morning|afternoon|evening)|welcome|how can i help)\b/.test(t)) return "greeting";
   if (/\?/.test(t) && t.length < 140) return "question";
+  if (/\b(no record(ed)?|not (in|on) (the|our) (records?|database|atlas)|(do not|don't|doesn't|does not) have|could ?n[o']t find|no such project)\b/.test(t)) return "unknown";
+  if (/^(yes|correct|exactly|that's right|that is right|right)[,.! ]/.test(t)) return "confirm";
+  // what an answer is about decides how he presents it
+  if (/\b(compared (to|with)|versus|vs\.?|than|whereas|while the|both|bigger|larger|smaller)\b/.test(t)) return "compare";
+  if (/\b(ongoing|completed|complete|percent|progress|on track|milestone|schedule|status|commissioning|under construction)\b/.test(t)) return "status";
+  if (/\b(located|lies|sits|in the province|province of|north of|south of|east of|west of|near|along the|region [ivx\d]+|on the map)\b/.test(t)) return "location";
+  if (/\b(chairman|director|manager|engineer|team|led by|founded|leadership|people|staff|client)\b/.test(t)) return "people";
   if (/\d/.test(t) || /\b(megawatts?|kilometers?|million liters|mw|mld)\b/.test(t)) return "number";
   if (/(,\s*[^,]+){2,}\band\b|\b(first|second|third|several|following|including)\b/.test(t)) return "list";
   return "explain";

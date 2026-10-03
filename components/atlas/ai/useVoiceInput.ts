@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { emitNavigatorEvent } from "./navigatorBus";
+import { fixProjectNames } from "@/lib/atlas-ai/projectVocabulary";
 
 export interface UseVoiceInputOptions {
   onTranscriptComplete?: (transcript: string) => void;
@@ -14,6 +15,8 @@ export interface UseVoiceInputReturn {
   interimTranscript: string;
   error: string | null;
   isSupported: boolean;
+  /** Recording mode only: "transcribing" while the server writes down what was said */
+  phase: "idle" | "listening" | "transcribing";
   startListening: () => void;
   stopListening: () => void;
   toggleListening: () => void;
@@ -24,7 +27,8 @@ export interface UseVoiceInputReturn {
  * ("Tour me on North Luzon" came back as "turn me on north luzon".)
  */
 export function correctTranscript(text: string): string {
-  return text
+  // project and place names first ("Mala Dugo" -> "Maladugao"), then the app's own phrases
+  return fixProjectNames(text)
     .replace(/\b(?:turn|tore|torr?|two?r)\s+me\s+(on|through|around|in|across)\b/gi, "tour me $1")
     .replace(/\b(?:turn|tore)\s+(?:of|off)\s+(?=(?:the\s+)?(?:north|south|central|luzon|visayas|mindanao|region|project))/gi, "tour of ")
     .replace(/\bstart (?:the )?(?:tower|tore|turn)\b/gi, "start tour")
@@ -37,7 +41,10 @@ export function correctTranscript(text: string): string {
 const WHISPER_PHANTOMS = /^(?:thank you\.?|thanks for watching[.!]?|you\.?|bye\.?|\.+|okay\.?)$/i;
 const RECORDER_KEY = "atlas.voiceInput.recorder";
 /** Silence after speech that ends the recording (it is then sent straight away) */
-const END_SILENCE_MS = 1200;
+const END_SILENCE_MS = 700;
+/** A shorter pause already starts transcribing what was said so far: if the pause turns out to be
+ *  the end, the text is usually back by the time the recording stops (talking again discards it) */
+const EARLY_TRANSCRIBE_MS = 300;
 const NO_SPEECH_MS = 7000;
 const MAX_RECORD_MS = 20000;
 
@@ -64,6 +71,7 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
   const [interimTranscript, setInterimTranscript] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(false);
+  const [phase, setPhase] = useState<"idle" | "listening" | "transcribing">("idle");
 
   const recognitionRef = useRef<any>(null);
   const recorderRef = useRef<{ stop: (send: boolean) => void } | null>(null);
@@ -108,6 +116,8 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
     setTranscript("");
     setInterimTranscript("");
     finalTranscriptRef.current = "";
+    // wake the transcription function now (a serverless cold start would otherwise land after you speak)
+    void fetch("/api/atlas-ai/transcribe", { method: "GET" }).catch(() => {});
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
@@ -117,10 +127,29 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
     }
     const mime =
       ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"].find((t) => MediaRecorder.isTypeSupported?.(t)) || "";
+    const type = mime || "audio/webm";
     const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
     const chunks: Blob[] = [];
+
+    const transcribe = async (parts: Blob[]): Promise<string> => {
+      const body = new FormData();
+      body.append("audio", new Blob(parts, { type: recorder.mimeType || type }));
+      body.append("lang", optionsRef.current?.lang || "en-PH");
+      const res = await fetch("/api/atlas-ai/transcribe", { method: "POST", body });
+      const json = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      return json.text || "";
+    };
+    // early transcription started at a pause (dropped if speech resumes)
+    let early: Promise<string> | null = null;
+    let wantEarly = false;
     recorder.ondataavailable = (e) => {
       if (e.data.size) chunks.push(e.data);
+      if (wantEarly) {
+        wantEarly = false;
+        early = transcribe(chunks.slice());
+        early.catch(() => {});
+      }
     };
 
     // Loudness watch: has speech started, and has it been quiet long enough to stop?
@@ -152,22 +181,26 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
       for (let i = 0; i < samples.length; i++) sum += samples[i] * samples[i];
       const rms = Math.sqrt(sum / samples.length);
       const now = performance.now();
-      // the first half second sets the room's noise floor
-      if (now - startedAt < 500) floor = Math.max(floor, rms * 1.5);
+      // the first 300 ms set the room's noise floor
+      if (now - startedAt < 300) floor = Math.max(floor, rms * 1.5);
       else if (rms > Math.max(0.02, floor * 2)) {
-        if (!heardAt) {
-          heardAt = now;
-          setInterimTranscript("Listening…");
-        }
+        heardAt = heardAt || now;
         lastLoudAt = now;
+        early = null; // still talking: what was sent early is out of date
+        wantEarly = false;
       }
-      if (heardAt && now - lastLoudAt > END_SILENCE_MS) return finish(true);
+      const quietFor = now - lastLoudAt;
+      if (heardAt && quietFor > EARLY_TRANSCRIBE_MS && !early && !wantEarly && recorder.state === "recording") {
+        wantEarly = true;
+        recorder.requestData();
+      }
+      if (heardAt && quietFor > END_SILENCE_MS) return finish(true);
       if (!heardAt && now - startedAt > NO_SPEECH_MS) {
         setError("No speech was detected. Please try speaking again.");
         return finish(false);
       }
       if (now - startedAt > MAX_RECORD_MS) finish(true);
-    }, 50);
+    }, 40);
 
     recorder.onstop = async () => {
       stream.getTracks().forEach((t) => t.stop());
@@ -175,18 +208,19 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
       recorderRef.current = null;
       if (!send || !heardAt || !chunks.length) {
         setIsListening(false);
-        setInterimTranscript("");
+        setPhase("idle");
         return;
       }
-      setInterimTranscript("Transcribing…");
+      setPhase("transcribing");
       try {
-        const body = new FormData();
-        body.append("audio", new Blob(chunks, { type: recorder.mimeType || mime || "audio/webm" }));
-        body.append("lang", optionsRef.current?.lang || "en-PH");
-        const res = await fetch("/api/atlas-ai/transcribe", { method: "POST", body });
-        const json = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
-        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
-        const text = correctTranscript(json.text || "");
+        // nothing but silence was added after the early request: its answer is the whole request
+        let raw: string;
+        try {
+          raw = early ? await early : await transcribe(chunks);
+        } catch {
+          raw = await transcribe(chunks);
+        }
+        const text = correctTranscript(raw);
         if (!text || WHISPER_PHANTOMS.test(text)) {
           setError("No speech was detected. Please try speaking again.");
         } else {
@@ -198,12 +232,13 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
         setError(`Speech input error: ${err?.message || "transcription failed"}`);
       } finally {
         setIsListening(false);
-        setInterimTranscript("");
+        setPhase("idle");
       }
     };
 
-    recorder.start(250);
+    recorder.start();
     setIsListening(true);
+    setPhase("listening");
   }, []);
 
   const startListening = useCallback(() => {
@@ -337,6 +372,7 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
     interimTranscript,
     error,
     isSupported,
+    phase,
     startListening,
     stopListening,
     toggleListening,

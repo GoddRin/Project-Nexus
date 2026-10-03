@@ -65,3 +65,6 @@ test_weather.js
 
 # local tooling / ide files
 .claude/*.local.json
+
+# Raw Mixamo downloads: licence forbids redistributing the source files (only the baked animations in the GLB ship)
+/assets-src/mixamo/

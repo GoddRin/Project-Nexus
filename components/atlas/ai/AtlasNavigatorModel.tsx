@@ -86,7 +86,10 @@ const mkSpring = (): Spring => ({ p: 0, v: 0 });
 // (forearm `abduct` stays 0 - that sideways elbow is what made the old wave look dislocated).
 // They also keep the hand inside his narrow frame.
 type E3 = [number, number, number];
-const WAVE = { arm: [0.76, -0.85, 0.39] as E3, fore: [1.96, 1.28, 0] as E3 };
+// (elbow by the ribs, forearm up in front of the shoulder, open palm: solved with pose_render.py.
+//  The earlier pose and the Mixamo "Waving" recording both held the upper arm out sideways at
+//  shoulder height, which the user called bent / "halfway sideways".)
+const WAVE = { arm: [0.55, -0.6, 0.05] as E3, fore: [2.3, 1.2, 0] as E3 };
 const PRESENT = { arm: [-0.63, 0.2, 0.27] as E3, fore: [2.01, -0.81, 0] as E3 };
 const POINT = { arm: [-0.48, -0.58, 0.25] as E3, fore: [1.69, 1.3, 0] as E3 };
 /** "Easy / hold on": one hand low in front, palm down */
@@ -97,16 +100,72 @@ const EASY = { arm: [-0.2, 0.2, 0.19] as E3, fore: [1.3, 1.2, 0] as E3 };
  * with scripts/blender/retarget_m2m_animations.py). `start` / `end` pick the useful stretch of the
  * clip in seconds. When the model has no clips, the posed version of the reaction is used instead.
  */
-const SHOT_CLIPS: Record<string, { clip: string; start: number; end: number; speed: number }> = {
-  // (none in use: the library's wave, "no" and "confused" clips put a hand on the hip or the hands
-  //  up by the face, which did not suit him. Reactions are posed instead; see section 4b.)
+type ShotDef = {
+  clip: string; start: number; end: number; speed: number; loop?: boolean;
+  /** How much of the recording is played (1 = as performed). A "hard" nod and a full bow are
+   *  large movements: at 1 they read as him bowing to the floor. */
+  gain?: number;
 };
+const SHOT_CLIPS: Record<string, ShotDef> = {
+  // Mixamo motion capture (male performer, exported on Y Bot; scripts/blender/add_mixamo_clips.py).
+  // Each was reviewed on him frame by frame (scripts/blender/render_clip_review.py).
+  // 2026-10-03: the user lifted the earlier limits (hand on hip / chest / chin, head tilts, hip
+  // sway), so the recordings now play as performed, head included.
+  // `start` / `end` cut each recording to its useful stretch. His RIGHT arm is on screen-left.
+  // Tap reactions ("nod", "salute") are NOT recordings: Mixamo's nods are big, and stacked on his
+  // own small nod they had him bowing at every tap. They stay the short posed nod of section 4b.
+  // (no recorded wave: Mixamo's holds the upper arm straight out to the side. The wave is posed.)
+  shrug: { clip: "shrug", start: 0.2, end: 1.5, speed: 1 },
+  bow: { clip: "bow", start: 0.2, end: 2.65, speed: 1, gain: 0.55 },
+  presentRight: { clip: "presentL", start: 0.2, end: 3.3, speed: 1.1 }, // toward screen-right
+  presentLeft: { clip: "presentR", start: 0.2, end: 3.3, speed: 1.1 },
+};
+/** The same recordings as speaking gestures (navigatorGestures.ts `shot`), by clip */
+const GESTURE_SHOTS: Record<string, ShotDef> = {
+  presentR: { clip: "presentR", start: 0.2, end: 3.3, speed: 1 },
+  presentL: { clip: "presentL", start: 0.2, end: 3.3, speed: 1 },
+  presentBoth: { clip: "presentBoth", start: 0.2, end: 3.0, speed: 1 },
+  // (the recording opens with a long look at the floor: only the point itself is used)
+  pointR: { clip: "pointR", start: 1.75, end: 3.4, speed: 1 },
+  pointL: { clip: "pointL", start: 1.75, end: 3.4, speed: 1 },
+  // played in full: a hand to the chest as he starts, and (explainTwo) a hand on the hip to finish
+  explainOne: { clip: "explainOne", start: 0.2, end: 3.6, speed: 1 },
+  explainTwo: { clip: "explainTwo", start: 0.2, end: 3.8, speed: 1 },
+  offer: { clip: "offer", start: 0.2, end: 2.8, speed: 1 },
+  shrug: { clip: "shrug", start: 0.2, end: 1.5, speed: 1 },
+  nod: { clip: "nodFirm", start: 0.1, end: 1.55, speed: 1, gain: 0.5 },
+};
+/**
+ * Parts of each recorded gesture that are NOT played. Hips, legs and feet always stay his own
+ * (planted, square to the viewer). For arm gestures the neck and head stay with the gaze solver,
+ * so he keeps looking where he should and the head stays level; nods and the bow keep theirs.
+ */
+const BODY_ONLY = /(Hips|UpLeg|Leg|Foot|ToeBase|Toe_End|Neck|Head|HeadTop_End|Eye)\.(quaternion|position|scale)$/;
+const BODY_AND_HEAD = /(Hips|UpLeg|Leg|Foot|ToeBase|Toe_End|Eye)\.(quaternion|position|scale)$/;
+const GESTURE_CLIP_FILTER: Record<string, RegExp> = {
+  // (the pointing recording looks at the floor first: its head stays with the gaze solver)
+  pointR: BODY_ONLY, pointL: BODY_ONLY, wave: BODY_ONLY,
+  // head as recorded (tilts and all); feet stay planted
+  presentR: BODY_AND_HEAD, presentL: BODY_AND_HEAD, presentBoth: BODY_AND_HEAD,
+  explainOne: BODY_AND_HEAD, explainTwo: BODY_AND_HEAD, shrug: BODY_AND_HEAD, offer: BODY_AND_HEAD,
+  nodFirm: BODY_AND_HEAD, acknowledge: BODY_AND_HEAD, bow: BODY_AND_HEAD, nodListen: BODY_AND_HEAD,
+  // idleNeutral is not filtered: the weight on one leg and the turned hips ARE the stance
+};
+/** Thinking: hand at the jaw (solved with solve_pose.py against the chin, rendered to check) */
+const CHIN = { arm: [-0.74, 1.23, 0.69] as [number, number, number], fore: [2.4, 0.48, 0] as [number, number, number] };
+function withoutTracks(source: THREE.AnimationClip, drop: RegExp): THREE.AnimationClip {
+  const clip = source.clone();
+  clip.tracks = clip.tracks.filter((track) => !drop.test(track.name));
+  return clip;
+}
 /**
  * Standing loops, and the parts of each that are NOT taken from the recording (see steadyClip).
  * The library's idle stands with the hips turned about 25 degrees and the weight on one leg, the
  * spine and neck turned back the other way; arms-folded does the same with the hips and head.
  */
 const STEADY_CLIPS: Record<string, RegExp> = {
+  // Mixamo "Breathing Idle": already square-on; the legs and head are still left to the model
+  idleBreathing: /(Hips|UpLeg|Leg|Foot|ToeBase|Toe_End|Neck|Head)\.(quaternion|position)$/,
   idleSubtle: /(Hips|UpLeg|Leg|Foot|ToeBase|Spine\d?|Neck|Head)\.(quaternion|position)$/,
   foldArms: /(Hips|UpLeg|Leg|Foot|ToeBase|Head)\.(quaternion|position)$/,
 };
@@ -137,7 +196,7 @@ const COMPANION_EXPRESSION_GAIN = 1.8;
 const FX = Object.fromEntries(EXPRESSION_CHANNELS.map((ch, i) => [ch, i])) as Record<(typeof EXPRESSION_CHANNELS)[number], number>;
 
 /** Clips that are scrubbed by hand as one-shots (their own clock is stopped) */
-const SHOT_CLIP_NAMES = new Set(Object.values(SHOT_CLIPS).map((x) => x.clip));
+const SHOT_CLIP_NAMES = new Set([...Object.values(SHOT_CLIPS), ...Object.values(GESTURE_SHOTS)].map((x) => x.clip));
 
 interface AnimLayer {
   mixer: THREE.AnimationMixer;
@@ -146,7 +205,7 @@ interface AnimLayer {
 }
 
 const OVERLAY_DURATIONS: Record<string, number> = {
-  presentRight: 1.9, presentLeft: 1.9, wave: 1.7, nod: 0.7, surprise: 1.0, tilt: 1.2, shrug: 1.5, salute: 0.8, greet: 1.8, point: 2.0, shake: 1.3,
+  bow: 2.4, presentRight: 1.9, presentLeft: 1.9, wave: 1.7, nod: 0.7, surprise: 1.0, tilt: 1.2, shrug: 1.5, salute: 0.8, greet: 1.8, point: 2.0, shake: 1.3,
 };
 
 interface FaceBinding {
@@ -325,7 +384,11 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     const actions: Record<string, THREE.AnimationAction> = {};
     const weights: Record<string, number> = {};
     for (const source of animations) {
-      const clip = STEADY_CLIPS[source.name] ? steadyClip(source) : source;
+      const clip = STEADY_CLIPS[source.name]
+        ? steadyClip(source)
+        : GESTURE_CLIP_FILTER[source.name]
+        ? withoutTracks(source, GESTURE_CLIP_FILTER[source.name])
+        : source;
       const action = mixer.clipAction(clip);
       action.enabled = true;
       action.setEffectiveWeight(0);
@@ -360,7 +423,8 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     headRoll: mkSpring(), headNod: mkSpring(), leanSp: mkSpring(), dragSpring: mkSpring(),
     fingerOpen: mkSpring(),
     armW: { l: 0, r: 0 },
-    shot: null as null | { clip: string; start: number; end: number; speed: number; t0: number },
+    shot: null as null | (ShotDef & { t0: number; gesture?: boolean; cut?: boolean }),
+    lastGestureSince: -1,
     idleSince: 0,
     invScene: new THREE.Quaternion(),
     // the mixer's own output for every bone we adjust (see 8a)
@@ -447,6 +511,12 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
       st.canvasCenter.x = rc.left + rc.width / 2;
       st.canvasCenter.y = rc.top + rc.height * 0.3; // head height within the frame
       navigatorBus.avatarCenter = { x: rc.left + rc.width / 2, y: rc.top + rc.height / 2 };
+      // where the map is from where he stands now (he can be moved anywhere on the page)
+      const mapEl = typeof document !== "undefined" ? document.querySelector(".maplibregl-map") : null;
+      if (mapEl) {
+        const mr = mapEl.getBoundingClientRect();
+        navigatorBus.mapCenter = { x: mr.left + mr.width / 2, y: mr.top + mr.height / 2 };
+      }
     }
 
     // 2. Speech telemetry -----------------------------------------------------
@@ -521,9 +591,32 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     let headNodTarget = st.emph * 0.035;
     let yawExtra = 0;
 
+    // What he looks and points at, measured from where he actually stands: the selected or
+    // clicked project, else the spot the user is working on (click, drag, zoom), else the map.
+    const freshPeek = !!peek && (dbg?.peek ? true : peekAge < 6000);
+    const attention = navigatorBus.attention && now * 1000 - navigatorBus.attentionAt < 3500 ? navigatorBus.attention : null;
+    const target = freshPeek ? peek : attention ?? navigatorBus.mapCenter;
+    const activity = speaking ? navigatorBus.activity : null;
+    /** -1..1: how far to his screen-left (-) or screen-right (+) the target is */
+    const targetSide = target ? THREE.MathUtils.clamp((target.x - st.canvasCenter.x) / 600, -1, 1) : -0.7;
+
     if (!reducedMotion) {
-      const hasPeek = !!peek && (dbg?.peek ? true : peekAge < 6000);
-      advanceDirector(st.director, t, { hasPeek, hint: navigatorBus.narrationHint });
+      // a tour guide always has the site to show, and "where is it" is answered at the map
+      const hasPeek = freshPeek || (!!target && (activity === "tour" || (activity === "answer" && navigatorBus.narrationHint === "location")));
+      const hasClips = !!animRef.current?.actions.presentR;
+      advanceDirector(st.director, t, { hasPeek, hint: navigatorBus.narrationHint, activity, hasClips });
+      // A recorded gesture: played once, start to finish, when the director picks it. The side he
+      // presents or points to is the side the map (or the named project) is on.
+      if (st.director.since !== st.lastGestureSince) {
+        st.lastGestureSince = st.director.since;
+        const kind = st.director.current.shot;
+        if (kind && speaking && animRef.current) {
+          const id =
+            kind === "present" ? (targetSide < 0 ? "presentR" : "presentL") : kind === "point" ? (targetSide < 0 ? "pointR" : "pointL") : kind;
+          const def = GESTURE_SHOTS[id];
+          if (def && animRef.current.actions[def.clip]) st.shot = { ...def, t0: t, gesture: true };
+        }
+      }
       if (dbg?.gesture) {
         const forced = GESTURES.find((x) => x.id === dbg.gesture);
         if (forced) { st.director.current = forced; st.director.until = t + 5; }
@@ -550,10 +643,11 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
         if (g.lean) leanTarget += g.lean * w;
         glanceWrist = !!g.glanceTablet;
         // point toward the peek target (arm swings to the side the target is on)
-        if (g.id === "mapPoint" && peek) {
-          const dx = THREE.MathUtils.clamp((peek.x - st.canvasCenter.x) / 600, -1, 1);
-          setT("rArm", 0, 0, -dx * 0.45 * w);
-        }
+        if (g.id === "mapPoint" && target) setT("rArm", 0, 0, -targetSide * 0.45 * w);
+        // presenting the site: the open arm sweeps toward the map's side of him
+        if (g.id === "presentLeft" && target) setT("rArm", 0, 0, -targetSide * 0.3 * w);
+        // a tour guide squares up to what he is showing, a little (not a turn of the hips)
+        if (activity === "tour") yawExtra += targetSide * 0.12 * w;
       } else {
         switch (poseState) {
           case "LISTENING":
@@ -561,8 +655,10 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
             headNodTarget += Math.max(0, Math.sin(t * 1.3)) * Math.max(0, Math.sin(t * 0.37)) * 0.06;
             break;
           case "THINKING":
-            // working it out: brow down, chin dropped a touch, hands left where they are
+            // working it out: brow down, chin dropped a touch, a hand at the jaw
             faceBrowDown += 0.3; headNodTarget += 0.04;
+            setT("rArm", CHIN.arm[0], CHIN.arm[1], CHIN.arm[2]);
+            setT("rFore", CHIN.fore[0], CHIN.fore[1], CHIN.fore[2]);
             break;
           case "SEARCHING":
           case "NAVIGATING": {
@@ -584,9 +680,9 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     }
 
     // 4b. One-shot reactions (tap / hover / events) -----------------------------
-    // How he carries himself: a site engineer, at ease and economical. Movement comes from the
-    // shoulder and elbow, not the wrist; the head stays level (no tilts); a nod is one firm
-    // down-and-up; hands stay below the face, close to the body, and never push at the viewer.
+    // How he carries himself: a site engineer, at ease and economical. These tap reactions are
+    // small on purpose (a nod is one firm down-and-up): he is tapped often, and a big movement
+    // on every tap reads as bowing. The larger, freer movements are the recorded gestures.
     const ov = st.overlay;
     if (ov.id && !reducedMotion) {
       const lt = t - ov.t0;
@@ -724,10 +820,26 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
         // Angle toward the target as if the map plane sat ~0.55 screen-widths in front of him
         yaw = THREE.MathUtils.clamp(Math.atan2(dx, winW * 0.55), -1.05, 1.05);
         pitch = THREE.MathUtils.clamp(Math.atan2(-dy, winH * 0.7), -0.45, 0.4);
+      } else if (attention && !speaking) {
+        // the user is working on the map: he follows what they do
+        const dx = attention.x - st.canvasCenter.x;
+        const dy = attention.y - st.canvasCenter.y;
+        const winW = typeof window !== "undefined" ? window.innerWidth : 1920;
+        const winH = typeof window !== "undefined" ? window.innerHeight : 1080;
+        yaw = THREE.MathUtils.clamp(Math.atan2(dx, winW * 0.55), -1.05, 1.05);
+        pitch = THREE.MathUtils.clamp(Math.atan2(-dy, winH * 0.7), -0.45, 0.4);
       } else if (poseState === "THINKING") {
         yaw = 0.3; pitch = 0.2; // up and away while he works it out
+      } else if (activity === "tour" && target) {
+        // tour guide: shows the site, then turns back to the audience, in a steady rhythm
+        const atSite = (t % 6.5) < 4 || st.director.current.id === "mapPoint";
+        yaw = atSite ? THREE.MathUtils.clamp(targetSide * 0.75, -0.9, 0.9) : 0;
+        pitch = atSite ? -0.04 : 0.02;
       } else if (gazeTarget === "MAP" || poseState === "SEARCHING" || poseState === "NAVIGATING") {
-        yaw = visualMode === "companion" ? -0.4 : -0.25; // the map is to his right (screen-left)
+        // toward the map from where he stands (he can be moved to either side of it)
+        const side = target ? targetSide : -0.7;
+        yaw = THREE.MathUtils.clamp(side * 0.6, visualMode === "companion" ? -0.55 : -0.35, visualMode === "companion" ? 0.55 : 0.35);
+        if (Math.abs(yaw) < 0.12) yaw = 0.12 * Math.sign(side || -1); // map behind him: a clear glance, not a stare at the viewer
         pitch = 0.03;
       } else if (px.isHovering) {
         yaw = THREE.MathUtils.clamp(px.x * 0.32, -0.32, 0.32);
@@ -781,22 +893,35 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
       const idle = !speaking && poseState === "IDLE" && !st.overlay.id;
       if (!idle) st.idleSince = t;
       const idleFor = t - st.idleSince;
-      let base = "idleSubtle";
-      if (speaking && st.speakW > 0.3) base = gesture.clip && an.actions[gesture.clip] ? gesture.clip : "idleSubtle";
-      else if (idle && idleFor > 24 && idleFor % 44 < 13 && an.actions.foldArms) base = "foldArms"; // a change of stance now and then
+      const standing = an.actions.idleBreathing ? "idleBreathing" : "idleSubtle";
+      let base = standing;
+      if (speaking && st.speakW > 0.3) base = gesture.clip && an.actions[gesture.clip] ? gesture.clip : standing;
+      // listening to the microphone: the recorded attentive nod
+      else if (poseState === "LISTENING" && an.actions.nodListen) base = "nodListen";
+      // a change of stance now and then: arms folded, or the weight on one leg
+      else if (idle && idleFor > 24 && idleFor % 44 < 13) {
+        const alt = Math.floor(idleFor / 44) % 2 === 1 && an.actions.idleNeutral ? "idleNeutral" : "foldArms";
+        if (an.actions[alt]) base = alt;
+      }
 
       // one-shot reaction clip, scrubbed by hand
       let shotW = 0;
       const shot = st.shot;
       if (shot) {
         const lt = t - shot.t0;
+        // he stopped speaking (or was interrupted): a speaking gesture winds down at once
+        if (shot.gesture && !speaking && !shot.cut) {
+          shot.cut = true;
+          shot.end = Math.min(shot.end, shot.start + (lt + 0.35) * shot.speed);
+        }
         const dur = (shot.end - shot.start) / shot.speed;
         const action = an.actions[shot.clip];
         if (lt >= dur || !action || reducedMotion) {
           st.shot = null;
         } else {
-          action.time = shot.start + lt * shot.speed;
-          shotW = Math.min(1, lt / 0.25) * Math.min(1, (dur - lt) / 0.35);
+          const played = shot.start + lt * shot.speed;
+          action.time = shot.loop ? played % Math.max(0.05, action.getClip().duration) : played;
+          shotW = Math.min(1, lt / 0.25) * Math.min(1, (dur - lt) / 0.35) * (shot.gain ?? 1);
         }
       }
       const k = 1 - Math.exp(-dt / 0.16);

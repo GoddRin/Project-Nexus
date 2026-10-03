@@ -12,6 +12,16 @@ bpy.ops.import_scene.gltf(filepath=GLB)
 arm = next(o for o in bpy.data.objects if o.type == "ARMATURE")
 bpy.context.view_layer.objects.active = arm
 vl = bpy.context.view_layer
+# start from the rest pose: the importer leaves one of the GLB's animation clips playing
+if arm.animation_data:
+    arm.animation_data.action = None
+    for track in list(arm.animation_data.nla_tracks):
+        arm.animation_data.nla_tracks.remove(track)
+for pb in arm.pose.bones:
+    pb.rotation_mode = "QUATERNION"
+    pb.rotation_quaternion = (1, 0, 0, 0)
+    pb.location = (0, 0, 0)
+vl.update()
 C = Matrix(((1, 0, 0), (0, 0, -1), (0, 1, 0)))
 Ci = C.inverted()
 

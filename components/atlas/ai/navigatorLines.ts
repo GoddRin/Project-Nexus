@@ -18,7 +18,7 @@
  */
 export type OverlayId =
   | "wave" | "nod" | "surprise" | "tilt" | "shrug" | "salute" | "greet" | "point" | "shake"
-  | "presentRight" | "presentLeft";
+  | "presentRight" | "presentLeft" | "bow";
 
 export interface NavigatorLine {
   id: string;
