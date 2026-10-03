@@ -65,7 +65,7 @@ export function ProgressChart({ data }: ProgressChartProps) {
               if (active && payload && payload.length) {
                 const point = payload[0].payload as SnapshotPoint;
                 return (
-                  <div className="rounded-xl border border-scic-blue/30 bg-[#0B131B]/95 p-3.5 shadow-2xl backdrop-blur-md">
+                  <div className="rounded-xl border border-scic-blue/30 bg-bg-panel/95 p-3.5 shadow-2xl backdrop-blur-md">
                     <p className="font-mono text-[10px] uppercase font-bold text-scic-cyan">
                       {point.formattedDate}
                     </p>

@@ -154,7 +154,7 @@ export function MobileNavDrawer({
             {/* Header: SCIC Logo & Project Badge */}
             <div className="flex items-center justify-between border-b border-border-hairline p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline overflow-hidden shadow-sm p-1">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-bg-panel border border-border-hairline overflow-hidden shadow-sm p-1">
                   <HydroPowerLogo className="h-full w-full" size={40} />
                 </div>
                 <div className="min-w-0">

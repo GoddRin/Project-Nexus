@@ -59,3 +59,9 @@ next-env.d.ts
 *.blend1
 test_weather.js
 
+
+# generated speech audio cache (lib/atlas-ai/speechService.ts)
+/.cache/
+
+# local tooling / ide files
+.claude/*.local.json

@@ -71,20 +71,20 @@ export function IncidentDispatchModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
-      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#161b16] shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/60 backdrop-blur-sm p-4 font-sans">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-white/10 bg-[#161b16] shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/5 px-6 py-4 bg-gradient-to-r from-red-500/10 to-transparent">
+        <div className="flex items-center justify-between border-b border-slate-200/70 dark:border-white/5 px-6 py-4 bg-gradient-to-r from-red-500/10 to-transparent">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-red-500/20 p-2">
               <AlertTriangle className="h-5 w-5 text-red-500" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">Dispatch Incident</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Dispatch Incident</h2>
               <p className="text-xs text-text-muted">Dispatching to: <span className="font-medium text-flow-teal">{facilityName}</span></p>
             </div>
           </div>
-          <button onClick={onClose} className="rounded-full p-2 hover:bg-white/5 text-text-muted transition-colors">
+          <button onClick={onClose} className="rounded-full p-2 hover:bg-slate-100 dark:hover:bg-white/5 text-text-muted transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -97,7 +97,7 @@ export function IncidentDispatchModal({
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-flow-teal transition-colors [color-scheme:dark]"
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-flow-teal transition-colors [color-scheme:dark]"
               >
                 <option value="MEDICAL" className="bg-[#161b16]">Medical Emergency</option>
                 <option value="SECURITY" className="bg-[#161b16]">Security Breach</option>
@@ -110,7 +110,7 @@ export function IncidentDispatchModal({
               <select
                 value={formData.severity}
                 onChange={(e) => setFormData({ ...formData, severity: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-flow-teal transition-colors [color-scheme:dark]"
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-flow-teal transition-colors [color-scheme:dark]"
               >
                 <option value="LOW" className="bg-[#161b16]">Low</option>
                 <option value="MEDIUM" className="bg-[#161b16]">Medium</option>
@@ -127,7 +127,7 @@ export function IncidentDispatchModal({
               lang="en-US"
               value={formData.timeOfDeparture}
               onChange={(e) => setFormData({ ...formData, timeOfDeparture: e.target.value })}
-              className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-flow-teal transition-colors [color-scheme:dark]"
+              className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-flow-teal transition-colors [color-scheme:dark]"
             />
           </div>
 
@@ -138,7 +138,7 @@ export function IncidentDispatchModal({
               placeholder="e.g. John Doe, Night Shift Security"
               value={formData.personnelInvolved}
               onChange={(e) => setFormData({ ...formData, personnelInvolved: e.target.value })}
-              className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-flow-teal transition-colors"
+              className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-flow-teal transition-colors"
             />
           </div>
 
@@ -149,7 +149,7 @@ export function IncidentDispatchModal({
               placeholder="Briefly describe the incident and condition..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-flow-teal transition-colors min-h-[100px] resize-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-flow-teal transition-colors min-h-[100px] resize-none"
             />
           </div>
 
@@ -158,7 +158,7 @@ export function IncidentDispatchModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-sm font-medium text-text-muted hover:text-white hover:bg-white/5 transition-all"
+              className="px-4 py-2 rounded-xl text-sm font-medium text-text-muted hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
             >
               Cancel
             </button>
@@ -168,7 +168,7 @@ export function IncidentDispatchModal({
               className="flex items-center gap-2 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
             >
               {loading ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 dark:border-white/30 border-t-white" />
               ) : (
                 <AlertTriangle className="h-4 w-4" />
               )}

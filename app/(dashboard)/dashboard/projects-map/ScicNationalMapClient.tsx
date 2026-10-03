@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   SCICProject,
@@ -43,15 +43,25 @@ import {
   getRegionDiscoveryDetail,
   CANONICAL_REGIONS,
 } from "@/components/atlas/AtlasDiscoveryUtils";
-import { Search, X, SlidersHorizontal, Loader2, Compass } from "lucide-react";
+import { Search, X, SlidersHorizontal, Loader2, Compass, Minimize2, FileText, Sparkles, CloudRain } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AtlasCommandBar,
   AtlasAssistantDrawer,
+  AtlasAIWorkspace,
   AtlasAIFloatingTrigger,
   AtlasTourController,
+  AtlasNavigatorAvatar,
+  useAtlasNavigatorState,
   useAtlasAI,
 } from "@/components/atlas/ai";
+import { navigatorBus, setNavigatorPeek, emitNavigatorEvent } from "@/components/atlas/ai/navigatorBus";
+import { AtlasMapEffects } from "@/components/atlas/effects/AtlasMapEffects";
+import { DayDuskTint } from "@/components/atlas/effects/DayDuskTint";
+import { AtlasIntro } from "@/components/atlas/effects/AtlasIntro";
+import { hasSiteStory, SITE_STORY_PREFIX } from "@/lib/atlas-ai/siteStories";
+import { playUiTone } from "@/lib/ui/sounds";
+import { rememberProject } from "@/lib/atlas-ai/userMemory";
 
 function ScicNationalMapContent() {
   const {
@@ -66,6 +76,7 @@ function ScicNationalMapContent() {
     activeGisLayers,
     toggleGisLayer,
     viewport,
+    mapInstance,
   } = useAtlasMap();
 
   const searchParams = useSearchParams();
@@ -143,6 +154,10 @@ function ScicNationalMapContent() {
 
   // AI-driven visual highlight on project markers (Phase 17)
   const [highlightedProjectIds, setHighlightedProjectIds] = useState<string[]>([]);
+
+  // ─── SCIC Atlas Navigator Peek Target State ──────
+  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
+  const [clickedCoords, setClickedCoords] = useState<[number, number] | null>(null);
 
   // AI-driven dynamic GIS overlays (transit corridor & buffer zones)
   const [transitCorridor, setTransitCorridor] = useState<{
@@ -258,7 +273,9 @@ function ScicNationalMapContent() {
     setDiscoveryScope({ level: "national" });
     setGeographicScope({ region: "ALL", province: "ALL" });
     selectProject(null);
-    resetToNationalView();
+    setClickedCoords(null);
+    setHoveredProjectId(null);
+    resetToNationalView(); // (also tells the navigator)
   }, [selectProject, resetToNationalView]);
 
   // 4. Single Canonical Filter Pipeline (Directive 5)
@@ -338,6 +355,11 @@ function ScicNationalMapContent() {
     );
   }, [selectedProjectId, activeProjects]);
 
+  // Atlas remembers what you look at (in this browser only) so he can pick up where you left off
+  useEffect(() => {
+    if (selectedProject) rememberProject({ id: selectedProject.id, name: selectedProject.name, region: selectedProject.region });
+  }, [selectedProject]);
+
   // National KPIs (Computed across full dataset for executive ribbon)
   const kpis = useMemo(() => computeNationalKPIs(activeProjects), [activeProjects]);
 
@@ -393,6 +415,7 @@ function ScicNationalMapContent() {
     geographicScope,
     mapStyle,
     activeGisLayers,
+    visibleProjectIds: filteredProjects.slice(0, 25).map((p) => p.id),
     allProjectsCount: activeProjects.length,
     onSelectProject: (id) => {
       if (!id) {
@@ -596,6 +619,261 @@ function ScicNationalMapContent() {
     },
   });
 
+  // ─── SCIC Atlas Navigator 3D Character Integration (Phase 21) ──────
+  const avatarSlotRef = useRef<HTMLDivElement>(null);
+
+  // ── Layout: one panel per side, the map resizes around a docked chat, focus mode ──
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [rowInsets, setRowInsets] = useState({ top: 56, right: 12, bottom: 12, left: 12 });
+  const [chatDock, setChatDock] = useState<{ rightDockWidth: number; dock: string; expanded: boolean }>({
+    rightDockWidth: 0,
+    dock: "RIGHT",
+    expanded: false,
+  });
+  const [rightTab, setRightTab] = useState<"project" | "chat">("chat");
+  const [isFocusMode, setIsFocusMode] = useState(false);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      const next = {
+        top: Math.round(r.top),
+        right: Math.round(window.innerWidth - r.right),
+        bottom: Math.round(window.innerHeight - r.bottom),
+        left: Math.round(r.left),
+      };
+      setRowInsets((prev) =>
+        prev.top === next.top && prev.right === next.right && prev.bottom === next.bottom && prev.left === next.left
+          ? prev
+          : next
+      );
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [isFocusMode]);
+
+  // ── Presentation effects ──
+  // Rain radar + typhoon tracks appear when the weather desk is opened and stay until dismissed
+  const [weatherLayerOn, setWeatherLayerOn] = useState(false);
+  useEffect(() => {
+    if (isNewsModalOpen) setWeatherLayerOn(true);
+  }, [isNewsModalOpen]);
+  useEffect(() => {
+    if (weatherLayerOn && !isNewsModalOpen) emitNavigatorEvent("weather-on");
+  }, [weatherLayerOn, isNewsModalOpen]);
+  // The project highlighted in the list pulses once on the map
+  const activeListCoords = useMemo<[number, number] | null>(() => {
+    if (!hoveredProjectId) return null;
+    const p = activeProjects.find((x) => x.id === hoveredProjectId);
+    return p?.coordinates ? [p.coordinates.lng, p.coordinates.lat] : null;
+  }, [hoveredProjectId, activeProjects]);
+  // Interface tones (off unless the user turns them on) + navigator acknowledgements
+  const tourStepKey = atlasAI.activeTour ? `${atlasAI.activeTour.tourId}:${atlasAI.activeTour.stepIndex}` : null;
+  const prevTourStepRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (tourStepKey && prevTourStepRef.current && tourStepKey !== prevTourStepRef.current) {
+      playUiTone("success");
+      emitNavigatorEvent("tour-step");
+    }
+    prevTourStepRef.current = tourStepKey;
+  }, [tourStepKey]);
+
+  // The panel the user just opened comes to the front
+  const prevSelForTabRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (selectedProjectId && selectedProjectId !== prevSelForTabRef.current) {
+      setRightTab("project");
+      playUiTone("tap");
+      emitNavigatorEvent("panel-open-right");
+    }
+    prevSelForTabRef.current = selectedProjectId ?? null;
+  }, [selectedProjectId]);
+  const chatIsOpen = atlasAI.isOpen;
+  useEffect(() => {
+    if (chatIsOpen) {
+      setRightTab("chat");
+      playUiTone("open");
+    }
+  }, [chatIsOpen]);
+
+  const handleChatDockInfo = useCallback(
+    (info: { rightDockWidth: number; dock: string; expanded: boolean }) =>
+      setChatDock((prev) =>
+        prev.rightDockWidth === info.rightDockWidth && prev.dock === info.dock && prev.expanded === info.expanded
+          ? prev
+          : info
+      ),
+    []
+  );
+  const [isChatInputFocused, setIsChatInputFocused] = useState(false);
+  const [isMapPanning, setIsMapPanning] = useState(false);
+  const [isSpotlightActive, setIsSpotlightActive] = useState(false);
+  const panTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-dock avatar spotlight back to corner companion mode when map navigation or panning starts
+  useEffect(() => {
+    if (isMapPanning && isSpotlightActive) {
+      setIsSpotlightActive(false);
+    }
+  }, [isMapPanning, isSpotlightActive]);
+
+  // 1. Debounced Map Panning State with 350ms hysteresis (prevents rapid toggle during drag/inertia)
+  useEffect(() => {
+    if (!mapInstance) return;
+
+    const handleGestureStart = () => {
+      if (panTimerRef.current) clearTimeout(panTimerRef.current);
+      setIsMapPanning(true);
+    };
+
+    const handleGestureEnd = () => {
+      if (panTimerRef.current) clearTimeout(panTimerRef.current);
+      panTimerRef.current = setTimeout(() => {
+        setIsMapPanning(false);
+      }, 350);
+    };
+
+    const handleMoveStart = (e: any) => {
+      if (e?.originalEvent) {
+        if (panTimerRef.current) clearTimeout(panTimerRef.current);
+        setIsMapPanning(true);
+      }
+    };
+
+    const handleMoveEnd = () => {
+      if (panTimerRef.current) clearTimeout(panTimerRef.current);
+      panTimerRef.current = setTimeout(() => {
+        setIsMapPanning(false);
+      }, 350);
+    };
+
+    // Capture direct map clicks for target peeking
+    const handleMapClick = (e: any) => {
+      if (e?.lngLat) {
+        setClickedCoords([e.lngLat.lng, e.lngLat.lat]);
+      }
+    };
+
+    mapInstance.on("dragstart", handleGestureStart);
+    mapInstance.on("dragend", handleGestureEnd);
+    mapInstance.on("zoomstart", handleGestureStart);
+    mapInstance.on("zoomend", handleGestureEnd);
+    mapInstance.on("movestart", handleMoveStart);
+    mapInstance.on("moveend", handleMoveEnd);
+    mapInstance.on("click", handleMapClick);
+
+    return () => {
+      if (panTimerRef.current) clearTimeout(panTimerRef.current);
+      mapInstance.off("dragstart", handleGestureStart);
+      mapInstance.off("dragend", handleGestureEnd);
+      mapInstance.off("zoomstart", handleGestureStart);
+      mapInstance.off("zoomend", handleGestureEnd);
+      mapInstance.off("movestart", handleMoveStart);
+      mapInstance.off("moveend", handleMoveEnd);
+      mapInstance.off("click", handleMapClick);
+    };
+  }, [mapInstance]);
+
+  // 2. Resolve Active Geographic Peek Coordinates
+  // Priority: hovered project in directory > clicked map point > selected project > AI highlighted projects
+  const activePeekCoords = useMemo<[number, number] | null>(() => {
+    if (hoveredProjectId) {
+      const p = activeProjects.find((x) => x.id === hoveredProjectId);
+      if (p?.coordinates) return [p.coordinates.lng, p.coordinates.lat];
+    }
+    if (clickedCoords) {
+      return clickedCoords;
+    }
+    if (selectedProject?.coordinates) {
+      return [selectedProject.coordinates.lng, selectedProject.coordinates.lat];
+    }
+    if (highlightedProjectIds.length > 0) {
+      const first = activeProjects.find((x) => x.id === highlightedProjectIds[0]);
+      if (first?.coordinates) return [first.coordinates.lng, first.coordinates.lat];
+    }
+    return null;
+  }, [hoveredProjectId, clickedCoords, selectedProject, highlightedProjectIds, activeProjects]);
+
+  // User map interaction instantly hands Stage Focus back to the map (non-modal, interruptible)
+  useEffect(() => {
+    if (!mapInstance) return;
+    const onInteract = () => emitNavigatorEvent("map-interaction");
+    mapInstance.on("dragstart", onInteract);
+    mapInstance.on("zoomstart", onInteract);
+    mapInstance.on("click", onInteract);
+    return () => {
+      mapInstance.off("dragstart", onInteract);
+      mapInstance.off("zoomstart", onInteract);
+      mapInstance.off("click", onInteract);
+    };
+  }, [mapInstance]);
+
+  // 3. Continuously project geographic peek coordinates to screen viewport pixels
+  useEffect(() => {
+    if (!mapInstance || !activePeekCoords) {
+      setNavigatorPeek(null);
+      return;
+    }
+
+    // Writes to the non-React navigator bus (read per-frame by the 3D head) — no re-render per map frame
+    const updateScreenPoint = () => {
+      try {
+        const container = mapInstance.getContainer();
+        const rect = container.getBoundingClientRect();
+        const pt = mapInstance.project(activePeekCoords);
+        setNavigatorPeek({
+          x: Math.round(rect.left + pt.x),
+          y: Math.round(rect.top + pt.y),
+        });
+      } catch {
+        // Map may be tearing down
+      }
+    };
+
+    // New peek target (hover/click/select/highlight changed): re-arm the look-at window
+    navigatorBus.peekChangedAt = performance.now();
+    updateScreenPoint();
+
+    mapInstance.on("move", updateScreenPoint);
+    mapInstance.on("zoom", updateScreenPoint);
+    mapInstance.on("render", updateScreenPoint);
+
+    return () => {
+      setNavigatorPeek(null);
+      mapInstance.off("move", updateScreenPoint);
+      mapInstance.off("zoom", updateScreenPoint);
+      mapInstance.off("render", updateScreenPoint);
+    };
+  }, [mapInstance, activePeekCoords]);
+
+  const navigatorState = useAtlasNavigatorState({
+    isGenerating: atlasAI.isGenerating,
+    hasError: atlasAI.hasError,
+    currentToolEvents: atlasAI.currentToolEvents,
+    isInputFocused: isChatInputFocused,
+    isSpeaking: atlasAI.isSpeaking,
+    isStreaming: atlasAI.isStreaming,
+    isMapPanning,
+    lastAppliedAction: atlasAI.lastAppliedAction,
+    selectedProjectId: selectedProject?.id,
+    selectedProjectName: selectedProject?.name,
+    activeRegion: geographicScope.region,
+    isTourActive: !!atlasAI.activeTour,
+  });
+
+  // Expose runtime state for telemetry & test suites
+  if (typeof window !== "undefined") {
+    (window as any).__atlasNavigatorRuntime = navigatorState;
+  }
+
   // 7. Construct GeoJSON FeatureCollection for MapLibre
   // (Directive 6: Map ALWAYS receives ALL filtered projects, plus active selectedProject if excluded by filters)
   const currentGeoJson: AtlasFeatureCollection = useMemo(() => {
@@ -669,7 +947,12 @@ function ScicNationalMapContent() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (atlasAI.activeTour) {
+        if (isFocusMode) {
+          setIsFocusMode(false);
+        } else if (atlasAI.activeTour?.tourId.startsWith(SITE_STORY_PREFIX)) {
+          // a site story is about the project on screen: Esc ends the story and leaves you there
+          atlasAI.exitTour();
+        } else if (atlasAI.activeTour) {
           atlasAI.exitTour();
           selectProject(null);
           handleResetNationalScope();
@@ -679,6 +962,14 @@ function ScicNationalMapContent() {
           handleResetNationalScope();
         } else if (isMobileDirectoryOpen) {
           setIsMobileDirectoryOpen(false);
+        } else if (mapInstance && !atlasAI.isOpen) {
+          // Nothing left to close: Esc always leads back to the full Philippine view, including after
+          // a free pan/zoom or once a project panel has been dismissed (the chat owns Esc while open)
+          const tag = document.activeElement?.tagName.toLowerCase();
+          if (tag === "input" || tag === "textarea") return;
+          const awayFromNational =
+            mapInstance.getZoom() > 6.2 || Math.abs(mapInstance.getBearing()) > 1 || mapInstance.getPitch() > 1;
+          if (awayFromNational) handleResetNationalScope();
         }
       }
     };
@@ -686,6 +977,7 @@ function ScicNationalMapContent() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
+    isFocusMode,
     atlasAI,
     selectedProjectId,
     selectProject,
@@ -693,6 +985,7 @@ function ScicNationalMapContent() {
     discoveryScope.level,
     handleResetNationalScope,
     isMobileDirectoryOpen,
+    mapInstance,
   ]);
 
   // Project Selection Handler from Directory Sidebar
@@ -713,10 +1006,28 @@ function ScicNationalMapContent() {
     [activeProjects, selectProject, flyToProject]
   );
 
+  // The right edge holds ONE panel: project details or the docked chat. When both are available,
+  // a small tab strip switches between them instead of stacking them over the map.
+  const chatOnRight = atlasAI.isOpen && chatDock.dock === "RIGHT" && chatDock.expanded && !atlasAI.activeTour;
+  const bothRight = !!selectedProject && chatOnRight && !isFocusMode;
+  // While a tour or site story plays, its narration card is the one place the project is described:
+  // the project panel (which shows the same overview) steps aside and returns when it ends.
+  const showProjectPanel =
+    !!selectedProject && !isFocusMode && !atlasAI.activeTour && (!bothRight || rightTab === "project");
+  // During a guided tour the narration card owns the bottom of the map; the chat returns when it ends
+  const hideChat = isFocusMode || !!atlasAI.activeTour || (bothRight && rightTab === "project");
+  const tabStripH = bothRight ? 40 : 0;
+  // Matches the project panel's responsive width (md 380 / lg 410 / xl 430)
+  const projectPanelWidth =
+    typeof window === "undefined" ? 430 : window.innerWidth >= 1280 ? 430 : window.innerWidth >= 1024 ? 410 : window.innerWidth >= 768 ? 380 : 0;
+
   return (
-    <div className="flex flex-col gap-3 w-full h-[calc(100vh-5.5rem)] min-h-[640px] text-slate-900 dark:text-slate-100 font-sans transition-colors">
+    <div className="atlas-theme flex flex-col gap-3 w-full h-[calc(100vh-5.5rem)] min-h-[640px] text-slate-900 dark:text-slate-100 transition-colors">
       {/* 1. Top Executive Corporate Header */}
+      {!isFocusMode && (
       <AtlasHeader
+        onEnterFocusMode={() => setIsFocusMode(true)}
+        tourProgress={atlasAI.activeTour ? (atlasAI.activeTour.stepIndex + 1) / Math.max(1, atlasAI.activeTour.totalSteps) : null}
         totalProjects={kpis.totalProjects}
         totalOngoing={kpis.totalOngoing}
         renewableCapacityMw={kpis.totalRenewableCapacityMw}
@@ -726,16 +1037,18 @@ function ScicNationalMapContent() {
         onStyleChange={setMapStyle}
         onOpenNews={() => setIsNewsModalOpen(true)}
       />
+      )}
 
       {/* 2. Composition: Desktop Sidebar + Central Map + Mobile Drawers */}
-      <div className="flex-1 flex gap-3 min-h-0 relative overflow-hidden">
+      <div ref={rowRef} className="flex-1 flex gap-3 min-h-0 relative overflow-hidden">
         {/* Desktop Directory Sidebar (Left) */}
-        <div className="hidden lg:flex h-full">
+        <div className={cn("hidden h-full", !isFocusMode && "lg:flex")}>
           <AtlasDirectorySidebar
             projects={sortedProjects}
             totalCount={activeProjects.length}
             selectedProjectId={selectedProjectId}
             onSelectProject={handleSelectProject}
+            onHoverProject={setHoveredProjectId}
             searchQuery={searchInputValue}
             onSearchChange={setSearchInputValue}
             selectedCategory={selectedCategory}
@@ -768,12 +1081,29 @@ function ScicNationalMapContent() {
         {/* Center / Right Dominant GIS Map Surface */}
         <main
           className={cn(
-            "overflow-hidden bg-slate-100 dark:bg-[#08121E] transition-all duration-150",
+            "overflow-hidden bg-slate-100 dark:bg-atlas-sunken transition-all duration-150",
             isFullscreen
               ? "fixed inset-0 z-[99999] border-0 rounded-none"
               : "flex-1 h-full relative rounded-xl border border-slate-200 dark:border-white/10"
           )}
+          style={
+            !isFullscreen && chatDock.rightDockWidth > 0 && !hideChat
+              ? { marginRight: chatDock.rightDockWidth + 12 }
+              : undefined
+          }
         >
+          {isFocusMode && (
+            <button
+              type="button"
+              onClick={() => setIsFocusMode(false)}
+              className="absolute top-14 left-3 z-40 flex items-center gap-1.5 h-8 px-3 rounded-full bg-atlas-panel/90 backdrop-blur-md border border-white/15 text-[11px] font-medium text-slate-200 hover:text-white hover:border-emerald-400/50 shadow-lg transition-colors cursor-pointer"
+              title="Exit focus mode (Esc)"
+            >
+              <Minimize2 className="h-3.5 w-3.5" />
+              <span>Exit focus</span>
+              <kbd className="ml-1 px-1 rounded bg-white/10 text-[9px] font-mono text-slate-400">Esc</kbd>
+            </button>
+          )}
           {/* Mobile Pinned Search & Discovery Trigger Bar (< lg) */}
           <div className="lg:hidden absolute top-3 left-3 right-16 z-30 flex items-center gap-2">
             <button
@@ -781,7 +1111,7 @@ function ScicNationalMapContent() {
                 setSidebarMode("DIRECTORY");
                 setIsMobileDirectoryOpen(true);
               }}
-              className="flex-1 flex items-center justify-between px-3.5 py-2 rounded-xl bg-white/95 dark:bg-[#0B1726]/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs text-slate-700 dark:text-slate-300 shadow-md cursor-pointer"
+              className="flex-1 flex items-center justify-between px-3.5 py-2 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs text-slate-700 dark:text-slate-300 shadow-md cursor-pointer"
             >
               <div className="flex items-center gap-2 truncate">
                 <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -792,7 +1122,7 @@ function ScicNationalMapContent() {
                 </span>
               </div>
               <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                <span className="px-1.5 py-0.5 rounded bg-[#0284C7]/20 border border-[#0284C7]/30 text-[10px] font-mono text-[#0284C7] dark:text-[#38BDF8]">
+                <span className="px-1.5 py-0.5 rounded bg-scic-blue/20 border border-scic-blue/30 text-[10px] font-mono text-scic-blue dark:text-sky-400">
                   {filteredProjects.length}
                 </span>
                 <SlidersHorizontal className="h-3 w-3 text-slate-400" />
@@ -804,7 +1134,7 @@ function ScicNationalMapContent() {
                 setSidebarMode("DISCOVERY");
                 setIsMobileDirectoryOpen(true);
               }}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl bg-white/95 dark:bg-[#0B1726]/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs font-mono font-semibold text-[#0284C7] dark:text-[#38BDF8] shadow-md cursor-pointer shrink-0"
+              className="flex items-center gap-1 px-3 py-2 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs font-mono font-semibold text-scic-blue dark:text-sky-400 shadow-md cursor-pointer shrink-0"
               title="Explore by Region"
             >
               <Compass className="h-3.5 w-3.5" />
@@ -835,8 +1165,18 @@ function ScicNationalMapContent() {
             />
           </div>
 
-          {/* ✦ SCIC Atlas Command Bar: Top-Center on Map Canvas */}
-          <div className="absolute top-14 lg:top-3 left-1/2 -translate-x-1/2 z-30 w-full max-w-sm sm:max-w-md lg:max-w-xl px-3 pointer-events-none flex justify-center">
+          {/* ✦ SCIC Atlas Command Bar: Top-Center on Map Canvas.
+              With the project panel open it drops below the breadcrumb row and centres in the map
+              area that is still visible, so it is never cut off by the panel or the breadcrumb. */}
+          <div
+            className={cn(
+              "absolute left-0 right-0 z-30 px-3 pointer-events-none flex justify-center transition-[top,right] duration-300",
+              showProjectPanel
+                ? "top-26 lg:top-14 md:right-[380px] lg:right-[410px] xl:right-[430px]"
+                : "top-14 lg:top-3"
+            )}
+          >
+            <div className="w-full max-w-sm sm:max-w-md lg:max-w-xl flex justify-center">
             <AtlasCommandBar
               onSend={atlasAI.sendMessage}
               onOpenDrawer={() => atlasAI.setIsOpen(true)}
@@ -844,18 +1184,45 @@ function ScicNationalMapContent() {
               isGenerating={atlasAI.isGenerating}
               selectedProjectName={selectedProject?.name}
               activeRegion={geographicScope.region}
+              onFocusChange={setIsChatInputFocused}
             />
+            </div>
           </div>
 
-          {/* ✦ Floating Atlas AI Entry Point Button (Bottom-Right, non-colliding with GIS Legend) */}
-          {!atlasAI.isOpen && (
-            <div className="absolute bottom-5 right-4 z-20 pointer-events-auto">
-              <AtlasAIFloatingTrigger
-                onClick={() => atlasAI.setIsOpen(true)}
-                isOpen={false}
-              />
-            </div>
-          )}
+          {/* ✦ SCIC ATLAS NAVIGATOR 3D CHARACTER (PHASE 21: Persistent Singleton R3F Canvas) */}
+          <AtlasNavigatorAvatar
+            state={navigatorState.state}
+            reaction={navigatorState.reaction}
+            gazeTarget={navigatorState.gazeTarget}
+            statusLabel={navigatorState.statusLabel}
+            onClickAvatar={() => {
+              navigatorState.triggerClickReaction();
+              atlasAI.setIsOpen(true);
+            }}
+            isOpen={atlasAI.isOpen}
+            isDrawerOpen={showProjectPanel}
+            isInputFocused={isChatInputFocused}
+            cancelSpeech={atlasAI.cancelSpeech}
+            warmVoice={atlasAI.warmVoice}
+            prepareSpeech={atlasAI.prepareSpeech}
+            spokenCaption={atlasAI.spokenCaption}
+            targetSlotRef={avatarSlotRef}
+            lipSyncRef={atlasAI.lipSyncRef}
+            isSpeaking={atlasAI.isSpeaking}
+            isPreparingSpeech={atlasAI.isPreparingSpeech}
+            isTourActive={!!atlasAI.activeTour}
+            mapStyle={mapStyle}
+            activeVoice={atlasAI.activeVoice}
+            voiceEnabled={atlasAI.voiceEnabled}
+            toggleVoiceNarration={atlasAI.toggleVoiceNarration}
+            selectedProjectName={selectedProject?.name}
+            selectedProjectCategory={selectedProject?.sector}
+            playAudio={atlasAI.playAudio}
+            playHolographicChime={atlasAI.playHolographicChime}
+            isSpotlightActive={isSpotlightActive}
+            onToggleSpotlight={setIsSpotlightActive}
+            speakNarration={atlasAI.speakNarration}
+          />
 
           {/* Region Intelligence Card (Floats when in regional scope, no project selected, and sidebar is not in Discovery mode) */}
           {geographicScope.region !== "ALL" && !selectedProjectId && sidebarMode !== "DISCOVERY" && (
@@ -878,6 +1245,23 @@ function ScicNationalMapContent() {
             </div>
           )}
 
+          {/* Presentation layer: time-of-day wash, map effects, session intro */}
+          <DayDuskTint satellite={mapStyle === "SATELLITE"} dark={mapStyle === "DARK"} />
+          <AtlasMapEffects activeCoords={activeListCoords} weatherLayerOn={weatherLayerOn} />
+          <AtlasIntro />
+          {weatherLayerOn && (
+            <button
+              type="button"
+              onClick={() => setWeatherLayerOn(false)}
+              className="absolute bottom-24 left-3 z-20 flex items-center gap-1.5 h-7 px-2.5 rounded-full bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/10 text-[11px] font-medium text-slate-700 dark:text-slate-200 shadow-md hover:border-emerald-500/50 transition-colors cursor-pointer"
+              title="Hide the rain radar and typhoon tracks"
+            >
+              <CloudRain className="h-3.5 w-3.5 text-sky-500" />
+              <span>Rain radar on</span>
+              <X className="h-3 w-3 opacity-60" />
+            </button>
+          )}
+
           {/* Native MapLibre GL WebGL Map Canvas */}
           <ProjectAtlasMap
             geoJson={currentGeoJson}
@@ -893,8 +1277,8 @@ function ScicNationalMapContent() {
         {/* Mobile Directory Slide-Over Drawer (< lg) (Directive 28 & 30) */}
         {isMobileDirectoryOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-start">
-            <div className="w-full max-w-sm h-full bg-white dark:bg-[#0B1726] border-r border-slate-200 dark:border-white/10 flex flex-col shadow-2xl animate-in slide-in-from-left duration-200">
-              <div className="flex items-center justify-between p-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#08121E]">
+            <div className="w-full max-w-sm h-full bg-white dark:bg-atlas-panel border-r border-slate-200 dark:border-white/10 flex flex-col shadow-2xl animate-in slide-in-from-left duration-200">
+              <div className="flex items-center justify-between p-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-atlas-sunken">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold font-mono tracking-wider text-slate-900 dark:text-white uppercase">
                     {sidebarMode === "DISCOVERY" ? "Project Discovery" : "Project Directory"}
@@ -917,6 +1301,7 @@ function ScicNationalMapContent() {
                   totalCount={activeProjects.length}
                   selectedProjectId={selectedProjectId}
                   onSelectProject={handleSelectProject}
+                  onHoverProject={setHoveredProjectId}
                   searchQuery={searchInputValue}
                   onSearchChange={setSearchInputValue}
                   selectedCategory={selectedCategory}
@@ -955,8 +1340,42 @@ function ScicNationalMapContent() {
         )}
 
         {/* Project Information Panel (Desktop docked / Mobile bottom-sheet) */}
+        {bothRight && (
+          <div
+            role="tablist"
+            aria-label="Right panel"
+            className={cn(
+              "hidden md:flex absolute top-0 right-0 z-[52] items-center gap-1 p-1 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-lg",
+              rightTab === "project" && "md:w-[380px] lg:w-[410px] xl:w-[430px]"
+            )}
+            style={rightTab === "chat" ? { width: chatDock.rightDockWidth || 430 } : undefined}
+          >
+            {([
+              { id: "project" as const, label: selectedProject?.code || "Project", Icon: FileText },
+              { id: "chat" as const, label: "Atlas AI", Icon: Sparkles },
+            ]).map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={rightTab === id}
+                onClick={() => setRightTab(id)}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-medium transition-colors cursor-pointer truncate",
+                  rightTab === id
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5"
+                )}
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         <ProjectInspectionDrawer
-          project={selectedProject}
+          className={bothRight ? "md:!top-[46px] md:!right-0 md:!max-h-[calc(100%-46px)]" : undefined}
+          project={showProjectPanel ? selectedProject : null}
           onClose={() => selectProject(null)}
           onFocusCoordinates={(lat, lng) => {
             flyToProject({
@@ -969,16 +1388,28 @@ function ScicNationalMapContent() {
           isTourActive={!!atlasAI.activeTour}
           tourSpokenWordIndex={atlasAI.spokenWordIndex}
           isTourSpeaking={atlasAI.isSpeaking}
+          onTellStory={selectedProject && hasSiteStory(selectedProject) ? () => atlasAI.startStory(selectedProject) : undefined}
         />
 
-        {/* ✦ SCIC ATLAS ASSISTANT CONVERSATION DRAWER */}
-        <AtlasAssistantDrawer
+        {/* ✦ SCIC ATLAS AI WORKSPACE (PHASE 20: Movable, Resizable, Dockable, Adjustable Analyst Dashboard) */}
+        <AtlasAIWorkspace
+          dockInsets={{
+            ...rowInsets,
+            top: rowInsets.top + tabStripH + (tabStripH ? 6 : 0),
+            // the minimised chat pill and bottom dock stay clear of the open project panel
+            right: rowInsets.right + (showProjectPanel && !bothRight ? projectPanelWidth + 8 : 0),
+          }}
+          forceMinimized={!!atlasAI.activeTour}
+          compactPill={showProjectPanel}
+          hidden={hideChat}
+          onDockInfo={handleChatDockInfo}
           isOpen={atlasAI.isOpen}
           onClose={() => atlasAI.setIsOpen(false)}
           messages={atlasAI.messages}
           isGenerating={atlasAI.isGenerating}
           currentToolEvents={atlasAI.currentToolEvents}
           onSendMessage={atlasAI.sendMessage}
+          onCancelGeneration={atlasAI.cancelGeneration}
           onClearChat={atlasAI.clearChat}
           suggestions={atlasAI.suggestions}
           onExecuteAction={atlasAI.executeAction}
@@ -989,6 +1420,43 @@ function ScicNationalMapContent() {
           selectedProjectId={selectedProject?.id}
           activeRegion={geographicScope.region}
           totalProjectsCount={activeProjects.length}
+          projects={activeProjects}
+          onSelectProject={(id) => {
+            if (id) handleSelectProject(id);
+            else selectProject(null);
+          }}
+          onFlyToProject={({ id, coordinates, zoom, pitch, bearing }) => {
+            if (id) {
+              const p = findProjectInDataset(activeProjects, id);
+              if (p) {
+                flyToProject({
+                  coordinates: { lat: p.coordinates.lat, lng: p.coordinates.lng },
+                  id: p.id,
+                  zoom: zoom ?? 14.5,
+                  pitch: pitch ?? 45,
+                  bearing: bearing ?? 0,
+                });
+              }
+            } else if (coordinates) {
+              flyToProject({ coordinates, zoom: zoom ?? 14.5, pitch: pitch ?? 45, bearing: bearing ?? 0 });
+            }
+          }}
+          highlightedProjectIds={highlightedProjectIds}
+          onHighlightProjects={(ids) => setHighlightedProjectIds(ids)}
+          onCompareProjects={(ids) => {
+            atlasAI.sendMessage(`Compare projects side-by-side: ${ids.join(", ")}`);
+          }}
+          avatarSlotRef={avatarSlotRef}
+          onInputFocusChange={setIsChatInputFocused}
+          statusLabel={navigatorState.statusLabel}
+          activeVoice={atlasAI.activeVoice}
+          setActiveVoice={atlasAI.setActiveVoice}
+          availableVoices={atlasAI.availableVoices}
+          voiceEnabled={atlasAI.voiceEnabled}
+          toggleVoiceNarration={atlasAI.toggleVoiceNarration}
+          isSpeaking={atlasAI.isSpeaking}
+          cancelSpeech={atlasAI.cancelSpeech}
+          speakNarration={atlasAI.speakNarration}
         />
 
         {/* ✦ SCIC ATLAS GUIDED PORTFOLIO TOUR CONTROLLER HUD */}
@@ -1023,7 +1491,7 @@ export default function ScicNationalMapClient() {
     <Suspense
       fallback={
         <div className="w-full h-[calc(100vh-5.5rem)] flex items-center justify-center bg-slate-900 text-slate-400">
-          <Loader2 className="w-8 h-8 animate-spin text-[#0284C7]" />
+          <Loader2 className="w-8 h-8 animate-spin text-scic-blue" />
         </div>
       }
     >

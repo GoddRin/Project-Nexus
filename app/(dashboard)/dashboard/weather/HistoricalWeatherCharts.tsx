@@ -201,7 +201,7 @@ export function HistoricalWeatherCharts({ data }: Props) {
                 <ReferenceLine y={200} stroke="#E8A33D" strokeDasharray="3 3" label={{ position: 'top', value: 'Heavy', fill: '#E8A33D', fontSize: 10 }} />
                 <Bar dataKey="totalPrecipitation" radius={[4, 4, 0, 0]}>
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.totalPrecipitation > 200 ? '#E8A33D' : '#1FB6A6'} />
+                    <Cell key={`cell-${index}`} fill={entry.totalPrecipitation > 200 ? '#E8A33D' : '#129450'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -219,7 +219,7 @@ export function HistoricalWeatherCharts({ data }: Props) {
                 <XAxis dataKey="monthName" stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }} tickLine={false} axisLine={false} />
                 <YAxis domain={['dataMin - 2', 'dataMax + 2']} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }} tickLine={false} axisLine={false} />
                 <RechartsTooltip content={CustomTempTooltip} />
-                <Area type="monotone" dataKey="avgTempMin" stroke="#1FB6A6" fill="#1FB6A6" fillOpacity={0.1} />
+                <Area type="monotone" dataKey="avgTempMin" stroke="#129450" fill="#129450" fillOpacity={0.1} />
                 <Area type="monotone" dataKey="avgTempMax" stroke="#D6483F" fill="none" />
               </AreaChart>
             </ResponsiveContainer>

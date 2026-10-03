@@ -103,7 +103,7 @@ export function AtlasDiscoveryMode({
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-white dark:bg-[#0B1726] text-slate-900 dark:text-slate-100 overflow-hidden font-sans transition-colors",
+        "flex flex-col h-full bg-white dark:bg-atlas-panel text-slate-900 dark:text-slate-100 overflow-hidden font-sans transition-colors",
         className
       )}
     >
@@ -113,19 +113,19 @@ export function AtlasDiscoveryMode({
       {activeRegionDetail ? (
         <div className="flex flex-col h-full overflow-hidden animate-in fade-in slide-in-from-right-3 duration-200">
           {/* 1. Regional Header & Return Navigation */}
-          <div className="p-3.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/60 space-y-2.5 shrink-0">
+          <div className="p-3.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/60 space-y-2.5 shrink-0">
             <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={onBackToNational}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-[#0284C7] dark:text-[#38BDF8] hover:bg-sky-50 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-scic-blue dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 title="Return to National Overview"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>All Philippines</span>
               </button>
 
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-sky-500/10 text-[#0284C7] dark:text-[#38BDF8] border border-sky-500/20">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-sky-500/10 text-scic-blue dark:text-sky-400 border border-sky-500/20">
                 {activeRegionDetail.islandGroup}
               </span>
             </div>
@@ -265,7 +265,7 @@ export function AtlasDiscoveryMode({
                       className={cn(
                         "p-3 rounded-xl border transition-all cursor-pointer text-left relative",
                         isSelected
-                          ? "bg-sky-50/80 dark:bg-[#0C1E33] border-[#0284C7] dark:border-[#38BDF8] shadow-sm"
+                          ? "bg-sky-50/80 dark:bg-[#0C1E33] border-scic-blue dark:border-sky-400 shadow-sm"
                           : "bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/[0.04]"
                       )}
                     >
@@ -308,7 +308,7 @@ export function AtlasDiscoveryMode({
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {project.metrics?.capacity && (
-                            <span className="font-bold text-[#0284C7] dark:text-[#38BDF8]">
+                            <span className="font-bold text-scic-blue dark:text-sky-400">
                               {project.metrics.capacity}
                             </span>
                           )}
@@ -316,7 +316,7 @@ export function AtlasDiscoveryMode({
                             href={`/dashboard/projects/${project.id}`}
                             onClick={(e) => e.stopPropagation()}
                             title="Open Project Profile"
-                            className="p-1 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-[#0284C7] dark:hover:text-[#38BDF8] transition-colors"
+                            className="p-1 rounded hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-scic-blue dark:hover:text-sky-400 transition-colors"
                           >
                             <FileText className="h-3 w-3" />
                           </Link>
@@ -335,9 +335,9 @@ export function AtlasDiscoveryMode({
            ───────────────────────────────────────────────────────────── */
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
-          <div className="p-3.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/60 space-y-2 shrink-0">
+          <div className="p-3.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/60 space-y-2 shrink-0">
             <div className="flex items-center gap-2">
-              <Compass className="h-4 w-4 text-[#0284C7] dark:text-[#38BDF8] shrink-0" />
+              <Compass className="h-4 w-4 text-scic-blue dark:text-sky-400 shrink-0" />
               <h2 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-900 dark:text-white">
                 Explore by Region
               </h2>
@@ -354,7 +354,7 @@ export function AtlasDiscoveryMode({
                 className={cn(
                   "px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase font-semibold transition-colors cursor-pointer whitespace-nowrap",
                   selectedIslandTab === "ALL"
-                    ? "bg-[#0284C7] text-white shadow-xs"
+                    ? "bg-emerald-600 dark:bg-emerald-500/25 text-white dark:text-emerald-100 shadow-xs"
                     : "bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
@@ -368,7 +368,7 @@ export function AtlasDiscoveryMode({
                   className={cn(
                     "px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase font-semibold transition-colors cursor-pointer whitespace-nowrap",
                     selectedIslandTab === isl.id
-                      ? "bg-[#0284C7] text-white shadow-xs"
+                      ? "bg-scic-blue text-white shadow-xs"
                       : "bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
@@ -415,11 +415,11 @@ export function AtlasDiscoveryMode({
                       key={region.key}
                       type="button"
                       onClick={() => handleSelectRegion(region)}
-                      className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-200/80 dark:border-white/5 bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:border-[#0284C7]/40 dark:hover:border-[#38BDF8]/40 transition-all cursor-pointer text-left group"
+                      className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-200/80 dark:border-white/5 bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:border-scic-blue/40 dark:hover:border-sky-400/40 transition-all cursor-pointer text-left group"
                     >
                       <div className="min-w-0 pr-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-[#0284C7] dark:group-hover:text-[#38BDF8] transition-colors truncate">
+                          <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-scic-blue dark:group-hover:text-sky-400 transition-colors truncate">
                             {region.shortName}
                           </span>
                           {region.topSectorLabel && (
@@ -443,7 +443,7 @@ export function AtlasDiscoveryMode({
                         <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
                           {region.projectCount} {region.projectCount === 1 ? "Project" : "Projects"}
                         </span>
-                        <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-[#0284C7] dark:group-hover:text-[#38BDF8] group-hover:translate-x-0.5 transition-all" />
+                        <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-scic-blue dark:group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </button>
                   ))}

@@ -414,7 +414,7 @@ export function SiteMapSVG({
           {/* River Linear Gradient - Static to avoid heavy SVG container repaint lag */}
           <linearGradient id="riverGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={isDark ? "#0D4A5A" : "#86efac"} />
-            <stop offset="50%" stopColor={isDark ? "#1A7A8A" : "#22d3ee"} />
+            <stop offset="50%" stopColor={isDark ? "#1A7A8A" : "#4E9DC2"} />
             <stop offset="100%" stopColor={isDark ? "#0D4A5A" : "#86efac"} />
           </linearGradient>
 
@@ -426,8 +426,8 @@ export function SiteMapSVG({
 
           {/* Surge Tank Water Gradient */}
           <linearGradient id="surgeWaterGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#0D9488" />
-            <stop offset="100%" stopColor="#22D3EE" />
+            <stop offset="0%" stopColor="#007B3E" />
+            <stop offset="100%" stopColor="#4E9DC2" />
           </linearGradient>
 
           {/* Mountain Gradient left-to-right (Sierra Madre and Valley transition) */}
@@ -534,28 +534,28 @@ export function SiteMapSVG({
         <path d="M840,445 Q900,435 1000,430 L1000,495 Q900,490 840,475 Z" fill="url(#riverGrad)" opacity="0.8" />
 
         {/* Upstream flowing river currents */}
-        <path d="M0,195 Q50,190 90,195 T135,195" fill="none" stroke={isDark ? "#22d3ee" : "#0D7A6A"} strokeWidth="1.2" strokeDasharray="8 12" opacity="0.4" className="river-flow-fast" />
-        <path d="M0,210 Q50,205 90,210 T135,202" fill="none" stroke={isDark ? "#1FB6A6" : "#0A5C50"} strokeWidth="1.0" strokeDasharray="12 18" opacity="0.3" className="river-flow-medium" />
+        <path d="M0,195 Q50,190 90,195 T135,195" fill="none" stroke={isDark ? "#4E9DC2" : "#0D7A6A"} strokeWidth="1.2" strokeDasharray="8 12" opacity="0.4" className="river-flow-fast" />
+        <path d="M0,210 Q50,205 90,210 T135,202" fill="none" stroke={isDark ? "#129450" : "#0A5C50"} strokeWidth="1.0" strokeDasharray="12 18" opacity="0.3" className="river-flow-medium" />
         {/* Upstream water caustics shimmer */}
         <rect x="0" y="178" width="90" height="45" fill="url(#riverGrad)" opacity="0.15" filter="url(#waterCaustics)" />
 
         {/* Downstream flowing river currents */}
-        <path d="M840,455 Q900,445 1000,440" fill="none" stroke={isDark ? "#22D3EE" : "#0D7A6A"} strokeWidth="1.8" strokeDasharray="14 20" opacity="0.55" className="river-flow-fast" />
-        <path d="M840,468 Q900,458 1000,453" fill="none" stroke={isDark ? "#1FB6A6" : "#0A5C50"} strokeWidth="1.2" strokeDasharray="10 15" opacity="0.45" className="river-flow-medium" />
-        <path d="M840,480 Q900,473 1000,468" fill="none" stroke={isDark ? "#22D3EE" : "#0D7A6A"} strokeWidth="1.5" strokeDasharray="16 24" opacity="0.4" className="river-flow-slow" />
+        <path d="M840,455 Q900,445 1000,440" fill="none" stroke={isDark ? "#4E9DC2" : "#0D7A6A"} strokeWidth="1.8" strokeDasharray="14 20" opacity="0.55" className="river-flow-fast" />
+        <path d="M840,468 Q900,458 1000,453" fill="none" stroke={isDark ? "#129450" : "#0A5C50"} strokeWidth="1.2" strokeDasharray="10 15" opacity="0.45" className="river-flow-medium" />
+        <path d="M840,480 Q900,473 1000,468" fill="none" stroke={isDark ? "#4E9DC2" : "#0D7A6A"} strokeWidth="1.5" strokeDasharray="16 24" opacity="0.4" className="river-flow-slow" />
         {/* Downstream water caustics shimmer */}
         <rect x="840" y="435" width="160" height="55" fill="url(#riverGrad)" opacity="0.12" filter="url(#waterCaustics)" />
 
         {/* Foam & bubble particles flowing downstream from tailrace */}
-        <circle r="2" fill="#22D3EE" opacity="0.5" filter="url(#waterGlow)">
+        <circle r="2" fill="#4E9DC2" opacity="0.5" filter="url(#waterGlow)">
           <animateMotion dur="6s" repeatCount="indefinite" path="M840,455 Q900,445 1000,440" />
           <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite" />
         </circle>
-        <circle r="1.5" fill="#1FB6A6" opacity="0.4">
+        <circle r="1.5" fill="#129450" opacity="0.4">
           <animateMotion dur="8s" repeatCount="indefinite" path="M840,468 Q900,458 1000,453" begin="1s" />
           <animate attributeName="opacity" values="0.4;0.15;0.4" dur="4s" repeatCount="indefinite" />
         </circle>
-        <circle r="1.8" fill="#22D3EE" opacity="0.35" filter="url(#waterGlow)">
+        <circle r="1.8" fill="#4E9DC2" opacity="0.35" filter="url(#waterGlow)">
           <animateMotion dur="7s" repeatCount="indefinite" path="M840,460 Q900,450 1000,445" begin="2.5s" />
           <animate attributeName="opacity" values="0.35;0.1;0.35" dur="3.5s" repeatCount="indefinite" />
         </circle>
@@ -563,28 +563,28 @@ export function SiteMapSVG({
           <animateMotion dur="5s" repeatCount="indefinite" path="M840,475 Q900,465 1000,460" begin="0.5s" />
           <animate attributeName="opacity" values="0.5;0;0.5" dur="2.5s" repeatCount="indefinite" />
         </circle>
-        <circle r="1.2" fill="#1FB6A6" opacity="0.3">
+        <circle r="1.2" fill="#129450" opacity="0.3">
           <animateMotion dur="9s" repeatCount="indefinite" path="M840,480 Q900,473 1000,468" begin="3s" />
         </circle>
 
         {/* Upstream floating particles */}
-        <circle r="1.5" fill="#22D3EE" opacity="0.3">
+        <circle r="1.5" fill="#4E9DC2" opacity="0.3">
           <animateMotion dur="7s" repeatCount="indefinite" path="M0,195 Q50,190 90,195" />
           <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
         </circle>
-        <circle r="1" fill="#1FB6A6" opacity="0.25">
+        <circle r="1" fill="#129450" opacity="0.25">
           <animateMotion dur="9s" repeatCount="indefinite" path="M0,210 Q50,205 90,210" begin="2s" />
         </circle>
 
         {/* Static turbulence ripples near tailrace outfall */}
-        <g stroke={isDark ? "#22D3EE" : "#0D7A6A"} strokeWidth="1.2" fill="none" opacity="0.6" filter="url(#waterGlow)">
+        <g stroke={isDark ? "#4E9DC2" : "#0D7A6A"} strokeWidth="1.2" fill="none" opacity="0.6" filter="url(#waterGlow)">
           <path d="M785,456 Q800,458 815,456" />
           <path d="M795,456 Q815,461 835,456" />
           <path d="M805,456 Q830,464 855,456" />
         </g>
         
         {/* Static direction chevrons near outfall */}
-        <g stroke={isDark ? "#22D3EE" : "#0D7A6A"} strokeWidth="1.5" fill="none" opacity="0.65">
+        <g stroke={isDark ? "#4E9DC2" : "#0D7A6A"} strokeWidth="1.5" fill="none" opacity="0.65">
           <path d="M 846,444 L 850,447 L 846,450" />
           <path d="M 853,450 L 857,454 L 853,458" />
           <path d="M 849,460 L 853,463 L 849,466" />
@@ -592,7 +592,7 @@ export function SiteMapSVG({
         </g>
 
         {/* ═══ WATER FLOW ARROWS (static) ═══ */}
-        <path d="M750,415 L775,415 L775,342 L790,342" fill="none" stroke={isDark ? "#1FB6A6" : "#0D7A6A"} strokeWidth="1.2" strokeDasharray="6 3" opacity="0.4" className="river-flow-fast">
+        <path d="M750,415 L775,415 L775,342 L790,342" fill="none" stroke={isDark ? "#129450" : "#0D7A6A"} strokeWidth="1.2" strokeDasharray="6 3" opacity="0.4" className="river-flow-fast">
         </path>
 
         {/* ═══ ZONE: WEIR / INTAKE ═══ */}
@@ -619,37 +619,37 @@ export function SiteMapSVG({
           <line x1="105" y1="208" x2="117" y2="208" stroke={getMaterialColors("dam-intake").stroke} strokeWidth="0.8" opacity="0.6" />
           
           {/* Water overflow trickling */}
-          <path d="M130,212 Q140,218 133,228" fill="none" stroke="#22D3EE" strokeWidth="1" opacity="0.35" className="zone-pulse-red" />
+          <path d="M130,212 Q140,218 133,228" fill="none" stroke="#4E9DC2" strokeWidth="1" opacity="0.35" className="zone-pulse-red" />
           
           {/* Animated water overflow - dual trickle */}
-          <path d="M88,220 Q82,226 85,234" fill="none" stroke="#22D3EE" strokeWidth="0.8" opacity="0.3" className="water-shimmer-d1" />
+          <path d="M88,220 Q82,226 85,234" fill="none" stroke="#4E9DC2" strokeWidth="0.8" opacity="0.3" className="water-shimmer-d1" />
           {/* Intake gate hydraulic vibration */}
           <g className="gate-vibrate">
-            <rect x="102" y="180" width="18" height="32" rx="1" fill="none" stroke="#22D3EE" strokeWidth="0.5" opacity="0.2" />
+            <rect x="102" y="180" width="18" height="32" rx="1" fill="none" stroke="#4E9DC2" strokeWidth="0.5" opacity="0.2" />
           </g>
           {/* Water ripples at dam base - with glow */}
           <g filter="url(#waterGlow)">
-            <circle cx="110" cy="232" r="2" fill="none" stroke="#22D3EE" strokeWidth="0.4" className="ripple-1" />
-            <circle cx="110" cy="232" r="4" fill="none" stroke="#22D3EE" strokeWidth="0.3" className="ripple-2" />
-            <circle cx="110" cy="232" r="6" fill="none" stroke="#22D3EE" strokeWidth="0.2" className="ripple-3" />
+            <circle cx="110" cy="232" r="2" fill="none" stroke="#4E9DC2" strokeWidth="0.4" className="ripple-1" />
+            <circle cx="110" cy="232" r="4" fill="none" stroke="#4E9DC2" strokeWidth="0.3" className="ripple-2" />
+            <circle cx="110" cy="232" r="6" fill="none" stroke="#4E9DC2" strokeWidth="0.2" className="ripple-3" />
           </g>
           {/* Mist spray particles with blur */}
           <g filter="url(#mistBlur)">
-            <circle cx="133" cy="222" r="1.8" fill="#22D3EE" className="mist-1" />
-            <circle cx="137" cy="218" r="1.4" fill="#22D3EE" className="mist-2" />
-            <circle cx="130" cy="216" r="1.2" fill="#22D3EE" className="mist-3" />
-            <circle cx="126" cy="220" r="1" fill="#1FB6A6" className="mist-2" />
+            <circle cx="133" cy="222" r="1.8" fill="#4E9DC2" className="mist-1" />
+            <circle cx="137" cy="218" r="1.4" fill="#4E9DC2" className="mist-2" />
+            <circle cx="130" cy="216" r="1.2" fill="#4E9DC2" className="mist-3" />
+            <circle cx="126" cy="220" r="1" fill="#129450" className="mist-2" />
           </g>
           {/* Animated waterfall cascade - water drops falling over weir face */}
-          <circle r="0.8" fill="#22D3EE" opacity="0.6">
+          <circle r="0.8" fill="#4E9DC2" opacity="0.6">
             <animateMotion dur="1.5s" repeatCount="indefinite" path="M130,175 Q135,195 133,228" />
             <animate attributeName="opacity" values="0.6;0.3;0" dur="1.5s" repeatCount="indefinite" />
           </circle>
-          <circle r="0.6" fill="#1FB6A6" opacity="0.5">
+          <circle r="0.6" fill="#129450" opacity="0.5">
             <animateMotion dur="2s" repeatCount="indefinite" path="M128,180 Q134,200 132,230" begin="0.5s" />
             <animate attributeName="opacity" values="0.5;0.2;0" dur="2s" repeatCount="indefinite" />
           </circle>
-          <circle r="0.7" fill="#22D3EE" opacity="0.4">
+          <circle r="0.7" fill="#4E9DC2" opacity="0.4">
             <animateMotion dur="1.8s" repeatCount="indefinite" path="M132,170 Q136,190 134,225" begin="1s" />
             <animate attributeName="opacity" values="0.4;0.15;0" dur="1.8s" repeatCount="indefinite" />
           </circle>
@@ -678,19 +678,19 @@ export function SiteMapSVG({
           <line x1="135" y1="205" x2="195" y2="205" stroke={getMaterialColors("feeder-canal").stroke} strokeWidth={effective === "feeder-canal" ? 2 : 1.2} strokeDasharray={getStrokeDash("feeder-canal")} />
           
           {/* Active Flowing current dash lines */}
-          <line x1="135" y1="195" x2="195" y2="195" stroke="#22D3EE" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.4" className="river-flow-fast" />
+          <line x1="135" y1="195" x2="195" y2="195" stroke="#4E9DC2" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.4" className="river-flow-fast" />
 
           {/* Multi-layer water surface shimmer with caustics */}
           <rect x="137" y="188" width="56" height="14" rx="1" fill="url(#riverGrad)" opacity="0.12" filter="url(#waterCaustics)" />
-          <rect x="137" y="190" width="56" height="3" rx="1" fill="#22D3EE" className="water-shimmer" filter="url(#waterGlow)" />
-          <rect x="140" y="198" width="50" height="2" rx="1" fill="#22D3EE" className="water-shimmer-d1" />
+          <rect x="137" y="190" width="56" height="3" rx="1" fill="#4E9DC2" className="water-shimmer" filter="url(#waterGlow)" />
+          <rect x="140" y="198" width="50" height="2" rx="1" fill="#4E9DC2" className="water-shimmer-d1" />
           {/* Secondary flow current */}
-          <line x1="135" y1="200" x2="195" y2="200" stroke="#1FB6A6" strokeWidth="1" strokeDasharray="3 7" opacity="0.3" className="river-flow-medium" />
+          <line x1="135" y1="200" x2="195" y2="200" stroke="#129450" strokeWidth="1" strokeDasharray="3 7" opacity="0.3" className="river-flow-medium" />
           {/* Floating debris particles */}
-          <circle cx="150" cy="194" r="0.6" fill="#22D3EE" className="foam-1" />
-          <circle cx="170" cy="196" r="0.5" fill="#1FB6A6" className="foam-2" />
+          <circle cx="150" cy="194" r="0.6" fill="#4E9DC2" className="foam-1" />
+          <circle cx="170" cy="196" r="0.5" fill="#129450" className="foam-2" />
           {/* Animated water particle flowing through canal */}
-          <circle r="1" fill="#22D3EE" opacity="0.4" filter="url(#waterGlow)">
+          <circle r="1" fill="#4E9DC2" opacity="0.4" filter="url(#waterGlow)">
             <animateMotion dur="3s" repeatCount="indefinite" path="M135,195 L195,195" />
             <animate attributeName="opacity" values="0.4;0.2;0.4" dur="1.5s" repeatCount="indefinite" />
           </circle>
@@ -731,9 +731,9 @@ export function SiteMapSVG({
           <circle cx="240" cy="180" r="0.8" fill="#C8882A" className="sed-2" />
           <circle cx="255" cy="183" r="1.1" fill="#C8882A" className="sed-3" />
           {/* Internal flow current through basin */}
-          <line x1="197" y1="195" x2="273" y2="195" stroke="#22D3EE" strokeWidth="1" strokeDasharray="4 6" opacity="0.25" className="river-flow-medium" filter="url(#waterGlow)" />
+          <line x1="197" y1="195" x2="273" y2="195" stroke="#4E9DC2" strokeWidth="1" strokeDasharray="4 6" opacity="0.25" className="river-flow-medium" filter="url(#waterGlow)" />
           {/* Clean water outflow shimmer */}
-          <rect x="270" y="192" width="5" height="8" rx="1" fill="#22D3EE" className="water-shimmer" filter="url(#waterGlow)" />
+          <rect x="270" y="192" width="5" height="8" rx="1" fill="#4E9DC2" className="water-shimmer" filter="url(#waterGlow)" />
           {/* Animated vortex swirl - sediment settling pattern */}
           <circle r="0.6" fill="#C8882A" opacity="0.35">
             <animateMotion dur="5s" repeatCount="indefinite" path="M230,182 Q250,178 260,190 Q250,200 230,198 Q220,190 230,182" />
@@ -778,14 +778,14 @@ export function SiteMapSVG({
           <path d="M305,187 L300,187 Q297,187 297,195 Q297,203 300,203 L305,203 Z" fill="#0B1418" stroke={getMaterialColors("tunnel-transition").stroke} strokeWidth="0.8" />
 
           {/* Portal entrance glow - enhanced neon */}
-          <rect x="298" y="188" width="6" height="14" rx="1" fill="#22D3EE" className="glow-breathe" filter="url(#waterGlow)" />
+          <rect x="298" y="188" width="6" height="14" rx="1" fill="#4E9DC2" className="glow-breathe" filter="url(#waterGlow)" />
           {/* Water flow entering portal */}
-          <line x1="280" y1="195" x2="305" y2="195" stroke="#22D3EE" strokeWidth="1" strokeDasharray="3 5" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
+          <line x1="280" y1="195" x2="305" y2="195" stroke="#4E9DC2" strokeWidth="1" strokeDasharray="3 5" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
           {/* Moisture drips from ceiling */}
-          <circle cx="300" cy="172" r="0.6" fill="#22D3EE" className="drip-1" />
-          <circle cx="307" cy="174" r="0.5" fill="#22D3EE" className="drip-2" />
+          <circle cx="300" cy="172" r="0.6" fill="#4E9DC2" className="drip-1" />
+          <circle cx="307" cy="174" r="0.5" fill="#4E9DC2" className="drip-2" />
           {/* Animated water rush into portal */}
-          <circle r="1" fill="#22D3EE" opacity="0.5" filter="url(#waterGlow)">
+          <circle r="1" fill="#4E9DC2" opacity="0.5" filter="url(#waterGlow)">
             <animateMotion dur="2s" repeatCount="indefinite" path="M280,195 L305,195" />
             <animate attributeName="opacity" values="0.5;0.2;0" dur="2s" repeatCount="indefinite" />
           </circle>
@@ -820,20 +820,20 @@ export function SiteMapSVG({
           <line x1="420" y1="187" x2="420" y2="203" stroke={getMaterialColors("tunnel-1").details} strokeWidth="0.8" opacity="0.5" />
 
           {/* Underground water flow inside tunnel with glow */}
-          <line x1="312" y1="195" x2="448" y2="195" stroke="#22D3EE" strokeWidth="1.5" strokeDasharray="6 8" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
+          <line x1="312" y1="195" x2="448" y2="195" stroke="#4E9DC2" strokeWidth="1.5" strokeDasharray="6 8" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
           {/* Moisture drips from tunnel ceiling */}
-          <circle cx="350" cy="188" r="0.5" fill="#22D3EE" className="drip-1" />
-          <circle cx="400" cy="189" r="0.5" fill="#22D3EE" className="drip-2" />
+          <circle cx="350" cy="188" r="0.5" fill="#4E9DC2" className="drip-1" />
+          <circle cx="400" cy="189" r="0.5" fill="#4E9DC2" className="drip-2" />
           {/* Rock bolt moisture reflections */}
           <circle cx="340" cy="190" r="0.8" fill="#7A9CAD" className="spark-1" filter="url(#waterGlow)" />
           <circle cx="380" cy="190" r="0.8" fill="#7A9CAD" className="spark-3" filter="url(#waterGlow)" />
           <circle cx="420" cy="190" r="0.8" fill="#7A9CAD" className="spark-2" filter="url(#waterGlow)" />
           {/* Animated water particle flowing through tunnel */}
-          <circle r="1.5" fill="#22D3EE" opacity="0.35" filter="url(#waterGlow)">
+          <circle r="1.5" fill="#4E9DC2" opacity="0.35" filter="url(#waterGlow)">
             <animateMotion dur="5s" repeatCount="indefinite" path="M312,195 L448,195" />
             <animate attributeName="opacity" values="0.4;0.15;0.4" dur="2.5s" repeatCount="indefinite" />
           </circle>
-          <circle r="1" fill="#1FB6A6" opacity="0.25">
+          <circle r="1" fill="#129450" opacity="0.25">
             <animateMotion dur="6s" repeatCount="indefinite" path="M312,195 L448,195" begin="2s" />
           </circle>
 
@@ -878,9 +878,9 @@ export function SiteMapSVG({
           <line x1="448" y1="193.5" x2="492" y2="193.5" stroke={getMaterialColors("pipe-crossing").highlight} strokeWidth="1.2" opacity="0.6" strokeLinecap="butt" />
 
           {/* Internal pressurized flow with glow */}
-          <line x1="450" y1="195" x2="490" y2="195" stroke="#22D3EE" strokeWidth="1.2" strokeDasharray="4 5" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
+          <line x1="450" y1="195" x2="490" y2="195" stroke="#4E9DC2" strokeWidth="1.2" strokeDasharray="4 5" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
           {/* Animated water particle through pipe */}
-          <circle r="1.2" fill="#22D3EE" opacity="0.4" filter="url(#waterGlow)">
+          <circle r="1.2" fill="#4E9DC2" opacity="0.4" filter="url(#waterGlow)">
             <animateMotion dur="1.5s" repeatCount="indefinite" path="M450,195 L490,195" />
             <animate attributeName="opacity" values="0.4;0.15;0.4" dur="0.75s" repeatCount="indefinite" />
           </circle>
@@ -916,15 +916,15 @@ export function SiteMapSVG({
           <line x1="550" y1="187" x2="550" y2="203" stroke={getMaterialColors("tunnel-2").details} strokeWidth="0.8" opacity="0.5" />
 
           {/* Underground water flow with glow */}
-          <line x1="492" y1="195" x2="578" y2="195" stroke="#22D3EE" strokeWidth="1.5" strokeDasharray="5 7" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
+          <line x1="492" y1="195" x2="578" y2="195" stroke="#4E9DC2" strokeWidth="1.5" strokeDasharray="5 7" opacity="0.3" className="river-flow-fast" filter="url(#waterGlow)" />
           {/* Moisture drips */}
-          <circle cx="520" cy="188" r="0.5" fill="#22D3EE" className="drip-2" />
-          <circle cx="555" cy="189" r="0.4" fill="#22D3EE" className="drip-1" />
+          <circle cx="520" cy="188" r="0.5" fill="#4E9DC2" className="drip-2" />
+          <circle cx="555" cy="189" r="0.4" fill="#4E9DC2" className="drip-1" />
           {/* Rock bolt twinkle */}
           <circle cx="515" cy="190" r="0.7" fill="#7A9CAD" className="spark-2" filter="url(#waterGlow)" />
           <circle cx="550" cy="190" r="0.7" fill="#7A9CAD" className="spark-4" filter="url(#waterGlow)" />
           {/* Animated water particle through tunnel 2 */}
-          <circle r="1.2" fill="#22D3EE" opacity="0.3" filter="url(#waterGlow)">
+          <circle r="1.2" fill="#4E9DC2" opacity="0.3" filter="url(#waterGlow)">
             <animateMotion dur="3.5s" repeatCount="indefinite" path="M492,195 L578,195" />
             <animate attributeName="opacity" values="0.35;0.12;0.35" dur="1.8s" repeatCount="indefinite" />
           </circle>
@@ -959,17 +959,17 @@ export function SiteMapSVG({
           <ellipse cx="605" cy="132" rx="25" ry="5" fill="none" stroke={getMaterialColors("surge-tank").stroke} strokeWidth="1.2" opacity="0.5" />
 
           {/* Water surface ripple line */}
-          <line x1="584" y1="160" x2="626" y2="160" stroke="#22D3EE" strokeWidth="1" strokeDasharray="3 4" opacity="0.4" className="river-flow-slow" />
+          <line x1="584" y1="160" x2="626" y2="160" stroke="#4E9DC2" strokeWidth="1" strokeDasharray="3 4" opacity="0.4" className="river-flow-slow" />
           {/* Rising bubbles with glow */}
           <g filter="url(#waterGlow)">
-            <circle cx="595" cy="195" r="1.2" fill="#22D3EE" className="bubble-1" />
-            <circle cx="610" cy="190" r="0.9" fill="#22D3EE" className="bubble-2" />
-            <circle cx="602" cy="185" r="0.8" fill="#1FB6A6" className="bubble-3" />
+            <circle cx="595" cy="195" r="1.2" fill="#4E9DC2" className="bubble-1" />
+            <circle cx="610" cy="190" r="0.9" fill="#4E9DC2" className="bubble-2" />
+            <circle cx="602" cy="185" r="0.8" fill="#129450" className="bubble-3" />
           </g>
           {/* Water surface shimmer at fill line */}
-          <rect x="583" y="158" width="44" height="4" rx="1" fill="#22D3EE" className="water-shimmer" filter="url(#waterGlow)" />
+          <rect x="583" y="158" width="44" height="4" rx="1" fill="#4E9DC2" className="water-shimmer" filter="url(#waterGlow)" />
           {/* Animated water surface wave */}
-          <path d="M583,160 Q594,157 605,160 Q616,163 627,160" fill="none" stroke="#22D3EE" strokeWidth="0.8" opacity="0.4">
+          <path d="M583,160 Q594,157 605,160 Q616,163 627,160" fill="none" stroke="#4E9DC2" strokeWidth="0.8" opacity="0.4">
             <animate attributeName="d" values="M583,160 Q594,157 605,160 Q616,163 627,160;M583,160 Q594,163 605,160 Q616,157 627,160;M583,160 Q594,157 605,160 Q616,163 627,160" dur="3s" repeatCount="indefinite" />
           </path>
 
@@ -1012,21 +1012,21 @@ export function SiteMapSVG({
           />
 
           {/* High-velocity flow inside penstock with glow */}
-          <path d="M630,215 L693,413" fill="none" stroke="#22D3EE" strokeWidth="2" strokeDasharray="5 6" opacity="0.35" className="penstock-flow" filter="url(#waterGlow)" />
+          <path d="M630,215 L693,413" fill="none" stroke="#4E9DC2" strokeWidth="2" strokeDasharray="5 6" opacity="0.35" className="penstock-flow" filter="url(#waterGlow)" />
           {/* Pressure pulse ring at top connection */}
-          <circle cx="630" cy="210" r="4" fill="none" stroke="#22D3EE" strokeWidth="0.8" className="pressure-pulse" filter="url(#waterGlow)" />
+          <circle cx="630" cy="210" r="4" fill="none" stroke="#4E9DC2" strokeWidth="0.8" className="pressure-pulse" filter="url(#waterGlow)" />
           {/* Animated pressure wave traveling down penstock */}
-          <circle r="2.5" fill="#22D3EE" opacity="0.4" filter="url(#waterGlow)">
+          <circle r="2.5" fill="#4E9DC2" opacity="0.4" filter="url(#waterGlow)">
             <animateMotion dur="2s" repeatCount="indefinite" path="M630,215 L693,413" />
             <animate attributeName="opacity" values="0.5;0.2;0.5" dur="1s" repeatCount="indefinite" />
           </circle>
-          <circle r="1.5" fill="#1FB6A6" opacity="0.3">
+          <circle r="1.5" fill="#129450" opacity="0.3">
             <animateMotion dur="2.5s" repeatCount="indefinite" path="M630,215 L693,413" begin="1s" />
           </circle>
           {/* Flow vibration indicators along pipe */}
-          <circle cx="650" cy="270" r="1" fill="#22D3EE" className="water-shimmer" />
-          <circle cx="665" cy="320" r="1" fill="#22D3EE" className="water-shimmer-d1" />
-          <circle cx="680" cy="370" r="1" fill="#22D3EE" className="water-shimmer-d2" />
+          <circle cx="650" cy="270" r="1" fill="#4E9DC2" className="water-shimmer" />
+          <circle cx="665" cy="320" r="1" fill="#4E9DC2" className="water-shimmer-d1" />
+          <circle cx="680" cy="370" r="1" fill="#4E9DC2" className="water-shimmer-d2" />
 
           {/* Construction Overlay */}
           {renderZoneProgressDecoration("penstock", "path", { d: "M630,210 L695,418" })}
@@ -1072,11 +1072,11 @@ export function SiteMapSVG({
           <rect x="666" y="425" width="8" height="6" fill="#4A6572" opacity="0.9" rx="1" />
 
           {/* Internal flow along bridge corridor with glow */}
-          <path d="M648,270 L680,380" fill="none" stroke="#22D3EE" strokeWidth="1" strokeDasharray="4 6" opacity="0.25" className="penstock-flow" filter="url(#waterGlow)" />
+          <path d="M648,270 L680,380" fill="none" stroke="#4E9DC2" strokeWidth="1" strokeDasharray="4 6" opacity="0.25" className="penstock-flow" filter="url(#waterGlow)" />
           {/* Pressure indicator at midpoint */}
-          <circle cx="664" cy="325" r="1.5" fill="#1FB6A6" className="ind-blink" filter="url(#turbineGlow)" />
+          <circle cx="664" cy="325" r="1.5" fill="#129450" className="ind-blink" filter="url(#turbineGlow)" />
           {/* Animated flow particle through bridge */}
-          <circle r="1" fill="#22D3EE" opacity="0.3" filter="url(#waterGlow)">
+          <circle r="1" fill="#4E9DC2" opacity="0.3" filter="url(#waterGlow)">
             <animateMotion dur="2s" repeatCount="indefinite" path="M648,270 L680,380" />
             <animate attributeName="opacity" values="0.35;0.12;0.35" dur="1s" repeatCount="indefinite" />
           </circle>
@@ -1110,29 +1110,29 @@ export function SiteMapSVG({
           
           {/* Turbine / Generator status indicators */}
           <circle cx="720" cy="447" r="10" fill="none" stroke={getMaterialColors("powerhouse").stroke} strokeWidth="1" opacity="0.5" />
-          <circle cx="720" cy="447" r="3" fill={isDark ? "#1FB6A6" : "#0D7A6A"} opacity="0.6" className="spin-fast-720" />
+          <circle cx="720" cy="447" r="3" fill={isDark ? "#129450" : "#0D7A6A"} opacity="0.6" className="spin-fast-720" />
           <line x1="720" y1="437" x2="720" y2="457" stroke={getMaterialColors("powerhouse").stroke} strokeWidth="0.8" opacity="0.4" className="spin-fast-720" />
           
           <circle cx="760" cy="447" r="10" fill="none" stroke={getMaterialColors("powerhouse").stroke} strokeWidth="1" opacity="0.5" />
-          <circle cx="760" cy="447" r="3" fill={isDark ? "#1FB6A6" : "#0D7A6A"} opacity="0.6" className="spin-slow-760" />
+          <circle cx="760" cy="447" r="3" fill={isDark ? "#129450" : "#0D7A6A"} opacity="0.6" className="spin-slow-760" />
           <line x1="760" y1="437" x2="760" y2="457" stroke={getMaterialColors("powerhouse").stroke} strokeWidth="0.8" opacity="0.4" className="spin-slow-760" />
 
           {/* Turbine operation glow halos with neon filter */}
           <g filter="url(#turbineGlow)">
-            <circle cx="720" cy="447" r="13" fill="none" stroke="#1FB6A6" strokeWidth="0.8" className="glow-breathe" />
-            <circle cx="760" cy="447" r="13" fill="none" stroke="#1FB6A6" strokeWidth="0.8" className="glow-breathe-d1" />
+            <circle cx="720" cy="447" r="13" fill="none" stroke="#129450" strokeWidth="0.8" className="glow-breathe" />
+            <circle cx="760" cy="447" r="13" fill="none" stroke="#129450" strokeWidth="0.8" className="glow-breathe-d1" />
           </g>
           {/* Electrical output indicators */}
           <circle cx="775" cy="425" r="1.5" fill="#C8882A" className="ind-blink" filter="url(#electricGlow)" />
-          <circle cx="700" cy="425" r="1.5" fill="#1FB6A6" className="ind-blink-d1" filter="url(#turbineGlow)" />
+          <circle cx="700" cy="425" r="1.5" fill="#129450" className="ind-blink-d1" filter="url(#turbineGlow)" />
           {/* Generator vibration line */}
           <line x1="697" y1="474" x2="783" y2="474" stroke="#8A9A3A" strokeWidth="0.5" strokeDasharray="2 4" opacity="0.2" className="river-flow-slow" />
           {/* Animated turbine blade sweep highlights */}
-          <circle cx="720" cy="447" r="8" fill="none" stroke="#22D3EE" strokeWidth="0.5" opacity="0">
+          <circle cx="720" cy="447" r="8" fill="none" stroke="#4E9DC2" strokeWidth="0.5" opacity="0">
             <animate attributeName="opacity" values="0;0.4;0" dur="3s" repeatCount="indefinite" />
             <animateTransform attributeName="transform" type="rotate" from="0 720 447" to="360 720 447" dur="3s" repeatCount="indefinite" />
           </circle>
-          <circle cx="760" cy="447" r="8" fill="none" stroke="#22D3EE" strokeWidth="0.5" opacity="0">
+          <circle cx="760" cy="447" r="8" fill="none" stroke="#4E9DC2" strokeWidth="0.5" opacity="0">
             <animate attributeName="opacity" values="0;0.3;0" dur="4s" repeatCount="indefinite" begin="1s" />
             <animateTransform attributeName="transform" type="rotate" from="0 760 447" to="360 760 447" dur="4s" repeatCount="indefinite" />
           </circle>
@@ -1165,8 +1165,8 @@ export function SiteMapSVG({
           <path d="M785,443 Q810,439 840,445 L840,453 Q810,447 785,449 Z" fill="url(#riverGrad)" opacity="0.8" />
 
           {/* Enhanced turbulent discharge swirls */}
-          <path d="M790,448 Q810,444 830,450" fill="none" stroke="#22D3EE" strokeWidth="1" strokeDasharray="3 4" opacity="0.4" className="river-flow-fast" />
-          <path d="M788,455 Q815,450 838,457" fill="none" stroke="#1FB6A6" strokeWidth="0.8" strokeDasharray="2 5" opacity="0.3" className="river-flow-medium" />
+          <path d="M790,448 Q810,444 830,450" fill="none" stroke="#4E9DC2" strokeWidth="1" strokeDasharray="3 4" opacity="0.4" className="river-flow-fast" />
+          <path d="M788,455 Q815,450 838,457" fill="none" stroke="#129450" strokeWidth="0.8" strokeDasharray="2 5" opacity="0.3" className="river-flow-medium" />
           {/* Whitewater foam particles with glow */}
           <g filter="url(#waterGlow)">
             <circle cx="825" cy="445" r="1.2" fill="#ffffff" className="foam-1" />
@@ -1176,11 +1176,11 @@ export function SiteMapSVG({
           </g>
           {/* Splash ripple at outfall with glow */}
           <g filter="url(#waterGlow)">
-            <circle cx="840" cy="452" r="2" fill="none" stroke="#22D3EE" strokeWidth="0.4" className="ripple-1" />
-            <circle cx="840" cy="452" r="5" fill="none" stroke="#22D3EE" strokeWidth="0.3" className="ripple-2" />
+            <circle cx="840" cy="452" r="2" fill="none" stroke="#4E9DC2" strokeWidth="0.4" className="ripple-1" />
+            <circle cx="840" cy="452" r="5" fill="none" stroke="#4E9DC2" strokeWidth="0.3" className="ripple-2" />
           </g>
           {/* Animated splash droplets ejecting from tailrace */}
-          <circle r="0.8" fill="#22D3EE" opacity="0.5" filter="url(#waterGlow)">
+          <circle r="0.8" fill="#4E9DC2" opacity="0.5" filter="url(#waterGlow)">
             <animateMotion dur="1.5s" repeatCount="indefinite" path="M790,445 Q810,435 835,442" />
             <animate attributeName="opacity" values="0.5;0.15;0" dur="1.5s" repeatCount="indefinite" />
           </circle>
@@ -1235,7 +1235,7 @@ export function SiteMapSVG({
             <path d="M825,340 Q830,332 835,340" fill="none" stroke="#FCD34D" strokeWidth="1" className="arc-2" />
           </g>
           {/* Blinking indicator lights on transformers */}
-          <circle cx="814" cy="348" r="1.5" fill="#1FB6A6" className="ind-blink" filter="url(#turbineGlow)" />
+          <circle cx="814" cy="348" r="1.5" fill="#129450" className="ind-blink" filter="url(#turbineGlow)" />
           <circle cx="844" cy="348" r="1.5" fill="#C8882A" className="ind-blink-d1" filter="url(#electricGlow)" />
           {/* Enhanced spark bolt glow */}
           <path d="M870,325 L865,334 L869,334 L864,345 L873,331 L869,331 L874,325 Z" fill="#FCD34D" className="spark-1" filter="url(#electricGlow)" />
@@ -1346,8 +1346,8 @@ export function SiteMapSVG({
           <text x="30" y="14" textAnchor="middle" fill="var(--text-primary)" fontSize="7">≈ 200m</text>
         </g>
         
-        <text x="45" y="178" fill={isDark ? "#1FB6A6" : "#0D7A6A"} fontSize="7" opacity="0.3" fontFamily="var(--font-display)" letterSpacing="1">RIVER FLOW →</text>
-        <text x="870" y="435" fill={isDark ? "#1FB6A6" : "#0D7A6A"} fontSize="7" opacity="0.3" fontFamily="var(--font-display)" letterSpacing="2">→ TO RIVER</text>
+        <text x="45" y="178" fill={isDark ? "#129450" : "#0D7A6A"} fontSize="7" opacity="0.3" fontFamily="var(--font-display)" letterSpacing="1">RIVER FLOW →</text>
+        <text x="870" y="435" fill={isDark ? "#129450" : "#0D7A6A"} fontSize="7" opacity="0.3" fontFamily="var(--font-display)" letterSpacing="2">→ TO RIVER</text>
         <text x="235" y="145" fill="var(--text-primary)" fontSize="7" opacity="0.15" fontFamily="var(--font-display)">▲ 420m ASL</text>
         <text x="695" y="492" fill="var(--text-primary)" fontSize="7" opacity="0.15" fontFamily="var(--font-display)">▼ 280m ASL</text>
 
@@ -1417,7 +1417,7 @@ export function SiteMapSVG({
                   width="26" 
                   height="18" 
                   rx="5" 
-                  fill="#1FB6A6" 
+                  fill="#129450" 
                   stroke="#ffffff" 
                   strokeWidth="1"
                   filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))"
@@ -1465,14 +1465,14 @@ export function SiteMapSVG({
                 {/* Outer Glow / Pulse Ring */}
                 <circle
                   r={isSelected ? "14" : "10"}
-                  fill={isSelected ? "#1FB6A6" : "#0D9488"}
+                  fill={isSelected ? "#129450" : "#007B3E"}
                   fillOpacity={isSelected ? "0.4" : "0.2"}
                   className="animate-ping"
                 />
                 {/* Inner Pin Body */}
                 <circle
                   r={isSelected ? "8" : "6"}
-                  fill={isSelected ? "#1FB6A6" : "#0D9488"}
+                  fill={isSelected ? "#129450" : "#007B3E"}
                   stroke="#ffffff"
                   strokeWidth={isSelected ? "2" : "1.5"}
                   filter="drop-shadow(0 2px 6px rgba(0,0,0,0.5))"
@@ -1486,13 +1486,13 @@ export function SiteMapSVG({
                     height="14"
                     rx="3"
                     fill="#0B1013"
-                    stroke={isSelected ? "#1FB6A6" : "rgba(255,255,255,0.2)"}
+                    stroke={isSelected ? "#129450" : "rgba(255,255,255,0.2)"}
                     strokeWidth="1"
                   />
                   <text
                     textAnchor="middle"
                     y="2"
-                    fill={isSelected ? "#1FB6A6" : "#E2E8F0"}
+                    fill={isSelected ? "#129450" : "#E2E8F0"}
                     fontSize="8.5"
                     fontWeight="600"
                     fontFamily="var(--font-mono)"

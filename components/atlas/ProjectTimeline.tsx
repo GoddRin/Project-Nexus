@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
+import { BRAND_SPRING } from "@/components/shared/motion";
 import {
   Calendar,
   CheckCircle2,
@@ -360,16 +361,16 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={BRAND_SPRING}
       className={cn(
-        "rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/60 p-3.5 space-y-3 shadow-2xs",
+        "rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/60 p-3.5 space-y-3 shadow-2xs",
         className
       )}
     >
       {/* 1. Header Bar: Timeline Identity & Temporal Horizon */}
       <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/10 pb-2">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF]" />
+          <Calendar className="h-4 w-4 text-scic-blue dark:text-cyan-400" />
           <div className="flex flex-col">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
               <span>Project Chronology</span>
@@ -424,7 +425,7 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
 
               {/* Achieved Segment Overlay */}
               <div
-                className="absolute left-3 top-[40px] -translate-y-1/2 h-0.5 bg-emerald-500/80 transition-all duration-500"
+                className="draw-x absolute left-3 top-[40px] -translate-y-1/2 h-0.5 bg-emerald-500/80 transition-all duration-500"
                 style={{
                   width: `calc(${progressPercent}% - 6px)`,
                 }}
@@ -438,15 +439,16 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
                 return (
                   <div
                     key={node.id}
-                    className="relative z-10 flex flex-col items-center group cursor-default"
+                    style={{ "--i": idx } as React.CSSProperties}
+                    className="pop-in relative z-10 flex flex-col items-center group cursor-default"
                   >
                     {/* Top Tier (h-7): Floating CURRENT pill badge or reserved clearance */}
                     <div className="h-7 flex items-center justify-center">
                       {node.isCurrentIndicator ? (
-                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/90 border border-sky-400/50 dark:border-[#00E5FF]/50 text-[#0284C7] dark:text-[#00E5FF] text-[9px] font-mono font-bold shadow-xs whitespace-nowrap">
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/90 border border-sky-400/50 dark:border-cyan-400/50 text-scic-blue dark:text-cyan-400 text-[9px] font-mono font-bold shadow-xs whitespace-nowrap">
                           <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0284C7] dark:bg-[#00E5FF] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#0284C7] dark:bg-[#00E5FF]"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-scic-blue dark:bg-cyan-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-scic-blue dark:bg-cyan-400"></span>
                           </span>
                           <span>CURRENT</span>
                         </div>
@@ -459,7 +461,7 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
                         className={cn(
                           "flex items-center justify-center transition-transform group-hover:scale-125 duration-200",
                           node.isCurrentIndicator
-                            ? "h-4 w-4 rounded-full bg-[#0284C7] dark:bg-[#00E5FF] ring-4 ring-[#0284C7]/20 dark:ring-[#00E5FF]/20 shadow-sm"
+                            ? "h-4 w-4 rounded-full bg-scic-blue dark:bg-cyan-400 ring-4 ring-scic-blue/20 dark:ring-cyan-400/20 shadow-sm"
                             : node.status === "ACHIEVED"
                             ? "h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30 text-slate-950"
                             : node.status === "IN_PROGRESS"
@@ -482,7 +484,7 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
                         className={cn(
                           "text-[9px] font-mono select-none whitespace-nowrap",
                           node.isCurrentIndicator
-                            ? "font-bold text-[#0284C7] dark:text-[#00E5FF]"
+                            ? "font-bold text-scic-blue dark:text-cyan-400"
                             : node.status === "ACHIEVED"
                             ? "text-emerald-700 dark:text-emerald-400 font-semibold"
                             : "text-slate-500 dark:text-slate-400 font-medium",
@@ -516,16 +518,16 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
                 className={cn(
                   "relative text-xs transition-colors rounded-lg p-1.5 -ml-1.5",
                   isCurrent
-                    ? "bg-[#0284C7]/10 dark:bg-[#0284C7]/15 border border-[#0284C7]/30"
+                    ? "bg-scic-blue/10 dark:bg-scic-blue/15 border border-scic-blue/30"
                     : "hover:bg-slate-100/60 dark:hover:bg-white/[0.02]"
                 )}
               >
                 {/* Node Pin Marker on Vertical Line */}
                 <span
                   className={cn(
-                    "absolute -left-[19px] top-2.5 rounded-full border-2 border-white dark:border-[#08121E] transition-all",
+                    "absolute -left-[19px] top-2.5 rounded-full border-2 border-white dark:border-atlas-sunken transition-all",
                     isCurrent
-                      ? "h-2.5 w-2.5 bg-[#0284C7] dark:bg-[#00E5FF] ring-2 ring-[#0284C7]/40"
+                      ? "h-2.5 w-2.5 bg-scic-blue dark:bg-cyan-400 ring-2 ring-scic-blue/40"
                       : node.status === "ACHIEVED"
                       ? "h-2 w-2 bg-emerald-500 dark:bg-emerald-400"
                       : node.status === "IN_PROGRESS"
@@ -541,7 +543,7 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
                         className={cn(
                           "font-sans font-medium leading-snug",
                           isCurrent
-                            ? "text-[#0284C7] dark:text-[#38BDF8] font-bold"
+                            ? "text-scic-blue dark:text-sky-400 font-bold"
                             : "text-slate-800 dark:text-slate-200"
                         )}
                       >
@@ -572,7 +574,7 @@ export function ProjectTimeline({ project, className }: ProjectTimelineProps) {
                     className={cn(
                       "text-[10px] font-mono shrink-0 text-right",
                       isCurrent
-                        ? "text-[#0284C7] dark:text-[#38BDF8] font-bold"
+                        ? "text-scic-blue dark:text-sky-400 font-bold"
                         : node.status === "ACHIEVED"
                         ? "text-emerald-700 dark:text-emerald-400 font-semibold"
                         : "text-slate-500 dark:text-slate-400"

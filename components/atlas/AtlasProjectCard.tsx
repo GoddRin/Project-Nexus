@@ -15,12 +15,14 @@ export interface AtlasProjectCardProps {
   project: SCICProject;
   isSelected?: boolean;
   onSelect: (project: SCICProject) => void;
+  onHover?: (projectId: string | null) => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCardProps>(
   function AtlasProjectCard(
-    { project, isSelected = false, onSelect, className },
+    { project, isSelected = false, onSelect, onHover, className, style },
     ref
   ) {
     const canonicalCat = toCanonicalCategory(
@@ -41,12 +43,15 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
 
     return (
       <div
+        style={style}
         ref={ref}
         role="button"
         tabIndex={0}
         aria-selected={isSelected}
         aria-label={`${project.name}, ${catConfig.shortLabel}, ${status.label}, in ${project.municipality}, ${project.province}. Metric: ${primarySpec}. Press Enter to select on map.`}
         onClick={() => onSelect(project)}
+        onMouseEnter={() => onHover?.(project.id)}
+        onMouseLeave={() => onHover?.(null)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
@@ -55,10 +60,10 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
         }}
         className={cn(
           "group relative p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer select-none overflow-hidden",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0284C7] dark:focus-visible:ring-[#00E5FF] focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#08121E]",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:focus-visible:ring-emerald-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-atlas-sunken",
           isSelected
-            ? "bg-sky-50/90 dark:bg-[#0C1E33] border-[#0284C7] dark:border-[#00E5FF]/80 shadow-[0_0_16px_rgba(2,132,199,0.2)] dark:shadow-[0_0_16px_rgba(0,229,255,0.18)] ring-1 ring-[#0284C7]/50 dark:ring-[#00E5FF]/50"
-            : "bg-white dark:bg-[#0B1726] border-slate-200/90 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-[#0E1E32] hover:border-slate-300 dark:hover:border-white/20 shadow-xs hover:shadow-md",
+            ? "bg-emerald-50/90 dark:bg-emerald-950/45 border-emerald-600 dark:border-emerald-400/80 shadow-[0_0_16px_rgba(0,123,62,0.18)] ring-1 ring-emerald-600/40 dark:ring-emerald-400/40"
+            : "bg-white dark:bg-atlas-panel border-slate-200/90 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-atlas-raised hover:border-slate-300 dark:hover:border-white/20 shadow-xs hover:shadow-md",
           className
         )}
       >
@@ -126,8 +131,8 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
             className={cn(
               "text-[12.5px] font-bold leading-[1.32] line-clamp-2 transition-colors font-sans tracking-tight",
               isSelected
-                ? "text-[#0284C7] dark:text-white"
-                : "text-slate-800 dark:text-slate-100 group-hover:text-[#0284C7] dark:group-hover:text-white"
+                ? "text-scic-blue dark:text-white"
+                : "text-slate-800 dark:text-slate-100 group-hover:text-scic-blue dark:group-hover:text-white"
             )}
           >
             {project.name}
@@ -165,7 +170,7 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
               href={`/dashboard/projects/${project.id}`}
               onClick={(e) => e.stopPropagation()}
               title="Open full Project Profile"
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-mono font-medium text-slate-500 hover:text-[#0284C7] dark:hover:text-[#00E5FF] hover:bg-[#0284C7]/10 transition-colors"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-mono font-medium text-slate-500 hover:text-scic-blue dark:hover:text-cyan-400 hover:bg-scic-blue/10 transition-colors"
             >
               <FileText className="h-2.5 w-2.5" />
               <span>Profile</span>
@@ -175,8 +180,8 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
               className={cn(
                 "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9.5px] font-mono font-semibold transition-all shrink-0",
                 isSelected
-                  ? "bg-[#0284C7]/15 dark:bg-[#00E5FF]/15 text-[#0284C7] dark:text-[#00E5FF] border border-[#0284C7]/30 dark:border-[#00E5FF]/30 shadow-xs"
-                  : "bg-slate-200/50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/10 group-hover:bg-[#0284C7]/10 dark:group-hover:bg-sky-500/15 group-hover:text-[#0284C7] dark:group-hover:text-sky-300 group-hover:border-[#0284C7]/30 dark:group-hover:border-sky-500/30"
+                  ? "bg-scic-blue/15 dark:bg-cyan-400/15 text-scic-blue dark:text-cyan-400 border border-scic-blue/30 dark:border-cyan-400/30 shadow-xs"
+                  : "bg-slate-200/50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/10 group-hover:bg-scic-blue/10 dark:group-hover:bg-sky-500/15 group-hover:text-scic-blue dark:group-hover:text-sky-300 group-hover:border-scic-blue/30 dark:group-hover:border-sky-500/30"
               )}
             >
               <span>{isSelected ? "Selected" : "Inspect"}</span>

@@ -51,9 +51,9 @@ export function TicketTrendsChart({ data }: { data: Record<string, string | numb
         <XAxis dataKey="week" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
-        <Bar dataKey="open" name="Open" stackId="a" fill="var(--flow-teal)" radius={[0, 0, 0, 0]} />
-        <Bar dataKey="inProgress" name="In Progress" stackId="a" fill="var(--signal-amber)" radius={[0, 0, 0, 0]} />
-        <Bar dataKey="resolvedClosed" name="Resolved/Closed" stackId="a" fill="var(--text-muted)" radius={[4, 4, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="open" name="Open" stackId="a" fill="var(--flow-teal)" radius={[0, 0, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="inProgress" name="In Progress" stackId="a" fill="var(--signal-amber)" radius={[0, 0, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="resolvedClosed" name="Resolved/Closed" stackId="a" fill="var(--text-muted)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -105,10 +105,10 @@ export function InventoryActivityChart({ data }: { data: Record<string, string |
         <XAxis dataKey="week" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
-        <Bar dataKey="RESTOCK" name="Restock" fill="var(--flow-teal)" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="ISSUE" name="Issue" fill="var(--signal-amber)" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="BORROW" name="Borrow" fill="var(--text-primary)" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="RETURN" name="Return" fill="var(--text-muted)" radius={[2, 2, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="RESTOCK" name="Restock" fill="var(--flow-teal)" radius={[2, 2, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="ISSUE" name="Issue" fill="var(--signal-amber)" radius={[2, 2, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="BORROW" name="Borrow" fill="var(--text-primary)" radius={[2, 2, 0, 0]} />
+        <Bar maxBarSize={56} dataKey="RETURN" name="Return" fill="var(--text-muted)" radius={[2, 2, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

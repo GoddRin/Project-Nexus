@@ -35,7 +35,7 @@ export const CATEGORY_ICON_REGISTRY: Record<ProjectCategoryId, CategoryMarkerCon
     iconName: "marker-hydro",
     label: "Hydropower & Renewable Energy",
     shortLabel: "Hydropower",
-    color: "#10A51D",
+    color: "#129450",
     textColor: "#ffffff",
     // Runner blade turbine with integrated lightning bolt energy core
     svgInnerPath: `
@@ -48,7 +48,7 @@ export const CATEGORY_ICON_REGISTRY: Record<ProjectCategoryId, CategoryMarkerCon
     iconName: "marker-wind",
     label: "Wind Power & Clean Aerogenerators",
     shortLabel: "Wind Power",
-    color: "#06B6D4",
+    color: "#2F82AB",
     textColor: "#ffffff",
     // 3-blade aerodynamic wind turbine generator with tower and air current trails
     svgInnerPath: `
@@ -57,7 +57,7 @@ export const CATEGORY_ICON_REGISTRY: Record<ProjectCategoryId, CategoryMarkerCon
       <path d="M32 28 C30.8 23 30.8 17 32 13 C33.2 17 33.2 23 32 28 Z" fill="#ffffff"/>
       <path d="M32 28 C36.5 27 41.5 30.5 45 35.5 C41 36.2 36 33.5 32 28 Z" fill="#ffffff"/>
       <path d="M32 28 C32.5 33.5 27.5 36.2 19 35.5 C22.5 30.5 27.5 27 32 28 Z" fill="#ffffff"/>
-      <circle cx="32" cy="28" r="1.2" fill="#06B6D4"/>
+      <circle cx="32" cy="28" r="1.2" fill="#2F82AB"/>
       <path d="M21 21 Q25 18 29 20" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
       <path d="M35 39 Q39 41 43 38" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
     `,
@@ -146,13 +146,13 @@ export const CATEGORY_ICON_REGISTRY: Record<ProjectCategoryId, CategoryMarkerCon
     iconName: "marker-industrial",
     label: "Industrial Facilities & Manufacturing",
     shortLabel: "Industrial",
-    color: "#14B8A6",
+    color: "#129450",
     textColor: "#ffffff",
     // Industrial plant with sawtooth roofline and smokestack
     svgInnerPath: `
       <path d="M22 43 L22 34 L27 28 L27 34 L32 28 L32 34 L37 28 L37 43 Z" fill="#ffffff"/>
       <rect x="38" y="21" width="4" height="22" rx="0.5" fill="#ffffff"/>
-      <circle cx="28" cy="38" r="2" fill="#14B8A6"/>
+      <circle cx="28" cy="38" r="2" fill="#129450"/>
     `,
   },
   ENERGY_GRID: {

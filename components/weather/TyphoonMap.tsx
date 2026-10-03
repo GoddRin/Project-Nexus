@@ -316,7 +316,7 @@ export default function TyphoonMap({
         <div class="relative flex items-center justify-center">
           <div class="absolute w-8 h-8 rounded-full bg-teal-500/20 animate-ping"></div>
           <div class="absolute w-5 h-5 rounded-full bg-teal-500/40 animate-pulse"></div>
-          <div class="w-3.5 h-3.5 rounded-full bg-[#1FB6A6] border-2 border-white shadow-md"></div>
+          <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-md"></div>
         </div>
       `,
       iconSize: [32, 32],
@@ -353,7 +353,7 @@ export default function TyphoonMap({
   // Helper to get category-based colors
   const getCategoryColor = (category: string, windKnots: number) => {
     const cat = category.toLowerCase();
-    if (cat.includes("depression") || cat.includes("low pressure")) return "#1FB6A6";
+    if (cat.includes("depression") || cat.includes("low pressure")) return "#129450";
     if (cat.includes("storm")) return "#E8A33D";
     if (cat.includes("super") || windKnots >= 130) return "#FF2040";
     return "#D6483F";
@@ -430,7 +430,7 @@ export default function TyphoonMap({
           >
             <Popup>
               <div className="p-2.5 text-slate-900 font-sans text-xs max-w-[260px]">
-                <div className="flex items-center gap-1.5 font-bold text-[#0D9488] text-sm">
+                <div className="flex items-center gap-1.5 font-bold text-emerald-600 text-sm">
                   <span>🛡️</span>
                   <h4>Philippine Area of Responsibility (PAR)</h4>
                 </div>
@@ -458,7 +458,7 @@ export default function TyphoonMap({
           <Marker position={[SITE_LAT, SITE_LNG]} icon={siteIcon}>
             <Popup>
               <div className="p-2 text-slate-900 font-sans">
-                <h4 className="font-bold text-sm text-[#0D9488]">Tumauini HEPP</h4>
+                <h4 className="font-bold text-sm text-emerald-600">Tumauini HEPP</h4>
                 <p className="text-xs text-slate-600">Project Operations Center</p>
                 <p className="text-xs font-mono mt-1">17.3188&deg; N, 121.9749&deg; E</p>
               </div>
@@ -482,7 +482,7 @@ export default function TyphoonMap({
             <Circle
               center={[SITE_LAT, SITE_LNG]}
               radius={1000000}
-              pathOptions={{ color: "#1FB6A6", weight: 1, dashArray: "5, 8", fill: false, opacity: 0.2 }}
+              pathOptions={{ color: "#129450", weight: 1, dashArray: "5, 8", fill: false, opacity: 0.2 }}
             />
           </>
         )}
@@ -514,7 +514,7 @@ export default function TyphoonMap({
                 <Polyline
                   positions={fullPastLine}
                   pathOptions={{
-                    color: inPAR ? "#10B981" : "#64748B", // emerald green if in PAR, slate if regional
+                    color: inPAR ? "#129450" : "#64748B", // emerald green if in PAR, slate if regional
                     weight: 3,
                     opacity: 0.85,
                     className: "past-track-line",
@@ -720,7 +720,7 @@ export default function TyphoonMap({
 
       {/* Status Badge Overlay — Top Left (above zoom buttons) */}
       <div className="absolute top-2.5 left-3 z-20 bg-card/90 dark:bg-slate-950/95 backdrop-blur-md border border-border-hairline px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xl pointer-events-auto max-w-[50%] sm:max-w-[58%]">
-        <div className={cn("w-2 h-2 rounded-full shrink-0", parStorms.length > 0 ? "bg-red-500 animate-ping" : "bg-[#1FB6A6] animate-pulse")}></div>
+        <div className={cn("w-2 h-2 rounded-full shrink-0", parStorms.length > 0 ? "bg-red-500 animate-ping" : "bg-emerald-500 animate-pulse")}></div>
         <span className="text-[10px] font-bold text-text-primary tracking-wide truncate">
           {parStorms.length > 0
             ? `WARNING: ${parStorms[0].name} (PAR)`

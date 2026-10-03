@@ -22,7 +22,7 @@ export default function SignUpPage() {
         appearance={{
           theme: isDark ? dark : undefined,
           variables: {
-            colorPrimary: "#1FB6A6",
+            colorPrimary: "#129450",
             borderRadius: "0.75rem",
             fontFamily: "'IBM Plex Sans', sans-serif",
             ...(isDark
@@ -45,7 +45,7 @@ export default function SignUpPage() {
           },
           elements: {
             card: isDark
-              ? "shadow-xl border border-white/10 bg-[#121C21]"
+              ? "shadow-xl border border-white/10 bg-bg-panel"
               : "shadow-xl border border-slate-200/80 bg-white",
             headerTitle: "font-display",
             headerSubtitle: isDark ? "text-slate-400" : "text-slate-500",

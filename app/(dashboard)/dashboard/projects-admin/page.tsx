@@ -478,7 +478,7 @@ export default function ProjectsAdminPage() {
                           <Link
                             href={`/dashboard/projects/${p.id}`}
                             title="View Project Profile"
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#0284C7] hover:bg-[#0284C7]/10 dark:hover:text-[#00E5FF] transition-colors"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-scic-blue hover:bg-scic-blue/10 dark:hover:text-cyan-400 transition-colors"
                           >
                             <FileText className="w-4 h-4" />
                           </Link>

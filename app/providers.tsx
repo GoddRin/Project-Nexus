@@ -48,7 +48,7 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
         appearance={{
           theme: dark,
           variables: {
-            colorPrimary: "#1FB6A6",
+            colorPrimary: "#129450",
             colorBackground: "#0B1418",
             colorForeground: "#EDEFF1",
             fontFamily: "'IBM Plex Sans', sans-serif",
@@ -66,7 +66,7 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
       appearance={{
         theme: resolvedTheme === "dark" ? dark : undefined,
         variables: {
-          colorPrimary: "#1FB6A6",
+          colorPrimary: "#129450",
           fontFamily: "'IBM Plex Sans', sans-serif",
           ...(resolvedTheme === "dark" ? {
             colorBackground: "#0B1418",
@@ -85,11 +85,13 @@ function ThemeAwareComponents({ children }: { children: React.ReactNode }) {
 }
 
 import { MotionConfig } from "framer-motion";
+import { SpotlightProvider } from "@/components/shared/SpotlightProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
-      <MotionConfig reducedMotion="never">
+      <MotionConfig reducedMotion="user">
+        <SpotlightProvider />
         <ThemeAwareComponents>
           {children}
         </ThemeAwareComponents>

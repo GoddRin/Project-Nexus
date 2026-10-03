@@ -27,12 +27,12 @@ export function NetworkBadgeIcon({
           className={cn("shrink-0", className)}
         >
           {/* DOST-PAGASA: Meteorological Radar + Isobar Shield */}
-          <circle cx="12" cy="12" r="10" stroke="#06B6D4" strokeWidth="1.5" strokeOpacity="0.8" />
-          <circle cx="12" cy="12" r="6" stroke="#0EA5E9" strokeWidth="1.2" strokeOpacity="0.6" />
-          <circle cx="12" cy="12" r="2.5" fill="#38BDF8" />
+          <circle cx="12" cy="12" r="10" stroke="#2F82AB" strokeWidth="1.5" strokeOpacity="0.8" />
+          <circle cx="12" cy="12" r="6" stroke="#2F82AB" strokeWidth="1.2" strokeOpacity="0.6" />
+          <circle cx="12" cy="12" r="2.5" fill="#4E9DC2" />
           {/* Radar Sweep & Crosshairs */}
-          <path d="M12 2V22M2 12H22" stroke="#06B6D4" strokeWidth="0.8" strokeOpacity="0.4" />
-          <path d="M12 12L19 5" stroke="#38BDF8" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M12 2V22M2 12H22" stroke="#2F82AB" strokeWidth="0.8" strokeOpacity="0.4" />
+          <path d="M12 12L19 5" stroke="#4E9DC2" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       );
 
@@ -56,7 +56,7 @@ export function NetworkBadgeIcon({
           />
           <path
             d="M9 15C9 13 10.2 11 12 11C13.8 11 15 13 15 15"
-            stroke="#10B981"
+            stroke="#129450"
             strokeWidth="1.75"
             strokeLinecap="round"
           />
@@ -75,9 +75,9 @@ export function NetworkBadgeIcon({
           className={cn("shrink-0", className)}
         >
           {/* ABS-CBN: RGB Broadcast Rings */}
-          <rect x="2" y="3" width="20" height="18" rx="4" fill="#08121E" stroke="#38BDF8" strokeWidth="1.2" strokeOpacity="0.5" />
+          <rect x="2" y="3" width="20" height="18" rx="4" fill="#08121E" stroke="#4E9DC2" strokeWidth="1.2" strokeOpacity="0.5" />
           <circle cx="12" cy="12" r="7" stroke="#EF4444" strokeWidth="1.5" strokeOpacity="0.8" />
-          <circle cx="12" cy="12" r="4.5" stroke="#10B981" strokeWidth="1.5" strokeOpacity="0.8" />
+          <circle cx="12" cy="12" r="4.5" stroke="#129450" strokeWidth="1.5" strokeOpacity="0.8" />
           <circle cx="12" cy="12" r="2" fill="#3B82F6" />
         </svg>
       );

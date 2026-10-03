@@ -401,7 +401,7 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ type: "spring", damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-xl mt-12 sm:mt-20 rounded-2xl border border-border-hairline bg-card/95 dark:bg-[#0B131B]/95 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col z-10"
+            className="relative w-full max-w-xl mt-12 sm:mt-20 rounded-2xl border border-border-hairline bg-card/95 dark:bg-bg-panel/95 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col z-10"
           >
             {/* Search Input Bar */}
             <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border-hairline">

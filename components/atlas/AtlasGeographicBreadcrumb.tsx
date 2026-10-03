@@ -49,12 +49,12 @@ export function AtlasGeographicBreadcrumb({
         className={cn(
           "flex items-center gap-1.5 px-2 py-1 rounded-lg transition-colors cursor-pointer shrink-0",
           !hasRegion && !hasProvince && !hasProject
-            ? "bg-[#0284C7]/15 dark:bg-[#0284C7]/25 text-[#0284C7] dark:text-[#38BDF8] font-bold border border-[#0284C7]/30 dark:border-[#0284C7]/40"
+            ? "bg-scic-blue/15 dark:bg-scic-blue/25 text-scic-blue dark:text-sky-400 font-bold border border-scic-blue/30 dark:border-scic-blue/40"
             : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
         )}
         title="Zoom to Full Philippine Extent"
       >
-        <Globe className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
+        <Globe className="h-3.5 w-3.5 text-scic-blue dark:text-sky-400" />
         <span>Philippines</span>
       </button>
 
@@ -68,7 +68,7 @@ export function AtlasGeographicBreadcrumb({
             className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-lg transition-colors cursor-pointer truncate max-w-[150px] sm:max-w-[180px] shrink-0",
               hasRegion && !hasProvince && !hasProject
-                ? "bg-[#0284C7]/15 dark:bg-[#0284C7]/25 text-[#0284C7] dark:text-[#38BDF8] font-bold border border-[#0284C7]/30 dark:border-[#0284C7]/40"
+                ? "bg-scic-blue/15 dark:bg-scic-blue/25 text-scic-blue dark:text-sky-400 font-bold border border-scic-blue/30 dark:border-scic-blue/40"
                 : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
             )}
             title={`Drill to ${region}`}
@@ -88,7 +88,7 @@ export function AtlasGeographicBreadcrumb({
             className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-lg transition-colors cursor-pointer truncate max-w-[130px] sm:max-w-[160px] shrink-0",
               hasProvince && !hasProject
-                ? "bg-[#0284C7]/15 dark:bg-[#0284C7]/25 text-[#0284C7] dark:text-[#38BDF8] font-bold border border-[#0284C7]/30 dark:border-[#0284C7]/40"
+                ? "bg-scic-blue/15 dark:bg-scic-blue/25 text-scic-blue dark:text-sky-400 font-bold border border-scic-blue/30 dark:border-scic-blue/40"
                 : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
             )}
             title={`Drill to ${province}`}

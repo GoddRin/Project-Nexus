@@ -151,7 +151,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
  return (
   <aside
     className={cn(
-      "hidden md:flex h-screen flex-col border-r border-border-hairline bg-gradient-to-b from-[#0B2545]/[0.03] to-transparent dark:from-[#0B131B] dark:to-[#060B10] shell-blur transition-[width] duration-200 ease-in-out print:hidden",
+      "hidden md:flex h-screen flex-col border-r border-border-hairline bg-gradient-to-b from-scic-navy/[0.03] to-transparent dark:from-bg-panel dark:to-bg-base shell-blur transition-[width] duration-200 ease-in-out print:hidden",
       collapsed ? "w-16" : "w-64"
     )}
   >
@@ -164,7 +164,7 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
         collapsed ? "justify-center" : "max-md:justify-center"
       )}
  >
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline overflow-hidden shadow-sm p-1">
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-bg-panel border border-border-hairline overflow-hidden shadow-sm p-1">
           <HydroPowerLogo className="h-full w-full" size={40} />
         </div>
  {!collapsed && (

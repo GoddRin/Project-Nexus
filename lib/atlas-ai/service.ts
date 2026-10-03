@@ -6,7 +6,10 @@
 import { executeAICascade } from "@/lib/ai/core/providerHarness";
 import { AIChatMessage, AIToolStreamEvent } from "@/lib/ai/core/types";
 import { globalAIRateLimiter } from "@/lib/ai/core/rateLimiter";
-import { buildAtlasSystemInstruction, AtlasContextPayload } from "./identity";
+import { buildAtlasSystemInstruction, AtlasContextPayload, isCompanyQuestion } from "./identity";
+import { tryQuickAnswer } from "./quickAnswers";
+import { reviewAnswer, unsupportedNumbers } from "./selfReview";
+import { COMPANY_PROFILE } from "./companyProfile";
 import {
   ATLAS_TOOL_DECLARATIONS,
   NEXUS_TOOL_DECLARATIONS,
@@ -28,7 +31,7 @@ export interface GenerateAtlasAIAnswerOptions {
 
 const MAX_INPUT_CHARACTERS = 4000;
 const MAX_CONVERSATION_CONTEXT = 12;
-const MAX_EXECUTION_TIMEOUT_MS = 25000;
+const MAX_EXECUTION_TIMEOUT_MS = 40000; // free fallback models (OpenRouter) can need 20-35 s with tools
 const ASSISTANT_VERSION = "1.0.0-prod";
 const PROMPT_VERSION = "19.0.0";
 const TOOL_VERSION = "19.0.0";
@@ -97,6 +100,35 @@ export async function generateAtlasAIAnswer(
     });
   }
 
+  // 3b. Counting questions ("how many projects in Mindanao", "and how many of those are ongoing?")
+  //     are answered exactly from the records, instantly, without the language model.
+  try {
+    const quick = await tryQuickAnswer(query, history, initialContext?.language);
+    if (quick) {
+      return validateAndGateAtlasResponse({
+        answer: quick.answer,
+        actions: quick.filters
+          ? [{ type: "FILTER_PROJECTS", filters: quick.filters }]
+          : quick.highlight
+          ? [{ type: "HIGHLIGHT_PROJECTS", projectIds: quick.highlight, fitBounds: true }]
+          : [],
+        sources: [{ name: "Project Atlas Database", sourceType: "DATABASE", provenance: "Verified" }],
+        metadata: {
+          provider: "atlas_records",
+          model: "quick_count",
+          durationMs: 0,
+          executedTools: ["quick_count"],
+          assistantVersion: ASSISTANT_VERSION,
+          promptVersion: PROMPT_VERSION,
+          toolVersion: TOOL_VERSION,
+          requestId,
+        },
+      });
+    }
+  } catch (err) {
+    console.warn("[AtlasAIService] quick answer skipped:", err);
+  }
+
   // 4. Resolve Active Project & Nexus Integration Boundary (Phase 18)
   const context: AtlasContextPayload = initialContext ? { ...initialContext } : {};
   context.isAuthorized = isAuthorized;
@@ -155,19 +187,28 @@ export async function generateAtlasAIAnswer(
     : ATLAS_TOOL_DECLARATIONS;
 
   // 5. Build dedicated Atlas system instruction with Phase 18 boundary
-  const systemInstruction = buildAtlasSystemInstruction(context);
+  // the full company profile only when the question (or the one before it) is about the company
+  const lastUserTurn = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+  const systemInstruction = buildAtlasSystemInstruction({
+    ...context,
+    companyQuestion: isCompanyQuestion(query) || (query.split(/\s+/).length <= 6 && isCompanyQuestion(lastUserTurn)),
+  });
 
   // 6. Prepare tool execution containers
   const collectedActions: AtlasAIAction[] = [];
   const collectedSources: AtlasAISource[] = [];
 
+  // everything the tools returned, kept for the self-review of figures
+  const toolOutputs: unknown[] = [];
   const executeTool = async (name: string, args: Record<string, unknown>): Promise<unknown> => {
-    return await dispatchAtlasTool(name, args, {
+    const output = await dispatchAtlasTool(name, args, {
       actions: collectedActions,
       sources: collectedSources,
       runtimeContext: context,
       isAuthorized,
     });
+    toolOutputs.push({ tool: name, output });
+    return output;
   };
 
   // Limit conversation history to prevent context overflows
@@ -202,10 +243,40 @@ export async function generateAtlasAIAnswer(
     );
 
     const result = await Promise.race([cascadePromise, timeoutPromise]);
+    let answerText = result.text;
+
+    // 7b. Self-review: figures in an answer built from tool data must be found in that data. If
+    //     some are not, the answer goes back once to be corrected (one extra request, only then).
+    const startedAt = Date.now() - (result.telemetry.durationMs ?? 0);
+    if (toolOutputs.length && Date.now() - startedAt < 15000) {
+      const unsupported = unsupportedNumbers(answerText, toolOutputs, [
+        query,
+        history.map((m) => m.content).join("\n"),
+        COMPANY_PROFILE,
+      ]);
+      if (unsupported.length) {
+        console.warn(`[AtlasAIService] ${requestId}: figures not found in tool data (${unsupported.join(", ")}); reviewing`);
+        const reviewed = await Promise.race([
+          reviewAnswer({ question: query, draft: answerText, toolOutputs, unsupported }),
+          new Promise<null>((r) => setTimeout(() => r(null), 8000)),
+        ]);
+        if (reviewed) answerText = reviewed;
+      }
+    }
+
+    // A company answer cites the company's own pages, which the user can open
+    if (/company profile/i.test(answerText)) {
+      collectedSources.unshift({
+        name: "Sta. Clara company profile",
+        sourceType: "NARRATIVE_DOC",
+        provenance: "Verified",
+        document: "https://staclara.com.ph/who-we-are/about-scic/",
+      });
+    }
 
     // 8. Deliver final output through Central Validation Gate
     return validateAndGateAtlasResponse({
-      answer: result.text,
+      answer: answerText,
       actions: collectedActions,
       sources: collectedSources,
       metadata: {

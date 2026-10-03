@@ -467,7 +467,10 @@ export function validateAndGateAtlasResponse(raw: {
   metadata?: Partial<AtlasAIMetadata>;
 }): AtlasAIResponse {
   // 1. Redact secrets from factual textual response
-  const rawAnswer = typeof raw.answer === "string" ? raw.answer : "I processed your request.";
+  const rawAnswer =
+    typeof raw.answer === "string" && raw.answer.trim()
+      ? raw.answer
+      : "Sorry, I lost my train of thought on that one. Could you ask me again?";
   const cleanAnswer = redactSecrets(rawAnswer);
 
   const executedTools = raw.metadata?.executedTools || [];

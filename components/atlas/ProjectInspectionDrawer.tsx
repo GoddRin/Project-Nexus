@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { BRAND_SPRING } from "@/components/shared/motion";
 import {
   X,
   MapPin,
@@ -40,6 +41,7 @@ import {
   Mail,
   AlertCircle,
   Filter,
+  BookOpen,
 } from "lucide-react";
 import { SCICProject } from "@/lib/data/scicProjectsData";
 import { ATLAS_STATUSES } from "./AtlasTokens";
@@ -63,6 +65,8 @@ export interface ProjectInspectionDrawerProps {
   isTourActive?: boolean;
   tourSpokenWordIndex?: number;
   isTourSpeaking?: boolean;
+  /** Plays the narrated site story for this project (omitted when the record is too thin for one) */
+  onTellStory?: () => void;
 }
 
 export function ProjectInspectionDrawer({
@@ -75,6 +79,7 @@ export function ProjectInspectionDrawer({
   isTourActive = false,
   tourSpokenWordIndex,
   isTourSpeaking = false,
+  onTellStory,
 }: ProjectInspectionDrawerProps) {
   const {
     flyToProject,
@@ -109,7 +114,8 @@ export function ProjectInspectionDrawer({
         if (isLightboxOpen) {
           e.preventDefault();
           setIsLightboxOpen(false);
-        } else if (project) {
+        } else if (project && !isTourActive) {
+          // (while a tour or site story is playing, Esc ends that first and the panel stays)
           e.preventDefault();
           onClose();
         }
@@ -117,7 +123,7 @@ export function ProjectInspectionDrawer({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLightboxOpen, project, onClose]);
+  }, [isLightboxOpen, project, onClose, isTourActive]);
 
   // Prevent body scroll when lightbox modal is open (Directive 12 & 41)
   useEffect(() => {
@@ -316,9 +322,9 @@ export function ProjectInspectionDrawer({
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 24 }}
-          transition={{ duration: 0.22, ease: "easeOut" }}
+          transition={BRAND_SPRING}
           className={cn(
-            "flex flex-col text-slate-800 dark:text-slate-100 shadow-2xl bg-white/95 dark:bg-[#0B1726]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10",
+            "flex flex-col text-slate-800 dark:text-slate-100 shadow-2xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-xl border border-slate-200 dark:border-white/10",
             // Mobile: Bottom sheet with peek vs expanded mode (Directives 29–32)
             "fixed inset-x-0 bottom-0 z-50 md:absolute md:inset-auto",
             isMobileExpanded
@@ -330,7 +336,7 @@ export function ProjectInspectionDrawer({
           )}
         >
           {/* Mobile Top Drag Handle & Expand Toggle */}
-          <div className="md:hidden flex items-center justify-between px-4 pt-2.5 pb-1 border-b border-slate-200 dark:border-white/5 shrink-0 bg-slate-50/90 dark:bg-[#08121E]/60">
+          <div className="md:hidden flex items-center justify-between px-4 pt-2.5 pb-1 border-b border-slate-200 dark:border-white/5 shrink-0 bg-slate-50/90 dark:bg-atlas-sunken/60">
             <button
               onClick={() => setIsMobileExpanded(!isMobileExpanded)}
               className="flex-1 flex justify-center py-1 cursor-pointer"
@@ -361,10 +367,10 @@ export function ProjectInspectionDrawer({
           </div>
 
           {/* Desktop Control Bar */}
-          <div className="hidden md:flex items-center justify-between px-4 py-2.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/70 shrink-0">
+          <div className="hidden md:flex items-center justify-between px-4 py-2.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/70 shrink-0">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#0284C7] dark:bg-[#00E5FF] shadow-[0_0_8px_#0284C7] dark:shadow-[0_0_8px_#00E5FF]" />
-              <span className="text-[11px] font-mono tracking-wider font-bold uppercase text-[#0284C7] dark:text-[#00E5FF]">
+              <span className="h-2 w-2 rounded-full bg-scic-blue dark:bg-cyan-400 shadow-[0_0_8px_#0284C7] dark:shadow-[0_0_8px_#00E5FF]" />
+              <span className="text-[11px] font-mono tracking-wider font-bold uppercase text-scic-blue dark:text-cyan-400">
                 PROJECT INTELLIGENCE
               </span>
             </div>
@@ -416,7 +422,7 @@ export function ProjectInspectionDrawer({
               {/* Top Code Badge & Canonical Category Badge */}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 text-[10px] font-mono font-bold text-[#0284C7] dark:text-[#38BDF8]">
+                  <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 text-[10px] font-mono font-bold text-scic-blue dark:text-sky-400">
                     {project.code}
                   </span>
                   <span
@@ -475,12 +481,12 @@ export function ProjectInspectionDrawer({
               </div>
 
               {/* Featured Project Image (Directives 10 & 11) */}
-              <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-100 dark:bg-[#08121E]">
+              <motion.div layoutId={`project-photo-${project.id}`} transition={BRAND_SPRING} className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-100 dark:bg-atlas-sunken">
                 {activePhotoUrl ? (
                   <button
                     ref={triggerImageRef}
                     onClick={() => setIsLightboxOpen(true)}
-                    className="relative block w-full h-48 md:h-52 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00E5FF]"
+                    className="photo-brand relative block w-full h-48 md:h-52 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-600 dark:focus:ring-emerald-400"
                     title="Click to expand high-resolution photo in lightbox"
                     aria-label={`View full-size photo: ${project.name}`}
                   >
@@ -495,7 +501,7 @@ export function ProjectInspectionDrawer({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
                     <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded bg-black/75 border border-white/15 text-[10px] font-mono text-slate-200 backdrop-blur-xs">
-                      <Maximize2 className="h-3 w-3 text-[#00E5FF]" />
+                      <Maximize2 className="h-3 w-3 text-cyan-400" />
                       <span>Expand Photo</span>
                     </div>
                   </button>
@@ -505,7 +511,7 @@ export function ProjectInspectionDrawer({
                     <span className="text-xs font-mono">No Image Asset Available</span>
                   </div>
                 )}
-              </div>
+              </motion.div>
 
               {/* Gallery Thumbnail Strip (Directive 11: Render ONLY when legitimate gallery exists) */}
               {galleryImages.length > 1 && (
@@ -528,7 +534,7 @@ export function ProjectInspectionDrawer({
                         className={cn(
                           "relative h-12 w-14 rounded-lg overflow-hidden border shrink-0 transition-all cursor-pointer focus:outline-none",
                           activeGalleryIndex === idx
-                            ? "border-[#0284C7] dark:border-[#00E5FF] ring-2 ring-[#0284C7]/40 dark:ring-[#00E5FF]/40 scale-105"
+                            ? "border-scic-blue dark:border-cyan-400 ring-2 ring-scic-blue/40 dark:ring-cyan-400/40 scale-105"
                             : "border-slate-200 dark:border-white/15 opacity-75 hover:opacity-100"
                         )}
                       >
@@ -551,57 +557,11 @@ export function ProjectInspectionDrawer({
                 <div className="pt-1">
                   <div className="flex items-center justify-between mb-1">
                     <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                      {isTourActive && isTourSpeaking ? (
-                        <>
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                          </span>
-                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">Live Spoken Overview</span>
-                        </>
-                      ) : (
-                        <span>Project Overview</span>
-                      )}
+                      <span>Project Overview</span>
                     </h3>
                   </div>
                   <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-200/95 font-sans">
-                    {isTourActive && tourSpokenWordIndex !== undefined ? (
-                      (() => {
-                        const words = project.description.trim().split(/\s+/).filter(Boolean);
-                        const count = Math.min(words.length, Math.max(0, tourSpokenWordIndex));
-                        if (count === 0 && isTourSpeaking) {
-                          return (
-                            <span className="text-slate-400 italic text-xs flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
-                              Beginning spoken overview...
-                            </span>
-                          );
-                        }
-                        return (
-                          <>
-                            {words.slice(0, count).map((word, idx) => {
-                              const isLatest = idx === count - 1 && isTourSpeaking;
-                              return (
-                                <span
-                                  key={idx}
-                                  className={cn(
-                                    "inline-block mr-1 transition-all duration-100",
-                                    isLatest ? "text-emerald-600 dark:text-emerald-300 font-bold" : ""
-                                  )}
-                                >
-                                  {word}
-                                </span>
-                              );
-                            })}
-                            {isTourSpeaking && (
-                              <span className="inline-block w-1.5 h-3 bg-emerald-400 ml-0.5 animate-pulse rounded-xs align-middle" />
-                            )}
-                          </>
-                        );
-                      })()
-                    ) : (
-                      project.description
-                    )}
+                    {project.description}
                   </p>
                 </div>
               )}
@@ -611,20 +571,37 @@ export function ProjectInspectionDrawer({
                 SECTION 2: MAP QUICK ACTIONS TOOLBAR (Directives 13–18)
                 Center · Site View · Satellite · Copy Coordinates · Open in Maps
                 ============================================================ */}
-            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/80 p-2.5">
+            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/80 p-2.5">
               {/* Primary Architecture Action: Open Full Project Profile */}
               <div className="space-y-1.5 mb-2.5">
                 <Link
                   href={`/dashboard/projects/${project.id}`}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 via-[#0284C7]/15 to-emerald-500/10 dark:from-sky-500/20 dark:via-[#00E5FF]/20 dark:to-emerald-500/15 border border-[#0284C7]/40 dark:border-[#00E5FF]/40 text-[#0284C7] dark:text-[#00E5FF] hover:border-[#0284C7] dark:hover:border-[#00E5FF] transition-all group font-mono text-xs font-bold shadow-2xs cursor-pointer"
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 via-scic-blue/15 to-emerald-500/10 dark:from-sky-500/20 dark:via-cyan-400/20 dark:to-emerald-500/15 border border-scic-blue/40 dark:border-cyan-400/40 text-scic-blue dark:text-cyan-400 hover:border-scic-blue dark:hover:border-cyan-400 transition-all group font-mono text-xs font-bold shadow-2xs cursor-pointer"
                   title="Open full authoritative Project Profile"
                 >
                   <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:scale-110 transition-transform shrink-0" />
+                    <FileText className="h-4 w-4 text-scic-blue dark:text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
                     <span>Open Project Profile</span>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:translate-x-0.5 transition-transform shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-scic-blue dark:text-cyan-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Link>
+
+                {/* Narrated site story, told by the navigator (Esc or any map movement stops it) */}
+                {onTellStory && (
+                  <button
+                    type="button"
+                    onClick={onTellStory}
+                    disabled={isTourActive}
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-600/30 dark:border-emerald-400/30 text-emerald-700 dark:text-emerald-300 hover:border-emerald-600 dark:hover:border-emerald-400 transition-all group text-xs font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-default"
+                    title="Hear the story of this project: what was built, the hard part, the numbers and where it stands"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 shrink-0 group-hover:scale-110 transition-transform" />
+                      <span>{isTourActive ? "Story playing…" : "Tell me the story"}</span>
+                    </div>
+                    <span className="text-[10px] font-normal text-emerald-700/70 dark:text-emerald-300/70">about a minute</span>
+                  </button>
+                )}
 
                 {/* Phase 18 Controlled Cross-System Action: Open Nexus Operations */}
                 {isOperationalNexusProject ? (
@@ -668,7 +645,7 @@ export function ProjectInspectionDrawer({
                   className="flex flex-col items-center justify-center p-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs"
                   title="Re-center map camera on project coordinates"
                 >
-                  <Crosshair className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#00E5FF] mb-1 group-hover:scale-110 transition-transform" />
+                  <Crosshair className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400 mb-1 group-hover:scale-110 transition-transform" />
                   <span className="text-[10px] font-mono">Center</span>
                 </button>
 
@@ -688,7 +665,7 @@ export function ProjectInspectionDrawer({
                   className={cn(
                     "flex flex-col items-center justify-center p-2 rounded-lg border transition-colors cursor-pointer text-center group shadow-2xs",
                     mapStyle === "SATELLITE"
-                      ? "bg-[#0284C7]/20 border-[#0284C7] text-[#0284C7] dark:text-white font-bold"
+                      ? "bg-scic-blue/20 border-scic-blue text-scic-blue dark:text-white font-bold"
                       : "bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white"
                   )}
                   title={
@@ -740,7 +717,7 @@ export function ProjectInspectionDrawer({
                   title="Zoom and focus on verified engineering footprint"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Layers className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF] group-hover:scale-110 transition-transform shrink-0" />
+                    <Layers className="h-4 w-4 text-scic-blue dark:text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
                     <div className="text-left">
                       <span className="block text-xs font-semibold leading-tight text-slate-900 dark:text-white">
                         Inspect Engineering Footprint
@@ -778,7 +755,7 @@ export function ProjectInspectionDrawer({
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Capacity / Rating
                       </span>
-                      <span className="text-sm font-bold font-mono text-[#0284C7] dark:text-[#00E5FF] mt-0.5 block truncate">
+                      <span className="text-sm font-bold font-mono text-scic-blue dark:text-cyan-400 mt-0.5 block truncate">
                         {project.metrics.capacity}
                       </span>
                     </div>
@@ -868,10 +845,10 @@ export function ProjectInspectionDrawer({
             {/* ============================================================
                 SECTION 4: TECHNICAL PROJECT LEDGER (Directives 22–26)
                 ============================================================ */}
-            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#08121E]/60 p-3 space-y-3">
+            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/60 p-3 space-y-3">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-1.5">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <Table className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#00E5FF]" />
+                  <Table className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400" />
                   Technical Specification Ledger
                 </span>
                 <span className="text-[9px] font-mono text-slate-400">WGS84 Datum</span>
@@ -950,7 +927,7 @@ export function ProjectInspectionDrawer({
                 <ul className="space-y-1.5">
                   {project.engineeringScope.map((scope, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-200 font-sans">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#0284C7] dark:bg-[#00E5FF] shrink-0 mt-1.5" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-scic-blue dark:bg-cyan-400 shrink-0 mt-1.5" />
                       <span className="leading-snug">{scope}</span>
                     </li>
                   ))}
@@ -975,7 +952,7 @@ export function ProjectInspectionDrawer({
                           m.status === "ACHIEVED"
                             ? "bg-emerald-500 dark:bg-emerald-400"
                             : m.status === "IN_PROGRESS"
-                            ? "bg-[#0284C7] dark:bg-[#00E5FF] animate-pulse"
+                            ? "bg-scic-blue dark:bg-cyan-400 animate-pulse"
                             : "bg-slate-400 dark:bg-slate-500"
                         )}
                       />
@@ -998,7 +975,7 @@ export function ProjectInspectionDrawer({
               <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-3 space-y-2 shadow-2xs">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <User className="h-3 w-3 text-[#0284C7] dark:text-[#00E5FF]" />
+                    <User className="h-3 w-3 text-scic-blue dark:text-cyan-400" />
                     Lead Project Manager
                   </span>
                   <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">SCIC Executive</span>
@@ -1029,7 +1006,7 @@ export function ProjectInspectionDrawer({
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white tracking-tight truncate">
                       {project.leadPM.name}
                     </h4>
-                    <p className="text-[11px] text-[#0284C7] dark:text-[#00E5FF] truncate font-medium">{project.leadPM.role}</p>
+                    <p className="text-[11px] text-scic-blue dark:text-cyan-400 truncate font-medium">{project.leadPM.role}</p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{project.leadPM.division}</p>
                   </div>
                 </div>
@@ -1111,7 +1088,7 @@ export function ProjectInspectionDrawer({
                   {project.name}
                 </span>
                 {galleryImages.length > 1 && (
-                  <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono text-[#00E5FF]">
+                  <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono text-cyan-400">
                     {activeGalleryIndex + 1} / {galleryImages.length}
                   </span>
                 )}
@@ -1187,7 +1164,7 @@ export function ProjectInspectionDrawer({
                       className={cn(
                         "h-2 rounded-full transition-all cursor-pointer",
                         activeGalleryIndex === i
-                          ? "w-6 bg-[#00E5FF]"
+                          ? "w-6 bg-cyan-400"
                           : "w-2 bg-white/20 hover:bg-white/40"
                       )}
                       aria-label={`Jump to photo ${i + 1}`}

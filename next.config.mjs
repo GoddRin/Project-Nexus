@@ -1,6 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   devIndicators: false,
+  turbopack: {
+    // The in-browser voice's phonemizer (lib/atlas-ai/piperVoice.worker.ts) references fs/path in a
+    // Node-only branch; give browser bundles an empty stand-in.
+    resolveAlias: {
+      fs: { browser: './lib/atlas-ai/emptyModule.ts' },
+      path: { browser: './lib/atlas-ai/emptyModule.ts' },
+    },
+  },
+  experimental: {
+    // The on-disk Turbopack dev cache came back corrupted after the dev server was stopped hard:
+    // every route except a few answered 404 until .next/dev was deleted. Start clean each time instead.
+    turbopackFileSystemCacheForDev: false,
+  },
   transpilePackages: ['three'],
   images: {
     remotePatterns: [

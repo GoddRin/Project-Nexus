@@ -1283,66 +1283,6 @@
     "updatedAt": "2026-09-19T06:08:05.891Z"
   },
   {
-    "id": "cmu6czvh60003m496logq1l85",
-    "organizationId": "scic-org-001",
-    "name": "Kiangan Mini Hydroelectric Project",
-    "slug": "kiangan-hydro",
-    "projectCode": "SCIC-HEPP-04",
-    "category": "HYDROPOWER",
-    "status": "COMPLETED",
-    "description": "Civil and hydraulic engineering works for a 17.8 MW run-of-river facility providing sustainable off-grid reinforcement and rural electrification to indigenous heritage communities in Ifugao.",
-    "latitude": 16.7833,
-    "longitude": 121.0833,
-    "islandGroup": "LUZON",
-    "region": "CAR",
-    "province": "Ifugao",
-    "municipality": "Kiangan",
-    "barangay": null,
-    "locationDescription": "Kiangan Mini Hydroelectric Project - Kiangan, Ifugao (CAR)",
-    "location": "Kiangan, Ifugao",
-    "capacity": "17.8 MW",
-    "capacityMw": 17.8,
-    "plantType": null,
-    "percentComplete": null,
-    "projectStartDate": null,
-    "projectEndDate": null,
-    "client": "Kiangan Mini Hydro Corp.",
-    "projectValue": "₱1.9 Billion",
-    "featuredImage": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&auto=format&fit=crop&q=80",
-    "gallery": [],
-    "boundaryGeometry": null,
-    "leadPMName": "Engr. Arnel Dela Cruz",
-    "leadPMRole": "Project Manager",
-    "leadPMDivision": "SCIC Renewable Energy Infrastructure",
-    "leadPMLicense": null,
-    "leadPMContact": "a.delacruz@staclara.com.ph",
-    "engineeringScope": [
-      "Intake weir and automated trash rack system",
-      "Buried penstock conveyance across mountainous slopes",
-      "Two-unit Francis hydro turbine powerhouse"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2017",
-        "title": "Project Handover & Grid Hookup",
-        "status": "ACHIEVED"
-      }
-    ],
-    "metrics": {
-      "capacity": "17.8 MW",
-      "safeManHours": "1,200,000 Safe Hours",
-      "contractValue": "₱1.9 Billion"
-    },
-    "featured": false,
-    "targetCodDate": null,
-    "createdById": null,
-    "updatedById": null,
-    "deletedAt": null,
-    "deletedById": null,
-    "createdAt": "2026-09-18T02:48:26.394Z",
-    "updatedAt": "2026-09-18T02:48:26.394Z"
-  },
-  {
     "id": "cmu6czygt001fm4969x7bquyj",
     "organizationId": "scic-org-001",
     "name": "Kiangan Mini-Hydroelectric Power Project (17.5 MW)",
@@ -1474,78 +1414,6 @@
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.021Z",
     "updatedAt": "2026-09-19T06:08:06.845Z"
-  },
-  {
-    "id": "cmu6czyeo001em496yia233um",
-    "organizationId": "scic-org-001",
-    "name": "Laoag-Bongo River Flood Control & River Basin Protection",
-    "slug": "laoag-bongo-flood",
-    "projectCode": "SCIC-FLOOD-01",
-    "category": "ROADS_HIGHWAYS",
-    "status": "COMPLETED",
-    "description": "Comprehensive river basin protection and alluvial fan training along the Laoag and Bongo rivers in Ilocos Norte. SCIC built 15.8 kilometers of reinforced concrete dikes, steel sheet pile cutoff walls, and spur dikes to protect vital provincial communities from extreme monsoon floods.",
-    "latitude": 18.196,
-    "longitude": 120.5927,
-    "islandGroup": "LUZON",
-    "region": "Region I (Ilocos Region)",
-    "province": "Ilocos Norte",
-    "municipality": "Laoag City & San Nicolas",
-    "barangay": null,
-    "locationDescription": "Laoag-Bongo River Flood Control & River Basin Protection - Laoag City & San Nicolas, Ilocos Norte (Region I (Ilocos Region))",
-    "location": "Laoag City & San Nicolas, Ilocos Norte",
-    "capacity": "15.8 km Revetment",
-    "capacityMw": null,
-    "plantType": null,
-    "percentComplete": null,
-    "projectStartDate": null,
-    "projectEndDate": null,
-    "client": "DPWH Unified Project Management Office (UPMO) / JICA",
-    "projectValue": "₱1.70 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
-    "boundaryGeometry": null,
-    "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
-    "leadPMLicense": null,
-    "leadPMContact": null,
-    "engineeringScope": [
-      "15.8 km Heavy Concrete Revetments and Dike Embankments",
-      "Interlocking Steel Sheet Pile Cutoff Walls",
-      "Boulder Riprap Toe Protection & Spur Dike Groyne Structures",
-      "Channel Dredging and Flow Training"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2020-Q1",
-        "title": "Bongo River Dredging & Dike Foundation",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2021-Q3",
-        "title": "Sheet Piling & Concrete Revetment",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2022-Q4",
-        "title": "Final Inspection & Commissioning",
-        "status": "ACHIEVED"
-      }
-    ],
-    "metrics": {
-      "capacity": "15.8 km Revetment",
-      "safeManHours": "1,350,000 Safe Hours",
-      "contractValue": "₱1.70 Billion",
-      "workforcePeak": 420
-    },
-    "featured": false,
-    "targetCodDate": null,
-    "createdById": null,
-    "updatedById": null,
-    "deletedAt": null,
-    "deletedById": null,
-    "createdAt": "2026-09-18T02:48:30.192Z",
-    "updatedAt": "2026-09-19T06:08:06.601Z"
   },
   {
     "id": "cmu6czwy6000qm496o7syz29v",
@@ -2156,8 +2024,8 @@
     "category": "HYDROPOWER",
     "status": "ONGOING",
     "description": "A high-head run-of-river hydroelectric development harnessing the pristine waters of the Mangima River in Manolo Fortich, Bukidnon. Designed by EDCOP and built by SCIC as EPC contractor, the project features a low-environmental-impact diversion weir, automated sand settling desander, 3.2 km high-pressure penstock, and an advanced powerhouse equipped with multi-jet Pelton turbines feeding clean energy to the Mindanao grid.",
-    "latitude": 8.3667,
-    "longitude": 124.8667,
+    "latitude": 8.3714,
+    "longitude": 124.8844,
     "islandGroup": "MINDANAO",
     "region": "Region X (Northern Mindanao)",
     "province": "Bukidnon",

@@ -23,17 +23,17 @@ export interface AnimatedMarkerImageConfig {
  * Global Configuration Flags for Visual Inspection & Easy Modular Tuning
  */
 export const ATLAS_EFFECTS_CONFIG = {
-  enableOngoingSonarPulse: true,
-  enableOngoingBreathingGlow: true,
-  enableOngoingTelemetryBlip: true,
-  enableUpcomingRotatingOrbit: true,
-  enableUpcomingCautionStrobe: true,
+  enableOngoingSonarPulse: false,
+  enableOngoingBreathingGlow: false,
+  enableOngoingTelemetryBlip: false,
+  enableUpcomingRotatingOrbit: false,
+  enableUpcomingCautionStrobe: false,
   enableCompletedArchitecturalAura: true,
-  enableCompletedInspectionShimmer: true,
+  enableCompletedInspectionShimmer: false,
   enableSelectedCyberneticReticle: true,
   enableSelectedGroundDropBeacon: true,
-  enableSectorMicroEffects: true,
-  enableClusterBreathingHalo: true,
+  enableSectorMicroEffects: false,
+  enableClusterBreathingHalo: false,
 };
 
 /**
@@ -114,7 +114,7 @@ export function createOngoingRadarPulseImage(map: maplibregl.Map, size = 180): m
           context.beginPath();
           context.arc(blipX, blipY, 3, 0, Math.PI * 2);
           context.fillStyle = "#A7F3D0";
-          context.shadowColor = "#10B981";
+          context.shadowColor = "#129450";
           context.shadowBlur = 8;
           context.fill();
           context.shadowBlur = 0;
@@ -269,7 +269,7 @@ export function createCompletedAuraImage(map: maplibregl.Map, size = 150): mapli
           context.arc(center, center, 24, shimmerAngle - arcLength, shimmerAngle);
           context.strokeStyle = "#BAE6FD";
           context.lineWidth = 2.5;
-          context.shadowColor = "#38BDF8";
+          context.shadowColor = "#4E9DC2";
           context.shadowBlur = 10;
           context.stroke();
           context.shadowBlur = 0;

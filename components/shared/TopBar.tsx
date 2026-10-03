@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { NotificationItem } from "@/lib/actions/notifications";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SoundToggle } from "./SoundToggle";
 import { useMobileNav } from "./MobileNavContext";
 import { HydroPowerLogo } from "./HydroPowerLogo";
 import { GlobalSearchModal } from "./GlobalSearchModal";
@@ -91,7 +92,7 @@ export function TopBar({ className }: TopBarProps) {
  return (
   <header
   className={cn(
-  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-[#0B131B] dark:to-[#070D12] from-white/90 to-slate-50/90 shell-blur px-3.5 sm:px-6 print:hidden",
+  "flex h-14 items-center justify-between border-b border-border-hairline bg-gradient-to-r dark:from-bg-panel dark:to-[#070D12] from-white/90 to-slate-50/90 shell-blur px-3.5 sm:px-6 print:hidden",
   className
   )}
   >
@@ -109,7 +110,7 @@ export function TopBar({ className }: TopBarProps) {
 
     {/* Mobile Brand Pill */}
     <div className="flex items-center gap-2 md:hidden">
-      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-[#0B131B] border border-border-hairline p-1 shadow-sm overflow-hidden shrink-0">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white dark:bg-bg-panel border border-border-hairline p-1 shadow-sm overflow-hidden shrink-0">
         <HydroPowerLogo className="h-full w-full" size={32} priority />
       </div>
       <div className="flex flex-col min-w-0">
@@ -150,6 +151,7 @@ export function TopBar({ className }: TopBarProps) {
 
   {/* Right section */}
   <div className="flex items-center gap-2.5">
+  <SoundToggle className="hidden sm:flex" />
   <ThemeToggle />
   {/* Notifications */}
         <div className="relative" ref={popoverRef}>

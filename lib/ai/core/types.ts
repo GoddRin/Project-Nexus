@@ -3,7 +3,7 @@
  * Shared infrastructure between Project Nexus and Project Atlas.
  */
 
-export type AIProvider = "CEREBRAS" | "GEMINI" | "GROQ";
+export type AIProvider = "CEREBRAS" | "GEMINI" | "OPENROUTER" | "MISTRAL" | "GROQ";
 
 export type MessageRole = "user" | "assistant" | "system";
 

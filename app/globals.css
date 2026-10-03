@@ -21,76 +21,76 @@
    ============================================================ */
 :root {
   /* Backgrounds */
-  --bg-base: #F8FAFC;
+  --bg-base: #F5F8F6;
   --bg-panel: #FFFFFF;
-  --bg-panel-raised: #F1F5F9;
-  --bg-panel-subtle: #E2E8F0;
+  --bg-panel-raised: #EFF3F1;
+  --bg-panel-subtle: #E1E8E4;
 
   /* SCIC Corporate Brand Palette ("Renew Your Energy") */
-  --scic-green: #01770B;       /* SCIC Corporate Forest/Emerald Green (Primary Official Brand) */
-  --scic-green-energy: #10A51D;/* SCIC Energy Green / Renewable Accent */
-  --scic-green-leaf: #39813E;  /* SCIC Pine / Secondary Logo Mark */
-  --scic-green-bright: #42BC4A;/* SCIC Bright Energy Leaf */
-  --scic-navy: #0B2545;        /* SCIC Corporate Deep Navy */
-  --scic-navy-dark: #081B33;
-  --scic-navy-light: #133E68;
-  --scic-blue: #0284C7;        /* SCIC Hydro Electric Blue */
-  --scic-cyan: #00A3E0;        /* SCIC Energy / River Cyan */
+  --scic-green: #007B3E;       /* SCIC Corporate Forest/Emerald Green (Primary Official Brand) */
+  --scic-green-energy: #129450;/* SCIC Energy Green / Renewable Accent */
+  --scic-green-leaf: #006334;  /* SCIC Pine / Secondary Logo Mark */
+  --scic-green-bright: #36AD69;/* SCIC Bright Energy Leaf */
+  --scic-navy: #0F2E24;        /* SCIC Corporate Deep Navy */
+  --scic-navy-dark: #0A211A;
+  --scic-navy-light: #1C4A3A;
+  --scic-blue: #22688C;        /* SCIC Hydro Electric Blue */
+  --scic-cyan: #2F82AB;        /* SCIC Energy / River Cyan */
   --scic-red: #C8102E;         /* SCIC Safety / Alert Red */
-  --scic-amber: #D97706;       /* SCIC Industrial Machinery Amber */
-  --scic-slate: #0F172A;       /* SCIC Heavy Titanium Slate */
+  --scic-amber: #C27A0A;       /* SCIC Industrial Machinery Amber */
+  --scic-slate: #121C19;       /* SCIC Heavy Titanium Slate */
 
   /* Legacy & Semantic Mapping */
-  --flow-teal: #0284C7;
-  --brand-green: #01770B;      /* Primary Corporate Brand */
-  --signal-amber: #D97706;
+  --flow-teal: #22688C;
+  --brand-green: #007B3E;      /* Primary Corporate Brand */
+  --signal-amber: #C27A0A;
   --signal-red: #C8102E;
 
   /* Text Hierarchy */
-  --text-primary: #0F172A;     /* Slate-900 for maximum crispness */
-  --text-secondary: #334155;   /* Slate-700 */
-  --text-muted: #64748B;       /* Slate-500 */
+  --text-primary: #0F1A15;     /* Slate-900 for maximum crispness */
+  --text-secondary: #33423A;   /* Slate-700 */
+  --text-muted: #64736B;       /* Slate-500 */
 
   /* Borders */
-  --border-hairline: rgba(15, 23, 42, 0.12);
-  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-hairline: rgba(15, 26, 21, 0.12);
+  --border-subtle: rgba(15, 26, 21, 0.06);
 
   /* Font families */
   --font-display: "Outfit", "Plus Jakarta Sans", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-panel);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-panel);
+  --popover-foreground: var(--text-primary);
+  --primary: #007B3E;
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--bg-panel-raised);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-panel-raised);
+  --muted-foreground: var(--text-muted);
+  --accent: #E6F4EC;
+  --accent-foreground: #064E2C;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --border: rgba(15, 26, 21, 0.12);
+  --input: rgba(15, 26, 21, 0.16);
+  --ring: #129450;
+  --chart-1: #007B3E;
+  --chart-2: #2F82AB;
+  --chart-3: #C27A0A;
+  --chart-4: #36AD69;
+  --chart-5: #7FBAD6;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--bg-panel);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: #007B3E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E6F4EC;
+  --sidebar-accent-foreground: #064E2C;
+  --sidebar-border: rgba(15, 26, 21, 0.12);
+  --sidebar-ring: #129450;
 }
 
 /* ============================================================
@@ -98,6 +98,9 @@
    ============================================================ */
 @theme inline {
   /* Colors */
+  --color-atlas-panel: var(--atlas-panel);
+  --color-atlas-sunken: var(--atlas-sunken);
+  --color-atlas-raised: var(--atlas-raised);
   --color-bg-base: var(--bg-base);
   --color-bg-panel: var(--bg-panel);
   --color-bg-panel-raised: var(--bg-panel-raised);
@@ -199,11 +202,15 @@ body {
 /* ============================================================
    Typography Defaults
    ============================================================ */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
+/* In @layer base so Tailwind utilities on a heading (text-white, font-bold, ...) still win.
+   Unlayered, this rule silently overrode them: e.g. white titles on dark cards turned dark in light mode. */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
 }
 
 code, pre, kbd, samp,
@@ -236,7 +243,7 @@ code, pre, kbd, samp,
    Selection
    ============================================================ */
 ::selection {
-  background: color-mix(in srgb, var(--flow-teal) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-green) 28%, transparent);
   color: var(--text-primary);
 }
 
@@ -244,7 +251,7 @@ code, pre, kbd, samp,
    Focus Ring — accessible, matches theme
    ============================================================ */
 :focus-visible {
-  outline: 2px solid var(--flow-teal);
+  outline: 2px solid var(--brand-green);
   outline-offset: 2px;
 }
 
@@ -261,72 +268,72 @@ code, pre, kbd, samp,
 
 .dark {
   /* SCIC Industrial Design Tokens - High-Tech Command Dark Mode */
-  --bg-base: #060B10;          /* Deepest Abyssal Navy-Black */
-  --bg-panel: #0B131B;         /* Titanium Glass Panel */
-  --bg-panel-raised: #111C27;  /* Elevated Command Card */
-  --bg-panel-subtle: #182635;  /* Accent Inset Panel */
+  --bg-base: #070C0B;          /* Deepest Abyssal Navy-Black */
+  --bg-panel: #0D1614;         /* Titanium Glass Panel */
+  --bg-panel-raised: #131F1C;  /* Elevated Command Card */
+  --bg-panel-subtle: #1B2A26;  /* Accent Inset Panel */
 
   /* SCIC Corporate Brand Palette (High Contrast / Glow Optimized) */
-  --scic-green: #10A51D;       /* Glowing SCIC Renewable Energy Green */
-  --scic-green-energy: #22C55E;/* Vibrant Electric Emerald */
-  --scic-green-leaf: #16A34A;  /* Deep Leaf */
-  --scic-green-bright: #4ADE80;/* High-Vis Luminous Green */
-  --scic-navy: #133E68;
-  --scic-navy-dark: #09192B;
-  --scic-navy-light: #1E5285;
-  --scic-blue: #0284C7;        /* Glowing Hydro Blue */
-  --scic-cyan: #00D2FF;        /* Electric Pure Cyan for Telemetry */
-  --scic-red: #EF4444;         /* High-Vis Safety Red */
-  --scic-amber: #F59E0B;       /* Industrial Amber Warning */
-  --scic-slate: #1E293B;       /* Titanium Graphite */
+  --scic-green: #36AD69;       /* Glowing SCIC Renewable Energy Green */
+  --scic-green-energy: #4BC47E;/* Vibrant Electric Emerald */
+  --scic-green-leaf: #129450;  /* Deep Leaf */
+  --scic-green-bright: #68C68D;/* High-Vis Luminous Green */
+  --scic-navy: #1C4A3A;
+  --scic-navy-dark: #0A1512;
+  --scic-navy-light: #2A6450;
+  --scic-blue: #4E9DC2;        /* Glowing Hydro Blue */
+  --scic-cyan: #7FBAD6;        /* Electric Pure Cyan for Telemetry */
+  --scic-red: #F0605D;         /* High-Vis Safety Red */
+  --scic-amber: #E9A93B;       /* Industrial Amber Warning */
+  --scic-slate: #1F2B27;       /* Titanium Graphite */
 
   /* Semantic Mapping */
-  --flow-teal: #00D2FF;        /* River Cyan for live hydro metrics */
-  --brand-green: #10A51D;      /* SCIC Energy Green in Dark Mode */
-  --signal-amber: #F59E0B;
-  --signal-red: #EF4444;
+  --flow-teal: #4E9DC2;        /* River Cyan for live hydro metrics */
+  --brand-green: #36AD69;      /* SCIC Energy Green in Dark Mode */
+  --signal-amber: #E9A93B;
+  --signal-red: #F0605D;
 
   /* Typography Colors */
-  --text-primary: #F8FAFC;     /* Brightest White-Slate */
-  --text-secondary: #CBD5E1;   /* Slate-300 */
-  --text-muted: #8496A6;       /* Slate-400 with blue-gray tint */
+  --text-primary: #F2F6F4;     /* Brightest White-Slate */
+  --text-secondary: #C5D2CC;   /* Slate-300 */
+  --text-muted: #84958D;       /* Slate-400 with blue-gray tint */
 
   /* Borders & Specular Highlights */
   --border-hairline: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.04);
 
   /* shadcn UI */
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-panel);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-panel-raised);
+  --popover-foreground: var(--text-primary);
+  --primary: #0F8A49;
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--bg-panel-raised);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-panel-raised);
+  --muted-foreground: var(--text-muted);
+  --accent: #12261D;
+  --accent-foreground: #9FDDB6;
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --ring: #36AD69;
+  --chart-1: #36AD69;
+  --chart-2: #4E9DC2;
+  --chart-3: #E9A93B;
+  --chart-4: #68C68D;
+  --chart-5: #7FBAD6;
+  --sidebar: var(--bg-panel);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: #0F8A49;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #12261D;
+  --sidebar-accent-foreground: #9FDDB6;
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: #36AD69;
 }
 
 @layer base {
@@ -367,12 +374,12 @@ code, pre, kbd, samp,
 .glass-scic-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border-color: rgba(0, 119, 204, 0.25);
+  border-color: color-mix(in srgb, var(--brand-green) 35%, transparent);
 }
 
 .dark .glass-card,
 .dark .glass-scic-card {
-  background: linear-gradient(180deg, rgba(17, 28, 39, 0.85) 0%, rgba(11, 19, 27, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(19, 31, 28, 0.88) 0%, rgba(13, 22, 20, 0.96) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.07);
@@ -382,8 +389,8 @@ code, pre, kbd, samp,
 .dark .glass-card:hover,
 .dark .glass-scic-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(0, 210, 255, 0.15);
-  border-color: rgba(0, 210, 255, 0.25);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(104, 198, 141, 0.14);
+  border-color: color-mix(in srgb, var(--brand-green) 40%, transparent);
 }
 
 /* SCIC Command Center Metallic Accent Top Border */
@@ -455,6 +462,28 @@ code, pre, kbd, samp,
   text-align: center !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Light theme: the same Leaflet controls on a light surface */
+html:not(.dark) .leaflet-control-scale-line {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 26, 21, 0.14) !important;
+  border-bottom: 2px solid var(--flow-teal) !important;
+  color: #1b2a23 !important;
+  text-shadow: none !important;
+  box-shadow: 0 2px 8px rgba(15, 26, 21, 0.14) !important;
+}
+html:not(.dark) .leaflet-bar {
+  box-shadow: 0 2px 8px rgba(15, 26, 21, 0.16) !important;
+}
+html:not(.dark) .leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #1b2a23 !important;
+  border: 1px solid rgba(15, 26, 21, 0.14) !important;
+}
+html:not(.dark) .leaflet-control-zoom a:hover {
+  background: #eef6f1 !important;
+  color: var(--flow-teal) !important;
 }
 
 /* ============================================================
@@ -566,34 +595,34 @@ code, pre, kbd, samp,
    "Renew Your Energy" Corporate Green (#01770B) & Energy Accent (#10A51D)
    ============================================================ */
 .scic-gradient-btn {
-  background: linear-gradient(135deg, #01770b 0%, #10a51d 100%);
+  background: linear-gradient(135deg, #007B3E 0%, #129450 100%);
   color: #ffffff !important;
-  border: 1px solid rgba(16, 165, 29, 0.4);
-  box-shadow: 0 2px 8px rgba(1, 119, 11, 0.2);
+  border: 1px solid rgba(18, 148, 80, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 123, 62, 0.2);
   transition: all 0.2s ease-in-out;
 }
 .scic-gradient-btn:hover {
   opacity: 0.95;
-  box-shadow: 0 4px 16px rgba(16, 165, 29, 0.35);
+  box-shadow: 0 4px 16px rgba(18, 148, 80, 0.35);
   transform: translateY(-0.5px);
 }
 .dark .scic-gradient-btn {
-  border-color: rgba(16, 165, 29, 0.5);
-  box-shadow: 0 0 20px rgba(16, 165, 29, 0.25);
+  border-color: rgba(18, 148, 80, 0.5);
+  box-shadow: 0 0 20px rgba(18, 148, 80, 0.25);
 }
 .dark .scic-gradient-btn:hover {
-  box-shadow: 0 0 25px rgba(16, 165, 29, 0.45);
+  box-shadow: 0 0 25px rgba(18, 148, 80, 0.45);
 }
 
 .scic-pill-active {
-  background: rgba(1, 119, 11, 0.08);
-  color: #01770b;
-  border: 1px solid rgba(1, 119, 11, 0.25);
+  background: rgba(0, 123, 62, 0.08);
+  color: #007B3E;
+  border: 1px solid rgba(0, 123, 62, 0.25);
 }
 .dark .scic-pill-active {
-  background: rgba(16, 165, 29, 0.15);
-  color: #22c55e;
-  border-color: rgba(16, 165, 29, 0.35);
+  background: rgba(18, 148, 80, 0.15);
+  color: #68C68D;
+  border-color: rgba(18, 148, 80, 0.35);
 }
 
 /* ============================================================
@@ -625,4 +654,309 @@ code, pre, kbd, samp,
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* ============================================================
+   Sta. Clara brand system (whole application, light + dark)
+   Derived from the official logo green #007B3E.
+   Tailwind v4 colour utilities resolve through --color-* variables, so re-pointing the scales here
+   re-skins every emerald / green / teal / cyan / sky / slate utility across all pages at once.
+     brand green  = actions, selection, success
+     water blue   = live data and information
+     amber / red  = caution and danger (unchanged semantics)
+     slate        = neutrals, nudged toward the brand green so greys and greens sit together
+   ============================================================ */
+:root {
+  --atlas-panel: #0D1614;   /* fixed dark surfaces (map HUD, navigator bubble) */
+  --atlas-sunken: #080F0D;
+  --atlas-raised: #15211E;
+
+  --color-emerald-50: #EAF7EF;
+  --color-emerald-100: #CDEED9;
+  --color-emerald-200: #9FDDB6;
+  --color-emerald-300: #68C68D;
+  --color-emerald-400: #36AD69;
+  --color-emerald-500: #129450;
+  --color-emerald-600: #007B3E;
+  --color-emerald-700: #006334;
+  --color-emerald-800: #064E2C;
+  --color-emerald-900: #073F26;
+  --color-emerald-950: #022314;
+  --color-green-50: #EAF7EF;
+  --color-green-100: #CDEED9;
+  --color-green-200: #9FDDB6;
+  --color-green-300: #68C68D;
+  --color-green-400: #36AD69;
+  --color-green-500: #129450;
+  --color-green-600: #007B3E;
+  --color-green-700: #006334;
+  --color-green-800: #064E2C;
+  --color-green-900: #073F26;
+  --color-teal-50: #EAF7EF;
+  --color-teal-100: #CDEED9;
+  --color-teal-200: #9FDDB6;
+  --color-teal-300: #68C68D;
+  --color-teal-400: #36AD69;
+  --color-teal-500: #129450;
+  --color-teal-600: #007B3E;
+  --color-teal-700: #006334;
+
+  --color-cyan-50: #EEF6FA;
+  --color-cyan-100: #D6EAF3;
+  --color-cyan-200: #AFD5E7;
+  --color-cyan-300: #7FBAD6;
+  --color-cyan-400: #4E9DC2;
+  --color-cyan-500: #2F82AB;
+  --color-cyan-600: #22688C;
+  --color-cyan-700: #1E5471;
+  --color-cyan-800: #1C465D;
+  --color-cyan-900: #1B3B4E;
+  --color-cyan-950: #0F2633;
+  --color-sky-50: #EEF6FA;
+  --color-sky-100: #D6EAF3;
+  --color-sky-200: #AFD5E7;
+  --color-sky-300: #7FBAD6;
+  --color-sky-400: #4E9DC2;
+  --color-sky-500: #2F82AB;
+  --color-sky-600: #22688C;
+  --color-sky-700: #1E5471;
+  --color-sky-800: #1C465D;
+  --color-sky-900: #1B3B4E;
+  --color-sky-950: #0F2633;
+
+  --color-slate-50: #F5F8F6;
+  --color-slate-100: #EDF1EF;
+  --color-slate-200: #DFE6E2;
+  --color-slate-300: #C7D2CC;
+  --color-slate-400: #93A39B;
+  --color-slate-500: #66766E;
+  --color-slate-600: #4A5952;
+  --color-slate-700: #35433D;
+  --color-slate-800: #1F2B27;
+  --color-slate-900: #121C19;
+  --color-slate-950: #080F0D;
+
+  /* Motion: one curve and three durations for the whole product */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur-base: 240ms;
+  --dur-slow: 420ms;
+}
+
+/* Type: display face for titles, sans for everything else. Uppercase monospace "terminal labels"
+   become plain sans; real monospace is kept for codes, IDs and numbers. */
+.font-mono.uppercase {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.045em;
+}
+
+/* The map page goes one step further: every label is sans there. */
+.atlas-theme {
+  --color-pink-400: #E0A83A;
+  --color-pink-500: #C98A1B;
+  --color-pink-600: #A86F12;
+  font-family: var(--font-body);
+}
+.atlas-theme h1,
+.atlas-theme h2,
+.atlas-theme h3,
+.atlas-theme .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+.atlas-theme .font-mono {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.atlas-theme .font-mono.uppercase,
+.atlas-theme .uppercase {
+  letter-spacing: 0.045em;
+}
+.atlas-theme kbd,
+.atlas-theme code,
+.atlas-theme pre {
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   Motion & effect utilities
+   ============================================================ */
+/* Staggered list entry: set style="--i: <index>" on each item */
+@keyframes brand-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.rise-in {
+  animation: brand-rise var(--dur-slow) var(--ease-brand) both;
+  animation-delay: calc(min(var(--i, 0), 14) * 35ms);
+}
+
+/* Skeleton shimmer in brand green (replaces spinners while data loads) */
+@keyframes brand-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+.skeleton-brand {
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--brand-green) 7%, var(--bg-panel-raised)) 20%,
+    color-mix(in srgb, var(--brand-green) 22%, var(--bg-panel-raised)) 42%,
+    color-mix(in srgb, var(--brand-green) 7%, var(--bg-panel-raised)) 64%
+  );
+  background-size: 200% 100%;
+  animation: brand-shimmer 1.6s linear infinite;
+}
+
+/* Project photos: slow Ken Burns drift under a duotone green wash that lifts on hover */
+@keyframes brand-kenburns {
+  from { transform: scale(1.04) translate3d(-1%, -1%, 0); }
+  to { transform: scale(1.14) translate3d(1.5%, 1%, 0); }
+}
+.photo-brand {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.photo-brand > img,
+.photo-brand > .photo-brand-media {
+  animation: brand-kenburns 22s ease-in-out infinite alternate;
+  filter: grayscale(0.55) contrast(1.04);
+  transition: filter var(--dur-slow) var(--ease-brand);
+  will-change: transform;
+}
+.photo-brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(160deg, rgba(0, 123, 62, 0.34), rgba(6, 78, 44, 0.16));
+  mix-blend-mode: soft-light;
+  transition: opacity var(--dur-slow) var(--ease-brand);
+}
+.photo-brand:hover > img,
+.photo-brand:hover > .photo-brand-media,
+.photo-brand:focus-within > img,
+.photo-brand:focus-within > .photo-brand-media {
+  filter: none;
+}
+.photo-brand:hover::after,
+.photo-brand:focus-within::after {
+  opacity: 0;
+}
+
+/* Cursor-following highlight on cards (--mx / --my are set by the SpotlightProvider) */
+.spotlight {
+  position: relative;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-brand);
+  background: radial-gradient(
+    220px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--brand-green) 14%, transparent),
+    transparent 70%
+  );
+  z-index: 0;
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Lines that draw themselves left to right (timeline, energy line) */
+@keyframes brand-draw-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.draw-x {
+  transform-origin: left center;
+  animation: brand-draw-x 900ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+@keyframes brand-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+.pop-in {
+  animation: brand-pop var(--dur-slow) var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+
+/* "Renew Your Energy" line: a thin green current that fills along a bar */
+@keyframes brand-current {
+  from { background-position: 0 0; }
+  to { background-position: 48px 0; }
+}
+.energy-line {
+  height: 2px;
+  border-radius: 2px;
+  background-image: linear-gradient(90deg, #007B3E, #36AD69 55%, #9FDDB6);
+  box-shadow: 0 0 10px rgba(54, 173, 105, 0.55);
+  transition: width var(--dur-slow) var(--ease-brand);
+}
+.energy-line::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background-image: linear-gradient(90deg, transparent 0 60%, rgba(255, 255, 255, 0.55) 80%, transparent 100%);
+  background-size: 48px 100%;
+  animation: brand-current 900ms linear infinite;
+}
+
+/* Map: one-shot pulse when a project becomes active, bloom ring when a cluster opens */
+@keyframes atlas-pulse-once {
+  0% { transform: scale(0.35); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.atlas-pulse-once,
+.atlas-bloom-once {
+  width: 72px;
+  height: 72px;
+  border-radius: 9999px;
+  pointer-events: none;
+  border: 2px solid #36AD69;
+  background: radial-gradient(circle, rgba(54, 173, 105, 0.32) 0%, rgba(54, 173, 105, 0) 68%);
+  opacity: 0;
+  animation: atlas-pulse-once 1100ms var(--ease-brand) both;
+}
+.atlas-bloom-once {
+  width: 44px;
+  height: 44px;
+  border-width: 1.5px;
+  animation-duration: 700ms;
+}
+
+/* Intro: the wordmark draws itself left to right */
+@keyframes atlas-logo-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.atlas-intro-logo {
+  animation: atlas-logo-draw 850ms var(--ease-brand) both;
+}
+
+/* Everything above (and every Tailwind animation) stands down for people who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .photo-brand > img,
+  .photo-brand > .photo-brand-media {
+    animation: none !important;
+    transform: none !important;
+  }
 }

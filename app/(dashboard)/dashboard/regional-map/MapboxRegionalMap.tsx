@@ -144,12 +144,12 @@ export const SitePin = () => (
   <div className="relative flex items-center justify-center -translate-y-4">
     <div className="absolute w-8 h-8 rounded-full bg-flow-teal/20 animate-ping"></div>
     <div className="absolute w-5 h-5 rounded-full bg-flow-teal/40 animate-pulse"></div>
-    <div className="w-3.5 h-3.5 rounded-full bg-[#1FB6A6] border-2 border-white shadow-md relative z-10"></div>
+    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-md relative z-10"></div>
   </div>
 );
 
 export const SubstationPin = () => (
-  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-black/60 border border-signal-amber text-signal-amber shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
+  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/90 dark:bg-black/60 border border-signal-amber text-signal-amber shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
     </svg>
@@ -157,7 +157,7 @@ export const SubstationPin = () => (
 );
 
 export const PagasaPin = () => (
-  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-black/60 border border-[#6A9ABA] text-[#6A9ABA] shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
+  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/90 dark:bg-black/60 border border-[#6A9ABA] text-[#6A9ABA] shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17.5 19A3.5 3.5 0 0 0 21 15.5c0-2.79-2.54-4.5-5-4.5-.42-1.89-1.78-3.5-4-3.5a5.5 5.5 0 0 0-5.38 4.38A4 4 0 0 0 3 15.5 3.5 3.5 0 0 0 6.5 19z"></path>
     </svg>
@@ -173,7 +173,7 @@ export const HospitalPin = () => (
 );
 
 export const GovernmentPin = () => (
-  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-black/60 border border-[#8A9ABA] text-[#8A9ABA] shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer hover:bg-black/80 transition-all">
+  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/90 dark:bg-black/60 border border-[#8A9ABA] text-[#8A9ABA] shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer hover:bg-white/95 dark:hover:bg-black/80 transition-all">
     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v7M12 14v7M16 14v7"></path>
     </svg>
@@ -181,7 +181,7 @@ export const GovernmentPin = () => (
 );
 
 export const PolicePin = () => (
-  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-black/60 border border-blue-500 text-blue-500 shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
+  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/90 dark:bg-black/60 border border-blue-500 text-blue-500 shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
     </svg>
@@ -189,7 +189,7 @@ export const PolicePin = () => (
 );
 
 export const FirePin = () => (
-  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-black/60 border border-red-500 text-red-500 shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
+  <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/90 dark:bg-black/60 border border-red-500 text-red-500 shadow-lg relative -translate-y-3 -translate-x-3 pointer-events-auto cursor-pointer">
     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
     </svg>
@@ -198,7 +198,7 @@ export const FirePin = () => (
 
 export const LabelPin = ({ text }: { text: string }) => (
   <div className="bg-transparent border-none p-0 whitespace-nowrap relative -translate-x-1/2 -translate-y-1">
-    <div className="text-[10px] font-bold text-white tracking-wide" style={{ textShadow: "0px 2px 4px rgba(0,0,0,0.9), 0px 0px 2px rgba(0,0,0,0.9), 0px 0px 8px rgba(0,0,0,0.8)" }}>{text}</div>
+    <div className="text-[10px] font-bold text-slate-900 dark:text-white tracking-wide" style={{ textShadow: "0px 2px 4px rgba(0,0,0,0.9), 0px 0px 2px rgba(0,0,0,0.9), 0px 0px 8px rgba(0,0,0,0.8)" }}>{text}</div>
   </div>
 );
 
@@ -206,7 +206,7 @@ export const MunicipalityPin = ({ name }: { name: string }) => (
   <div className="bg-transparent border-none p-0 whitespace-nowrap relative pointer-events-none -translate-x-1 -translate-y-2">
     <div className="flex items-center gap-1.5">
       <div className="w-1.5 h-1.5 rounded-full bg-white border border-black shadow-sm"></div>
-      <span className="text-[9px] font-bold text-white drop-shadow-[0_1px_2.5px_rgba(0,0,0,0.95)]">{name}</span>
+      <span className="text-[9px] font-bold text-slate-900 dark:text-white drop-shadow-[0_1px_2.5px_rgba(0,0,0,0.95)]">{name}</span>
     </div>
   </div>
 );
@@ -625,7 +625,7 @@ export function MapboxRegionalMap({
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+3rem)] -m-6 bg-bg-base overflow-hidden isolate z-0">
       {/* PAGE HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-white/[0.04] bg-bg-panel/50 relative z-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-slate-200/70 dark:border-white/[0.04] bg-bg-panel/50 relative z-20">
         <div>
           <div className="flex items-center gap-2">
             <MapIcon className="h-5 w-5 text-flow-teal" />
@@ -651,7 +651,7 @@ export function MapboxRegionalMap({
                   setShowSuggestions(true);
                 }}
                 onFocus={() => setShowSuggestions(true)}
-                className="w-full h-9 pl-9 pr-8 text-xs bg-black/60 border border-white/10 rounded-xl text-text-primary focus:outline-none focus:border-flow-teal transition-colors font-sans"
+                className="w-full h-9 pl-9 pr-8 text-xs bg-white/90 dark:bg-black/60 border border-slate-200 dark:border-white/10 rounded-xl text-text-primary focus:outline-none focus:border-flow-teal transition-colors font-sans"
               />
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-text-muted" />
               {searchQuery && (
@@ -666,7 +666,7 @@ export function MapboxRegionalMap({
 
             {/* Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-10 left-0 w-full z-30 border border-white/10 bg-black/95 rounded-xl shadow-2xl p-1 max-h-64 overflow-y-auto backdrop-blur-md">
+              <div className="absolute top-10 left-0 w-full z-30 border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/95 rounded-xl shadow-2xl p-1 max-h-64 overflow-y-auto backdrop-blur-md">
                 {suggestions.map((item) => (
                   <button
                     key={item.id}
@@ -676,10 +676,10 @@ export function MapboxRegionalMap({
                       setSearchQuery("");
                       toast.success(`Navigating to ${item.name}`);
                     }}
-                    className="w-full text-left px-3 py-2 text-xs hover:bg-white/10 rounded-lg transition-colors flex flex-col gap-1 group"
+                    className="w-full text-left px-3 py-2 text-xs hover:bg-slate-200/70 dark:hover:bg-white/10 rounded-lg transition-colors flex flex-col gap-1 group"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white group-hover:text-flow-teal transition-colors truncate pr-2">{item.name}</span>
+                      <span className="font-bold text-slate-900 dark:text-white group-hover:text-flow-teal transition-colors truncate pr-2">{item.name}</span>
                       <span className="text-[9px] text-flow-teal font-mono shrink-0">{item.distance.toFixed(1)} km</span>
                     </div>
                     <span className="text-[10px] text-text-muted uppercase tracking-wider font-mono">{item.category}</span>
@@ -696,7 +696,7 @@ export function MapboxRegionalMap({
               "flex items-center gap-1.5 px-3 h-9 rounded-xl border text-xs font-medium transition-all duration-300 font-sans",
               showEvacRings
                 ? "bg-signal-red/10 border-signal-red/30 text-signal-red shadow-[0_0_8px_rgba(239,68,68,0.2)]"
-                : "bg-black/40 border-white/10 text-text-muted hover:text-text-primary hover:border-white/20"
+                : "bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 text-text-muted hover:text-text-primary hover:border-slate-300 dark:hover:border-white/20"
             )}
           >
             {showEvacRings ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -705,19 +705,19 @@ export function MapboxRegionalMap({
 
           {/* MAP EXPORT HINT BUTTON */}
           <div className="relative group">
-            <button className="flex items-center justify-center h-9 w-9 bg-black/40 border border-white/10 hover:border-white/20 text-text-muted hover:text-text-primary rounded-xl transition-all">
+            <button className="flex items-center justify-center h-9 w-9 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 text-text-muted hover:text-text-primary rounded-xl transition-all">
               <Camera className="h-4 w-4" />
             </button>
-            <div className="absolute right-0 top-11 scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-30 w-64 p-3 bg-black/95 border border-white/10 rounded-xl shadow-2xl text-[10px] text-text-muted backdrop-blur-md font-sans">
+            <div className="absolute right-0 top-11 scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-30 w-64 p-3 bg-white/95 dark:bg-black/95 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl text-[10px] text-text-muted backdrop-blur-md font-sans">
               <p className="font-bold text-text-primary mb-1">Export Map Reference</p>
-              Use your browser&apos;s print function <kbd className="bg-white/10 px-1 rounded">Ctrl+P</kbd> to save this map as PDF for offline use during site emergencies.
+              Use your browser&apos;s print function <kbd className="bg-slate-200/70 dark:bg-white/10 px-1 rounded">Ctrl+P</kbd> to save this map as PDF for offline use during site emergencies.
             </div>
           </div>
 
           {/* NATIONAL ATLAS LINK */}
           <Link
             href="/dashboard/projects-map"
-            className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all text-xs font-semibold font-sans shadow-sm"
+            className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all text-xs font-semibold font-sans shadow-sm"
           >
             <Globe className="h-4 w-4" />
             <span className="hidden sm:inline">SCIC</span> National Map
@@ -726,7 +726,7 @@ export function MapboxRegionalMap({
           {/* MAP MODE TOGGLE */}
           <button
             onClick={() => setMapMode("2D")}
-            className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-white/10 bg-black/40 text-text-muted hover:text-text-primary hover:border-white/20 transition-all text-xs font-medium font-sans"
+            className="flex items-center gap-1.5 px-3 h-9 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-text-muted hover:text-text-primary hover:border-slate-300 dark:hover:border-white/20 transition-all text-xs font-medium font-sans"
           >
             <Layers className="h-4 w-4" />
             Switch to 2D Map
@@ -747,7 +747,7 @@ export function MapboxRegionalMap({
       {/* MAP VIEW CONTAINER */}
       <div className="relative w-full flex-1 overflow-hidden bg-[#1a1a1a]">
         {loading && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-black/80 backdrop-blur-md shadow-2xl">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/80 backdrop-blur-md shadow-2xl">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-flow-teal border-t-transparent" />
             <span className="text-xs font-medium text-text-muted font-sans">
               Loading Geographic layers from Overpass Server...
@@ -911,7 +911,7 @@ export function MapboxRegionalMap({
                 id="rivers-line"
                 type="line"
                 paint={{
-                  "line-color": "#1FB6A6",
+                  "line-color": "#129450",
                   "line-width": 3,
                   "line-opacity": 0.6
                 }}
@@ -1075,12 +1075,12 @@ export function MapboxRegionalMap({
         {layers.emergency && (
           <div
             className={cn(
-              "absolute top-4 left-4 z-20 w-80 border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden font-sans print:hidden",
+              "absolute top-4 left-4 z-20 w-80 border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden font-sans print:hidden",
               !isEmergencyPanelExpanded && "h-11"
             )}
           >
             <div
-              className="flex items-center justify-between px-4 py-3 bg-white/[0.02] border-b border-white/[0.04] cursor-pointer hover:bg-white/[0.04] transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/70 dark:border-white/[0.04] cursor-pointer hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-colors"
               onClick={() => setIsEmergencyPanelExpanded(!isEmergencyPanelExpanded)}
             >
               <div className="flex items-center gap-2">
@@ -1108,7 +1108,7 @@ export function MapboxRegionalMap({
                       <div
                         key={h.id}
                         onClick={() => selectNode(h, "Medical Facility")}
-                        className="flex items-start gap-2.5 p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.02] hover:border-white/10 cursor-pointer transition-all duration-200"
+                        className="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-slate-200/60 dark:border-white/[0.02] hover:border-slate-200 dark:hover:border-white/10 cursor-pointer transition-all duration-200"
                       >
                         <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-signal-red mt-0.5 shrink-0">
                           <span className="font-bold text-xs">+</span>
@@ -1137,14 +1137,14 @@ export function MapboxRegionalMap({
                       <div
                         key={p.id}
                         onClick={() => selectNode(p, "Law Enforcement (Police)")}
-                        className="flex items-start gap-2.5 p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.02] hover:border-white/10 cursor-pointer transition-all duration-200"
+                        className="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-slate-200/60 dark:border-white/[0.02] hover:border-slate-200 dark:hover:border-white/10 cursor-pointer transition-all duration-200"
                       >
                         <Shield className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-text-primary truncate">{p.name}</p>
                           <div className="flex items-center gap-2 mt-0.5 text-[10px] text-text-muted font-mono">
                             <span>{p.distance.toFixed(1)} km from site</span>
-                            <span className="text-blue-400 bg-blue-500/10 px-1.5 py-0.2 rounded font-sans scale-90">POLICE</span>
+                            <span className="text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.2 rounded font-sans scale-90">POLICE</span>
                           </div>
                         </div>
                       </div>
@@ -1164,14 +1164,14 @@ export function MapboxRegionalMap({
                       <div
                         key={f.id}
                         onClick={() => selectNode(f, "Fire & Rescue Station")}
-                        className="flex items-start gap-2.5 p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.02] hover:border-white/10 cursor-pointer transition-all duration-200"
+                        className="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-slate-200/60 dark:border-white/[0.02] hover:border-slate-200 dark:hover:border-white/10 cursor-pointer transition-all duration-200"
                       >
                         <Flame className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-text-primary truncate">{f.name}</p>
                           <div className="flex items-center gap-2 mt-0.5 text-[10px] text-text-muted font-mono">
                             <span>{f.distance.toFixed(1)} km from site</span>
-                            <span className="text-red-400 bg-red-500/10 px-1.5 py-0.2 rounded font-sans scale-90">FIRE</span>
+                            <span className="text-red-600 dark:text-red-400 bg-red-500/10 px-1.5 py-0.2 rounded font-sans scale-90">FIRE</span>
                           </div>
                         </div>
                       </div>
@@ -1184,11 +1184,11 @@ export function MapboxRegionalMap({
         )}
 
         {/* FLOATING PANEL: MINI INFO PANEL (BOTTOM LEFT) */}
-        <div className="absolute bottom-6 left-6 z-20 w-80 border border-white/10 bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans text-xs print:hidden">
+        <div className="absolute bottom-6 left-6 z-20 w-80 border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans text-xs print:hidden">
           {selectedItem ? (
             <div className="space-y-3 relative animate-in fade-in slide-in-from-bottom-2 duration-200">
               {selectedImage && (
-                <div className="relative w-full h-32 rounded-lg overflow-hidden mb-2 border border-white/10">
+                <div className="relative w-full h-32 rounded-lg overflow-hidden mb-2 border border-slate-200 dark:border-white/10">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={selectedImage} alt={selectedItem.name} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -1210,7 +1210,7 @@ export function MapboxRegionalMap({
                 </h4>
               </div>
 
-              <div className="space-y-1.5 pt-2 border-t border-white/5 font-mono text-[10px] text-text-muted">
+              <div className="space-y-1.5 pt-2 border-t border-slate-200/70 dark:border-white/5 font-mono text-[10px] text-text-muted">
                 {selectedItem.address && (
                   <p>
                     <span className="text-text-muted/60 font-sans">Loc:</span> {selectedItem.address}
@@ -1237,7 +1237,7 @@ export function MapboxRegionalMap({
               {(selectedItem.category.includes("Hospital") || selectedItem.category.includes("Police") || selectedItem.category.includes("Fire") || selectedItem.category.includes("Medical") || selectedItem.category.includes("Law Enforcement")) && (
                 <button
                   onClick={() => setShowDispatchModal(true)}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-red-600/20 text-red-500 border border-red-500/20 px-4 py-2 text-xs font-semibold hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-red-600/20 text-red-500 border border-red-500/20 px-4 py-2 text-xs font-semibold hover:bg-red-600 hover:text-slate-900 dark:hover:text-white hover:border-red-600 transition-all"
                 >
                   <AlertTriangle className="h-4 w-4" />
                   Dispatch Incident
@@ -1254,8 +1254,8 @@ export function MapboxRegionalMap({
         </div>
 
         {/* FLOATING PANEL: LAYER TOGGLE CONTROLS (TOP RIGHT) */}
-        <div className="absolute top-4 right-4 z-20 max-w-sm border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans print:hidden">
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/[0.04]">
+        <div className="absolute top-4 right-4 z-20 max-w-sm border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/85 backdrop-blur-md rounded-2xl shadow-2xl p-4 font-sans print:hidden">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-200/70 dark:border-white/[0.04]">
             <Layers className="h-4 w-4 text-flow-teal" />
             <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
               Regional Layers
@@ -1275,8 +1275,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.boundary
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <MapIcon className="h-3.5 w-3.5" />
@@ -1289,11 +1289,11 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.rivers
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
-              <Waves className="h-3.5 w-3.5 text-blue-400" />
+              <Waves className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
               <span>Rivers ({rivers.length})</span>
             </button>
 
@@ -1303,8 +1303,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.roads
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <Navigation className="h-3.5 w-3.5 text-[#8A7A4A]" />
@@ -1317,8 +1317,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.power
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <Zap className="h-3.5 w-3.5 text-signal-amber" />
@@ -1331,8 +1331,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.weather
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <CloudSun className="h-3.5 w-3.5 text-[#6A9ABA]" />
@@ -1345,8 +1345,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.medical
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <Activity className="h-3.5 w-3.5 text-signal-red" />
@@ -1359,8 +1359,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.government
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <Landmark className="h-3.5 w-3.5 text-[#8A9ABA]" />
@@ -1373,8 +1373,8 @@ export function MapboxRegionalMap({
               className={cn(
                 "flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all",
                 layers.emergency
-                  ? "bg-white/5 border-white/15 text-text-primary"
-                  : "bg-transparent border-white/5 text-text-muted hover:border-white/10"
+                  ? "bg-slate-100 dark:bg-white/5 border-slate-300 dark:border-white/15 text-text-primary"
+                  : "bg-transparent border-slate-200/70 dark:border-white/5 text-text-muted hover:border-slate-200 dark:hover:border-white/10"
               )}
             >
               <ShieldAlert className="h-3.5 w-3.5 text-signal-red" />

@@ -66,7 +66,7 @@ export function AtlasMeasurementWidget({
         source: SOURCE_ID,
         filter: ["==", "$type", "Polygon"],
         paint: {
-          "fill-color": "#06b6d4",
+          "fill-color": "#2F82AB",
           "fill-opacity": 0.15,
         },
       });
@@ -78,7 +78,7 @@ export function AtlasMeasurementWidget({
         type: "line",
         source: SOURCE_ID,
         paint: {
-          "line-color": "#38bdf8",
+          "line-color": "#4E9DC2",
           "line-width": 2.5,
           "line-dasharray": [3, 2],
         },
@@ -93,7 +93,7 @@ export function AtlasMeasurementWidget({
         filter: ["==", "$type", "Point"],
         paint: {
           "circle-radius": 5,
-          "circle-color": "#38bdf8",
+          "circle-color": "#4E9DC2",
           "circle-stroke-width": 2,
           "circle-stroke-color": "#ffffff",
         },
@@ -305,7 +305,7 @@ export function AtlasMeasurementWidget({
           className={cn(
             "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer",
             mode === "distance"
-              ? "bg-[#0284C7] text-white shadow-sm font-bold"
+              ? "bg-scic-blue text-white shadow-sm font-bold"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
         >
@@ -322,7 +322,7 @@ export function AtlasMeasurementWidget({
           className={cn(
             "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer",
             mode === "area"
-              ? "bg-[#0284C7] text-white shadow-sm font-bold"
+              ? "bg-scic-blue text-white shadow-sm font-bold"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           )}
         >
@@ -335,7 +335,7 @@ export function AtlasMeasurementWidget({
       <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shrink-0 min-w-[140px] text-center justify-center">
         {measurementResult ? (
           <div>
-            <span className="text-sm font-bold text-[#0284C7] dark:text-[#38BDF8]">
+            <span className="text-sm font-bold text-scic-blue dark:text-sky-400">
               {measurementResult.primary}
             </span>
             <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-1.5">

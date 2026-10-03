@@ -52,7 +52,7 @@ export default async function LocationDetailPage({ params }: { params: Promise<{
              <div 
                 className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-10 pointer-events-none"
                 style={{ 
-                  backgroundColor: location.percentComplete === 100 ? "#1FB6A6" : 
+                  backgroundColor: location.percentComplete === 100 ? "#129450" : 
                                    (location.percentComplete! > 0 ? "#E8A33D" : "#E35A5A")
                 }}
               />

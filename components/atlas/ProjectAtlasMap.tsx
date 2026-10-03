@@ -421,7 +421,7 @@ export function ProjectAtlasMap({
           type: "line",
           source: sourceId,
           paint: {
-            "line-color": "#10B981",
+            "line-color": "#129450",
             "line-width": 8,
             "line-opacity": 0.45,
             "line-blur": 3,
@@ -433,7 +433,7 @@ export function ProjectAtlasMap({
           type: "line",
           source: sourceId,
           paint: {
-            "line-color": "#34D399",
+            "line-color": "#36AD69",
             "line-width": 3,
             "line-dasharray": [2, 2],
           },
@@ -444,7 +444,7 @@ export function ProjectAtlasMap({
     if (map.isStyleLoaded()) {
       updateLayer();
     } else {
-      map.once("style.load", updateLayer);
+      map.once("idle", updateLayer);
     }
   }, [transitCorridor, isMapLoaded]);
 
@@ -486,7 +486,7 @@ export function ProjectAtlasMap({
           type: "fill",
           source: sourceId,
           paint: {
-            "fill-color": "#10B981",
+            "fill-color": "#129450",
             "fill-opacity": 0.15,
           },
         });
@@ -496,7 +496,7 @@ export function ProjectAtlasMap({
           type: "line",
           source: sourceId,
           paint: {
-            "line-color": "#10B981",
+            "line-color": "#129450",
             "line-width": 2,
             "line-dasharray": [3, 2],
           },
@@ -507,21 +507,32 @@ export function ProjectAtlasMap({
     if (map.isStyleLoaded()) {
       updateLayer();
     } else {
-      map.once("style.load", updateLayer);
+      map.once("idle", updateLayer);
     }
   }, [bufferZone, isMapLoaded]);
 
   // Add / Re-attach Source and Layers
+  const pendingSetupRef = useRef(false);
+  // (the retry calls go through refs: a callback cannot name itself before it is declared)
+  const setupRef = useRef<((map: maplibregl.Map, data: AtlasFeatureCollection | null, selectedId: string | null) => Promise<void>) | null>(null);
+  const syncGisRef = useRef<((map: maplibregl.Map, layers: Set<string>, selectedId: string | null) => Promise<void>) | null>(null);
   const setupSourceAndLayers = useCallback(
     async (
       map: maplibregl.Map,
       data: AtlasFeatureCollection | null,
       selectedId: string | null
     ) => {
+      // isStyleLoaded() is also false while tiles or another source are still loading. Waiting for
+      // "style.load" in that case waits for an event that has already fired and never comes
+      // again, which left the map with no project markers at all. "idle" always follows.
       if (!map.isStyleLoaded()) {
-        map.once("style.load", () => {
-          setupSourceAndLayers(map, data, selectedId);
-        });
+        if (!pendingSetupRef.current) {
+          pendingSetupRef.current = true;
+          map.once("idle", () => {
+            pendingSetupRef.current = false;
+            void setupRef.current?.(map, geoJsonRef.current, activeSelectedIdRef.current);
+          });
+        }
         return;
       }
 
@@ -532,6 +543,7 @@ export function ProjectAtlasMap({
 
       // Remove existing custom layers if present
       const layerIds = [
+        "project-labels",
         "project-points-selected",
         "project-selected-halo",
         "project-points-hover",
@@ -557,13 +569,24 @@ export function ProjectAtlasMap({
         features: [],
       };
 
-      // Native Clustered GeoJSON Source
+      // How projects appear as the user zooms (one continuous flow, nothing ever disappears):
+      //  - national view: projects that sit close together on screen share one numbered bubble;
+      //    a project standing on its own always shows its own icon. The grouping distance is
+      //    small (30 px), so the country reads as a dozen regional groups rather than a few
+      //    large blobs, and each zoom step splits the groups further.
+      //  - a bubble with a bright ring holds at least one ONGOING site.
+      //  - regional view (zoom 8+): names appear under the icons where there is room.
+      //  - only projects at (nearly) the same spot stay grouped at close range: grouping ends
+      //    past zoom 13, and clicking a bubble always opens it.
       map.addSource("scic-projects", {
         type: "geojson",
         data: featureData,
         cluster: true,
         clusterMaxZoom: 13,
-        clusterRadius: 50,
+        clusterRadius: 30,
+        clusterProperties: {
+          ongoing: ["+", ["case", ["==", ["get", "status"], "ONGOING"], 1, 0]],
+        },
       });
 
       // 0. Cluster Breathing Geo-Density Aura Layer (WebGL animated canvas)
@@ -599,23 +622,24 @@ export function ProjectAtlasMap({
           "circle-color": [
             "step",
             ["get", "point_count"],
-            "#10B981", // < 5 Projects: Sta. Clara Vibrant Emerald
+            "#129450", // < 5 Projects: Sta. Clara Vibrant Emerald
             5,
-            "#059669", // 5-15 Projects: Corporate SCIC Green
+            "#007B3E", // 5-15 Projects: Corporate SCIC Green
             15,
             "#047857", // > 15 Projects: Deep Sta. Clara Forest Green
           ],
           "circle-radius": [
             "step",
             ["get", "point_count"],
-            18,
+            14,
             5,
-            24,
+            18,
             15,
-            30,
+            23,
           ],
-          "circle-stroke-width": 2.5,
-          "circle-stroke-color": "#ffffff",
+          // bright ring: at least one site in the group is under construction
+          "circle-stroke-width": ["case", [">", ["get", "ongoing"], 0], 3, 2],
+          "circle-stroke-color": ["case", [">", ["get", "ongoing"], 0], "#6EE7B7", "#ffffff"],
           "circle-opacity": 0.95,
         },
       });
@@ -759,7 +783,7 @@ export function ProjectAtlasMap({
           ["==", ["get", "isPulse"], true],
         ],
         paint: {
-          "circle-color": "#10B981",
+          "circle-color": "#129450",
           "circle-radius": [
             "interpolate",
             ["linear"],
@@ -775,7 +799,7 @@ export function ProjectAtlasMap({
           ],
           "circle-opacity": 0.18,
           "circle-stroke-width": 1.5,
-          "circle-stroke-color": "#10B981",
+          "circle-stroke-color": "#129450",
           "circle-stroke-opacity": 0.6,
         },
       });
@@ -806,7 +830,7 @@ export function ProjectAtlasMap({
             26,
           ],
           "circle-stroke-width": 3,
-          "circle-stroke-color": "#10B981",
+          "circle-stroke-color": "#129450",
           "circle-stroke-opacity": 0.95,
         },
       });
@@ -837,15 +861,17 @@ export function ProjectAtlasMap({
             "interpolate",
             ["linear"],
             ["zoom"],
-            5,
-            0.65,
+            4,
+            0.72,
             9,
-            0.8,
+            0.85,
             13,
-            0.95,
+            0.98,
             17,
             1.15,
           ],
+          // where icons overlap, sites under construction are drawn on top
+          "symbol-sort-key": ["match", ["get", "status"], "ONGOING", 2, "UPCOMING", 1, 0],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },
@@ -935,20 +961,56 @@ export function ProjectAtlasMap({
         },
       });
 
+      // 8. Project names (regional view and closer). Names give way to each other where the map
+      //    is crowded; sites under construction get theirs first. Icons are never hidden by this.
+      map.addLayer({
+        id: "project-labels",
+        type: "symbol",
+        source: "scic-projects",
+        minzoom: 8,
+        filter: ["!", ["has", "point_count"]],
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": ["Noto Sans Bold"],
+          "text-size": ["interpolate", ["linear"], ["zoom"], 8, 10, 12, 12, 16, 13],
+          "text-anchor": "top",
+          "text-offset": [0, 1.35],
+          "text-max-width": 11,
+          "text-padding": 6,
+          "symbol-sort-key": ["match", ["get", "status"], "ONGOING", 0, "UPCOMING", 1, 2],
+        },
+        paint: {
+          "text-color": "#ffffff",
+          "text-halo-color": "rgba(5, 20, 14, 0.92)",
+          "text-halo-width": 1.6,
+          "text-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 8.6, 1],
+        },
+      });
+
       // Synchronize active GIS layers according to registry
-      await syncGisLayers(map, activeGisLayersRef.current, selectedId);
+      await syncGisRef.current?.(map, activeGisLayersRef.current, selectedId);
     },
     []
   );
 
   // Synchronize GIS layers (Administrative Boundaries, Footprints, Infrastructure)
+  const pendingGisSyncRef = useRef(false);
   const syncGisLayers = useCallback(
     async (
       map: maplibregl.Map,
       layers: Set<string>,
       selectedId: string | null
     ) => {
-      if (!map.isStyleLoaded()) return;
+      if (!map.isStyleLoaded()) {
+        if (!pendingGisSyncRef.current) {
+          pendingGisSyncRef.current = true;
+          map.once("idle", () => {
+            pendingGisSyncRef.current = false;
+            void syncGisRef.current?.(map, activeGisLayersRef.current, activeSelectedIdRef.current);
+          });
+        }
+        return;
+      }
 
       // 1. Projects Core Layer Visibility
       const isProjectsVisible = layers.has("projects");
@@ -965,6 +1027,7 @@ export function ProjectAtlasMap({
         "project-points-hover",
         "project-selected-halo",
         "project-points-selected",
+        "project-labels",
       ];
       for (const id of projectLayerIds) {
         if (map.getLayer(id)) {
@@ -1128,6 +1191,10 @@ export function ProjectAtlasMap({
     },
     []
   );
+  useEffect(() => {
+    setupRef.current = setupSourceAndLayers;
+    syncGisRef.current = syncGisLayers;
+  }, [setupSourceAndLayers, syncGisLayers]);
 
   // Single MapLibre GL Map Instantiation
   useEffect(() => {
@@ -1311,7 +1378,7 @@ export function ProjectAtlasMap({
       // Category identity from canonical registry
       const canonicalCategory = toCanonicalCategory(props.category);
       const catConfig = CATEGORY_ICON_REGISTRY[canonicalCategory];
-      const markerColor = catConfig?.color || props.color || "#0284C7";
+      const markerColor = catConfig?.color || props.color || "#2F82AB";
       const categoryLabel = catConfig?.shortLabel || props.categoryLabel || "Infrastructure";
       const innerSvg = catConfig?.svgInnerPath || "";
 
@@ -1699,7 +1766,7 @@ export function ProjectAtlasMap({
         } else {
           const el = document.createElement("div");
           el.className =
-            "h-4 w-4 rounded-full bg-[#00E5FF] border-2 border-white shadow-lg animate-pulse";
+            "h-4 w-4 rounded-full bg-cyan-400 border-2 border-white shadow-lg animate-pulse";
           userMarkerRef.current = new maplibregl.Marker({ element: el })
             .setLngLat([longitude, latitude])
             .addTo(map);
@@ -1730,7 +1797,7 @@ export function ProjectAtlasMap({
       ref={containerRef}
       role="region"
       aria-label="Sta. Clara National Infrastructure GIS Map"
-      className={cn("relative w-full h-full overflow-hidden bg-slate-100 dark:bg-[#08121E]", className)}
+      className={cn("relative w-full h-full overflow-hidden bg-slate-100 dark:bg-atlas-sunken", className)}
     >
       {/* Floating Map Legend (Bottom-Left above Scale Bar) */}
       <div className="absolute bottom-10 left-3 z-30 pointer-events-auto">
@@ -1762,7 +1829,7 @@ export function ProjectAtlasMap({
         </div>
 
         {/* Navigation & GIS Controls */}
-        <div className="flex flex-col rounded-xl bg-white/90 dark:bg-[#0B1726]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 shadow-lg pointer-events-auto overflow-hidden">
+        <div className="flex flex-col rounded-xl bg-white/90 dark:bg-atlas-panel/90 backdrop-blur-md border border-slate-200 dark:border-white/10 shadow-lg pointer-events-auto overflow-hidden">
           {/* Turf.js Geodesic Measurement Toggle Button */}
           <button
             onClick={() => setIsMeasuring(!isMeasuring)}
@@ -1836,7 +1903,7 @@ export function ProjectAtlasMap({
         </div>
 
         {/* Telemetry Display */}
-        <div className="hidden sm:flex flex-col px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-[#0B1726]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-500 dark:text-slate-400 text-right pointer-events-auto shadow-2xs">
+        <div className="hidden sm:flex flex-col px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-atlas-panel/90 backdrop-blur-md border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-500 dark:text-slate-400 text-right pointer-events-auto shadow-2xs">
           <div>
             ZOOM <span className="text-slate-800 dark:text-white font-bold">{zoom}</span>
           </div>

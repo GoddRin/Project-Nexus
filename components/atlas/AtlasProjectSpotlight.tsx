@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { BRAND_SPRING } from "@/components/shared/motion";
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -202,7 +204,7 @@ export function AtlasProjectSpotlight({
 
         {/* Presentation Carousel Navigation */}
         {sorted.length > 1 && (
-          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-[#08121E] border border-slate-200 dark:border-white/10 rounded-full px-1.5 py-0.5 text-[10px] font-mono text-slate-600 dark:text-slate-300 shrink-0">
+          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 rounded-full px-1.5 py-0.5 text-[10px] font-mono text-slate-600 dark:text-slate-300 shrink-0">
             <button
               type="button"
               onClick={handlePrevProject}
@@ -266,13 +268,13 @@ export function AtlasProjectSpotlight({
 
         <div
           className={cn(
-            "group relative rounded-xl overflow-hidden border border-slate-700/60 dark:border-white/15 bg-gradient-to-r from-slate-900 via-[#0B1726] to-slate-950 text-white shadow-md transition-all duration-300 p-2.5 flex items-center justify-between gap-2.5",
-            isSelected && "ring-2 ring-[#0284C7] dark:ring-[#38BDF8]"
+            "group relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/15 bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:via-atlas-panel dark:to-slate-950 text-slate-900 dark:text-white shadow-md transition-all duration-300 p-2.5 flex items-center justify-between gap-2.5",
+            isSelected && "ring-2 ring-scic-blue dark:ring-sky-400"
           )}
         >
           <div className="flex items-center gap-2.5 min-w-0">
             {/* Thumbnail Image */}
-            <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-slate-950">
+            <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-950">
               <img
                 src={activePhoto}
                 alt={project.name}
@@ -287,18 +289,18 @@ export function AtlasProjectSpotlight({
             {/* Metadata */}
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-[9px] font-mono text-sky-400 font-bold truncate">
+                <span className="text-[9px] font-mono text-sky-700 dark:text-sky-400 font-bold truncate">
                   {project.metrics?.capacity || "Flagship"}
                 </span>
-                <span className="text-[9px] font-mono text-slate-400">·</span>
-                <span className="text-[9px] font-mono text-emerald-400 font-semibold truncate">
+                <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400">·</span>
+                <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold truncate">
                   {statusConfig.label}
                 </span>
               </div>
-              <h4 className="text-xs font-bold text-white truncate leading-tight font-sans">
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate leading-tight font-sans">
                 {project.name}
               </h4>
-              <span className="text-[10px] font-mono text-slate-400 truncate block">
+              <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate block">
                 {project.municipality}, {project.province}
               </span>
             </div>
@@ -309,7 +311,7 @@ export function AtlasProjectSpotlight({
             <button
               type="button"
               onClick={() => onExploreProject(project)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-[11px] font-bold transition-all shadow-sm cursor-pointer active:scale-95"
               title="Explore on Map"
             >
               <span>Explore</span>
@@ -330,12 +332,12 @@ export function AtlasProjectSpotlight({
 
       <div
         className={cn(
-          "group relative rounded-2xl overflow-hidden border border-slate-700/50 dark:border-white/15 bg-gradient-to-b from-slate-900 to-[#08121E] text-white shadow-xl transition-all duration-300",
-          isSelected && "ring-2 ring-[#0284C7] dark:ring-[#38BDF8] shadow-[#0284C7]/20 shadow-2xl"
+          "group relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/15 bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:to-atlas-sunken text-slate-900 dark:text-white shadow-xl transition-all duration-300",
+          isSelected && "ring-2 ring-scic-blue dark:ring-sky-400 shadow-scic-blue/20 shadow-2xl"
         )}
       >
         {/* 1. CINEMATIC HERO IMAGE STAGE (Expanded High-Definition Photo Area) */}
-        <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-slate-950 select-none">
+        <motion.div layoutId={`project-photo-${project.id}`} transition={BRAND_SPRING} className="photo-brand relative w-full h-48 sm:h-52 overflow-hidden bg-slate-950 select-none">
           {/* Project Photography with smooth hover zoom */}
           <img
             key={activePhoto}
@@ -349,7 +351,7 @@ export function AtlasProjectSpotlight({
 
           {/* Multi-layered cinematic gradient overlays: subtle top vignette + smooth bottom blend */}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#08121E] via-[#08121E]/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 dark:from-atlas-sunken dark:via-atlas-sunken/60 to-transparent pointer-events-none" />
 
           {/* Bottom Floating Meta Chips on Image Stage */}
           <div className="absolute bottom-2.5 inset-x-2.5 flex items-end justify-between gap-2 z-10">
@@ -390,17 +392,17 @@ export function AtlasProjectSpotlight({
               </button>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* 2. ARCHITECTURAL IDENTITY & ENGINEERING TELEMETRY HUD */}
-        <div className="p-3.5 sm:p-4 space-y-3 bg-[#08121E]">
+        <div className="p-3.5 sm:p-4 space-y-3 bg-white dark:bg-atlas-sunken">
           {/* Code & Real-Time Status Indicator */}
           <div className="flex items-center justify-between gap-2">
-            <span className="px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-300 font-mono text-[10px] font-bold tracking-wider">
+            <span className="px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-700 dark:text-sky-300 font-mono text-[10px] font-bold tracking-wider">
               {project.code}
             </span>
 
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-900 border border-white/10 text-[10px] font-mono text-slate-300">
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-600 dark:text-slate-300">
               <span
                 className={cn(
                   "h-1.5 w-1.5 rounded-full",
@@ -413,12 +415,12 @@ export function AtlasProjectSpotlight({
 
           {/* Project Title & Municipal Location */}
           <div className="space-y-1">
-            <h3 className="text-base sm:text-[17px] font-bold font-sans text-white leading-snug tracking-tight line-clamp-2">
+            <h3 className="text-base sm:text-[17px] font-bold font-sans text-slate-900 dark:text-white leading-snug tracking-tight line-clamp-2">
               {project.name}
             </h3>
 
-            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
-              <MapPin className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-600 dark:text-slate-300">
+              <MapPin className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="truncate">
                 {project.municipality}, {project.province}
               </span>
@@ -428,22 +430,22 @@ export function AtlasProjectSpotlight({
           {/* Engineering Telemetry HUD: 3 Micro Stat Tiles */}
           <div className="grid grid-cols-3 gap-2 py-1">
             {/* Tile 1: Capacity / Scale */}
-            <div className="p-2 rounded-lg bg-slate-900/80 border border-white/5 flex flex-col">
-              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-white/5 flex flex-col">
+              <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Capacity
               </span>
-              <span className="text-xs font-mono font-bold text-emerald-300 truncate mt-0.5">
+              <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 truncate mt-0.5">
                 {project.metrics?.capacity || "Flagship"}
               </span>
             </div>
 
             {/* Tile 2: Target / Milestone */}
-            <div className="p-2 rounded-lg bg-slate-900/80 border border-white/5 flex flex-col">
-              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-white/5 flex flex-col">
+              <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Target COD
               </span>
               <span
-                className="text-xs font-mono font-bold text-emerald-300 truncate mt-0.5"
+                className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 truncate mt-0.5"
                 title={(project as any).targetCodDate || project.metrics?.generationOutput || "Active"}
               >
                 {formatTargetDate((project as any).targetCodDate) || project.metrics?.generationOutput || "Active"}
@@ -451,12 +453,12 @@ export function AtlasProjectSpotlight({
             </div>
 
             {/* Tile 3: Client / Owner */}
-            <div className="p-2 rounded-lg bg-slate-900/80 border border-white/5 flex flex-col">
-              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-white/5 flex flex-col">
+              <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Client
               </span>
               <span
-                className="text-xs font-mono font-bold text-slate-200 truncate mt-0.5"
+                className="text-xs font-mono font-bold text-slate-700 dark:text-slate-200 truncate mt-0.5"
                 title={project.client}
               >
                 {project.client.split("/")[0].trim() || "National"}
@@ -466,7 +468,7 @@ export function AtlasProjectSpotlight({
 
           {/* Authentic Executive Scope Overview */}
           {project.description && (
-            <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed font-sans pt-0.5">
+            <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-sans pt-0.5">
               {project.description}
             </p>
           )}
@@ -484,9 +486,9 @@ export function AtlasProjectSpotlight({
 
             <Link
               href={`/dashboard/projects/${project.id}`}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 hover:border-emerald-400/50 text-white font-mono text-xs font-semibold transition-all shadow-xs"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 border border-slate-200 dark:border-white/15 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 text-slate-900 dark:text-white font-mono text-xs font-semibold transition-all shadow-xs"
             >
-              <FileText className="h-3.5 w-3.5 text-emerald-400" />
+              <FileText className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Full Profile</span>
             </Link>
           </div>
@@ -496,9 +498,9 @@ export function AtlasProjectSpotlight({
             <button
               type="button"
               onClick={onScrollToDirectory}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-slate-900/80 hover:bg-slate-800/90 border border-white/10 hover:border-sky-500/40 text-sky-300 hover:text-sky-200 font-mono text-[10px] font-semibold transition-all cursor-pointer group/scroll"
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/80 dark:hover:bg-slate-800/90 border border-slate-200 dark:border-white/10 hover:border-sky-500/40 text-sky-700 hover:text-sky-800 dark:text-sky-300 dark:hover:text-sky-200 font-mono text-[10px] font-semibold transition-all cursor-pointer group/scroll"
             >
-              <ChevronDown className="h-3.5 w-3.5 animate-bounce text-sky-400 group-hover/scroll:translate-y-0.5 transition-transform" />
+              <ChevronDown className="h-3.5 w-3.5 animate-bounce text-sky-700 dark:text-sky-400 group-hover/scroll:translate-y-0.5 transition-transform" />
               <span>Scroll Down to Filters & 65 Projects</span>
             </button>
           )}

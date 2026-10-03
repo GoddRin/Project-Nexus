@@ -5,9 +5,11 @@
 
 import { INITIAL_ATLAS_PROJECTS } from "@/lib/data/scicAtlasInitialProjects";
 import { SCIC_PROJECTS, SCICProject } from "@/lib/data/scicProjectsData";
-import { findProjectInDataset, normalizeSearchText, projectMatchesSearch } from "@/components/atlas/AtlasSearchUtils";
+import { findProjectInDataset, normalizeSearchText, projectMatchesSearch, matchesRegionSafely } from "@/components/atlas/AtlasSearchUtils";
 
-const ALL_PROJECTS: SCICProject[] = [...INITIAL_ATLAS_PROJECTS, ...SCIC_PROJECTS];
+const ALL_PROJECTS: SCICProject[] = Array.from(
+  new Map([...INITIAL_ATLAS_PROJECTS, ...SCIC_PROJECTS].map((p) => [p.id, p])).values()
+);
 
 export interface AtlasTourStepData {
   step: number;
@@ -928,7 +930,65 @@ export const CLEAN_ENERGY_TOUR: AtlasTourData = {
   ],
 };
 
-// ─── 7. DYNAMIC TOUR GENERATOR ──────────────────────────────────
+// ─── 7. REGION II (CAGAYAN VALLEY) CURATED TOUR ──────────────────
+export const REGION_II_TOUR: AtlasTourData = {
+  tourId: "region-ii-tour",
+  tourTitle: "SCIC Region II (Cagayan Valley) Infrastructure Tour",
+  totalSteps: 2,
+  steps: [
+    {
+      step: 1,
+      totalSteps: 2,
+      id: "region2-step-1-thepp",
+      title: "Tumauini Hydroelectric Power Project (THEPP)",
+      subtitle: "11.3 MW Run-of-River Hydroelectric Generation in Isabela",
+      narration:
+        "Welcome to Region II, Cagayan Valley. In Antagan Uno, Tumauini, Isabela, SCIC is executing the 11.3 megawatt Tumauini Hydroelectric Power Project. This plant harnesses river flow to deliver base-load clean power to the regional grid while supporting agricultural irrigation across the Cagayan River basin.",
+      camera: {
+        center: [121.9749251, 17.318823],
+        zoom: 13.0,
+        pitch: 46,
+        bearing: 15,
+      },
+      highlightProjectIds: ["cmqvwzn750000r8w1zidk116i"],
+      selectedProjectId: "cmqvwzn750000r8w1zidk116i",
+      discoveryScope: { scope: "region", targetName: "Region II (Cagayan Valley)" },
+      keyMetrics: {
+        Project: "Tumauini HEPP (THEPP)",
+        Capacity: "11.3 MW",
+        Location: "Tumauini, Isabela",
+        Basin: "Cagayan River",
+        Status: "Under Construction",
+      },
+    },
+    {
+      step: 2,
+      totalSteps: 2,
+      id: "region2-step-2-flood",
+      title: "Cagayan Valley Agro-Industrial & Flood Mitigation Corridor",
+      subtitle: "River Protection, Embankments & Regional Drainage",
+      narration:
+        "Along the Cagayan River basin from Tuguegarao to Ilagan, SCIC constructed massive flood protection dikes and agricultural drainage channels, shielding rural communities and vital agro-industrial crop zones from severe seasonal monsoon flooding.",
+      camera: {
+        center: [121.7269, 17.6132],
+        zoom: 12.4,
+        pitch: 42,
+        bearing: -10,
+      },
+      highlightProjectIds: ["cmu6czvrf0008m4960303s818"],
+      selectedProjectId: "cmu6czvrf0008m4960303s818",
+      discoveryScope: { scope: "region", targetName: "Region II (Cagayan Valley)" },
+      keyMetrics: {
+        Project: "Cagayan Flood Mitigation Corridor",
+        Category: "Flood Mitigation & River Protection",
+        Location: "Tuguegarao to Ilagan",
+        Status: "Completed",
+      },
+    },
+  ],
+};
+
+// ─── 8. DYNAMIC TOUR GENERATOR ──────────────────────────────────
 export interface DynamicTourOptions {
   query?: string;
   region?: string;
@@ -957,7 +1017,7 @@ export function generateDynamicTour(options: DynamicTourOptions): AtlasTourData 
       if (options.islandGroup && normalizeSearchText(p.islandGroup) !== normalizeSearchText(options.islandGroup)) {
         return false;
       }
-      if (options.region && !normalizeSearchText(p.region).includes(normalizeSearchText(options.region))) {
+      if (options.region && !matchesRegionSafely(p.region, options.region)) {
         return false;
       }
       if (options.category && !normalizeSearchText(p.sector).includes(normalizeSearchText(options.category))) {
@@ -1020,48 +1080,47 @@ export function generateDynamicTour(options: DynamicTourOptions): AtlasTourData 
   };
 }
 
-// ─── 8. CANONICAL TOUR RESOLVER ─────────────────────────────────
+// ─── 9. CANONICAL TOUR RESOLVER ─────────────────────────────────
 export function getGuidedTourData(tourIdOrQuery: string = "national-flagship-tour"): AtlasTourData {
   const norm = normalizeSearchText(tourIdOrQuery);
 
-  if (norm.includes("visayas") || norm.includes("bohol") || norm.includes("cebu")) {
+  // Region II (Cagayan Valley) with strict boundary matching (never collides with Region III)
+  if (
+    norm === "region-ii-tour" ||
+    /\b(?:region\s*(?:ii|2|02)|cagayan\s*valley|cagayan|isabela)\b/i.test(tourIdOrQuery)
+  ) {
+    return REGION_II_TOUR;
+  }
+
+  // Region III (Central Luzon)
+  if (
+    /\b(?:region\s*(?:iii|3|03)|central\s*luzon|bataan|tarlac|bulacan|subic)\b/i.test(tourIdOrQuery)
+  ) {
+    return CENTRAL_LUZON_TOUR;
+  }
+
+  if (/\b(?:visayas|bohol|cebu|leyte|iloilo|panay)\b/i.test(tourIdOrQuery)) {
     return VISAYAS_TOUR;
   }
-  if (norm.includes("mindanao") || norm.includes("davao") || norm.includes("bukidnon") || norm.includes("sarangani")) {
+  if (/\b(?:mindanao|davao|bukidnon|sarangani|misamis)\b/i.test(tourIdOrQuery)) {
     return MINDANAO_TOUR;
   }
   if (
-    norm.includes("central") ||
-    norm.includes("bataan") ||
-    norm.includes("tarlac") ||
-    norm.includes("bulacan") ||
-    norm.includes("ncr") ||
-    norm.includes("manila") ||
-    norm.includes("subic")
+    /\b(?:ncr|metro\s*manila|manila|quezon\s*city)\b/i.test(tourIdOrQuery)
   ) {
     return CENTRAL_LUZON_TOUR;
   }
   if (
-    norm.includes("north") ||
-    norm.includes("cordillera") ||
-    norm.includes("car") ||
-    norm.includes("benguet") ||
-    norm.includes("isabela") ||
-    norm.includes("cagayan") ||
-    norm.includes("mountain")
+    /\b(?:north\s*luzon|cordillera|car|benguet|mountain\s*province|ilocos)\b/i.test(tourIdOrQuery)
   ) {
     return NORTH_LUZON_TOUR;
   }
   if (
-    norm.includes("hydro") ||
-    norm.includes("clean energy") ||
-    norm.includes("renewable") ||
-    norm.includes("wind") ||
-    norm.includes("solar")
+    /\b(?:hydro|clean\s*energy|renewable|wind|solar)\b/i.test(tourIdOrQuery)
   ) {
     return CLEAN_ENERGY_TOUR;
   }
-  if (norm === "national-flagship-tour" || norm.includes("flagship") || norm.includes("national") || norm.includes("philippines")) {
+  if (norm === "national-flagship-tour" || /\b(?:flagship|national|philippines)\b/i.test(tourIdOrQuery)) {
     return NATIONAL_FLAGSHIP_TOUR;
   }
 

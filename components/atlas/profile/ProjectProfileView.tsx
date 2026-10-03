@@ -119,7 +119,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
         <div className="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-slate-400">
           <Link
             href="/dashboard/projects-map"
-            className="flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-[#0284C7] dark:hover:text-[#00E5FF] transition-colors"
+            className="flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-scic-blue dark:hover:text-cyan-400 transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Project Atlas</span>
@@ -133,7 +133,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
             {project.province}
           </span>
           <span className="text-slate-400 dark:text-slate-600">/</span>
-          <span className="text-[#0284C7] dark:text-[#00E5FF] font-semibold truncate max-w-[200px]">
+          <span className="text-scic-blue dark:text-cyan-400 font-semibold truncate max-w-[200px]">
             {project.projectCode || project.slug}
           </span>
         </div>
@@ -145,7 +145,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
             href={`/dashboard/projects-map?select=${project.id}`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-xs font-mono font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs"
           >
-            <Compass className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#00E5FF]" />
+            <Compass className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400" />
             <span>Explore on Map</span>
           </Link>
 
@@ -162,7 +162,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
           {operational.hasNexusOperations ? (
             <Link
               href={operational.operationalRoutes.dashboard}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 via-teal-600 to-[#0284C7] hover:from-emerald-500 hover:to-[#0369a1] text-white text-xs font-mono font-bold tracking-wide transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.45)]"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 via-teal-600 to-scic-blue hover:from-emerald-500 hover:to-sky-700 text-white text-xs font-mono font-bold tracking-wide transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.45)]"
             >
               <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-200" />
               <span>Open Nexus Operations</span>
@@ -182,7 +182,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
       {/* ============================================================
           PROJECT HEADER & IDENTITY BANNER
           ============================================================ */}
-      <div className="relative p-5 sm:p-6 rounded-2xl bg-white/80 dark:bg-[#08121E]/90 border border-slate-200/90 dark:border-white/10 backdrop-blur-md overflow-hidden shadow-sm">
+      <div className="relative p-5 sm:p-6 rounded-2xl bg-white/80 dark:bg-atlas-sunken/90 border border-slate-200/90 dark:border-white/10 backdrop-blur-md overflow-hidden shadow-sm">
         {/* Top Discipline Accent Bar */}
         <div
           className="absolute top-0 inset-x-0 h-1"
@@ -271,7 +271,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
             <div
               onClick={handleCopyId}
               title="Click to copy canonical Project.id"
-              className="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-[#0284C7]/50 transition-colors cursor-pointer"
+              className="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-scic-blue/50 transition-colors cursor-pointer"
             >
               <span className="text-[10px] font-mono text-slate-400">ID:</span>
               <span className="text-xs font-mono font-semibold text-slate-700 dark:text-slate-300">
@@ -298,9 +298,9 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
             ============================================================ */}
         <div className="lg:col-span-2 space-y-6">
           {/* 1. Executive Overview */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
+          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-white/5">
-              <Building className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF]" />
+              <Building className="h-4 w-4 text-scic-blue dark:text-cyan-400" />
               <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-slate-900 dark:text-white">
                 Project Overview & Executive Summary
               </h2>
@@ -335,7 +335,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
 
           {/* 2. Engineering Scope */}
           {project.engineeringScope && project.engineeringScope.length > 0 && (
-            <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
               <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-white/5">
                 <Wrench className="h-4 w-4 text-emerald-500" />
                 <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-slate-900 dark:text-white">
@@ -358,10 +358,10 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
           )}
 
           {/* 3. Reusable Phase 12 Interactive Timeline */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
+          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/5">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF]" />
+                <Calendar className="h-4 w-4 text-scic-blue dark:text-cyan-400" />
                 <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-slate-900 dark:text-white">
                   Project Execution Timeline & Milestones
                 </h2>
@@ -376,7 +376,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
 
           {/* 4. Media & Field Photography Gallery */}
           {allImages.length > 0 && (
-            <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/5">
                 <div className="flex items-center gap-2">
                   <Camera className="h-4 w-4 text-purple-500" />
@@ -424,7 +424,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                       className={cn(
                         "relative aspect-square rounded-lg overflow-hidden border transition-all cursor-pointer bg-slate-950",
                         activeGalleryIndex === idx
-                          ? "border-[#0284C7] ring-2 ring-[#0284C7]/50"
+                          ? "border-scic-blue ring-2 ring-scic-blue/50"
                           : "border-slate-200 dark:border-white/10 opacity-70 hover:opacity-100"
                       )}
                     >
@@ -595,7 +595,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                 </p>
                 <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/5 text-[11px] font-mono text-slate-500 dark:text-slate-400 space-y-1">
                   <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-semibold">
-                    <ShieldCheck className="h-3.5 w-3.5 text-[#0284C7]" />
+                    <ShieldCheck className="h-3.5 w-3.5 text-scic-blue" />
                     <span>Atlas Geographic Oversight Active</span>
                   </div>
                   <p className="text-[10px]">
@@ -607,10 +607,10 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
           </div>
 
           {/* 2. GEOGRAPHIC CONTEXT & COORDINATES */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
+          <div className="p-5 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/5">
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF]" />
+                <MapPin className="h-4 w-4 text-scic-blue dark:text-cyan-400" />
                 <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-900 dark:text-white">
                   Geographic Location
                 </h3>
@@ -629,7 +629,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                 <button
                   type="button"
                   onClick={handleCopyCoords}
-                  className="flex items-center gap-1 text-[10px] font-mono text-[#0284C7] dark:text-[#00E5FF] hover:underline cursor-pointer"
+                  className="flex items-center gap-1 text-[10px] font-mono text-scic-blue dark:text-cyan-400 hover:underline cursor-pointer"
                 >
                   {copiedCoords ? (
                     <>
@@ -703,7 +703,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
             {verifiedGeometry && (
               <div className="p-3 rounded-xl bg-cyan-50/70 dark:bg-cyan-950/20 border border-cyan-500/30 text-xs space-y-1">
                 <div className="flex items-center gap-1.5 text-cyan-800 dark:text-cyan-300 font-bold font-mono">
-                  <Layers className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#00E5FF]" />
+                  <Layers className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400" />
                   <span>Verified Cadastral Boundary</span>
                 </div>
                 <p className="text-[10px] text-slate-600 dark:text-slate-400 leading-normal">
@@ -712,7 +712,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                 </p>
                 <Link
                   href={`/dashboard/projects-map?select=${project.id}`}
-                  className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-[#0284C7] dark:text-[#00E5FF] hover:underline pt-1"
+                  className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-scic-blue dark:text-cyan-400 hover:underline pt-1"
                 >
                   <span>Inspect Footprint in GIS Atlas</span>
                   <ChevronRight className="h-3 w-3" />
@@ -729,7 +729,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
               project.metrics?.workforcePeak ||
               project.metrics?.generationOutput
           ) && (
-            <div className="p-5 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/5">
                 <div className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-amber-500" />
@@ -746,7 +746,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                 {project.capacity && (
                   <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 flex items-center justify-between">
                     <span className="text-slate-400">Target Capacity</span>
-                    <span className="font-bold text-[#0284C7] dark:text-[#00E5FF]">
+                    <span className="font-bold text-scic-blue dark:text-cyan-400">
                       {project.capacity}
                     </span>
                   </div>
@@ -793,16 +793,16 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
 
           {/* 4. LEAD PROJECT MANAGER CARD */}
           {project.leadPMName && (
-            <div className="p-5 rounded-2xl bg-white dark:bg-[#08121E] border border-slate-200 dark:border-white/10 space-y-3 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 space-y-3 shadow-2xs">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
-                <User className="h-4 w-4 text-[#0284C7] dark:text-[#00E5FF]" />
+                <User className="h-4 w-4 text-scic-blue dark:text-cyan-400" />
                 <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-900 dark:text-white">
                   Lead Project Manager
                 </h3>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#0284C7]/10 border border-[#0284C7]/20 flex items-center justify-center text-[#0284C7] dark:text-[#00E5FF] font-bold text-sm shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-scic-blue/10 border border-scic-blue/20 flex items-center justify-center text-scic-blue dark:text-cyan-400 font-bold text-sm shrink-0">
                   {project.leadPMName
                     .split(" ")
                     .map((n) => n[0])
@@ -824,7 +824,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                   {project.leadPMContact && (
                     <a
                       href={`mailto:${project.leadPMContact}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-mono text-[#0284C7] hover:underline mt-1.5"
+                      className="inline-flex items-center gap-1 text-[11px] font-mono text-scic-blue hover:underline mt-1.5"
                     >
                       <Mail className="h-3 w-3" />
                       <span>{project.leadPMContact}</span>

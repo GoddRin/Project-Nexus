@@ -12,6 +12,7 @@ import React, {
 } from "react";
 import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
+import { emitNavigatorEvent } from "@/components/atlas/ai/navigatorBus";
 
 export type AtlasBaseStyle = "DARK" | "LIGHT" | "SATELLITE";
 export type AtlasIslandPreset =
@@ -159,8 +160,13 @@ export function AtlasMapProvider({
 
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
 
+  // Mirrored in state so consumers of `mapInstance` re-render the moment the map registers
+  // (reading the ref alone left them with null until some unrelated context change)
+  const [mapInstance, setMapInstanceState] = useState<maplibregl.Map | null>(null);
+
   const registerMapInstance = useCallback((map: maplibregl.Map | null) => {
     mapInstanceRef.current = map;
+    setMapInstanceState(map);
   }, []);
 
   const updateViewportState = useCallback((vp: Partial<AtlasViewport>) => {
@@ -256,6 +262,8 @@ export function AtlasMapProvider({
       duration: 1400,
       essential: true,
     });
+    // every way back to the whole country (map button, breadcrumb, Escape) tells the navigator
+    emitNavigatorEvent("national-view");
   }, [getResponsivePadding]);
 
   // Jump to Island Preset
@@ -352,7 +360,7 @@ export function AtlasMapProvider({
       viewport,
       mapStyle,
       isFullscreen,
-      mapInstance: mapInstanceRef.current,
+      mapInstance,
       selectProject,
       flyToProject,
       resetToNationalView,
@@ -372,6 +380,7 @@ export function AtlasMapProvider({
       viewport,
       mapStyle,
       isFullscreen,
+      mapInstance,
       selectProject,
       flyToProject,
       resetToNationalView,

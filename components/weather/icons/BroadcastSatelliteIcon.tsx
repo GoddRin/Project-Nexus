@@ -38,19 +38,19 @@ export default function BroadcastSatelliteIcon({
       ring: "stroke-yellow-500/50",
     },
     FAIR_DISTANT: {
-      primary: "#0EA5E9", // Sky-500
+      primary: "#2F82AB", // Sky-500
       glow: "rgba(14, 165, 233, 0.35)",
       beam: "#BAE6FD",
       ring: "stroke-sky-500/50",
     },
     NORMAL: {
-      primary: "#10B981", // Emerald-500
+      primary: "#129450", // Emerald-500
       glow: "rgba(16, 185, 129, 0.35)",
       beam: "#A7F3D0",
       ring: "stroke-emerald-500/50",
     },
   }[threatLevel] || {
-    primary: "#10B981",
+    primary: "#129450",
     glow: "rgba(16, 185, 129, 0.35)",
     beam: "#A7F3D0",
     ring: "stroke-emerald-500/50",

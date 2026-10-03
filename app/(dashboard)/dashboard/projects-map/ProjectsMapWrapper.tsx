@@ -9,7 +9,7 @@ const ScicNationalMapClient = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[calc(100vh-10rem)] w-full items-center justify-center rounded-2xl border border-white/10 bg-[#08121E] shadow-2xl">
+      <div className="flex h-[calc(100vh-10rem)] w-full items-center justify-center rounded-2xl border border-white/10 bg-atlas-sunken shadow-2xl">
         <div className="flex flex-col items-center gap-4 text-center px-6">
           <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
             <Globe className="h-8 w-8 animate-spin" />

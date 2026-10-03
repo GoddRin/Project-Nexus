@@ -26,7 +26,7 @@ export const AtlasAIFloatingTrigger: React.FC<AtlasAIFloatingTriggerProps> = ({
         "group relative flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-xl border shadow-xl transition-all duration-300 pointer-events-auto cursor-pointer",
         isOpen
           ? "bg-emerald-600/90 text-white border-emerald-400/40 ring-2 ring-emerald-400/30"
-          : "bg-[#0B1726]/90 hover:bg-[#0B1726] text-slate-200 hover:text-white border-white/10 hover:border-emerald-500/40 hover:shadow-emerald-950/40",
+          : "bg-atlas-panel/90 hover:bg-atlas-panel text-slate-200 hover:text-white border-white/10 hover:border-emerald-500/40 hover:shadow-emerald-950/40",
         className
       )}
     >

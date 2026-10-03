@@ -299,7 +299,7 @@ const ringVariants = {
 // ─── Category colour helper ──────────────────────────────────────────────────
 
 function arcColorForPct(pct: number): string {
-  if (pct >= 100) return "#1FB6A6";
+  if (pct >= 100) return "#129450";
   if (pct >= 75) return "rgba(31,182,166,0.8)";
   if (pct >= 50) return "#E8A33D";
   if (pct >= 25) return "rgba(232,163,61,0.7)";
@@ -641,7 +641,7 @@ export function IntelligenceClient({
               <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.03)" strokeWidth="6" fill="transparent" />
               <motion.circle
                 cx="50" cy="50" r="40"
-                stroke="#1FB6A6" strokeWidth="6"
+                stroke="#129450" strokeWidth="6"
                 strokeDasharray={`${2 * Math.PI * 40}`}
                 initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
                 animate={{ strokeDashoffset: 2 * Math.PI * 40 * (1 - averageCompletion / 100) }}

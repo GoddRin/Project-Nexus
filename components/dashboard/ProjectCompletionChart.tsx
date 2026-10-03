@@ -31,7 +31,7 @@ export function ProjectCompletionChart({ percentComplete }: ProjectCompletionCha
           <defs>
             <linearGradient id="scicRadialGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#0077CC" />
-              <stop offset="60%" stopColor="#0284C7" />
+              <stop offset="60%" stopColor="#2F82AB" />
               <stop offset="100%" stopColor="#00D2FF" />
             </linearGradient>
           </defs>

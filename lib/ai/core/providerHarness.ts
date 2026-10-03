@@ -89,6 +89,91 @@ export function convertToolsToOpenAI(tools: AIToolDeclaration[]): any[] {
   }));
 }
 
+function formatHumanToolLabel(
+  toolName: string,
+  args: Record<string, unknown> = {},
+  isComplete: boolean = false
+): string {
+  const norm = toolName.toLowerCase();
+  if (isComplete) {
+    if (norm.includes("search") || norm.includes("find")) return "Projects identified";
+    if (norm.includes("timeline")) return "Milestone timeline ready";
+    if (norm.includes("distance") || norm.includes("bounds")) return "Spatial calculation completed";
+    if (norm.includes("fly") || norm.includes("zoom") || norm.includes("navigate")) return "Map position focused";
+    if (norm.includes("filter")) return "Portfolio filters applied";
+    if (norm.includes("footprint")) return "Engineering boundary rendered";
+    if (norm.includes("tour")) return "Portfolio tour engaged";
+    if (norm.includes("nexus")) return "Operational records loaded";
+    return `Completed ${toolName.replace(/_/g, " ")}`;
+  }
+
+  // Active / in-progress label
+  if (norm === "search_projects" || norm === "search_atlas_knowledge") {
+    if (args.region) return `Locating projects in ${args.region}...`;
+    if (args.category) return `Finding ${args.category} projects...`;
+    if (args.query) return `Finding projects matching "${args.query}"...`;
+    return "Finding projects...";
+  }
+  if (norm === "get_region_summary" || norm === "zoom_to_region") {
+    return args.region ? `Locating ${args.region}...` : "Locating Region...";
+  }
+  if (norm === "get_province_summary") {
+    return args.province ? `Analyzing projects in ${args.province}...` : "Locating province...";
+  }
+  if (norm === "calculate_distance") {
+    return "Calculating distance...";
+  }
+  if (norm === "get_geographic_bounds") {
+    return "Calculating geographic bounds...";
+  }
+  if (norm === "get_nearby_projects") {
+    return "Searching nearby projects...";
+  }
+  if (norm === "get_project_timeline") {
+    return "Retrieving verified timeline...";
+  }
+  if (norm === "get_project" || norm === "get_project_details") {
+    return args.projectId ? `Retrieving project details...` : "Retrieving project...";
+  }
+  if (norm === "get_project_statistics") {
+    return "Calculating portfolio statistics...";
+  }
+  if (norm === "compare_projects") {
+    return "Comparing project specifications...";
+  }
+  if (norm === "get_portfolio_brief") {
+    return "Synthesizing executive portfolio brief...";
+  }
+  if (norm === "explain_current_view") {
+    return "Analyzing active map view...";
+  }
+  if (norm === "fly_to_project") {
+    return "Navigating map camera...";
+  }
+  if (norm === "apply_project_filters") {
+    return "Filtering projects...";
+  }
+  if (norm === "clear_project_filters") {
+    return "Resetting portfolio filters...";
+  }
+  if (norm === "toggle_gis_layer") {
+    return "Updating GIS layers...";
+  }
+  if (norm === "inspect_engineering_footprint") {
+    return "Loading engineering boundary...";
+  }
+  if (norm === "enter_discovery_scope") {
+    return "Activating Discovery Mode...";
+  }
+  if (norm === "get_nexus_project_summary") {
+    return "Querying Nexus operational records...";
+  }
+
+  // Fallback to formatted title
+  const clean = toolName.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return `Consulting ${clean}...`;
+}
+
 // ─── Engine 1: Cerebras Wafer-Scale Engine ───────────────────────
 
 async function runCerebras(
@@ -155,7 +240,7 @@ async function runCerebras(
       options.onToolEvent?.({
         type: "step_start",
         tool: toolName,
-        label: `Executing ${toolName}...`,
+        label: formatHumanToolLabel(toolName, parsedArgs, false),
       });
 
       const toolStart = Date.now();
@@ -173,7 +258,7 @@ async function runCerebras(
       options.onToolEvent?.({
         type: "step_complete",
         tool: toolName,
-        label: `Completed ${toolName}`,
+        label: formatHumanToolLabel(toolName, parsedArgs, true),
         elapsedMs: Date.now() - toolStart,
       });
 
@@ -239,7 +324,13 @@ async function runGemini(
 
   const startTime = Date.now();
   const genAI = new GoogleGenerativeAI(apiKey);
-  const geminiModels = ["gemini-2.5-flash", "gemini-1.5-flash"];
+  // Newest first. Each model has its own free-tier allowance (a few requests a minute), so a
+  // model that is rate-limited simply hands over to the next one. (gemini-1.5-flash was retired
+  // and only ever answered 404.)
+  // (gemini-3.8-flash is left out: it rejects the "function" role this SDK uses for tool
+  //  results, so it failed on every question that needed data. gemini-3.5-flash is accurate but
+  //  slower, so it comes after the fast 2.5 model.)
+  const geminiModels = ["gemini-2.5-flash", "gemini-3.5-flash"];
   const executedTools: string[] = [];
   const geminiTools = options.tools && options.tools.length > 0 ? convertToolsToGemini(options.tools) : undefined;
 
@@ -269,7 +360,17 @@ async function runGemini(
       let functionCalls = response.response.functionCalls();
       let loopCount = 0;
       const maxLoops = options.maxToolLoops ?? 5;
+      const replyText = () => {
+        try {
+          return response.response.text() || "";
+        } catch {
+          return ""; // blocked or no text part
+        }
+      };
+      let nudged = false;
 
+      // (the loop also runs once more after a nudge, below)
+      for (;;) {
       while (functionCalls && functionCalls.length > 0 && loopCount < maxLoops) {
         loopCount++;
         const functionResponses = [];
@@ -282,7 +383,7 @@ async function runGemini(
           options.onToolEvent?.({
             type: "step_start",
             tool: call.name,
-            label: `Executing ${call.name}...`,
+            label: formatHumanToolLabel(call.name, args, false),
           });
 
           let result: unknown;
@@ -299,7 +400,7 @@ async function runGemini(
           options.onToolEvent?.({
             type: "step_complete",
             tool: call.name,
-            label: `Completed ${call.name}`,
+            label: formatHumanToolLabel(call.name, args, true),
             elapsedMs: Date.now() - toolStart,
           });
 
@@ -315,6 +416,23 @@ async function runGemini(
         functionCalls = response.response.functionCalls();
       }
 
+      // An empty reply (no text, no tool call) happens now and then, typically a tool call the
+      // model got wrong. It used to reach the user as "I processed your request." The chat SDK
+      // also DROPS a turn that produced nothing, so the question itself is gone from the
+      // conversation (the model then answered the question before it, or said it "missed" it):
+      // ask it again, in full. If it is still empty, this model has failed and the cascade
+      // moves on to the next one.
+      if (isUsableAnswer(replyText()) || nudged) break;
+      nudged = true;
+      const finish = response.response.candidates?.[0]?.finishReason;
+      console.warn(`[AI Core :: Gemini] ${modelName} gave an empty reply (finish: ${finish ?? "?"}); asking again`);
+      response = await chat.sendMessage(
+        `${options.message}\n\n(If this needs data such as counts, lists or figures, call one tool with valid arguments first, then answer in plain sentences for a person, never as raw data or JSON.)`
+      );
+      functionCalls = response.response.functionCalls();
+      }
+      if (!isUsableAnswer(replyText())) throw new Error(`${modelName} returned no usable answer`);
+
       const durationMs = Date.now() - startTime;
       const telemetry: AIProviderTelemetry = {
         provider: "GEMINI",
@@ -327,7 +445,7 @@ async function runGemini(
       aiLogger.logExecution(assistantType, telemetry);
 
       return {
-        text: response.response.text(),
+        text: replyText(),
         executedTools,
         telemetry,
       };
@@ -338,6 +456,133 @@ async function runGemini(
   }
 
   throw lastError || new Error("All Gemini cascade models failed");
+}
+
+// ─── Engine 2b: OpenAI-compatible fallbacks (OpenRouter, Mistral) ─────
+// Same chat-completions shape with tool calls; each lists its models best first.
+
+type OpenAICompatEngine = {
+  provider: "OPENROUTER" | "MISTRAL";
+  label: string;
+  url: string;
+  models: string[];
+  apiKey: string | undefined;
+  extraHeaders?: Record<string, string>;
+};
+
+// OpenRouter free models (":free"): 50 requests a day without credits, 20 a minute. Tool-capable
+// models only, fastest good one first (Nemotron answers well but takes 30-70 s); OpenRouter itself also routes around a busy provider.
+const OPENROUTER_ENGINE = (): OpenAICompatEngine => ({
+  provider: "OPENROUTER",
+  label: "OpenRouter",
+  url: "https://openrouter.ai/api/v1/chat/completions",
+  models: ["qwen/qwen3.8-27b:free", "inclusionai/ling-3.0-flash-sante:free", "google/gemma-4-31b-it:free"],
+  apiKey: process.env.OPENROUTER_API_KEY,
+  extraHeaders: { "HTTP-Referer": "https://scic.com.ph", "X-Title": "SCIC Project Atlas" },
+});
+
+// Mistral La Plateforme: needs a paid plan for API use now; kept for when a key works.
+const MISTRAL_ENGINE = (): OpenAICompatEngine => ({
+  provider: "MISTRAL",
+  label: "Mistral",
+  url: "https://api.mistral.ai/v1/chat/completions",
+  models: ["mistral-medium-latest", "mistral-small-latest"],
+  apiKey: process.env.MISTRAL_API_KEY,
+});
+
+async function runOpenAICompatible(
+  engine: OpenAICompatEngine,
+  options: AICoreGenerateOptions,
+  assistantType: "ATLAS" | "NEXUS"
+): Promise<AICoreGenerateResult> {
+  const { apiKey, label } = engine;
+  if (!apiKey) throw new Error(`${label} key not configured`);
+
+  const tools = options.tools && options.tools.length > 0 ? convertToolsToOpenAI(options.tools) : undefined;
+  let lastError: unknown = null;
+
+  for (const model of engine.models) {
+    const startTime = Date.now();
+    const executedTools: string[] = [];
+    const messages: any[] = [
+      { role: "system", content: options.systemInstruction },
+      ...options.history.map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.content })),
+      { role: "user", content: options.message },
+    ];
+    const call = async () => {
+      const res = await fetch(engine.url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}`, ...engine.extraHeaders },
+        body: JSON.stringify({
+          model,
+          messages,
+          ...(tools ? { tools, tool_choice: "auto" } : {}),
+          temperature: options.temperature ?? 0.2,
+        }),
+      });
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        const err = new Error(`${label} ${model} HTTP ${res.status}: ${detail.slice(0, 300)}`);
+        (err as Error & { status?: number }).status = res.status;
+        throw err;
+      }
+      const json = await res.json();
+      return json.choices?.[0]?.message ?? {};
+    };
+
+    try {
+      let message = await call();
+      let loops = 0;
+      const maxLoops = options.maxToolLoops ?? 5;
+      while (Array.isArray(message.tool_calls) && message.tool_calls.length > 0 && loops < maxLoops) {
+        loops++;
+        messages.push({ role: "assistant", content: message.content ?? "", tool_calls: message.tool_calls });
+        for (const toolCall of message.tool_calls) {
+          const toolName: string = toolCall.function?.name ?? "unknown_tool";
+          let args: Record<string, unknown> = {};
+          try {
+            args = typeof toolCall.function?.arguments === "string" ? JSON.parse(toolCall.function.arguments || "{}") : toolCall.function?.arguments ?? {};
+          } catch {
+            args = {};
+          }
+          executedTools.push(toolName);
+          options.onToolEvent?.({ type: "step_start", tool: toolName, label: formatHumanToolLabel(toolName, args, false) });
+          const toolStart = Date.now();
+          let result: unknown;
+          try {
+            result = options.executeTool ? await options.executeTool(toolName, args) : { error: `Tool ${toolName} not configured` };
+          } catch (err: any) {
+            result = { error: err?.message || String(err) };
+          }
+          options.onToolEvent?.({
+            type: "step_complete",
+            tool: toolName,
+            label: formatHumanToolLabel(toolName, args, true),
+            elapsedMs: Date.now() - toolStart,
+          });
+          messages.push({ role: "tool", name: toolName, tool_call_id: toolCall.id, content: JSON.stringify(result ?? {}) });
+        }
+        message = await call();
+      }
+
+      const text = typeof message.content === "string" ? message.content : Array.isArray(message.content) ? message.content.map((p: any) => p?.text ?? "").join("") : "";
+      if (!isUsableAnswer(text)) throw new Error(`${label} ${model} returned no usable answer`);
+
+      const telemetry: AIProviderTelemetry = {
+        provider: engine.provider,
+        model,
+        durationMs: Date.now() - startTime,
+        executedTools,
+        success: true,
+      };
+      aiLogger.logExecution(assistantType, telemetry);
+      return { text, executedTools, telemetry };
+    } catch (err) {
+      lastError = err;
+      console.warn(`[AI Core :: ${label}] ${model} failed, cascading:`, (err as Error)?.message || err);
+    }
+  }
+  throw lastError || new Error(`All ${label} models failed`);
 }
 
 // ─── Engine 3: Groq LPU ─────────────────────────────────────────
@@ -390,7 +635,7 @@ async function runGroq(
       options.onToolEvent?.({
         type: "step_start",
         tool: toolName,
-        label: `Executing ${toolName}...`,
+        label: formatHumanToolLabel(toolName, parsedArgs, false),
       });
 
       const toolStart = Date.now();
@@ -408,7 +653,7 @@ async function runGroq(
       options.onToolEvent?.({
         type: "step_complete",
         tool: toolName,
-        label: `Completed ${toolName}`,
+        label: formatHumanToolLabel(toolName, parsedArgs, true),
         elapsedMs: Date.now() - toolStart,
       });
 
@@ -450,6 +695,24 @@ async function runGroq(
   };
 }
 
+/**
+ * An answer a person can be shown: not empty, and not a tool's raw output echoed back as the reply
+ * (seen once: a whole JSON statistics object arrived as the "answer").
+ */
+export function isUsableAnswer(text: string | null | undefined): boolean {
+  const t = (text || "").trim();
+  if (!t) return false;
+  if (/^[\[{]/.test(t)) {
+    try {
+      JSON.parse(t.split("[[SAY")[0].trim());
+      return false;
+    } catch {
+      // starts with a bracket but is prose
+    }
+  }
+  return true;
+}
+
 // ─── Public Cascade Dispatcher ──────────────────────────────────
 
 export async function executeAICascade(
@@ -457,11 +720,15 @@ export async function executeAICascade(
   assistantType: "ATLAS" | "NEXUS"
 ): Promise<AICoreGenerateResult> {
   const cascadeStart = Date.now();
+  const answered = (r: AICoreGenerateResult): AICoreGenerateResult => {
+    if (!isUsableAnswer(r.text)) throw new Error(`${r.telemetry?.provider ?? "engine"} returned no usable answer`);
+    return r;
+  };
 
   // 1. Wafer-Scale Engine: Cerebras
   if (process.env.CEREBRAS_API_KEY) {
     try {
-      return await runCerebras(options, assistantType);
+      return answered(await runCerebras(options, assistantType));
     } catch (err: any) {
       aiLogger.recordError(assistantType, "CEREBRAS", "gpt-oss-120b", Date.now() - cascadeStart, err);
       console.warn("[AI Core :: Cascade] Engine 1 (Cerebras) failed, cascading to Engine 2 (Gemini)...");
@@ -471,17 +738,28 @@ export async function executeAICascade(
   // 2. Multimodal & Reasoning Engine: Google Gemini Flash Cascade
   if (process.env.GOOGLE_AI_API_KEY) {
     try {
-      return await runGemini(options, assistantType);
+      return answered(await runGemini(options, assistantType));
     } catch (err: any) {
       aiLogger.recordError(assistantType, "GEMINI", "gemini-flash-cascade", Date.now() - cascadeStart, err);
-      console.warn("[AI Core :: Cascade] Engine 2 (Gemini) failed, cascading to Engine 3 (Groq)...");
+      console.warn("[AI Core :: Cascade] Engine 2 (Gemini) failed, cascading to OpenRouter / Mistral...");
+    }
+  }
+
+  // 2b. OpenAI-compatible fallbacks: OpenRouter free models, then Mistral
+  for (const engine of [OPENROUTER_ENGINE(), MISTRAL_ENGINE()]) {
+    if (!engine.apiKey) continue;
+    try {
+      return answered(await runOpenAICompatible(engine, options, assistantType));
+    } catch (err: any) {
+      aiLogger.recordError(assistantType, engine.provider, engine.models[0], Date.now() - cascadeStart, err);
+      console.warn(`[AI Core :: Cascade] ${engine.label} failed, cascading...`);
     }
   }
 
   // 3. Fast LPU Engine: Groq
   if (process.env.GROQ_API_KEY) {
     try {
-      return await runGroq(options, assistantType);
+      return answered(await runGroq(options, assistantType));
     } catch (err: any) {
       aiLogger.recordError(assistantType, "GROQ", "openai/gpt-oss-120b", Date.now() - cascadeStart, err);
       console.error("[AI Core :: Cascade] Engine 3 (Groq) failed.");

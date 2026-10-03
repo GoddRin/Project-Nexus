@@ -18,7 +18,7 @@ export function AtlasMapLegend({ className }: AtlasMapLegendProps) {
       role="region"
       aria-label="GIS Map Legend"
       className={cn(
-        "rounded-xl bg-white/95 dark:bg-[#0B1726]/95 backdrop-blur-md border border-slate-200 dark:border-white/15 shadow-xl text-xs font-sans overflow-hidden transition-all duration-200",
+        "rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 shadow-xl text-xs font-sans overflow-hidden transition-all duration-200",
         isOpen ? "w-80 sm:w-[340px]" : "w-auto",
         className
       )}
@@ -84,13 +84,13 @@ export function AtlasMapLegend({ className }: AtlasMapLegendProps) {
             </span>
             <div className="grid grid-cols-2 gap-x-2.5 gap-y-2 text-[10px] font-mono text-slate-700 dark:text-slate-300">
               <div className="flex items-center gap-2" title="Clusters group nearby projects at regional or national scales">
-                <span className="h-5 w-5 rounded-full bg-[#0284C7] border border-white flex items-center justify-center text-[9px] text-white font-bold shrink-0 shadow-2xs">
+                <span className="h-5 w-5 rounded-full bg-scic-blue border border-white flex items-center justify-center text-[9px] text-white font-bold shrink-0 shadow-2xs">
                   18
                 </span>
                 <span>Cluster [N]</span>
               </div>
               <div className="flex items-center gap-2" title="Individual project site marker">
-                <span className="h-5 w-5 rounded-full bg-[#10A51D] border border-white flex items-center justify-center shrink-0 shadow-2xs">
+                <span className="h-5 w-5 rounded-full bg-emerald-500 border border-white flex items-center justify-center shrink-0 shadow-2xs">
                   <span className="h-1.5 w-1.5 rounded-full bg-white" />
                 </span>
                 <span>Project Marker</span>
@@ -102,13 +102,22 @@ export function AtlasMapLegend({ className }: AtlasMapLegendProps) {
                 <span>Active Work</span>
               </div>
               <div className="flex items-center gap-2" title="Selected project highlighted by cyan focus halo">
-                <span className="h-5 w-5 rounded-full border-2 border-[#0284C7] dark:border-[#00E5FF] flex items-center justify-center shrink-0 shadow-[0_0_8px_#0284C780] dark:shadow-[0_0_8px_#00E5FF80]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#0284C7] dark:bg-[#00E5FF]" />
+                <span className="h-5 w-5 rounded-full border-2 border-scic-blue dark:border-cyan-400 flex items-center justify-center shrink-0 shadow-[0_0_8px_#0284C780] dark:shadow-[0_0_8px_#00E5FF80]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-scic-blue dark:bg-cyan-400" />
                 </span>
                 <span>Selected Halo</span>
               </div>
             </div>
           </div>
+
+          {/* Data credits (the map has no separate attribution control) */}
+          <p className="pt-2 border-t border-slate-200 dark:border-white/10 text-[9px] leading-snug text-slate-500 dark:text-slate-400">
+            Basemap © Esri and partners · Rivers ©{" "}
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="underline hover:text-emerald-600 dark:hover:text-emerald-400">
+              OpenStreetMap contributors
+            </a>{" "}
+            · Rain radar © RainViewer
+          </p>
         </div>
       )}
     </div>

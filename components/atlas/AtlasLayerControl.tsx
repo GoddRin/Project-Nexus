@@ -80,25 +80,25 @@ export function AtlasLayerControl({
         className={cn(
           "flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all duration-200 text-xs font-medium cursor-pointer shadow-lg",
           isOpen
-            ? "bg-[#0284C7]/20 border-[#0284C7] dark:border-[#38BDF8]/60 text-[#0284C7] dark:text-white shadow-sky-500/10"
-            : "bg-white/90 hover:bg-slate-100 dark:bg-[#0B1726]/90 dark:hover:bg-[#0F2238] border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200"
+            ? "bg-scic-blue/20 border-scic-blue dark:border-sky-400/60 text-scic-blue dark:text-white shadow-sky-500/10"
+            : "bg-white/90 hover:bg-slate-100 dark:bg-atlas-panel/90 dark:hover:bg-[#0F2238] border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200"
         )}
         title="GIS Map Layer Control"
         aria-label="Toggle map layers panel"
       >
-        <Layers className="h-4 w-4 text-[#0284C7] dark:text-[#38BDF8]" />
+        <Layers className="h-4 w-4 text-scic-blue dark:text-sky-400" />
         <span className="font-mono text-[11px] font-semibold tracking-wide uppercase">
           Layers
         </span>
         {activeCount > 0 && (
-          <span className="flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-[#0284C7] text-[9px] font-mono font-bold text-white">
+          <span className="flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-scic-blue text-[9px] font-mono font-bold text-white">
             {activeCount}
           </span>
         )}
         <ChevronDown
           className={cn(
             "h-3 w-3 text-slate-500 dark:text-slate-400 transition-transform duration-200",
-            isOpen && "rotate-180 text-[#0284C7] dark:text-sky-400"
+            isOpen && "rotate-180 text-scic-blue dark:text-sky-400"
           )}
         />
       </button>
@@ -112,7 +112,7 @@ export function AtlasLayerControl({
           {/* Header */}
           <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-200 dark:border-white/10">
             <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-300 font-semibold text-[11px] tracking-wide uppercase font-mono">
-              <Layers className="h-3.5 w-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
+              <Layers className="h-3.5 w-3.5 text-scic-blue dark:text-sky-400" />
               <span>Map Layer Control</span>
             </div>
             <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
@@ -132,7 +132,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex flex-col items-center gap-1 py-1.5 px-2 rounded-lg text-[10px] font-mono transition-all cursor-pointer",
                   currentStyle === "DARK"
-                    ? "bg-[#0284C7] text-white font-bold shadow-sm"
+                    ? "bg-scic-blue text-white font-bold shadow-sm"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/5"
                 )}
               >
@@ -146,7 +146,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex flex-col items-center gap-1 py-1.5 px-2 rounded-lg text-[10px] font-mono transition-all cursor-pointer",
                   currentStyle === "LIGHT"
-                    ? "bg-[#0284C7] text-white font-bold shadow-sm"
+                    ? "bg-scic-blue text-white font-bold shadow-sm"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/5"
                 )}
               >
@@ -160,7 +160,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex flex-col items-center gap-1 py-1.5 px-2 rounded-lg text-[10px] font-mono transition-all cursor-pointer",
                   currentStyle === "SATELLITE"
-                    ? "bg-[#0284C7] text-white font-bold shadow-sm"
+                    ? "bg-scic-blue text-white font-bold shadow-sm"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/5"
                 )}
               >
@@ -181,7 +181,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer select-none",
                   activeGisLayers.has("projects")
-                    ? "bg-[#0284C7]/10 dark:bg-[#0284C7]/15 border-[#0284C7]/30 dark:border-[#0284C7]/40 text-slate-900 dark:text-slate-100"
+                    ? "bg-scic-blue/10 dark:bg-scic-blue/15 border-scic-blue/30 dark:border-scic-blue/40 text-slate-900 dark:text-slate-100"
                     : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
                 )}
               >
@@ -190,7 +190,7 @@ export function AtlasLayerControl({
                     className={cn(
                       "flex items-center justify-center w-4 h-4 rounded border transition-colors",
                       activeGisLayers.has("projects")
-                        ? "bg-[#0284C7] border-[#0284C7] dark:border-[#38BDF8] text-white"
+                        ? "bg-scic-blue border-scic-blue dark:border-sky-400 text-white"
                         : "border-slate-400 dark:border-slate-500 bg-transparent"
                     )}
                   >
@@ -220,7 +220,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer select-none",
                   activeGisLayers.has("admin-boundaries")
-                    ? "bg-[#0284C7]/10 dark:bg-[#0284C7]/15 border-[#0284C7]/30 dark:border-[#0284C7]/40 text-slate-900 dark:text-slate-100"
+                    ? "bg-scic-blue/10 dark:bg-scic-blue/15 border-scic-blue/30 dark:border-scic-blue/40 text-slate-900 dark:text-slate-100"
                     : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
                 )}
               >
@@ -229,7 +229,7 @@ export function AtlasLayerControl({
                     className={cn(
                       "flex items-center justify-center w-4 h-4 rounded border transition-colors",
                       activeGisLayers.has("admin-boundaries")
-                        ? "bg-[#0284C7] border-[#0284C7] dark:border-[#38BDF8] text-white"
+                        ? "bg-scic-blue border-scic-blue dark:border-sky-400 text-white"
                         : "border-slate-400 dark:border-slate-500 bg-transparent"
                     )}
                   >
@@ -259,7 +259,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer select-none",
                   activeGisLayers.has("project-footprints")
-                    ? "bg-[#0284C7]/10 dark:bg-[#0284C7]/15 border-[#0284C7]/30 dark:border-[#0284C7]/40 text-slate-900 dark:text-slate-100"
+                    ? "bg-scic-blue/10 dark:bg-scic-blue/15 border-scic-blue/30 dark:border-scic-blue/40 text-slate-900 dark:text-slate-100"
                     : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
                 )}
               >
@@ -268,7 +268,7 @@ export function AtlasLayerControl({
                     className={cn(
                       "flex items-center justify-center w-4 h-4 rounded border transition-colors",
                       activeGisLayers.has("project-footprints")
-                        ? "bg-[#0284C7] border-[#0284C7] dark:border-[#38BDF8] text-white"
+                        ? "bg-scic-blue border-scic-blue dark:border-sky-400 text-white"
                         : "border-slate-400 dark:border-slate-500 bg-transparent"
                     )}
                   >
@@ -298,7 +298,7 @@ export function AtlasLayerControl({
                 className={cn(
                   "flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer select-none",
                   activeGisLayers.has("infrastructure-context")
-                    ? "bg-[#0284C7]/10 dark:bg-[#0284C7]/15 border-[#0284C7]/30 dark:border-[#0284C7]/40 text-slate-900 dark:text-slate-100"
+                    ? "bg-scic-blue/10 dark:bg-scic-blue/15 border-scic-blue/30 dark:border-scic-blue/40 text-slate-900 dark:text-slate-100"
                     : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
                 )}
               >
@@ -307,7 +307,7 @@ export function AtlasLayerControl({
                     className={cn(
                       "flex items-center justify-center w-4 h-4 rounded border transition-colors",
                       activeGisLayers.has("infrastructure-context")
-                        ? "bg-[#0284C7] border-[#0284C7] dark:border-[#38BDF8] text-white"
+                        ? "bg-scic-blue border-scic-blue dark:border-sky-400 text-white"
                         : "border-slate-400 dark:border-slate-500 bg-transparent"
                     )}
                   >

@@ -235,7 +235,7 @@ export function SiteMapClient({ locations, allEquipments = [], tickets, equipmen
                             cy="26"
                             r={radius}
                             fill="transparent"
-                            stroke="#1FB6A6"
+                            stroke="#129450"
                             strokeWidth="4.5"
                             strokeDasharray={circumference}
                             initial={{ strokeDashoffset: circumference }}
@@ -385,7 +385,7 @@ export function SiteMapClient({ locations, allEquipments = [], tickets, equipmen
                 <span className="text-xs font-medium text-text-primary">Suspended / Alert</span>
               </div>
               <div className="flex items-center gap-3 pt-1 border-t border-border-hairline">
-                <div className="w-3.5 h-0.5 bg-[#22D3EE]" />
+                <div className="w-3.5 h-0.5 bg-cyan-400" />
                 <span className="text-xs font-medium text-text-primary">Hydro Flow Circuit</span>
               </div>
             </div>

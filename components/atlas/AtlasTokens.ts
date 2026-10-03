@@ -33,7 +33,7 @@ export const ATLAS_CATEGORIES: Record<ProjectCategoryId, CategoryVisualToken> = 
     label: "Hydropower & Renewable Energy",
     shortLabel: "Hydropower",
     code: "HYD",
-    color: "#10A51D",
+    color: "#129450",
     bgClass: "bg-emerald-500/10 dark:bg-emerald-500/15",
     textClass: "text-emerald-500 dark:text-emerald-400",
     borderClass: "border-emerald-500/30",
@@ -44,7 +44,7 @@ export const ATLAS_CATEGORIES: Record<ProjectCategoryId, CategoryVisualToken> = 
     label: "Wind Power & Clean Aerogenerators",
     shortLabel: "Wind Power",
     code: "WND",
-    color: "#06B6D4",
+    color: "#2F82AB",
     bgClass: "bg-cyan-500/10 dark:bg-cyan-500/15",
     textClass: "text-cyan-500 dark:text-cyan-400",
     borderClass: "border-cyan-500/30",
@@ -110,7 +110,7 @@ export const ATLAS_CATEGORIES: Record<ProjectCategoryId, CategoryVisualToken> = 
     label: "Industrial Facilities & Manufacturing",
     shortLabel: "Industrial",
     code: "IND",
-    color: "#14B8A6",
+    color: "#129450",
     bgClass: "bg-teal-500/10 dark:bg-teal-500/15",
     textClass: "text-teal-500 dark:text-teal-400",
     borderClass: "border-teal-500/30",
@@ -195,7 +195,7 @@ export const ATLAS_STATUSES: Record<string, StatusVisualToken> = {
   ONGOING: {
     id: "ONGOING",
     label: "ACTIVE",
-    color: "#10B981",
+    color: "#129450",
     bgClass: "bg-emerald-500/15",
     textClass: "text-emerald-400",
     borderClass: "border-emerald-500/30",
@@ -204,7 +204,7 @@ export const ATLAS_STATUSES: Record<string, StatusVisualToken> = {
   COMPLETED: {
     id: "COMPLETED",
     label: "COMPLETED",
-    color: "#0284C7",
+    color: "#2F82AB",
     bgClass: "bg-sky-500/15",
     textClass: "text-sky-400",
     borderClass: "border-sky-500/30",
@@ -239,5 +239,75 @@ export const ATLAS_SURFACES = {
   textSecondary: "#94A3B8",
   textMuted: "#64748B",
   accentCyan: "#00E5FF",
-  accentBlue: "#0284C7",
+  accentBlue: "#2F82AB",
 };
+
+/**
+ * Centralized Project Atlas Overlay Z-Index Hierarchy (Phase 20)
+ * Prevents arbitrary z-index stacking and establishes deliberate layering:
+ * Map -> Controls -> Breadcrumb -> Directory -> AI Workspace -> Inspection Drawer -> Modals
+ */
+export const ATLAS_Z_INDEX = {
+  MAP_CANVAS: 0,
+  MAP_CONTROLS: 20,          // Zoom, compass, style switcher, GIS legends
+  NAVIGATOR_AVATAR: 25,      // SCIC Atlas Navigator 3D character (companion mode)
+  MAP_BREADCRUMB: 30,        // Geographic Breadcrumb, Discovery pills, Command bar
+  DIRECTORY_SIDEBAR: 35,     // Desktop directory sidebar
+  AI_WORKSPACE: 40,          // Atlas AI workspace (docked and resting floating)
+  AI_WORKSPACE_ACTIVE: 45,   // Active dragging / focused floating workspace
+  INSPECTION_DRAWER: 50,     // Project Inspection Drawer
+  MOBILE_OVERLAYS: 55,       // Mobile drawer backdrops
+  MODAL_LIGHTBOX: 60,        // Weather News Modal, System Dialogs
+  TOOLTIP_POPOVER: 70,       // Global Tooltips
+} as const;
+
+export type AtlasWorkspaceMode = "MINIMIZED" | "COMPACT" | "CHAT" | "ANALYST";
+export type AtlasDockPosition = "FLOATING" | "LEFT" | "RIGHT" | "BOTTOM";
+
+// ─── SCIC Atlas Navigator Types (Phase 21) ──────────────────────────────────
+export type AtlasNavigatorState =
+  | "IDLE"
+  | "LISTENING"
+  | "THINKING"
+  | "SEARCHING"
+  | "NAVIGATING"
+  | "SPEAKING"
+  | "SUCCESS"
+  | "ERROR"
+  | "OFFLINE";
+
+export type AtlasNavigatorReaction =
+  | "ATTENTIVE_NOD"
+  | "SUBTLE_WAVE"
+  | "MAP_SCAN"
+  | "TECHNICAL_ACKNOWLEDGE"
+  | null;
+
+export type AtlasNavigatorGazeTarget =
+  | "USER"
+  | "MAP"
+  | "WORKSPACE"
+  | "PROJECT"
+  | "HOLOGRAM";
+
+// ─── Atlas Navigator 3D asset ───────────────────────────────────────────────
+/** Active navigator character: photoreal field engineer with a full face blendshape set. */
+export const ATLAS_NAVIGATOR_MODEL_URL = "/models/characters/scic_atlas_navigator_pro.glb?v=4";
+
+export type AtlasNavigatorDisplayMode = "auto" | "compact" | "disabled";
+
+export interface AtlasWorkspacePrefs {
+  version: 1;
+  dockPosition: AtlasDockPosition;
+  mode: AtlasWorkspaceMode;
+  isMaximized: boolean;
+  floatingPos: { x: number; y: number };
+  floatingSize: { width: number; height: number };
+  dockWidthRight: number;
+  dockWidthLeft: number;
+  dockHeightBottom: number;
+  showNavigatorAvatar?: boolean;
+  navigatorDisplayMode?: AtlasNavigatorDisplayMode;
+}
+
+

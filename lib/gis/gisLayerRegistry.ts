@@ -75,7 +75,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         source: "scic-admin-boundaries",
         minzoom: 7,
         paint: {
-          "fill-color": "#38bdf8",
+          "fill-color": "#4E9DC2",
           "fill-opacity": 0.025,
         },
       },
@@ -150,7 +150,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         source: "scic-project-footprints",
         minzoom: 6,
         paint: {
-          "fill-color": "#06b6d4",
+          "fill-color": "#2F82AB",
           "fill-opacity": 0.15,
         },
       },
@@ -172,7 +172,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
         source: "scic-project-footprints",
         minzoom: 6,
         paint: {
-          "line-color": "#38bdf8",
+          "line-color": "#4E9DC2",
           "line-width": 3.5,
           "line-opacity": 1.0,
         },
@@ -191,7 +191,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
           "text-max-width": 10,
         },
         paint: {
-          "text-color": "#38bdf8",
+          "text-color": "#4E9DC2",
           "text-halo-color": "#020617",
           "text-halo-width": 2,
         },
@@ -233,7 +233,7 @@ export const GIS_LAYER_REGISTRY: Record<string, AtlasGisLayerDef> = {
             "match",
             ["get", "category"],
             "power",
-            "#10b981",
+            "#129450",
             "expressway",
             "#fbbf24",
             "#f59e0b",

@@ -113,10 +113,10 @@ export function WeatherChart({ hourly }: WeatherChartProps) {
             type="monotone" 
             dataKey="temperature" 
             name="Temperature (°C)"
-            stroke="#1fb6a6" 
+            stroke="#129450" 
             strokeWidth={3} 
             dot={false}
-            activeDot={{ r: 5, fill: "#1fb6a6", stroke: "rgba(31,182,166,0.4)", strokeWidth: 4 }}
+            activeDot={{ r: 5, fill: "#129450", stroke: "rgba(31,182,166,0.4)", strokeWidth: 4 }}
           />
           <Line 
             yAxisId="right" 

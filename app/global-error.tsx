@@ -16,7 +16,7 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body className="min-h-screen bg-[#070D12] text-[#EDEFF1] flex items-center justify-center p-6 font-sans">
-        <div className="max-w-md w-full bg-[#0E1720]/90 border border-[#1E293B] rounded-2xl p-8 text-center shadow-2xl backdrop-blur-xl">
+        <div className="max-w-md w-full bg-[#0E1720]/90 border border-slate-800 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-xl">
           <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-mono text-xl font-bold">
             SCIC
           </div>

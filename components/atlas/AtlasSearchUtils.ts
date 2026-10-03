@@ -17,6 +17,40 @@ export function normalizeSearchText(value: string | undefined | null): string {
 }
 
 /**
+ * Common Roman numerals and numeric region aliases in the Philippines:
+ * e.g., "region 2" <-> "region ii", "region 3" <-> "region iii"
+ */
+const REGION_NUMERAL_MAP: Record<string, string> = {
+  "1": "i", "2": "ii", "3": "iii", "4": "iv", "4a": "iv-a", "4b": "iv-b",
+  "5": "v", "6": "vi", "7": "vii", "8": "viii", "9": "ix", "10": "x",
+  "11": "xi", "12": "xii", "13": "xiii",
+};
+
+/**
+ * Evaluates whether projectRegion matches queryText safely with strict word boundaries
+ * to prevent Roman numeral substring collisions (e.g. preventing "Region III" from matching "Region II").
+ */
+export function matchesRegionSafely(projectRegion: string | undefined | null, queryText: string): boolean {
+  if (!projectRegion || !queryText) return false;
+  const normRegion = normalizeSearchText(projectRegion);
+  const normQuery = normalizeSearchText(queryText);
+
+  // Check if query is targeting a region (e.g. "region ii", "region 2", "region iii")
+  const regionMatch = normQuery.match(/\bregion\s+([a-z0-9-]+)\b/i);
+  if (regionMatch) {
+    let targetNumeral = regionMatch[1].toLowerCase();
+    if (REGION_NUMERAL_MAP[targetNumeral]) {
+      targetNumeral = REGION_NUMERAL_MAP[targetNumeral];
+    }
+    // Match with strict word boundary on numeral so "ii" NEVER matches "iii"
+    const regex = new RegExp(`\\bregion\\s+${targetNumeral}\\b`, "i");
+    return regex.test(normRegion);
+  }
+
+  return normRegion.includes(normQuery);
+}
+
+/**
  * Evaluates whether a project matches the given raw search query across 6 key dimensions:
  * 1. Project Name
  * 2. Project Code
@@ -28,6 +62,12 @@ export function normalizeSearchText(value: string | undefined | null): string {
 export function projectMatchesSearch(project: SCICProject, rawQuery: string): boolean {
   const query = normalizeSearchText(rawQuery);
   if (!query) return true;
+
+  // If search specifically queries a region (e.g., "region ii" or "region 2"),
+  // use strict word-boundary region matching to avoid collisions with "Phase II" or "Region III".
+  if (/\bregion\s+([a-z0-9-]+)\b/i.test(query)) {
+    return matchesRegionSafely(project.region, query);
+  }
 
   // 1. Textual attributes
   const name = normalizeSearchText(project.name);

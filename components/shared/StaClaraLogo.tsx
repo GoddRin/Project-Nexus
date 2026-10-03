@@ -11,13 +11,13 @@ export function StaClaraLogo({ className }: { className?: string }) {
       {/* Outer Hexagonal Heavy Engineering Shield */}
       <polygon
         points="20,2 37,11.5 37,28.5 20,38 3,28.5 3,11.5"
-        className="fill-[#081B33] dark:fill-[#081B33] stroke-[#01770B] dark:stroke-[#10A51D]"
+        className="fill-scic-navy-dark dark:fill-scic-navy-dark stroke-emerald-600 dark:stroke-emerald-500"
         strokeWidth="1.75"
       />
       {/* Inner Hydro Geometric Interlock */}
       <path
         d="M20 7L32 14V26L20 33L8 26V14L20 7Z"
-        className="fill-[#01770B]/20 dark:fill-[#10A51D]/15"
+        className="fill-emerald-600/20 dark:fill-emerald-500/15"
       />
       {/* SCIC Dynamic S/C monogram vectors */}
       <path
@@ -28,12 +28,12 @@ export function StaClaraLogo({ className }: { className?: string }) {
         strokeLinejoin="round"
       />
       {/* Renewable Energy Node */}
-      <circle cx="27" cy="13" r="2" fill="#10A51D" className="animate-pulse" />
+      <circle cx="27" cy="13" r="2" fill="#129450" className="animate-pulse" />
       <defs>
         <linearGradient id="scic-grad" x1="13" y1="11" x2="27" y2="29" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#10A51D" />
-          <stop offset="0.6" stopColor="#01770B" />
-          <stop offset="1" stopColor="#0284C7" />
+          <stop stopColor="#129450" />
+          <stop offset="0.6" stopColor="#007B3E" />
+          <stop offset="1" stopColor="#2F82AB" />
         </linearGradient>
       </defs>
     </svg>

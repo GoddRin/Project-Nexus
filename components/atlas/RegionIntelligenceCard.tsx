@@ -60,7 +60,7 @@ export function RegionIntelligenceCard({
       <div className="flex items-start justify-between gap-2 pb-2.5 border-b border-slate-200 dark:border-white/10">
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="px-1.5 py-0.5 rounded bg-sky-500/15 dark:bg-sky-500/20 text-[#0284C7] dark:text-[#38BDF8] border border-sky-500/30 text-[9px] font-mono font-bold tracking-wider uppercase">
+            <span className="px-1.5 py-0.5 rounded bg-sky-500/15 dark:bg-sky-500/20 text-scic-blue dark:text-sky-400 border border-sky-500/30 text-[9px] font-mono font-bold tracking-wider uppercase">
               {stats.islandGroup}
             </span>
             <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
@@ -171,7 +171,7 @@ export function RegionIntelligenceCard({
       <button
         type="button"
         onClick={onZoomToExtent}
-        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#0284C7]/15 hover:bg-[#0284C7]/25 dark:bg-[#0284C7]/20 dark:hover:bg-[#0284C7]/30 border border-[#0284C7]/30 dark:border-[#0284C7]/40 text-[#0284C7] dark:text-[#38BDF8] hover:text-[#0369A1] dark:hover:text-white font-mono text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-scic-blue/15 hover:bg-scic-blue/25 dark:bg-scic-blue/20 dark:hover:bg-scic-blue/30 border border-scic-blue/30 dark:border-scic-blue/40 text-scic-blue dark:text-sky-400 hover:text-sky-700 dark:hover:text-white font-mono text-xs font-semibold transition-all cursor-pointer shadow-2xs"
       >
         <Maximize2 className="h-3.5 w-3.5" />
         <span>Fit Regional Extent</span>

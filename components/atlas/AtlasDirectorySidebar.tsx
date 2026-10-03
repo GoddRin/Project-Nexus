@@ -37,6 +37,7 @@ export interface AtlasDirectorySidebarProps {
   totalCount: number;
   selectedProjectId: string | null;
   onSelectProject: (projectId: string) => void;
+  onHoverProject?: (projectId: string | null) => void;
 
   // Search
   searchQuery: string;
@@ -87,6 +88,7 @@ export function AtlasDirectorySidebar({
   totalCount,
   selectedProjectId,
   onSelectProject,
+  onHoverProject,
   searchQuery,
   onSearchChange,
   selectedCategory,
@@ -126,6 +128,10 @@ export function AtlasDirectorySidebar({
 
   // Spotlight collapse & scroll management
   const [isSpotlightCollapsed, setIsSpotlightCollapsed] = useState(false);
+  // A selected project owns the attention: fold the featured card away so the list is visible
+  useEffect(() => {
+    if (selectedProjectId) setIsSpotlightCollapsed(true);
+  }, [selectedProjectId]);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const handleScrollToDirectory = useCallback(() => {
@@ -220,7 +226,7 @@ export function AtlasDirectorySidebar({
     return (
       <aside
         className={cn(
-          "w-12 h-full bg-white dark:bg-[#0B1726] border border-slate-200 dark:border-white/10 rounded-xl flex flex-col items-center py-3 gap-4 shadow-sm shrink-0 transition-colors",
+          "w-12 h-full bg-white dark:bg-atlas-panel border border-slate-200 dark:border-white/10 rounded-xl flex flex-col items-center py-3 gap-4 shadow-sm shrink-0 transition-colors",
           className
         )}
       >
@@ -246,13 +252,13 @@ export function AtlasDirectorySidebar({
   return (
     <aside
       className={cn(
-        "w-full lg:w-[390px] xl:w-[420px] h-full bg-white dark:bg-[#0B1726] border border-slate-200 dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-sm shrink-0 transition-colors",
+        "w-full lg:w-[390px] xl:w-[420px] h-full bg-white dark:bg-atlas-panel border border-slate-200 dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-sm shrink-0 transition-colors",
         className
       )}
     >
       {/* 0. Top Mode Switcher & Minimize Sidebar Control */}
       <div className="flex items-center gap-1.5 px-3 pt-2.5 pb-1.5 shrink-0">
-        <div className="flex-1 flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-[#08121E] border border-slate-200 dark:border-white/10">
+        <div className="flex-1 flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10">
           <button
             type="button"
             onClick={() => onSidebarModeChange?.("DIRECTORY")}
@@ -286,7 +292,7 @@ export function AtlasDirectorySidebar({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#08121E] dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shrink-0 shadow-2xs group"
+            className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-atlas-sunken dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shrink-0 shadow-2xs group"
             title="Minimize sidebar to view more map"
             aria-label="Minimize sidebar to view more map"
           >
@@ -314,7 +320,7 @@ export function AtlasDirectorySidebar({
         >
           {/* 1. Featured Project Spotlight (Phase 11: Grand Architectural Showcase) */}
           {featuredProjects.length > 0 && (
-            <div className="p-3 pb-2 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-[#08121E]/30 shrink-0">
+            <div className="p-3 pb-2 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-atlas-sunken/30 shrink-0">
               <AtlasProjectSpotlight
                 featuredProjects={featuredProjects}
                 onExploreProject={(p) => onSelectProject(p.id)}
@@ -329,11 +335,11 @@ export function AtlasDirectorySidebar({
           {/* 2. Directory Section Header: Dynamic Result Count & View Mode Toggle (Positioned below spotlight) */}
           <div
             ref={directoryHeaderRef}
-            className="sticky top-0 z-20 flex items-center justify-between px-3.5 py-2.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#08121E]/95 backdrop-blur-md transition-colors shrink-0 shadow-xs"
+            className="sticky top-0 z-20 flex items-center justify-between px-3.5 py-2.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-atlas-sunken/95 backdrop-blur-md transition-colors shrink-0 shadow-xs"
           >
             <div className="flex flex-col min-w-0 pr-2">
               <div className="flex items-center gap-1.5">
-                <ListFilter className="h-4 w-4 text-[#0284C7] shrink-0" />
+                <ListFilter className="h-4 w-4 text-scic-blue shrink-0" />
                 <span className="text-xs font-bold font-mono tracking-wider text-slate-900 dark:text-white uppercase truncate">
                   {projects.length} {projects.length === 1 ? "Project" : "Projects"}
                 </span>
@@ -351,7 +357,7 @@ export function AtlasDirectorySidebar({
             <div className="flex items-center gap-1.5 shrink-0">
               {/* View Mode Toggle */}
               <div
-                className="flex items-center p-0.5 rounded-md bg-slate-100 dark:bg-[#0B1726] border border-slate-200 dark:border-white/10 transition-colors"
+                className="flex items-center p-0.5 rounded-md bg-slate-100 dark:bg-atlas-panel border border-slate-200 dark:border-white/10 transition-colors"
                 role="group"
                 aria-label="Directory view mode"
               >
@@ -363,7 +369,7 @@ export function AtlasDirectorySidebar({
                   className={cn(
                     "p-1 rounded text-xs transition-colors cursor-pointer",
                     viewMode === "CARDS"
-                      ? "bg-[#0284C7] text-white shadow-xs"
+                      ? "bg-scic-blue text-white shadow-xs"
                       : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
@@ -377,7 +383,7 @@ export function AtlasDirectorySidebar({
                   className={cn(
                     "p-1 rounded text-xs transition-colors cursor-pointer",
                     viewMode === "TABLE"
-                      ? "bg-[#0284C7] text-white shadow-xs"
+                      ? "bg-scic-blue text-white shadow-xs"
                       : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
@@ -388,7 +394,7 @@ export function AtlasDirectorySidebar({
           </div>
 
       {/* 2. Structured Filter & Search Controls Panel */}
-      <div className="p-3 border-b border-slate-200 dark:border-white/10 space-y-2 bg-white dark:bg-[#0B1726] transition-colors">
+      <div className="p-3 border-b border-slate-200 dark:border-white/10 space-y-2 bg-white dark:bg-atlas-panel transition-colors">
         {/* Instantaneous Search Input with Clear Action */}
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -397,7 +403,7 @@ export function AtlasDirectorySidebar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name, code, municipality, province, or category..."
-            className="w-full pl-8 pr-7 py-1.5 rounded-lg bg-slate-50 dark:bg-[#08121E] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#0284C7] font-sans transition-colors"
+            className="w-full pl-8 pr-7 py-1.5 rounded-lg bg-slate-50 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-scic-blue font-sans transition-colors"
           />
           {searchQuery && (
             <button
@@ -429,8 +435,8 @@ export function AtlasDirectorySidebar({
               className={cn(
                 "px-2 py-1 rounded text-[10px] font-mono uppercase whitespace-nowrap transition-colors cursor-pointer",
                 selectedStatus === s.id
-                  ? "bg-[#0284C7] dark:bg-white/20 text-white font-bold border border-[#0284C7] dark:border-white/30 shadow-xs"
-                  : "bg-slate-100 dark:bg-[#08121E] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200/60 dark:border-transparent"
+                  ? "bg-emerald-600 dark:bg-emerald-500/25 text-white dark:text-emerald-100 font-bold border border-emerald-600 dark:border-emerald-400/40 shadow-xs"
+                  : "bg-slate-100 dark:bg-atlas-sunken text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200/60 dark:border-transparent"
               )}
             >
               {s.label}
@@ -446,8 +452,8 @@ export function AtlasDirectorySidebar({
             className={cn(
               "px-2 py-0.5 rounded text-[9px] font-mono whitespace-nowrap uppercase transition-colors border cursor-pointer",
               selectedCategory === "ALL"
-                ? "bg-slate-800 dark:bg-white/20 text-white border-slate-800 dark:border-white/30 font-bold shadow-xs"
-                : "bg-slate-100 dark:bg-[#08121E] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/5 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-emerald-600 dark:bg-emerald-500/25 text-white dark:text-emerald-100 border-emerald-600 dark:border-emerald-400/40 font-bold shadow-xs"
+                : "bg-slate-100 dark:bg-atlas-sunken text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/5 hover:text-slate-900 dark:hover:text-white"
             )}
           >
             All Categories
@@ -464,7 +470,7 @@ export function AtlasDirectorySidebar({
                   "px-2 py-0.5 rounded text-[9px] font-mono whitespace-nowrap uppercase transition-colors border flex items-center gap-1 cursor-pointer",
                   isCur
                     ? cn(token.bgClass, token.textClass, token.borderClass, "font-bold shadow-xs")
-                    : "bg-slate-100 dark:bg-[#08121E] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/5 hover:text-slate-900 dark:hover:text-white"
+                    : "bg-slate-100 dark:bg-atlas-sunken text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/5 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 <span
@@ -485,7 +491,7 @@ export function AtlasDirectorySidebar({
               className="flex items-center gap-1.5 text-[10px] font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors cursor-pointer"
               aria-expanded={isGeoFiltersExpanded}
             >
-              <SlidersHorizontal className="h-3 w-3 text-[#0284C7]" />
+              <SlidersHorizontal className="h-3 w-3 text-scic-blue" />
               <span>
                 Geographic Filters
                 {selectedIsland !== "ALL" || selectedRegion !== "ALL" || selectedProvince !== "ALL"
@@ -532,8 +538,8 @@ export function AtlasDirectorySidebar({
                     className={cn(
                       "px-2 py-0.5 rounded text-[9px] font-mono whitespace-nowrap transition-colors cursor-pointer",
                       selectedIsland === isl.id
-                        ? "bg-[#0284C7] text-white font-bold shadow-xs"
-                        : "bg-slate-100 dark:bg-[#08121E] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-scic-blue text-white font-bold shadow-xs"
+                        : "bg-slate-100 dark:bg-atlas-sunken text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     )}
                   >
                     {isl.label}
@@ -549,7 +555,7 @@ export function AtlasDirectorySidebar({
                 <select
                   value={selectedRegion}
                   onChange={(e) => onRegionChange(e.target.value)}
-                  className="w-full px-2 py-1 rounded bg-slate-50 dark:bg-[#08121E] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0284C7] font-sans cursor-pointer transition-colors"
+                  className="w-full px-2 py-1 rounded bg-slate-50 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-scic-blue font-sans cursor-pointer transition-colors"
                 >
                   <option value="ALL">All Regions</option>
                   {availableRegions.map((reg) => (
@@ -568,7 +574,7 @@ export function AtlasDirectorySidebar({
                 <select
                   value={selectedProvince}
                   onChange={(e) => onProvinceChange(e.target.value)}
-                  className="w-full px-2 py-1 rounded bg-slate-50 dark:bg-[#08121E] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0284C7] font-sans cursor-pointer transition-colors"
+                  className="w-full px-2 py-1 rounded bg-slate-50 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-scic-blue font-sans cursor-pointer transition-colors"
                 >
                   <option value="ALL">All Provinces</option>
                   {availableProvinces.map((prov) => (
@@ -587,11 +593,14 @@ export function AtlasDirectorySidebar({
       <div className="p-3 space-y-2 flex-1">
         {projects.length === 0 ? (
           isLoading ? (
-            <div className="h-full min-h-[220px] flex flex-col items-center justify-center p-6 text-center space-y-3">
-              <div className="h-8 w-8 rounded-full border-2 border-[#0284C7] border-t-transparent animate-spin" />
-              <div className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                Syncing project portfolio...
-              </div>
+            <div className="space-y-2" aria-busy="true" aria-label="Loading projects">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="rounded-xl border border-slate-200/80 dark:border-white/10 p-3 space-y-2">
+                  <div className="skeleton-brand h-3 w-1/3" />
+                  <div className="skeleton-brand h-4 w-4/5" />
+                  <div className="skeleton-brand h-3 w-1/2" />
+                </div>
+              ))}
             </div>
           ) : (
             /* Meaningful Empty State with Clear Filters Button (Directive 13, 26) */
@@ -607,7 +616,7 @@ export function AtlasDirectorySidebar({
               </p>
               <button
                 onClick={onResetFilters}
-                className="mt-4 px-3.5 py-1.5 rounded-lg bg-[#0284C7] hover:bg-[#0369A1] text-xs font-mono font-bold text-white transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                className="mt-4 px-3.5 py-1.5 rounded-lg bg-scic-blue hover:bg-sky-700 text-xs font-mono font-bold text-white transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>Clear Filters</span>
@@ -617,15 +626,18 @@ export function AtlasDirectorySidebar({
         ) : viewMode === "CARDS" ? (
           /* Cards View */
           <>
-            {visibleProjects.map((project) => (
+            {visibleProjects.map((project, i) => (
               <AtlasProjectCard
                 key={project.id}
+                className="rise-in spotlight"
+                style={{ "--i": i % 12 } as React.CSSProperties}
                 ref={(el) => {
                   cardRefs.current[project.id] = el;
                 }}
                 project={project}
                 isSelected={selectedProjectId === project.id}
                 onSelect={() => onSelectProject(project.id)}
+                onHover={onHoverProject}
               />
             ))}
 
@@ -647,7 +659,7 @@ export function AtlasDirectorySidebar({
           /* Ledger Table View */
           <>
             <table className="w-full text-left border-collapse text-xs font-sans">
-              <thead className="sticky top-0 bg-slate-50 dark:bg-[#0B1726] border-b border-slate-200 dark:border-white/10 text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 z-10">
+              <thead className="sticky top-0 bg-slate-50 dark:bg-atlas-panel border-b border-slate-200 dark:border-white/10 text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 z-10">
                 <tr>
                   <th className="py-2 px-2">Project</th>
                   <th className="py-2 px-1.5">Category</th>
@@ -676,6 +688,8 @@ export function AtlasDirectorySidebar({
                       aria-selected={isSelected}
                       aria-label={`${project.name}, ${catConfig.shortLabel}, ${status.label}, in ${project.municipality}, ${project.province}. Press Enter to view on map.`}
                       onClick={() => onSelectProject(project.id)}
+                      onMouseEnter={() => onHoverProject?.(project.id)}
+                      onMouseLeave={() => onHoverProject?.(null)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
@@ -685,7 +699,7 @@ export function AtlasDirectorySidebar({
                       className={cn(
                         "cursor-pointer transition-colors focus:outline-none focus:bg-sky-50 dark:focus:bg-[#0F2238]",
                         isSelected
-                          ? "bg-sky-50 dark:bg-[#0C1E33] border-l-2 border-[#0284C7] dark:border-[#00E5FF]"
+                          ? "bg-sky-50 dark:bg-[#0C1E33] border-l-2 border-scic-blue dark:border-cyan-400"
                           : "hover:bg-slate-50 dark:hover:bg-white/5"
                       )}
                     >
@@ -740,7 +754,7 @@ export function AtlasDirectorySidebar({
           <button
             type="button"
             onClick={handleScrollToTop}
-            className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369a1] text-white text-[11px] font-mono font-bold shadow-lg shadow-[#0284C7]/40 transition-all cursor-pointer active:scale-95 animate-in fade-in slide-in-from-bottom-2"
+            className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-scic-blue hover:bg-sky-700 text-white text-[11px] font-mono font-bold shadow-lg shadow-scic-blue/40 transition-all cursor-pointer active:scale-95 animate-in fade-in slide-in-from-bottom-2"
             title="Scroll back to Spotlight"
           >
             <ChevronUp className="h-3.5 w-3.5" />

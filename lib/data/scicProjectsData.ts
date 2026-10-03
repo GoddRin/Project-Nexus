@@ -81,7 +81,7 @@ export const SECTOR_CONFIG: Record<
   HYDRO_RENEWABLE: {
     label: "Hydropower & Renewable Energy",
     shortLabel: "Hydro & Renewables",
-    color: "#10A51D",
+    color: "#129450",
     twBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
     twText: "text-emerald-600 dark:text-emerald-400",
     twBorder: "border-emerald-500/30",
@@ -91,7 +91,7 @@ export const SECTOR_CONFIG: Record<
   WIND_POWER: {
     label: "Wind Power & Clean Aerogenerators",
     shortLabel: "Wind Power",
-    color: "#06B6D4",
+    color: "#2F82AB",
     twBg: "bg-cyan-500/10 dark:bg-cyan-500/20",
     twText: "text-cyan-600 dark:text-cyan-400",
     twBorder: "border-cyan-500/30",
@@ -675,44 +675,6 @@ export const SCIC_PROJECTS: SCICProject[] = [
     ],
     imageUrl: "/project-images/scic-project-placeholder.png",
     featured: true,
-  },
-  {
-    id: "scic-laoag-bongo-flood",
-    name: "Laoag-Bongo River Flood Control & River Basin Protection",
-    code: "SCIC-FLOOD-01",
-    shortName: "Laoag Flood Control",
-    sector: "INFRASTRUCTURE_ROADS",
-    status: "COMPLETED",
-    islandGroup: "LUZON",
-    region: "Region I (Ilocos Region)",
-    province: "Ilocos Norte",
-    municipality: "Laoag City & San Nicolas",
-    coordinates: {
-      lat: 18.196,
-      lng: 120.5927,
-    },
-    metrics: {
-      capacity: "15.8 km Revetment",
-      contractValue: "₱1.70 Billion",
-      workforcePeak: 420,
-      safeManHours: "1,350,000 Safe Hours",
-    },
-    client: "DPWH Unified Project Management Office (UPMO) / JICA",
-    description:
-      "Comprehensive river basin protection and alluvial fan training along the Laoag and Bongo rivers in Ilocos Norte. SCIC built 15.8 kilometers of reinforced concrete dikes, steel sheet pile cutoff walls, and spur dikes to protect vital provincial communities from extreme monsoon floods.",
-    engineeringScope: [
-      "15.8 km Heavy Concrete Revetments and Dike Embankments",
-      "Interlocking Steel Sheet Pile Cutoff Walls",
-      "Boulder Riprap Toe Protection & Spur Dike Groyne Structures",
-      "Channel Dredging and Flow Training",
-    ],
-    keyMilestones: [
-      { date: "2020-Q1", title: "Bongo River Dredging & Dike Foundation", status: "ACHIEVED" },
-      { date: "2021-Q3", title: "Sheet Piling & Concrete Revetment", status: "ACHIEVED" },
-      { date: "2022-Q4", title: "Final Inspection & Commissioning", status: "ACHIEVED" },
-    ],
-    imageUrl: "/project-images/scic-project-placeholder.png",
-    completionYear: 2022,
   },
 
   // ==========================================
@@ -2323,10 +2285,7 @@ export const SCIC_PROJECTS: SCICProject[] = [
     province: "Bukidnon",
     municipality: "Manolo Fortich",
     barangay: "Dahilayan / Tankulan",
-    coordinates: {
-      lat: 8.3667,
-      lng: 124.8667,
-    },
+    coordinates: { lat: 8.3714, lng: 124.8844 },
     metrics: {
           "capacity": "12.0 MW",
           "contractValue": "₱2.40 Billion",
