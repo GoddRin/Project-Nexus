@@ -263,7 +263,7 @@
     "projectCode": "SCIC-DAM-02",
     "category": "WATER_RESOURCES",
     "status": "ONGOING",
-    "description": "A strategic mega multipurpose dam development by the National Irrigation Administration (NIA) along the Bulsa River in San Jose, Tarlac. Featuring a 105.5-meter high zoned earthfill dam impounding a 559 million cubic meter reservoir to irrigate 34,410 hectares of Central Luzon agricultural land benefiting over 21,700 farming families, mitigate downstream flood risks, and generate 43.5 MW of hydroelectric power. SCIC is executing critical high dam civil works, subterranean diversion and power tunnel drill-and-blast excavation, shotcreting, pressure grouting, and heavy embankment construction.",
+    "description": "A strategic mega multipurpose dam development by the National Irrigation Administration (NIA) along the Bulsa River in San Jose, Tarlac. Featuring a 105.5-meter high zoned earthfill dam impounding a 559 million cubic meter reservoir to irrigate 34,410 hectares of Central Luzon agricultural land benefiting over 21,700 farming families, mitigate downstream flood risks, and generate 43.5 MW of hydroelectric power. SCIC is executing critical high dam civil works, subterranean diversion and power tunnel drill-and-blast excavation, shotcreting, pressure grouting, and heavy embankment construction. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 15.4282,
     "longitude": 120.356,
     "islandGroup": "LUZON",
@@ -329,7 +329,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:43:33.713Z",
-    "updatedAt": "2026-10-03T07:25:17.190Z"
+    "updatedAt": "2026-10-03T07:47:26.475Z"
   },
   {
     "id": "cmu6czxo60012m496kiqnxlef",
@@ -643,7 +643,7 @@
     "projectCode": "SCIC-PIPE-02",
     "category": "WATER_RESOURCES",
     "status": "UPCOMING",
-    "description": "Strategic regional water management and flood control infrastructure safeguarding the Cagayan River basin, creating reliable irrigation canals and flood diversion channels.",
+    "description": "Strategic regional water management and flood control infrastructure safeguarding the Cagayan River basin, creating reliable irrigation canals and flood diversion channels. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 17.5,
     "longitude": 121.75,
     "islandGroup": "LUZON",
@@ -692,7 +692,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.330Z",
-    "updatedAt": "2026-10-03T07:25:16.710Z"
+    "updatedAt": "2026-10-03T07:47:27.015Z"
   },
   {
     "id": "cmu6czw6z000em496y3mfgqfk",
@@ -1131,7 +1131,7 @@
     "projectCode": "SCIC-RESORT-01",
     "category": "BUILDINGS",
     "status": "ONGOING",
-    "description": "A 6-hectare masterplanned development enclave within New Clark City supporting the 450-hectare Hann Reserve ultra-luxury integrated mountain resort. SCIC, in consortium with Saekyung Realty Corp. and the Korea Overseas Infrastructure and Urban Development Corp. (KIND), is executing site grading, staff and executive housing complexes, arterial access roads, and comprehensive wet and dry utility networks.",
+    "description": "A 6-hectare masterplanned development enclave within New Clark City supporting the 450-hectare Hann Reserve ultra-luxury integrated mountain resort. SCIC, in consortium with Saekyung Realty Corp. and the Korea Overseas Infrastructure and Urban Development Corp. (KIND), is executing site grading, staff and executive housing complexes, arterial access roads, and comprehensive wet and dry utility networks. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 15.345,
     "longitude": 120.485,
     "islandGroup": "LUZON",
@@ -1192,7 +1192,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.709Z",
-    "updatedAt": "2026-10-03T07:25:17.486Z"
+    "updatedAt": "2026-10-03T07:47:27.140Z"
   },
   {
     "id": "cmu7z82um001hjo9622gs3gcq",
@@ -1578,7 +1578,7 @@
     "projectCode": "SCIC-HEPP-KAPANGAN",
     "category": "HYDROPOWER",
     "status": "ONGOING",
-    "description": "A flagship 60 MW run-of-river hydroelectric power generation facility harnessing the high hydraulic head of the Amburayan River basin in Kapangan, Benguet. SCIC's civil scope features an 8.2 km low-pressure headrace tunnel through complex metamorphic Cordillera geology, 110-meter surge shaft, surface powerhouse, and heavy switchyard installation.",
+    "description": "A flagship 60 MW run-of-river hydroelectric power generation facility harnessing the high hydraulic head of the Amburayan River basin in Kapangan, Benguet. SCIC's civil scope features an 8.2 km low-pressure headrace tunnel through complex metamorphic Cordillera geology, 110-meter surge shaft, surface powerhouse, and heavy switchyard installation. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 16.5833,
     "longitude": 120.5833,
     "islandGroup": "LUZON",
@@ -1642,7 +1642,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.477Z",
-    "updatedAt": "2026-10-03T07:25:16.293Z"
+    "updatedAt": "2026-10-03T07:47:26.176Z"
   },
   {
     "id": "cmu6czygt001fm4969x7bquyj",
@@ -1891,7 +1891,7 @@
     "projectCode": "SCIC-WIND-LIBMANAN",
     "category": "WIND_POWER",
     "status": "ONGOING",
-    "description": "Construction of Wind Turbine Generator (WTG) gravity base foundations, heavy crawler crane hardstands, and specialized deep ground improvement across the rolling coastal terrain of Libmanan, Camarines Sur. Features deep mass soil stabilization, crawler crane operational platforms, reinforced concrete footing caps, and heavy equipment access corridors.",
+    "description": "Construction of Wind Turbine Generator (WTG) gravity base foundations, heavy crawler crane hardstands, and specialized deep ground improvement across the rolling coastal terrain of Libmanan, Camarines Sur. Features deep mass soil stabilization, crawler crane operational platforms, reinforced concrete footing caps, and heavy equipment access corridors. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 13.6942,
     "longitude": 123.0617,
     "islandGroup": "LUZON",
@@ -1954,7 +1954,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.550Z",
-    "updatedAt": "2026-10-03T07:25:15.640Z"
+    "updatedAt": "2026-10-03T07:47:26.333Z"
   },
   {
     "id": "cmu6czx6i000um4968am2gukb",
@@ -2358,7 +2358,7 @@
     "projectCode": "SCIC-HEPP-15",
     "category": "HYDROPOWER",
     "status": "ONGOING",
-    "description": "A run-of-river mini hydroelectric installation in the mountainous hinterlands of Siloo, Malitbog, Bukidnon. SCIC is actively deploying heavy equipment and skilled civil tunneling crews to construct the diversion weir, mountain water conduit channel, surge chamber, steel penstock, and semi-underground powerhouse to supply localized clean green power.",
+    "description": "A run-of-river mini hydroelectric installation in the mountainous hinterlands of Siloo, Malitbog, Bukidnon. SCIC is actively deploying heavy equipment and skilled civil tunneling crews to construct the diversion weir, mountain water conduit channel, surge chamber, steel penstock, and semi-underground powerhouse to supply localized clean green power. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 8.5333,
     "longitude": 124.9,
     "islandGroup": "MINDANAO",
@@ -2421,7 +2421,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:27.136Z",
-    "updatedAt": "2026-10-03T07:25:17.897Z"
+    "updatedAt": "2026-10-03T07:47:26.609Z"
   },
   {
     "id": "cmu7z82ye001jjo96xq2thqvn",
@@ -3031,7 +3031,7 @@
     "projectCode": "SCIC-PIPE-03",
     "category": "RAIL_TRANSIT",
     "status": "UPCOMING",
-    "description": "The historic first railway system for Mindanao, connecting Tagum, Davao City, and Digos. SCIC's proven railway viaduct and tunneling expertise positions the firm for key civil and bridge packages.",
+    "description": "The historic first railway system for Mindanao, connecting Tagum, Davao City, and Digos. SCIC's proven railway viaduct and tunneling expertise positions the firm for key civil and bridge packages. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 7.25,
     "longitude": 125.6,
     "islandGroup": "MINDANAO",
@@ -3080,7 +3080,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.393Z",
-    "updatedAt": "2026-10-03T07:25:15.561Z"
+    "updatedAt": "2026-10-03T07:47:26.866Z"
   },
   {
     "id": "cmu6czwqv000nm496cnxi94wl",
@@ -3942,7 +3942,7 @@
     "projectCode": "SCIC-WIND-03",
     "category": "WIND_POWER",
     "status": "ONGOING",
-    "description": "A flagship mega renewable development spanning the northern ridges of the Sierra Madre in Quezon province. Divided into North (ISLA-N), Middle (ISLA-M), and South (ISLA-S) sectors, SCIC is executing civil site works, steep mountain access corridors, heavy crane erection pads, and substation foundations across challenging tropical rainforest terrain.",
+    "description": "A flagship mega renewable development spanning the northern ridges of the Sierra Madre in Quezon province. Divided into North (ISLA-N), Middle (ISLA-M), and South (ISLA-S) sectors, SCIC is executing civil site works, steep mountain access corridors, heavy crane erection pads, and substation foundations across challenging tropical rainforest terrain. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 14.6833,
     "longitude": 121.6167,
     "islandGroup": "LUZON",
@@ -4005,7 +4005,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.488Z",
-    "updatedAt": "2026-10-03T07:25:18.133Z"
+    "updatedAt": "2026-10-03T07:47:26.741Z"
   },
   {
     "id": "cmus19cga000e8c960v8fkg7s",
@@ -4678,7 +4678,7 @@
     "projectCode": "SCIC-IND-ROLLING-MILL",
     "category": "BUILDINGS",
     "status": "COMPLETED",
-    "description": "A premier heavy industrial steel processing facility along the Quezon Road industrial corridor in San Simon, Pampanga. SCIC executed the specialized heavy civil, structural, and electro-mechanical packages including the Medium Section Mill bay foundations, Electrical Control Rooms (ECR 1 & ECR 2), industrial closed-loop Water Treatment Plant (Rolling Mill WTP), and the heavy reinforced concrete Scale Pit for continuous casting and rolling operations.",
+    "description": "A premier heavy industrial steel processing facility along the Quezon Road industrial corridor in San Simon, Pampanga. SCIC executed the specialized heavy civil, structural, and electro-mechanical packages including the Medium Section Mill bay foundations, Electrical Control Rooms (ECR 1 & ECR 2), industrial closed-loop Water Treatment Plant (Rolling Mill WTP), and the heavy reinforced concrete Scale Pit for continuous casting and rolling operations. Not confirmed by public sources: as of 3 October 2026, no public source (the company's website, news posts or press) confirms Sta. Clara's involvement in this project or names its client. The details in this record are unverified.",
     "latitude": 14.9922,
     "longitude": 120.7831,
     "islandGroup": "LUZON",
@@ -4740,7 +4740,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.854Z",
-    "updatedAt": "2026-10-03T07:25:16.621Z"
+    "updatedAt": "2026-10-03T07:47:27.291Z"
   },
   {
     "id": "cmu6czww3000pm4969a1m7klq",
