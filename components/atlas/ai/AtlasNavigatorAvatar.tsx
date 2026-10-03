@@ -28,6 +28,7 @@ import type { LipSyncTelemetry } from "./useLipSync";
 import { navigatorBus, subscribeNavigatorEvents, type NavigatorBusEvent } from "./navigatorBus";
 import { buildSpokenAlignment, limitSpokenText, MAX_SPOKEN_CHARS } from "@/lib/atlas-ai/spokenText";
 import { favourites, shortProjectName } from "@/lib/atlas-ai/userMemory";
+import { hasStaticClip } from "@/lib/atlas-ai/staticVoice";
 
 /** The project this user keeps coming back to, by a name that can be said */
 const favouriteName = (): string | null => {
@@ -272,6 +273,13 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
       try {
         const lines = filipinoLines();
         const texts = lines.map((l) => limitSpokenText(buildSpokenAlignment(l).spokenText, MAX_SPOKEN_CHARS));
+        // static clips on the CDN answer at once; only ask the server about the rest
+        const onCdn = await Promise.all(texts.map((t) => hasStaticClip(activeVoice, t)));
+        if (cancelled) return;
+        if (onCdn.every(Boolean)) {
+          setVoicedFilipino(lines);
+          return;
+        }
         const res = await fetch("/api/atlas-ai/tts/status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -279,7 +287,7 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
         });
         if (!res.ok || cancelled) return;
         const ready = ((await res.json()) as { cached?: boolean[] }).cached ?? [];
-        if (!cancelled) setVoicedFilipino(lines.filter((_, k) => ready[k]));
+        if (!cancelled) setVoicedFilipino(lines.filter((_, k) => ready[k] || onCdn[k]));
       } catch {
         // offline: Tagalog lines stay text-only for now
       }
@@ -413,7 +421,8 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
   // Have his stock lines ready in the neural voice before they are needed
   useEffect(() => {
     if (!mounted || !warmVoice || voiceEnabled === false) return;
-    const id = setTimeout(() => warmVoice(warmupLines(personality, new Date().getHours())), 9000);
+    // (stock lines come from static clips on the CDN: cheap, so start soon after the page settles)
+    const id = setTimeout(() => warmVoice(warmupLines(personality, new Date().getHours())), 2500);
     return () => clearTimeout(id);
   }, [mounted, warmVoice, voiceEnabled, personality, language]);
 

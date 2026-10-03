@@ -21,6 +21,7 @@ import type { SCICProject } from "@/lib/data/scicProjectsData";
 import { classifyNarration, estimateSpeechDuration } from "@/lib/atlas-ai/visemes";
 import { useLipSync, LipSyncTelemetry } from "./useLipSync";
 import { ATLAS_VOICES, DEFAULT_ATLAS_VOICE } from "@/lib/atlas-ai/speechService";
+import { getStaticClip, hasStaticClip, preloadStaticClips } from "@/lib/atlas-ai/staticVoice";
 
 export interface AtlasAIMessage {
   id: string;
@@ -890,21 +891,28 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
       const cache = neuralCacheRef.current;
       const hit = cache.get(key);
       if (hit) return hit;
-      // Known to be out of quota: don't spend a multi-second failed round trip on every line
-      // (a line already generated is served from disk and needs no quota)
-      if (!knownCached && Date.now() < ttsBlockedUntilRef.current) return Promise.resolve(null);
-      const request = fetch("/api/atlas-ai/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: spokenText, voice: activeVoice }),
-      })
-        .then(async (res) => {
-          if (res.ok) return await res.blob();
-          ttsBlockedUntilRef.current = Date.now() + TTS_BACKOFF_MS;
-          console.warn("[Atlas Voice] Neural TTS unavailable (HTTP " + res.status + "); using the browser voice for the next few minutes.");
-          return null;
+      // A stock line has a static clip on the CDN (no server function, no cold start): try that first
+      const request = getStaticClip(activeVoice, spokenText).then(async (clip) => {
+        if (clip) {
+          neuralReadyRef.current.add(key);
+          return clip;
+        }
+        // Known to be out of quota: don't spend a multi-second failed round trip on every line
+        // (a line already generated is served from disk and needs no quota)
+        if (!knownCached && Date.now() < ttsBlockedUntilRef.current) return null;
+        return fetch("/api/atlas-ai/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: spokenText, voice: activeVoice }),
         })
-        .catch(() => null);
+          .then(async (res) => {
+            if (res.ok) return await res.blob();
+            ttsBlockedUntilRef.current = Date.now() + TTS_BACKOFF_MS;
+            console.warn("[Atlas Voice] Neural TTS unavailable (HTTP " + res.status + "); using the browser voice for the next few minutes.");
+            return null;
+          })
+          .catch(() => null);
+      });
       cache.set(key, request);
       request.then((blob) => {
         if (!blob) cache.delete(key);
@@ -949,6 +957,19 @@ const ANSWER_ENGINE: Promise<SpeechEngine> = Promise.resolve("local");
       warmRunningRef.current = true;
       void (async () => {
         try {
+          // Lines with a static clip on the CDN: mark them ready and pull them into memory now,
+          // so a tap plays at once (no server round trip at all)
+          const staticTexts: string[] = [];
+          const rest: string[] = [];
+          for (const text of warmQueueRef.current) {
+            if (await hasStaticClip(activeVoice, text)) {
+              neuralReadyRef.current.add(`${activeVoice}::${text}`);
+              neuralMissingRef.current.delete(`${activeVoice}::${text}`);
+              staticTexts.push(text);
+            } else rest.push(text);
+          }
+          await preloadStaticClips(activeVoice, staticTexts);
+          warmQueueRef.current = rest;
           // Lines already generated need nothing: ask once which ones are, instead of fetching
           // each finished clip again just to find out.
           const queued = warmQueueRef.current.slice();

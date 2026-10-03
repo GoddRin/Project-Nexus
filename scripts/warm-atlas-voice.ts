@@ -10,6 +10,7 @@
  * model has a small daily quota: the script stops at the first refusal and can simply be run
  * again later; lines already generated are skipped.
  */
+import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import projects from "../lib/data/scicAtlasInitialProjects.json";
@@ -90,7 +91,10 @@ function syncVoiceBank() {
     }
   }
   console.log(`
-voice-bank: ${added} new line(s) copied; commit voice-bank/ so the deployed site has them`);
+voice-bank: ${added} new line(s) copied`);
+  // and as small MP3s on the CDN (public/voice) for the deployed site
+  execFileSync("node", ["scripts/build-voice-static.mjs"], { stdio: "inherit" });
+  console.log("commit voice-bank/ and public/voice/ so the deployed site has them");
 }
 
 main().then(syncVoiceBank).catch((err) => {
