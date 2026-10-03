@@ -11,6 +11,7 @@ import { buildAtlasSystemInstruction, AtlasContextPayload, isCompanyQuestion } f
 import { tryQuickAnswer } from "./quickAnswers";
 import { reviewAnswer, unsupportedNumbers } from "./selfReview";
 import { COMPANY_PROFILE } from "./companyProfile";
+import { ALL_SECTOR_TEXT, atlasGapNoteFor, sectorKnowledgeFor } from "./sectorKnowledge";
 import {
   ATLAS_TOOL_DECLARATIONS,
   NEXUS_TOOL_DECLARATIONS,
@@ -108,8 +109,13 @@ export async function generateAtlasAIAnswer(
   try {
     const quick = await tryQuickAnswer(query, history, initialContext?.language);
     if (quick) {
+      // "no solar projects" on the map must not read as "the company does no solar"
+      const gap = atlasGapNoteFor(query, quick.answer);
+      const quickAnswer = gap
+        ? `${quick.answer.split("[[SAY")[0].trimEnd()}\n${gap.note}${gap.spoken ? `\n[[SAY: ${gap.spoken}]]` : ""}`
+        : quick.answer;
       return validateAndGateAtlasResponse({
-        answer: quick.answer,
+        answer: quickAnswer,
         actions: quick.filters
           ? [{ type: "FILTER_PROJECTS", filters: quick.filters }]
           : quick.highlight
@@ -195,6 +201,9 @@ export async function generateAtlasAIAnswer(
   const systemInstruction = buildAtlasSystemInstruction({
     ...context,
     companyQuestion: isCompanyQuestion(query) || (query.split(/\s+/).length <= 6 && isCompanyQuestion(lastUserTurn)),
+    // what the company has built of the kind asked about, and how such projects work (a short
+    // follow-up, "and the risks?", keeps the sector of the question before it)
+    sectorKnowledge: sectorKnowledgeFor(query, query.split(/\s+/).length <= 8 ? lastUserTurn : ""),
   });
 
   // 6. Prepare tool execution containers
@@ -256,6 +265,7 @@ export async function generateAtlasAIAnswer(
         query,
         history.map((m) => m.content).join("\n"),
         COMPANY_PROFILE,
+        ALL_SECTOR_TEXT,
       ]);
       if (unsupported.length) {
         console.warn(`[AtlasAIService] ${requestId}: figures not found in tool data (${unsupported.join(", ")}); reviewing`);
@@ -274,6 +284,15 @@ export async function generateAtlasAIAnswer(
         sourceType: "NARRATIVE_DOC",
         provenance: "Verified",
         document: "https://staclara.com.ph/who-we-are/about-scic/",
+      });
+    }
+
+    if (/company website/i.test(answerText)) {
+      collectedSources.unshift({
+        name: "Sta. Clara company website",
+        sourceType: "NARRATIVE_DOC",
+        provenance: "Verified",
+        document: "https://staclara.com.ph/what-we-do/completed/renewable-energy-power-plants/",
       });
     }
 

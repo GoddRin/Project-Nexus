@@ -27,7 +27,7 @@ export function convertDtoToScicProject(dto: PublicProjectDTO): SCICProject {
       contractValue: dto.projectValue || undefined,
       ...dto.metrics,
     },
-    client: dto.client || "Sta. Clara International Corporation",
+    client: dto.client || "",
     description: dto.description || "",
     imageUrl: dto.featuredImage || "/logo.png",
     galleryImages: dto.gallery || [],

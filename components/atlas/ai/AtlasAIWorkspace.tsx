@@ -210,6 +210,8 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
   const workspaceRef = useRef<HTMLDivElement>(null);
 
   // Microphone Voice Chat Input
+  /** The sentence that was just sent by voice: never mirrored back into the box */
+  const voiceSentRef = useRef("");
   const {
     isListening: isVoiceListening,
     transcript: voiceTranscript,
@@ -229,6 +231,7 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
         setInputText(spoken);
         return;
       }
+      voiceSentRef.current = spoken;
       setInputText("");
       onSendMessage(spoken);
     },
@@ -238,9 +241,11 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
   useEffect(() => {
     if (isVoiceListening) {
       const activeText = voiceTranscript || voiceInterim;
-      if (activeText) {
+      if (activeText && activeText.trim() !== voiceSentRef.current) {
         setInputText(activeText);
       }
+    } else {
+      voiceSentRef.current = ""; // the next time the mic opens is a new sentence
     }
   }, [isVoiceListening, voiceTranscript, voiceInterim]);
 

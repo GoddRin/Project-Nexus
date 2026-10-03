@@ -102,7 +102,11 @@ function parseScope(text: string, provinces: string[]): Scope {
   for (const [re, id] of ISLANDS) if (re.test(text)) scope.island = id;
   const keys = regionKeys(text);
   if (keys.length) scope.regionKeys = keys;
-  const lower = text.toLowerCase();
+  // a region's own name is not a province: "Cagayan Valley" is Region II, not Cagayan province
+  // ("Davao Region", "Ilocos Region", "Central Luzon" likewise)
+  let lower = text.toLowerCase();
+  for (const alias of Object.keys(REGION_ALIASES)) if (alias.includes(" ")) lower = lower.replace(new RegExp(`\\b${alias}\\b`, "g"), " ");
+  lower = lower.replace(/\b(davao|ilocos|bicol|caraga) region\b/g, " ");
   const province = provinces.find((p) => p.length >= 4 && new RegExp(`\\b${p.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(lower));
   if (province) scope.province = province;
   for (const [re, id] of STATUS_WORDS) if (re.test(text)) scope.status = id;
@@ -288,7 +292,12 @@ export async function tryQuickAnswer(query: string, history: Turn[], language?: 
     };
   }
 
-  const followUp = /^(and|what about|how about|ilan)\b|\b(of those|of them|there|those|them|doon|dun)\b/i.test(q);
+  // A follow-up points back at the last answer ("and how many of those are ongoing?", "how many
+  // are ongoing there?"). "are there" / "is there" is NOT one: "how many projects are there in
+  // Cagayan Valley" is a new question, and reading it as a follow-up carried "solar" over from the
+  // question before it and answered "no solar projects in Region II".
+  const pointsBack = q.replace(/\b(are|is|were|was) there\b/gi, " ");
+  const followUp = /^(and|what about|how about|ilan)\b/i.test(q) || /\b(of those|of them|there|those|them|doon|dun)\b/i.test(pointsBack);
   if (!isCountQuestion(q) && !(followUp && /\b(ongoing|completed|upcoming|active|finished|hydro|wind|water|road|bridge|tunnel)\b/i.test(q))) return null;
   if (hasUnsupportedQualifier(q)) return null;
 
@@ -372,7 +381,7 @@ export async function tryQuickAnswer(query: string, history: Turn[], language?: 
         ? ` All of them are ${topLabel}.`
         : !scope.category && n >= 3 && topCount * 2 >= n
         ? ` Most of them are ${topLabel} (${topCount} of ${n}).`
-        : !scope.category && n >= 3
+        : !scope.category && n >= 3 && topCount >= 2 // ("the biggest group, with 1" says nothing)
         ? ` The biggest group is ${topLabel}, with ${topCount}.`
         : "";
     written = `There ${n === 1 ? "is" : "are"} ${n} Sta. Clara ${subject} ${place}${breakdown}.${mostly} [Source: Project Atlas Database]`;

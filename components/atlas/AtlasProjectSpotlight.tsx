@@ -461,7 +461,7 @@ export function AtlasProjectSpotlight({
                 className="text-xs font-mono font-bold text-slate-700 dark:text-slate-200 truncate mt-0.5"
                 title={project.client}
               >
-                {project.client.split("/")[0].trim() || "National"}
+                {(project.client || "").split("/")[0].trim() || "Not on record"}
               </span>
             </div>
           </div>

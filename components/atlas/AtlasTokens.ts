@@ -50,6 +50,17 @@ export const ATLAS_CATEGORIES: Record<ProjectCategoryId, CategoryVisualToken> = 
     borderClass: "border-cyan-500/30",
     badgeBg: "rgba(6, 182, 212, 0.15)",
   },
+  SOLAR_POWER: {
+    id: "SOLAR_POWER",
+    label: "Solar Power & Photovoltaic Plants",
+    shortLabel: "Solar Power",
+    code: "SOL",
+    color: "#D98E04",
+    bgClass: "bg-amber-500/10 dark:bg-amber-500/15",
+    textClass: "text-amber-600 dark:text-amber-400",
+    borderClass: "border-amber-500/30",
+    badgeBg: "rgba(217, 142, 4, 0.15)",
+  },
   WATER_RESOURCES: {
     id: "WATER_RESOURCES",
     label: "Water Utilities, Treatment & Reservoirs",

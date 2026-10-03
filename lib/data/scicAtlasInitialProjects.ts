@@ -23,7 +23,8 @@ export const INITIAL_ATLAS_PROJECTS: SCICProject[] = (initialProjectsData as any
     contractValue: dto.projectValue || undefined,
     ...(dto.metrics || {}),
   },
-  client: dto.client || "Sta. Clara International Corporation",
+  // (empty when the client could not be verified: never defaulted to the company itself)
+  client: dto.client || "",
   description: dto.description || "",
   imageUrl: dto.featuredImage || "/project-images/scic-project-placeholder.png",
   galleryImages: dto.gallery || [],

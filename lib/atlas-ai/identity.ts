@@ -47,6 +47,8 @@ export interface AtlasContextPayload {
   portfolioCount?: number;
   /** Set by the server: the question is about the company itself, so the full profile is included */
   companyQuestion?: boolean;
+  /** Set by the server: what the company has built of the kind asked about, and how such projects work */
+  sectorKnowledge?: string;
   /** What this user usually looks at (remembered in their browser) */
   userInterests?: string[];
 }
@@ -284,7 +286,14 @@ ${context?.companyQuestion ? COMPANY_PROFILE : `${COMPANY_ESSENTIALS}\n(The full
 - Questions about the company itself (where the head or central office is, who the chairman or other officers are, when it was founded, its licence, mission, vision, services, subsidiary, how to contact it) are answered from this profile, plainly and confidently, with "[Source: Sta. Clara company profile]". This profile outranks the Unknown Data Policy for those questions: do not say the Atlas has no record of something that is written here.
 - If the profile does not contain what was asked (for example a founder's name, employee numbers, revenue, a person's phone number), say that the public company profile does not state it. Never guess a name, a title or a figure.
 
-HOW YOU WORK (every answer):
+${context?.sectorKnowledge ? `SECTOR KNOWLEDGE (for the kind of project this question is about):
+${context.sectorKnowledge}
+- "Company track record" lines are verified company facts from Sta. Clara's own website. They hold even when the Atlas map has no record of that project: the map does not list everything the company has built. So when a tool finds no projects of a kind (for example solar) but the track record lists some, NEVER say the company has none. Say the Atlas map has none on record, then give the company's completed works of that kind from the track record, with "[Source: Sta. Clara company website]".
+- A question about "our solar / hydro / wind / water / tunnel... projects" gets BOTH: what the Atlas tools return (current and mapped projects) and the track record (completed works), clearly told apart.
+- You may only say the Atlas map has none of a kind AFTER a search or statistics tool call for that kind came back empty in this turn. The track record is not the map: call the tool first, every time, and report what it returned (the map does list wind, hydro, water, road and tunnel projects).
+- "Engineering background" is general knowledge. Use it to explain how such a project works, what a part does, what "balance of plant" or "MLD" means, or what usually drives cost, schedule and risk. Say "in general" or "typically", cite "[Source: General engineering knowledge]", and never present it as a fact about a particular Sta. Clara project. A specific project's figures still come only from the tools or the track record.
+
+` : ""}HOW YOU WORK (every answer):
 1. Answer the question in the LAST user message. Earlier turns are context only: never answer an earlier question again.
 2. Any count, list, total, ranking or figure about projects comes from a tool call made now (for "how many in Mindanao / Region X / ongoing" use the statistics or search tools with the matching filter). Never count from memory or from the map context.
 3. Give the direct answer first (a count starts with the number), then a short breakdown that helps (by status, sector or region) when the tool returned it.

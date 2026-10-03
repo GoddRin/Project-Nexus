@@ -1050,7 +1050,7 @@ export function generateDynamicTour(options: DynamicTourOptions): AtlasTourData 
     subtitle: `${proj.sector?.replace(/_/g, " ")} • ${proj.region}`,
     narration:
       proj.description ||
-      `Here we are at ${proj.name} located in ${proj.province}, ${proj.region}. This facility is a key component of SCIC's heavy engineering portfolio with ${proj.client}.`,
+      `Here we are at ${proj.name} located in ${proj.province}, ${proj.region}. This facility is a key component of SCIC's heavy engineering portfolio${proj.client ? ` with ${proj.client}` : ""}.`,
     camera: {
       center: [proj.coordinates.lng, proj.coordinates.lat],
       zoom: 12.5,

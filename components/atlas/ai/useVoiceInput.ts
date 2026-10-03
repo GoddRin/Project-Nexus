@@ -224,8 +224,12 @@ export function useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputRetu
         if (!text || WHISPER_PHANTOMS.test(text)) {
           setError("No speech was detected. Please try speaking again.");
         } else {
-          finalTranscriptRef.current = text;
-          setTranscript(text);
+          // The mic is closed BEFORE the text is handed over, and the text is not kept as a live
+          // transcript: the chat box mirrors the live transcript while listening, so it used to
+          // copy the sentence back in right after it had been sent.
+          finalTranscriptRef.current = "";
+          setIsListening(false);
+          setPhase("idle");
           optionsRef.current?.onTranscriptComplete?.(text);
         }
       } catch (err: any) {

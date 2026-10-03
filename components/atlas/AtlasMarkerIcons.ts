@@ -43,6 +43,30 @@ export const CATEGORY_ICON_REGISTRY: Record<ProjectCategoryId, CategoryMarkerCon
       <circle cx="32" cy="32" r="11" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="3,3" opacity="0.8"/>
     `,
   },
+  SOLAR_POWER: {
+    categoryId: "SOLAR_POWER",
+    iconName: "marker-solar",
+    label: "Solar Power & Photovoltaic Plants",
+    shortLabel: "Solar Power",
+    color: "#D98E04",
+    textColor: "#ffffff",
+    // a sun over a tilted photovoltaic panel on its post
+    svgInnerPath: `
+      <circle cx="41" cy="19" r="4.2" fill="#ffffff"/>
+      <g stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.9">
+        <line x1="41" y1="11.5" x2="41" y2="13"/><line x1="48.5" y1="19" x2="47" y2="19"/>
+        <line x1="46.3" y1="13.7" x2="45.2" y2="14.8"/><line x1="35.7" y1="13.7" x2="36.8" y2="14.8"/>
+        <line x1="46.3" y1="24.3" x2="45.2" y2="23.2"/>
+      </g>
+      <polygon points="17,39 39,27 46,33 24,45" fill="#ffffff"/>
+      <g stroke="#D98E04" stroke-width="0.9" opacity="0.85">
+        <line x1="24.3" y1="35" x2="31.3" y2="41"/><line x1="31.7" y1="31" x2="38.7" y2="37"/>
+        <line x1="20.5" y1="42" x2="42.5" y2="30"/>
+      </g>
+      <rect x="30.5" y="41" width="2" height="7" fill="#ffffff" opacity="0.9"/>
+      <rect x="26" y="47.5" width="11" height="1.6" rx="0.8" fill="#ffffff" opacity="0.9"/>
+    `,
+  },
   WIND_POWER: {
     categoryId: "WIND_POWER",
     iconName: "marker-wind",
@@ -229,6 +253,18 @@ export function toCanonicalCategory(
     return "WIND_POWER";
   }
 
+  // 1b. Solar (photovoltaic) plants
+  if (
+    upper === "SOLAR_POWER" ||
+    upper === "SOLAR" ||
+    contextText.includes("solar power") ||
+    contextText.includes("solar farm") ||
+    contextText.includes("photovoltaic") ||
+    contextText.includes("photo voltaic")
+  ) {
+    return "SOLAR_POWER";
+  }
+
   // 2. Contextual override: Check for explicit Bridges (unless mass transit railway)
   if (
     contextText.includes("interlink bridge") ||
@@ -275,6 +311,10 @@ export function toCanonicalCategory(
     case "WIND_POWER":
     case "WIND":
       return "WIND_POWER";
+
+    case "SOLAR_POWER":
+    case "SOLAR":
+      return "SOLAR_POWER";
 
     case "HYDROPOWER":
     case "HYDRO_RENEWABLE":

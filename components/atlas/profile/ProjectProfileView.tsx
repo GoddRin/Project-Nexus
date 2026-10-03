@@ -318,7 +318,7 @@ export function ProjectProfileView({ profile }: ProjectProfileViewProps) {
                   Project Owner / Client
                 </span>
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1 block">
-                  {project.client || "Sta. Clara International Corporation"}
+                  {project.client || "Not on record"}
                 </span>
               </div>
 

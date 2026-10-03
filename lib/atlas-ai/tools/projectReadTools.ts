@@ -112,9 +112,20 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
 
   // Normalize category to canonical enum expected by ProjectFilterSchema
   let normalizedCat: any = undefined;
+  // Wind and solar projects are filed under the power categories in the records and are told
+  // apart by their names (as quickAnswers.ts does): a "wind" category search returned nothing.
+  let nameKind: "wind" | "solar" | null = null;
+  let excludeNamed = false;
   if (criteria.category && criteria.category !== "ALL") {
     const upper = criteria.category.toUpperCase().replace(/\s+/g, "_");
-    if (upper.includes("HYDRO")) normalizedCat = "HYDROPOWER";
+    if (upper.includes("WIND")) nameKind = "wind";
+    else if (upper.includes("SOLAR") || upper.includes("PHOTOVOLTAIC")) nameKind = "solar";
+    if (nameKind) {
+      criteria = { ...criteria, category: undefined, query: criteria.query && new RegExp(nameKind, "i").test(criteria.query) ? criteria.query : nameKind };
+    } else if (upper.includes("HYDRO")) {
+      normalizedCat = "HYDROPOWER";
+      excludeNamed = true; // hydro means hydro: not the wind farms filed beside it
+    }
     else if (upper.includes("WIND")) normalizedCat = "WIND_POWER";
     else if (upper.includes("WATER") || upper.includes("DAM")) normalizedCat = "WATER_RESOURCES";
     else if (upper.includes("ROAD") || upper.includes("HIGHWAY")) normalizedCat = "ROADS_HIGHWAYS";
@@ -125,6 +136,16 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
     else if (upper.includes("GRID") || upper.includes("POWER")) normalizedCat = "ENERGY_GRID";
     else if (upper.includes("MINE") || upper.includes("TUNNEL")) normalizedCat = "MINING_TUNNELING";
     else normalizedCat = "OTHER";
+  }
+
+  // The same for a free-text search that is only the kind plus filler ("wind farms", "solar power
+  // projects"): searching for the whole phrase found one project out of five.
+  if (!nameKind && criteria.query) {
+    const m = criteria.query.trim().match(/^(wind|solar)(\s+(farms?|power|energy|projects?|plants?|parks?|turbines?))*$/i);
+    if (m) {
+      nameKind = m[1].toLowerCase() as "wind" | "solar";
+      criteria = { ...criteria, query: nameKind };
+    }
   }
 
   let normalizedStatus: any = criteria.status?.toUpperCase();
@@ -146,9 +167,13 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
     console.warn("[searchProjects] Service lookup error, falling back to memory catalog:", err);
   }
 
+  const kindOk = (name: string) =>
+    nameKind ? name.toLowerCase().includes(nameKind) : excludeNamed ? !/wind|solar/i.test(name) : true;
+  liveProjects = liveProjects.filter((p) => kindOk(p.name));
+
   // Fallback to static verified SCIC catalog if DB returned empty
   if (liveProjects.length === 0) {
-    let list = [...SCIC_PROJECTS];
+    let list = [...SCIC_PROJECTS].filter((p) => kindOk(p.name));
     if (criteria.islandGroup && criteria.islandGroup !== "ALL") {
       list = list.filter((p) => p.islandGroup?.toUpperCase() === criteria.islandGroup?.toUpperCase());
     }

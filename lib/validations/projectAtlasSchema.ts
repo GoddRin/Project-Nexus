@@ -26,6 +26,17 @@ export const PROJECT_CATEGORIES = {
     icon: "Wind",
     description: "Utility-scale onshore and offshore wind farms, turbine generator foundations, and heavy crane erection pads.",
   },
+  SOLAR_POWER: {
+    id: "SOLAR_POWER",
+    label: "Solar Power & Photovoltaic Plants",
+    shortLabel: "Solar Power",
+    color: "#D98E04",
+    twBg: "bg-amber-500/10 dark:bg-amber-500/20",
+    twText: "text-amber-600 dark:text-amber-400",
+    twBorder: "border-amber-500/30",
+    icon: "Sun",
+    description: "Utility-scale photovoltaic plants: site development, module mounting, cabling and balance of plant.",
+  },
   WATER_RESOURCES: {
     id: "WATER_RESOURCES",
     label: "Water Utilities, Treatment & Reservoirs",
@@ -131,6 +142,7 @@ export type ProjectCategoryId = keyof typeof PROJECT_CATEGORIES;
 export const ProjectCategoryEnum = z.enum([
   "HYDROPOWER",
   "WIND_POWER",
+  "SOLAR_POWER",
   "WATER_RESOURCES",
   "ROADS_HIGHWAYS",
   "BRIDGES",

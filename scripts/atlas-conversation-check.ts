@@ -37,6 +37,18 @@ const CASES: Case[] = [
   { name: "Mindanao count, no history", history: [], question: "how many projects are there currently in mindanao", expect: /\b11\b|eleven/i },
   { name: "Follow-up: ongoing there", history: mindanao, question: "and how many of those are ongoing?", expect: /\b5\b|five/i },
   { name: "Chairman", history: [], question: "who is our chairman", expect: /Nicandro/i },
+  { name: "Solar projects (on the map since 2026-10-03)", history: [], question: "i'd like to know more about our solar projects", expect: /Toledo/i },
+  { name: "Solar count", history: [], question: "how many solar projects do we have?", expect: /2|two/i },
+  { name: "Wind: the map does have wind farms", history: [], question: "which wind farms have we built?", expect: /Balaoi|Caunayan|Kalayaan 2|Libmanan|Quezon North/i },
+  {
+    name: "\"are there\" is not a follow-up (Cagayan Valley after a solar question)",
+    history: [
+      { role: "user", content: "how many solar projects do we have?" },
+      { role: "assistant", content: "There are 2 Sta. Clara solar projects across the portfolio. [Source: Project Atlas Database]" },
+    ],
+    question: "how many projects are there in cagayan valley",
+    expect: /3|three/i,
+  },
   { name: "Misheard project name (voice)", history: [], question: "tell me about mala dugo project", expect: /Maladugao/i },
   { name: "Central office", history: company, question: "where is our central office located", expect: /Mandaluyong/i },
   { name: "Founding year", history: [], question: "when was the company founded?", expect: /1976/ },
