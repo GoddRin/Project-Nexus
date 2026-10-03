@@ -10,6 +10,8 @@
  * model has a small daily quota: the script stops at the first refusal and can simply be run
  * again later; lines already generated are skipped.
  */
+import fs from "fs";
+import path from "path";
 import projects from "../lib/data/scicAtlasInitialProjects.json";
 import { allStockLines, projectStockLines } from "../components/atlas/ai/navigatorLines";
 import { buildSpokenAlignment, limitSpokenText, MAX_SPOKEN_CHARS } from "../lib/atlas-ai/spokenText";
@@ -74,7 +76,24 @@ async function main() {
   }
 }
 
-main().catch((err) => {
+/** Copy every generated line into voice-bank/ (committed), so the deployed site has the same voice */
+function syncVoiceBank() {
+  const from = path.join(process.cwd(), ".cache", "atlas-tts");
+  const to = path.join(process.cwd(), "voice-bank", "atlas-tts");
+  if (!fs.existsSync(from)) return;
+  fs.mkdirSync(to, { recursive: true });
+  let added = 0;
+  for (const name of fs.readdirSync(from)) {
+    if (name.endsWith(".wav") && !fs.existsSync(path.join(to, name))) {
+      fs.copyFileSync(path.join(from, name), path.join(to, name));
+      added += 1;
+    }
+  }
+  console.log(`
+voice-bank: ${added} new line(s) copied; commit voice-bank/ so the deployed site has them`);
+}
+
+main().then(syncVoiceBank).catch((err) => {
   console.error(err);
   process.exit(1);
 });

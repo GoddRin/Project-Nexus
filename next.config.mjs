@@ -14,6 +14,11 @@ const nextConfig = {
     // every route except a few answered 404 until .next/dev was deleted. Start clean each time instead.
     turbopackFileSystemCacheForDev: false,
   },
+  // Pre-generated Gemini voice lines (lib/atlas-ai/speechDiskCache.ts) read from disk by the speech routes
+  outputFileTracingIncludes: {
+    '/api/atlas-ai/tts': ['./voice-bank/atlas-tts/**/*'],
+    '/api/atlas-ai/tts/status': ['./voice-bank/atlas-tts/**/*'],
+  },
   transpilePackages: ['three'],
   images: {
     remotePatterns: [

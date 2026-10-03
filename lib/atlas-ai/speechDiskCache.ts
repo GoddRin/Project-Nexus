@@ -18,7 +18,27 @@ import {
  * navigator lines are fixed text, so after their first play they never wait on (or spend quota of)
  * the speech model again. Best effort: on a read-only host the cache is simply skipped.
  */
-const DISK_CACHE_DIR = path.join(process.cwd(), ".cache", "atlas-tts");
+// Writable cache: the project folder locally, /tmp on serverless hosts (Vercel's project folder is read-only)
+const DISK_CACHE_DIR = process.env.VERCEL
+  ? path.join("/tmp", "atlas-tts")
+  : path.join(process.cwd(), ".cache", "atlas-tts");
+// Voice bank: lines generated ahead of time (scripts/warm-atlas-voice.ts), committed to git and bundled
+// with the speech routes (next.config.mjs outputFileTracingIncludes), so the deployed site has the
+// Gemini voice for every stock line even when the free speech quota is spent. Read only.
+const VOICE_BANK_DIR = path.join(process.cwd(), "voice-bank", "atlas-tts");
+
+function cachedFile(voice: string, cleaned: string): string | null {
+  const name = `${crypto.createHash("sha256").update(`${voice}:::${cleaned}`).digest("hex")}.wav`;
+  for (const dir of [DISK_CACHE_DIR, VOICE_BANK_DIR]) {
+    try {
+      const file = path.join(dir, name);
+      if (fs.existsSync(file)) return file;
+    } catch {
+      // unreadable folder: try the next one
+    }
+  }
+  return null;
+}
 
 function resolveVoice(requested?: string): string {
   const wanted = (requested || "").trim().toLowerCase();
@@ -31,13 +51,7 @@ export function isSpeechCached(text: string, requestedVoice?: string): boolean {
   const cleaned = cleanTextForSpeech(text);
   if (!cleaned) return false;
   const voice = resolveVoice(requestedVoice);
-  try {
-    return fs.existsSync(
-      path.join(DISK_CACHE_DIR, `${crypto.createHash("sha256").update(`${voice}:::${cleaned}`).digest("hex")}.wav`)
-    );
-  } catch {
-    return false;
-  }
+  return cachedFile(voice, cleaned) !== null;
 }
 
 export async function synthesizeAtlasSpeechCached(
@@ -49,11 +63,10 @@ export async function synthesizeAtlasSpeechCached(
     ? path.join(DISK_CACHE_DIR, `${crypto.createHash("sha256").update(`${voice}:::${cleaned}`).digest("hex")}.wav`)
     : null;
 
-  if (file) {
+  const existing = cleaned ? cachedFile(voice, cleaned) : null;
+  if (existing) {
     try {
-      if (fs.existsSync(file)) {
-        return { buffer: fs.readFileSync(file), mimeType: "audio/wav", cached: true, voice };
-      }
+      return { buffer: fs.readFileSync(existing), mimeType: "audio/wav", cached: true, voice };
     } catch {
       // unreadable cache entry: fall through and synthesize
     }

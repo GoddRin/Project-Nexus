@@ -5,7 +5,8 @@ import { BrandLogo } from "@/components/shared/BrandLogo";
 import { useAtlasMap } from "@/components/atlas/AtlasMapContext";
 import { prefersReducedMotionNow } from "@/components/shared/motion";
 
-const SESSION_KEY = "scic.atlas.intro.seen";
+/** Longest wait for the map to finish loading before the intro plays over whatever is there */
+const MAP_WAIT_MS = 4000;
 /** Island groups revealed in order: [lng, lat, final radius as a fraction of the map's diagonal] */
 const ISLANDS: Array<[number, number, number]> = [
   [121.0, 16.2, 0.62], // Luzon
@@ -17,38 +18,56 @@ const REVEAL_MS = 1050;
 const STAGGER_MS = 170;
 
 /**
- * Two-second brand intro, once per browser session:
- * the Sta. Clara logo draws itself, then the cover opens over Luzon, Visayas and Mindanao in turn.
- * Any click, key press or map interaction skips it instantly (the map underneath is already live).
+ * Two-second brand intro each time the national map is opened: the Sta. Clara logo draws itself,
+ * then the cover opens over Luzon, Visayas and Mindanao in turn. It waits for the map to load (so
+ * the reveal opens onto real map, not a blank canvas) and for the tab to be visible. With reduced
+ * motion it is a short, still logo that fades. Any click, key press or wheel skips it instantly.
  */
 export function AtlasIntro() {
   const { mapInstance: map } = useAtlasMap();
-  const [phase, setPhase] = useState<"off" | "logo" | "reveal">("off");
+  // "waiting": cover up (logo hidden) until the map has loaded; it never shows a blank map
+  const [phase, setPhase] = useState<"waiting" | "off" | "logo" | "reveal" | "fade">("waiting");
   const coverRef = useRef<HTMLDivElement>(null);
-
-  // Survives React StrictMode's double effect run in development (the second run must not
-  // read the "seen" flag the first run just wrote and leave the cover up forever)
   const startedRef = useRef(false);
-  useEffect(() => {
-    if (!startedRef.current) {
-      try {
-        if (window.sessionStorage.getItem(SESSION_KEY) === "1" || prefersReducedMotionNow()) return;
-        window.sessionStorage.setItem(SESSION_KEY, "1");
-      } catch {
-        return;
-      }
-      startedRef.current = true;
-    }
-    setPhase("logo");
-    const t = window.setTimeout(() => setPhase("reveal"), LOGO_MS);
-    return () => window.clearTimeout(t);
-  }, []);
 
   useEffect(() => {
-    if (phase === "off") return;
+    if (phase !== "waiting" || startedRef.current) return;
+    let cancelled = false;
+    const begin = () => {
+      if (cancelled || startedRef.current) return;
+      startedRef.current = true;
+      // opened in a background tab: nobody would see it, so the map is simply there when they look
+      if (document.visibilityState !== "visible") return setPhase("off");
+      setPhase(prefersReducedMotionNow() ? "fade" : "logo");
+    };
+    const giveUp = window.setTimeout(begin, MAP_WAIT_MS);
+    if (map) {
+      if (map.loaded()) begin();
+      else map.once("load", begin);
+    }
+    return () => {
+      cancelled = true;
+      window.clearTimeout(giveUp);
+      map?.off("load", begin);
+    };
+  }, [map, phase]);
+
+  useEffect(() => {
+    if (phase === "logo") {
+      const t = window.setTimeout(() => setPhase("reveal"), LOGO_MS);
+      return () => window.clearTimeout(t);
+    }
+    if (phase === "fade") {
+      const t = window.setTimeout(() => setPhase("off"), 1100);
+      return () => window.clearTimeout(t);
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "logo") return;
     const t = window.setTimeout(() => setPhase("off"), LOGO_MS + REVEAL_MS + STAGGER_MS * ISLANDS.length + 600);
     return () => window.clearTimeout(t);
-  }, [phase === "off"]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase === "logo"]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Skip on any interaction
   useEffect(() => {
@@ -109,26 +128,29 @@ export function AtlasIntro() {
   }, [phase, map]);
 
   if (phase === "off") return null;
+  const logoOpacity = phase === "logo" ? 1 : phase === "fade" ? 1 : 0;
 
   return (
     <div
       ref={coverRef}
       aria-hidden
       className="absolute inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-bg-base"
+      style={phase === "fade" ? { animation: "atlas-intro-fade 1100ms ease-in forwards" } : undefined}
     >
+      <style>{"@keyframes atlas-intro-fade{0%,55%{opacity:1}100%{opacity:0}}"}</style>
       <div
         className="atlas-intro-logo"
-        style={{ opacity: phase === "reveal" ? 0 : 1, transition: "opacity 320ms var(--ease-brand)" }}
+        style={{ opacity: logoOpacity, transition: "opacity 320ms var(--ease-brand)" }}
       >
         <BrandLogo variant="wordmark" height={44} priority />
       </div>
       <div
         className="energy-line draw-x w-40"
-        style={{ opacity: phase === "reveal" ? 0 : 1, transition: "opacity 320ms var(--ease-brand)" }}
+        style={{ opacity: logoOpacity, transition: "opacity 320ms var(--ease-brand)" }}
       />
       <p
         className="text-[11px] uppercase tracking-[0.3em] text-text-muted"
-        style={{ opacity: phase === "reveal" ? 0 : 1, transition: "opacity 320ms var(--ease-brand)" }}
+        style={{ opacity: logoOpacity, transition: "opacity 320ms var(--ease-brand)" }}
       >
         Renew Your Energy
       </p>
