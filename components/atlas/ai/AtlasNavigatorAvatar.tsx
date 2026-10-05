@@ -1037,10 +1037,11 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
         el.style.setProperty("--nav-move", prefersReducedMotion ? "0s" : "0.35s");
         el.style.setProperty("--nav-ease", "cubic-bezier(0.16, 1, 0.3, 1)");
       } else {
-        // the recording walks at about 150 px a second at this size: longer ways are taken a
-        // little brisker (the stride speeds up to match, so his feet do not slide)
-        const seconds = Math.min(4.2, Math.max(1.1, dist / 150));
-        const rate = Math.min(1.7, Math.max(0.85, dist / 150 / seconds));
+        // the recording walks at about 150 px a second at this size; he crosses the screen at an
+        // unhurried ~115 px a second, longer ways a little brisker (the stride is scaled to the
+        // actual speed, so his feet do not slide)
+        const seconds = Math.min(5.2, Math.max(1.4, dist / 115));
+        const rate = Math.min(1.7, Math.max(0.7, dist / 150 / seconds));
         el.style.setProperty("--nav-move", `${seconds}s`);
         el.style.setProperty("--nav-ease", "linear");
         navigatorBus.walk = { dir: dx > 0 ? -1 : 1, until: performance.now() + seconds * 1000, rate };
