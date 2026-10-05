@@ -6,6 +6,8 @@
  *   npx tsx scripts/warm-atlas-voice.ts --projects also the lines built around each project name
  *   npx tsx scripts/warm-atlas-voice.ts --timeline also the narrated timeline (one line per year)
  *   npx tsx scripts/warm-atlas-voice.ts --list     print the lines and whether each is ready
+ *   npx tsx scripts/warm-atlas-voice.ts --bank     only copy what is already generated into voice-bank/
+ *                                                  and public/voice/ (no dev server, no speech quota)
  *
  * Needs the dev server running (it calls /api/atlas-ai/tts, which writes the cache). The speech
  * model has a small daily quota: the script stops at the first refusal and can simply be run
@@ -110,7 +112,7 @@ voice-bank: ${added} new line(s) copied`);
   console.log("commit voice-bank/ and public/voice/ so the deployed site has them");
 }
 
-main().then(syncVoiceBank).catch((err) => {
+(args.has("--bank") ? Promise.resolve() : main()).then(syncVoiceBank).catch((err) => {
   console.error(err);
   process.exit(1);
 });
