@@ -12,6 +12,8 @@ interface AtlasCommandBarProps {
   isGenerating?: boolean;
   selectedProjectName?: string | null;
   activeRegion?: string | null;
+  /** Projects in the portfolio as shown on the map */
+  projectCount?: number;
   className?: string;
   onFocusChange?: (focused: boolean) => void;
 }
@@ -23,6 +25,7 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
   isGenerating,
   selectedProjectName,
   activeRegion,
+  projectCount,
   className,
   onFocusChange,
 }) => {
@@ -252,7 +255,7 @@ export const AtlasCommandBar: React.FC<AtlasCommandBarProps> = ({
                 ? `Context: ${selectedProjectName}`
                 : activeRegion && activeRegion !== "ALL"
                 ? `Context: ${activeRegion}`
-                : "Context: National Overview (65 Projects)"}
+                : `Context: National Overview${typeof projectCount === "number" ? ` (${projectCount} Projects)` : ""}`}
             </span>
             <span className="text-slate-500">Suggested Prompts</span>
           </div>

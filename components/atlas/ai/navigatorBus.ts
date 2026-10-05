@@ -35,6 +35,9 @@ export interface NavigatorBus {
   /** Where the user last clicked, dragged or zoomed on the map (viewport px), and when */
   attention: { x: number; y: number } | null;
   attentionAt: number;
+  /** He is walking to a new spot on screen: which way (+1 = screen-right), until when
+   *  (performance.now()), and how fast his stride should run (1 = the recording's own pace) */
+  walk: { dir: 1 | -1; until: number; rate: number } | null;
 }
 
 export type NavigatorBusEvent =
@@ -56,6 +59,7 @@ export const navigatorBus: NavigatorBus = {
   mapCenter: null,
   attention: null,
   attentionAt: 0,
+  walk: null,
 };
 
 /** The user is working at this point of the map (click, drag, zoom): he looks there */

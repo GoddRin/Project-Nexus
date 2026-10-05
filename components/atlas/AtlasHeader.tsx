@@ -15,6 +15,9 @@ interface AtlasHeaderProps {
   renewableCapacityMw: number;
   tunnelLengthKm: number;
   waterCapacityMld: number;
+  /** Set while a filter or search is on: the whole portfolio's size (the figures then describe
+   *  what is on the map, and say so) */
+  filteredOf?: number | null;
   currentStyle: AtlasBaseStyle;
   onStyleChange: (style: AtlasBaseStyle) => void;
   onOpenNews?: () => void;
@@ -61,6 +64,7 @@ export function AtlasHeader({
   renewableCapacityMw,
   tunnelLengthKm,
   waterCapacityMld,
+  filteredOf = null,
   currentStyle,
   onStyleChange,
   onOpenNews,
@@ -119,7 +123,11 @@ export function AtlasHeader({
 
       {/* KPI strip: one line, values lead */}
       <div className="hidden lg:flex items-center gap-4 xl:gap-5 font-mono min-w-0 overflow-hidden">
-        <Kpi value={totalProjects} label="Projects" tone="text-slate-900 dark:text-white" />
+        <Kpi
+          value={totalProjects}
+          label={typeof filteredOf === "number" ? `of ${filteredOf} in view` : "Projects"}
+          tone={typeof filteredOf === "number" ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-white"}
+        />
         <span className="h-4 w-px bg-slate-200 dark:bg-white/10" />
         <Kpi value={totalOngoing} label="Ongoing" tone="text-emerald-600 dark:text-emerald-400" />
         <span className="h-4 w-px bg-slate-200 dark:bg-white/10" />

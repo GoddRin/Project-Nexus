@@ -73,11 +73,14 @@ export function AtlasMapEffects({ activeCoords, weatherLayerOn }: AtlasMapEffect
         map.once("idle", ensureLayers);
         return;
       }
-      if (!map.getSource(FLOW_SOURCE)) map.addSource(FLOW_SOURCE, { type: "geojson", data, attribution: "Rivers © OpenStreetMap contributors" });
+      if (!map.getSource(FLOW_SOURCE)) map.addSource(FLOW_SOURCE, { type: "geojson", data, attribution: "Rivers and project routes © OpenStreetMap contributors" });
       const before = map.getLayer("clusters") ? "clusters" : undefined;
       const color: maplibregl.ExpressionSpecification = [
-        "match", ["get", "kind"], "transmission", "#E9A93B", /* river / default */ "#4E9DC2",
+        "match", ["get", "kind"], "transmission", "#E9A93B", "road", "#E2E8F0", "rail", "#A78BFA", /* river / default */ "#4E9DC2",
       ];
+      // Project routes (expressway, railway, transmission line: each the corridor as mapped in
+      // OpenStreetMap) are drawn heavier than the background rivers
+      const isProject: maplibregl.ExpressionSpecification = ["has", "project"];
       if (!map.getLayer(FLOW_BASE)) {
         map.addLayer(
           {
@@ -85,7 +88,11 @@ export function AtlasMapEffects({ activeCoords, weatherLayerOn }: AtlasMapEffect
             type: "line",
             source: FLOW_SOURCE,
             layout: { "line-cap": "round", "line-join": "round" },
-            paint: { "line-color": color, "line-width": ["interpolate", ["linear"], ["zoom"], 5, 0.8, 10, 2.2], "line-opacity": 0.28 },
+            paint: {
+              "line-color": color,
+              "line-width": ["interpolate", ["linear"], ["zoom"], 5, ["case", isProject, 1.6, 0.8], 10, ["case", isProject, 4, 2.2]],
+              "line-opacity": ["case", isProject, 0.5, 0.28],
+            },
           },
           before
         );
@@ -98,7 +105,7 @@ export function AtlasMapEffects({ activeCoords, weatherLayerOn }: AtlasMapEffect
             source: FLOW_SOURCE,
             paint: {
               "line-color": color,
-              "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1, 10, 2.6],
+              "line-width": ["interpolate", ["linear"], ["zoom"], 5, ["case", isProject, 1.8, 1], 10, ["case", isProject, 4.2, 2.6]],
               "line-opacity": 0.85,
               "line-dasharray": DASH_SEQ[0],
             },
@@ -106,11 +113,31 @@ export function AtlasMapEffects({ activeCoords, weatherLayerOn }: AtlasMapEffect
           before
         );
       }
+      // Each project route says what it is, along the line
+      if (!map.getLayer("atlas-flowlines-label")) {
+        map.addLayer({
+          id: "atlas-flowlines-label",
+          type: "symbol",
+          source: FLOW_SOURCE,
+          filter: ["has", "project"],
+          minzoom: 7.5,
+          layout: {
+            "symbol-placement": "line",
+            "symbol-spacing": 420,
+            "text-field": ["get", "name"],
+            "text-font": ["Noto Sans Bold"],
+            "text-size": 11,
+            "text-offset": [0, -0.9],
+            "text-max-angle": 40,
+          },
+          paint: { "text-color": color, "text-halo-color": "rgba(5, 20, 14, 0.92)", "text-halo-width": 1.6 },
+        });
+      }
     };
 
     // The dataset is optional: drop a GeoJSON of LineStrings (properties.kind = "river" | "transmission")
     // at /public/data/atlas-flowlines.geojson and it appears here. No file → no layer.
-    fetch("/data/atlas-flowlines.geojson")
+    fetch("/data/atlas-flowlines.geojson?v=3")
       .then((r) => (r.ok ? r.json() : null))
       .then((json) => {
         if (cancelled || !json?.features?.length) return;

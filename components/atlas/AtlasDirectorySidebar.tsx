@@ -328,6 +328,7 @@ export function AtlasDirectorySidebar({
                 isCollapsed={isSpotlightCollapsed}
                 onToggleCollapse={() => setIsSpotlightCollapsed((prev) => !prev)}
                 onScrollToDirectory={handleScrollToDirectory}
+                directoryCount={totalCount}
               />
             </div>
           )}

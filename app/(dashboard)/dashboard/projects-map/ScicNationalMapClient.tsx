@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { ATLAS_CATEGORIES, ATLAS_STATUSES } from "@/components/atlas/AtlasTokens";
 import {
   SCICProject,
   SCIC_PROJECTS,
@@ -59,8 +60,13 @@ import { navigatorBus, setNavigatorPeek, setNavigatorAttention, emitNavigatorEve
 import { AtlasMapEffects } from "@/components/atlas/effects/AtlasMapEffects";
 import { DayDuskTint } from "@/components/atlas/effects/DayDuskTint";
 import { AtlasIntro } from "@/components/atlas/effects/AtlasIntro";
+import { AtlasToolDock, type DockPanel } from "@/components/atlas/tools/AtlasToolDock";
+import { AtlasPresentationMode } from "@/components/atlas/tools/AtlasPresentationMode";
+import { AtlasTimeTravel, type TimeArrival } from "@/components/atlas/tools/AtlasTimeTravel";
+import { capacityMwOf, completionYearOf, eraChaptersOf, readStarred, shortLabelOf, underConstructionIn, verificationOf, visibleInYear, writeStarred } from "@/lib/atlas/projectFacts";
 import { hasSiteStory, SITE_STORY_PREFIX } from "@/lib/atlas-ai/siteStories";
 import { playUiTone } from "@/lib/ui/sounds";
+import { toast } from "sonner";
 import { rememberProject } from "@/lib/atlas-ai/userMemory";
 
 function ScicNationalMapContent() {
@@ -118,13 +124,17 @@ function ScicNationalMapContent() {
     return () => window.removeEventListener("atlas:revalidate", handleRevalidate);
   }, [fetchLiveProjects]);
 
-  // Handle URL ?select={id} parameter from Admin Workspace "Inspect on Map"
+  // Handle URL ?select={id} (a shared link, or Admin Workspace "Inspect on Map"). Each value is
+  // acted on once: the page also WRITES this parameter when a project is selected (see the
+  // shareable-view effect below), and that must not fly the camera a second time.
+  const handledSelectRef = useRef<string | null>(null);
   useEffect(() => {
-    if (selectParam && activeProjects.length > 0) {
+    if (selectParam && activeProjects.length > 0 && handledSelectRef.current !== selectParam) {
       const target = activeProjects.find(
         (p) => p.id === selectParam || p.code === selectParam || (p as any).slug === selectParam
       );
       if (target) {
+        handledSelectRef.current = selectParam;
         selectProject(target.id);
         flyToProject({
           coordinates: { lat: target.coordinates.lat, lng: target.coordinates.lng },
@@ -135,13 +145,105 @@ function ScicNationalMapContent() {
   }, [selectParam, activeProjects, selectProject, flyToProject]);
 
   // 1. Page-level Query & Filter State (Directive 3: Clean separation from map state)
-  const [searchInputValue, setSearchInputValue] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<ProjectCategoryId | "ALL">("ALL");
-  const [selectedStatus, setSelectedStatus] = useState<ProjectStatusId | "ALL">("ALL");
-  const [selectedIsland, setSelectedIsland] = useState<IslandGroupId | "ALL">("ALL");
-  const [selectedRegion, setSelectedRegion] = useState<string | "ALL">("ALL");
-  const [selectedProvince, setSelectedProvince] = useState<string | "ALL">("ALL");
+  // Filters start from the link (?q=&cat=&status=&island=&region=&province=), so a filtered view
+  // can be shared or bookmarked; unknown values fall back to "ALL".
+  const urlCategory = (searchParams.get("cat") || "").toUpperCase();
+  const urlStatus = (searchParams.get("status") || "").toUpperCase();
+  const urlIsland = (searchParams.get("island") || "").toUpperCase();
+  const [searchInputValue, setSearchInputValue] = useState(() => searchParams.get("q") || "");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(() => searchParams.get("q") || "");
+  const [selectedCategory, setSelectedCategory] = useState<ProjectCategoryId | "ALL">(
+    urlCategory in ATLAS_CATEGORIES ? (urlCategory as ProjectCategoryId) : "ALL"
+  );
+  const [selectedStatus, setSelectedStatus] = useState<ProjectStatusId | "ALL">(
+    urlStatus in ATLAS_STATUSES ? (urlStatus as ProjectStatusId) : "ALL"
+  );
+  const [selectedIsland, setSelectedIsland] = useState<IslandGroupId | "ALL">(
+    ["LUZON", "VISAYAS", "MINDANAO"].includes(urlIsland) ? (urlIsland as IslandGroupId) : "ALL"
+  );
+  const [selectedRegion, setSelectedRegion] = useState<string | "ALL">(() => searchParams.get("region") || "ALL");
+  const [selectedProvince, setSelectedProvince] = useState<string | "ALL">(() => searchParams.get("province") || "ALL");
+
+  // Map tools (the dock at the foot of the map): timeline year, client, starred, compare, presentation
+  const thisYear = useMemo(() => new Date().getFullYear(), []);
+  const [yearLimit, setYearLimit] = useState<number | null>(() => {
+    const y = Number(searchParams.get("year"));
+    return Number.isInteger(y) && y > 1900 && y <= new Date().getFullYear() ? y : null;
+  });
+  const [clientFilter, setClientFilter] = useState<string | null>(() => searchParams.get("client") || null);
+  const [starredIds, setStarredIds] = useState<string[]>([]);
+  const [starredOnly, setStarredOnly] = useState(false);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const compareLoadedRef = useRef(false);
+  useEffect(() => {
+    // (kept for this tab, so a comparison survives a reload or a shared link opening)
+    try {
+      if (!compareLoadedRef.current) {
+        compareLoadedRef.current = true;
+        const saved = JSON.parse(window.sessionStorage.getItem("atlas.compare") || "[]");
+        if (Array.isArray(saved) && saved.length) return setCompareIds(saved.filter((x) => typeof x === "string").slice(0, 3));
+      }
+      window.sessionStorage.setItem("atlas.compare", JSON.stringify(compareIds));
+    } catch {
+      // private window: the tray lasts for this visit only
+    }
+  }, [compareIds]);
+  const [dockPanel, setDockPanel] = useState<DockPanel>(null);
+  const [isPresenting, setIsPresenting] = useState(false);
+  useEffect(() => {
+    setStarredIds(readStarred());
+  }, []);
+  const toggleStar = useCallback((id: string) => {
+    setStarredIds((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      writeStarred(next);
+      return next;
+    });
+  }, []);
+  const toggleCompare = useCallback((id: string) => {
+    // (three fit side by side; a fourth replaces the oldest)
+    setCompareIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id].slice(-3)));
+  }, []);
+  // Opens a tool panel. With the project panel open on a narrow map there is no room for it, so
+  // the project panel closes first (the dock is hidden in exactly that case).
+  const openDockPanel = useCallback(
+    (p: Exclude<DockPanel, null>, toggle = false) => {
+      const dock = document.querySelector<HTMLElement>("[data-atlas-tool-dock] > div");
+      if (!dock || dock.offsetParent === null) selectProject(null);
+      setDockPanel((cur) => (toggle && cur === p ? null : p));
+    },
+    [selectProject]
+  );
+  const yearBounds = useMemo<[number, number]>(() => {
+    const years = activeProjects.map(completionYearOf).filter((y): y is number => y !== null);
+    return [years.length ? Math.min(...years) : thisYear - 30, thisYear];
+  }, [activeProjects, thisYear]);
+
+  // Shareable view: the address bar always describes what is on screen (selected project and
+  // filters), without adding history entries. Closing a project removes it from the link.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const put = (key: string, value: string | null) => (value ? params.set(key, value) : params.delete(key));
+    const selected = selectedProjectId ? activeProjects.find((p) => p.id === selectedProjectId) : null;
+    // (while a shared ?select= link is still waiting for the project list, leave it alone)
+    if (selected || !selectParam || handledSelectRef.current === selectParam) {
+      const slug = selected ? ((selected as any).slug as string | undefined) || selected.id : null;
+      put("select", slug);
+      handledSelectRef.current = slug;
+    }
+    put("q", debouncedSearchQuery.trim() || null);
+    put("cat", selectedCategory !== "ALL" ? selectedCategory : null);
+    put("status", selectedStatus !== "ALL" ? selectedStatus : null);
+    put("island", selectedIsland !== "ALL" ? selectedIsland : null);
+    put("region", selectedRegion !== "ALL" ? selectedRegion : null);
+    put("province", selectedProvince !== "ALL" ? selectedProvince : null);
+    put("year", yearLimit !== null ? String(yearLimit) : null);
+    put("client", clientFilter);
+    const next = params.toString();
+    const current = window.location.search.replace(/^\?/, "");
+    if (next !== current) window.history.replaceState(window.history.state, "", `${window.location.pathname}${next ? `?${next}` : ""}`);
+  }, [selectedProjectId, activeProjects, selectParam, debouncedSearchQuery, selectedCategory, selectedStatus, selectedIsland, selectedRegion, selectedProvince, yearLimit, clientFilter]);
 
   // Phase 8: Geographic Scope state (camera & regional intelligence context)
   const [geographicScope, setGeographicScope] = useState<{
@@ -301,6 +403,11 @@ function ScicNationalMapContent() {
       // 5. Province Filter
       if (selectedProvince !== "ALL" && p.province !== selectedProvince) return false;
 
+      // 5b. Map tools: timeline year, client, starred only
+      if (yearLimit !== null && !visibleInYear(p, yearLimit, thisYear)) return false;
+      if (clientFilter && p.client !== clientFilter) return false;
+      if (starredOnly && !starredIds.includes(p.id)) return false;
+
       // 6. Debounced Search Filter across 6 dimensions
       if (debouncedSearchQuery.trim()) {
         if (!projectMatchesSearch(p, debouncedSearchQuery)) {
@@ -318,7 +425,22 @@ function ScicNationalMapContent() {
     selectedRegion,
     selectedProvince,
     debouncedSearchQuery,
+    yearLimit,
+    thisYear,
+    clientFilter,
+    starredOnly,
+    starredIds,
   ]);
+
+  // Atlas notices the map changing under the tools (timeline, client, starred): he looks at it
+  const toolsSignature = `${yearLimit}|${clientFilter}|${starredOnly}`;
+  const toolsSignatureRef = useRef(toolsSignature);
+  useEffect(() => {
+    if (toolsSignatureRef.current === toolsSignature) return;
+    toolsSignatureRef.current = toolsSignature;
+    const c = navigatorBus.mapCenter;
+    if (c) setNavigatorAttention(c.x, c.y);
+  }, [toolsSignature]);
 
   // 5. Pure Alphabetical Sort Order across all sections (Directive: strictly A-Z)
   const sortedProjects = useMemo(() => {
@@ -361,7 +483,9 @@ function ScicNationalMapContent() {
   }, [selectedProject]);
 
   // National KPIs (Computed across full dataset for executive ribbon)
-  const kpis = useMemo(() => computeNationalKPIs(activeProjects), [activeProjects]);
+  // The header's figures describe what is on the map: with a filter on they re-count to the
+  // filtered set (and the header says "of 87 in view"); with none they are the whole portfolio.
+  const kpis = useMemo(() => computeNationalKPIs(filteredProjects), [filteredProjects]);
 
   // Check if any filter or search query is currently active
   const hasActiveFilters = useMemo(() => {
@@ -371,7 +495,10 @@ function ScicNationalMapContent() {
       selectedStatus !== "ALL" ||
       selectedIsland !== "ALL" ||
       selectedRegion !== "ALL" ||
-      selectedProvince !== "ALL"
+      selectedProvince !== "ALL" ||
+      yearLimit !== null ||
+      !!clientFilter ||
+      starredOnly
     );
   }, [
     searchInputValue,
@@ -380,6 +507,9 @@ function ScicNationalMapContent() {
     selectedIsland,
     selectedRegion,
     selectedProvince,
+    yearLimit,
+    clientFilter,
+    starredOnly,
   ]);
 
   // Phase 11: Detect if selected project is hidden by current directory filters
@@ -397,6 +527,9 @@ function ScicNationalMapContent() {
     setSelectedIsland("ALL");
     setSelectedRegion("ALL");
     setSelectedProvince("ALL");
+    setYearLimit(null);
+    setClientFilter(null);
+    setStarredOnly(false);
   }, []);
 
   // ─── SCIC Atlas AI Assistant Integration (Phase 16) ─────────────
@@ -926,20 +1059,26 @@ function ScicNationalMapContent() {
             category: canonicalCat,
             categoryLabel: iconConfig.label,
             color: iconConfig.color,
-            status: p.status as any,
-            statusLabel: p.status === "ONGOING" ? "Ongoing" : p.status,
-            isPulse: p.status === "ONGOING",
+            // (a project that had started but was not finished in the timeline's year is a live site)
+            ...(() => {
+              const building = yearLimit !== null && yearLimit < thisYear && underConstructionIn(p, yearLimit, thisYear);
+              const status = building ? "ONGOING" : p.status;
+              return { status: status as any, statusLabel: status === "ONGOING" ? (building ? "Under construction" : "Ongoing") : status, isPulse: status === "ONGOING" };
+            })(),
             islandGroup: p.islandGroup,
             region: p.region,
             province: p.province,
             municipality: p.municipality,
-            capacity:
-              p.metrics.capacity ||
-              p.metrics.roadLength ||
-              p.metrics.contractValue ||
-              "Major Project",
+            // (no filler words: an empty value lets the hover card fall back to client or region)
+            capacity: p.metrics.capacity || p.metrics.roadLength || "",
             client: p.client,
-            projectValue: p.metrics.contractValue || "Enterprise",
+            projectValue: p.metrics.contractValue || "",
+            ...(() => {
+              const mw = verificationOf(p) === "unconfirmed" ? null : capacityMwOf(p);
+              return mw && mw > 0
+                ? { mw, mwLabel: mw.toLocaleString("en-US", { maximumFractionDigits: mw < 10 ? 1 : 0 }) }
+                : { mw: 0, mwLabel: "" };
+            })(),
             featuredImage: p.imageUrl,
             leadPM: p.leadPM?.name || "",
             featured: !!p.featured,
@@ -947,7 +1086,7 @@ function ScicNationalMapContent() {
         };
       }),
     };
-  }, [filteredProjects, selectedProject]);
+  }, [filteredProjects, selectedProject, yearLimit, thisYear]);
 
   // Auto-focus camera & highlight when search query narrows down to a single project
   useEffect(() => {
@@ -968,7 +1107,12 @@ function ScicNationalMapContent() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (isFocusMode) {
+        if (isPresenting) {
+          setIsPresenting(false);
+          setIsFocusMode(false);
+        } else if (dockPanel) {
+          setDockPanel(null);
+        } else if (isFocusMode) {
           setIsFocusMode(false);
         } else if (atlasAI.activeTour?.tourId.startsWith(SITE_STORY_PREFIX)) {
           // a site story is about the project on screen: Esc ends the story and leaves you there
@@ -992,6 +1136,41 @@ function ScicNationalMapContent() {
             mapInstance.getZoom() > 6.2 || Math.abs(mapInstance.getBearing()) > 1 || mapInstance.getPitch() > 1;
           if (awayFromNational) handleResetNationalScope();
         }
+        return;
+      }
+
+      // Single-key shortcuts (never while typing, never with a modifier held)
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = document.activeElement as HTMLElement | null;
+      const tag = el?.tagName.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || el?.isContentEditable) return;
+      const togglePanel = (p: Exclude<DockPanel, null>) => openDockPanel(p, true);
+      switch (e.key.toLowerCase()) {
+        case "t":
+          togglePanel("timeline");
+          break;
+        case "c":
+          togglePanel("compare");
+          break;
+        case "v":
+          togglePanel("views");
+          break;
+        case "?":
+          togglePanel("help");
+          break;
+        case "s":
+          if (selectedProjectId) toggleStar(selectedProjectId);
+          break;
+        case "f":
+          if (!isPresenting) setIsFocusMode((v) => !v);
+          break;
+        case "p":
+          setDockPanel(null);
+          setIsPresenting(!isPresenting);
+          setIsFocusMode(!isPresenting);
+          break;
+        default:
+          return;
       }
     };
 
@@ -999,6 +1178,10 @@ function ScicNationalMapContent() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     isFocusMode,
+    isPresenting,
+    dockPanel,
+    toggleStar,
+    openDockPanel,
     atlasAI,
     selectedProjectId,
     selectProject,
@@ -1027,6 +1210,34 @@ function ScicNationalMapContent() {
     [activeProjects, selectProject, flyToProject]
   );
 
+  // Time travel: the works finished in the year the timeline holds (they land on the map)
+  const timeArrivals = useMemo<TimeArrival[]>(() => {
+    if (yearLimit === null) return [];
+    return filteredProjects
+      .filter((p) => completionYearOf(p) === yearLimit)
+      .map((p) => ({
+        id: p.id,
+        name: shortLabelOf(p.name),
+        lng: p.coordinates.lng,
+        lat: p.coordinates.lat,
+        color: CATEGORY_ICON_REGISTRY[toCanonicalCategory(p.sector, p.name, p.description)].color,
+      }));
+  }, [filteredProjects, yearLimit]);
+
+  // The portfolio's eras (read from the records), and the one the timeline is in
+  const eraChapters = useMemo(
+    () => eraChaptersOf(activeProjects, yearBounds[0], yearBounds[1], (p) => CATEGORY_ICON_REGISTRY[toCanonicalCategory(p.sector, p.name, p.description)].shortLabel),
+    [activeProjects, yearBounds]
+  );
+  const currentChapter = yearLimit === null ? null : eraChapters.find((c) => yearLimit >= c.from && yearLimit <= c.to) || null;
+
+  // Presentation mode shows what is on the map: the flagships among the filtered projects, or,
+  // when a filter leaves fewer than two of them, every filtered project.
+  const presentationProjects = useMemo(() => {
+    const flagships = sortedProjects.filter((p) => p.featured);
+    return flagships.length >= 2 ? flagships : sortedProjects;
+  }, [sortedProjects]);
+
   // The right edge holds ONE panel: project details or the docked chat. When both are available,
   // a small tab strip switches between them instead of stacking them over the map.
   const chatOnRight = atlasAI.isOpen && chatDock.dock === "RIGHT" && chatDock.expanded && !atlasAI.activeTour;
@@ -1054,6 +1265,7 @@ function ScicNationalMapContent() {
         renewableCapacityMw={kpis.totalRenewableCapacityMw}
         tunnelLengthKm={kpis.totalTunnelLengthKm}
         waterCapacityMld={kpis.totalWaterCapacityMld}
+        filteredOf={filteredProjects.length !== activeProjects.length ? activeProjects.length : null}
         currentStyle={mapStyle}
         onStyleChange={setMapStyle}
         onOpenNews={() => setIsNewsModalOpen(true)}
@@ -1113,7 +1325,7 @@ function ScicNationalMapContent() {
               : undefined
           }
         >
-          {isFocusMode && (
+          {isFocusMode && !isPresenting && (
             <button
               type="button"
               onClick={() => setIsFocusMode(false)}
@@ -1164,7 +1376,7 @@ function ScicNationalMapContent() {
           </div>
 
           {/* Geographic Breadcrumb (Top-Left on Desktop, below search pill on Mobile) */}
-          <div className="absolute top-14 lg:top-3 left-3 z-20 pointer-events-auto max-w-[calc(100%-140px)]">
+          <div className={cn("absolute top-14 lg:top-3 left-3 z-20 pointer-events-auto max-w-[calc(100%-140px)]", isPresenting && "hidden")}>
             <AtlasGeographicBreadcrumb
               region={
                 selectedProject?.region ||
@@ -1192,6 +1404,7 @@ function ScicNationalMapContent() {
           <div
             className={cn(
               "absolute left-0 right-0 z-30 px-3 pointer-events-none flex justify-center transition-[top,right] duration-300",
+              isPresenting && "hidden",
               showProjectPanel
                 ? "top-26 lg:top-14 md:right-[380px] lg:right-[410px] xl:right-[430px]"
                 : "top-14 lg:top-3"
@@ -1205,6 +1418,7 @@ function ScicNationalMapContent() {
               isGenerating={atlasAI.isGenerating}
               selectedProjectName={selectedProject?.name}
               activeRegion={geographicScope.region}
+              projectCount={activeProjects.length}
               onFocusChange={setIsChatInputFocused}
             />
             </div>
@@ -1270,6 +1484,59 @@ function ScicNationalMapContent() {
           <DayDuskTint satellite={mapStyle === "SATELLITE"} dark={mapStyle === "DARK"} />
           <AtlasMapEffects activeCoords={activeListCoords} weatherLayerOn={weatherLayerOn} />
           <AtlasIntro />
+          <AtlasTimeTravel
+            year={yearLimit}
+            minYear={yearBounds[0]}
+            maxYear={yearBounds[1]}
+            arrivals={timeArrivals}
+            dark={mapStyle === "DARK"}
+            satellite={mapStyle === "SATELLITE"}
+            chapter={currentChapter}
+          />
+
+          {/* Map tools: timeline, compare, starred, clients, views, export, presentation */}
+          {isPresenting ? (
+            <AtlasPresentationMode
+              projects={presentationProjects}
+              onShow={handleSelectProject}
+              onExit={() => {
+                setIsPresenting(false);
+                setIsFocusMode(false);
+              }}
+              map={mapInstance}
+            />
+          ) : (
+            !atlasAI.activeTour && (
+              <AtlasToolDock
+                projects={sortedProjects}
+                allProjects={activeProjects}
+                panel={dockPanel}
+                onPanelChange={setDockPanel}
+                year={yearLimit}
+                onYearChange={setYearLimit}
+                yearBounds={yearBounds}
+                starredIds={starredIds}
+                starredOnly={starredOnly}
+                onToggleStarredOnly={() => setStarredOnly((v) => !v)}
+                onToggleStar={toggleStar}
+                client={clientFilter}
+                onClientChange={setClientFilter}
+                compareIds={compareIds}
+                onToggleCompare={toggleCompare}
+                onClearCompare={() => setCompareIds([])}
+                onSelectProject={handleSelectProject}
+                besidePanel={showProjectPanel}
+                chapters={eraChapters}
+                onNarrate={atlasAI.voiceEnabled === false ? undefined : atlasAI.speakNarration}
+                speechBusy={atlasAI.isSpeaking || atlasAI.isPreparingSpeech}
+                onPresent={() => {
+                  setDockPanel(null);
+                  setIsPresenting(true);
+                  setIsFocusMode(true);
+                }}
+              />
+            )
+          )}
           {weatherLayerOn && (
             <button
               type="button"
@@ -1410,6 +1677,24 @@ function ScicNationalMapContent() {
           tourSpokenWordIndex={atlasAI.spokenWordIndex}
           isTourSpeaking={atlasAI.isSpeaking}
           onTellStory={selectedProject && hasSiteStory(selectedProject) ? () => atlasAI.startStory(selectedProject) : undefined}
+          isStarred={!!selectedProject && starredIds.includes(selectedProject.id)}
+          onToggleStar={selectedProject ? () => toggleStar(selectedProject.id) : undefined}
+          isCompared={!!selectedProject && compareIds.includes(selectedProject.id)}
+          onToggleCompare={
+            selectedProject
+              ? () => {
+                  const adding = !compareIds.includes(selectedProject.id);
+                  toggleCompare(selectedProject.id);
+                  if (adding) {
+                    const n = Math.min(compareIds.length + 1, 3);
+                    toast.success(`Added to comparison (${n} of 3)`, {
+                      description: n < 2 ? "Open another project and add it too." : undefined,
+                      action: { label: "View", onClick: () => openDockPanel("compare") },
+                    });
+                  }
+                }
+              : undefined
+          }
         />
 
         {/* ✦ SCIC ATLAS AI WORKSPACE (PHASE 20: Movable, Resizable, Dockable, Adjustable Analyst Dashboard) */}

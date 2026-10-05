@@ -40,6 +40,8 @@ MIXAMO = {
     "atlas_offer": "offer",
     "atlas_nod_listen": "nodListen",
     "atlas_neutral_idle": "idleNeutral",
+    # 2026-10-05: walking in place (Mixamo "Walking" on Y Bot), for crossing the screen
+    "atlas_walk": "walk",
 }
 # Downloaded, reviewed on him (scripts/blender/render_clip_review.py) and left out:
 #   atlas_point_bent   points at the viewer's face        atlas_look_around  turns his back to the camera

@@ -10,6 +10,7 @@ import {
   CATEGORY_ICON_REGISTRY,
 } from "./AtlasMarkerIcons";
 import { cn } from "@/lib/utils";
+import { VERIFICATION_LABEL, verificationOf } from "@/lib/atlas/projectFacts";
 
 export interface AtlasProjectCardProps {
   project: SCICProject;
@@ -39,7 +40,9 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
       project.metrics.roadLength ||
       project.metrics.tunnelLength ||
       project.metrics.contractValue ||
-      "Major Works";
+      // (no filler: a record without a published figure shows its category)
+      catConfig.shortLabel;
+    const unconfirmed = verificationOf(project) === "unconfirmed";
 
     return (
       <div
@@ -124,6 +127,16 @@ export const AtlasProjectCard = React.forwardRef<HTMLDivElement, AtlasProjectCar
             <span>{status.label}</span>
           </span>
         </div>
+
+        {unconfirmed && (
+          <span
+            title={VERIFICATION_LABEL.unconfirmed.hint}
+            className="relative z-10 inline-flex items-center gap-1 mb-1.5 px-1.5 py-0.5 rounded border border-amber-500/35 bg-amber-500/10 text-[9px] font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            Unconfirmed
+          </span>
+        )}
 
         {/* Project Title */}
         <div className="relative z-10 mb-1.5">

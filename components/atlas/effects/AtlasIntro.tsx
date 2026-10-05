@@ -23,6 +23,13 @@ const STAGGER_MS = 170;
  * the reveal opens onto real map, not a blank canvas) and for the tab to be visible. With reduced
  * motion it is a short, still logo that fades. Any click, key press or wheel skips it instantly.
  */
+/** True once the opening has finished (or was skipped). The navigator waits for this to greet. */
+let introFinished = false;
+export const ATLAS_INTRO_DONE_EVENT = "atlas:intro-done";
+export function atlasIntroFinished(): boolean {
+  return introFinished;
+}
+
 export function AtlasIntro() {
   const { mapInstance: map } = useAtlasMap();
   // "waiting": cover up (logo hidden) until the map has loaded; it never shows a blank map
@@ -68,6 +75,14 @@ export function AtlasIntro() {
     const t = window.setTimeout(() => setPhase("off"), LOGO_MS + REVEAL_MS + STAGGER_MS * ISLANDS.length + 600);
     return () => window.clearTimeout(t);
   }, [phase === "logo"]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Tell the page when the opening is over (the navigator greets only after it)
+  useEffect(() => {
+    if (phase === "waiting") introFinished = false;
+    if (phase !== "off") return;
+    introFinished = true;
+    window.dispatchEvent(new Event(ATLAS_INTRO_DONE_EVENT));
+  }, [phase]);
 
   // Skip on any interaction
   useEffect(() => {

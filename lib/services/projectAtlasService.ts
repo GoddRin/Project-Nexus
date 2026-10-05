@@ -42,6 +42,9 @@ export interface AtlasGeoJsonProperties {
   featuredImage: string;
   leadPM: string;
   featured: boolean;
+  /** Megawatts of a confirmed power project (0 otherwise); drives the capacity view */
+  mw?: number;
+  mwLabel?: string;
 }
 
 export type AtlasFeatureCollection = FeatureCollection<Point, AtlasGeoJsonProperties>;

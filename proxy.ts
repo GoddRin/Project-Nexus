@@ -25,6 +25,8 @@ const isPublicRoute = createRouteMatcher([
   "/models/(.*)",
   // pre-generated voice clips (static files; the map is public, so its voice must be too)
   "/voice/(.*)",
+  // GIS data the public map draws (river flow lines, boundaries): it was redirected to sign-in
+  "/data/(.*)",
   "/audio/(.*)",
   "/maplibre-gl-worker(.*)",
   "/maplibre-gl-shared(.*)",

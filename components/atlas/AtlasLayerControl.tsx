@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Layers,
   ChevronDown,
@@ -17,12 +17,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AtlasBaseStyle } from "./AtlasMapContext";
+import { getVerifiedProjectGeometriesGeoJson } from "@/lib/data/scicProjectGeometries";
 
 export interface AtlasLayerControlProps {
   currentStyle: AtlasBaseStyle;
   onStyleChange: (style: AtlasBaseStyle) => void;
   activeGisLayers: Set<string>;
   onToggleGisLayer: (layerId: string) => void;
+  /** Markers on the map right now (shown beside the layer; never a typed-in number) */
+  projectCount?: number;
   className?: string;
 }
 
@@ -31,8 +34,10 @@ export function AtlasLayerControl({
   onStyleChange,
   activeGisLayers,
   onToggleGisLayer,
+  projectCount,
   className,
 }: AtlasLayerControlProps) {
+  const footprintCount = useMemo(() => getVerifiedProjectGeometriesGeoJson().features.length, []);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -203,7 +208,7 @@ export function AtlasLayerControl({
                       Projects & Clusters
                     </span>
                     <span className="block text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                      Core Markers (53 Projects)
+                      Core Markers{typeof projectCount === "number" ? ` (${projectCount} ${projectCount === 1 ? "Project" : "Projects"})` : ""}
                     </span>
                   </div>
                 </div>
@@ -281,7 +286,7 @@ export function AtlasLayerControl({
                       Project Footprints
                     </span>
                     <span className="block text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                      15 Verified Site Perimeters
+                      {footprintCount} Verified Site Perimeters
                     </span>
                   </div>
                 </div>
@@ -331,6 +336,42 @@ export function AtlasLayerControl({
                   onChange={() => onToggleGisLayer("infrastructure-context")}
                 />
               </label>
+
+              {/* Views: capacity bubbles and 3D terrain */}
+              {(
+                [
+                  ["capacity-view", "Capacity View", "Plants sized by rated megawatts"],
+                  ["terrain-3d", "3D Terrain", "Real relief and hill shading"],
+                ] as const
+              ).map(([id, title, hint]) => (
+                <label
+                  key={id}
+                  className={cn(
+                    "flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer select-none",
+                    activeGisLayers.has(id)
+                      ? "bg-scic-blue/10 dark:bg-scic-blue/15 border-scic-blue/30 dark:border-scic-blue/40 text-slate-900 dark:text-slate-100"
+                      : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={cn(
+                        "flex items-center justify-center w-4 h-4 rounded border transition-colors",
+                        activeGisLayers.has(id)
+                          ? "bg-scic-blue border-scic-blue dark:border-sky-400 text-white"
+                          : "border-slate-400 dark:border-slate-500 bg-transparent"
+                      )}
+                    >
+                      {activeGisLayers.has(id) && <Check className="h-3 w-3 stroke-[3]" />}
+                    </span>
+                    <div>
+                      <span className="block text-[11px] font-medium leading-none">{title}</span>
+                      <span className="block text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">{hint}</span>
+                    </div>
+                  </div>
+                  <input type="checkbox" className="sr-only" checked={activeGisLayers.has(id)} onChange={() => onToggleGisLayer(id)} />
+                </label>
+              ))}
             </div>
           </div>
         </div>

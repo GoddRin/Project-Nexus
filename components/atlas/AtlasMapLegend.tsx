@@ -50,7 +50,7 @@ export function AtlasMapLegend({ className }: AtlasMapLegendProps) {
               <span className="text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                 Engineering Disciplines
               </span>
-              <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500">10 Categories</span>
+              <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500">{Object.keys(CATEGORY_ICON_REGISTRY).length} Categories</span>
             </div>
             <div className="grid grid-cols-2 gap-x-2.5 gap-y-2">
               {(Object.keys(CATEGORY_ICON_REGISTRY) as ProjectCategoryId[]).map((key) => {

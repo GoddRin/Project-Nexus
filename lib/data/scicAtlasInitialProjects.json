@@ -1,77 +1,5 @@
 [
   {
-    "id": "cmu6czyci001dm496humy19k0",
-    "organizationId": "scic-org-001",
-    "name": "Apex Mining Maco Underground Infrastructure & TSF Expansion",
-    "slug": "apex-mining-maco",
-    "projectCode": "SCIC-MINE-01",
-    "category": "MINING_TUNNELING",
-    "status": "ONGOING",
-    "description": "Underground haulage and drainage drift tunneling, raise boring, and Tailings Storage Facility (TSF) dam raise at the Maco Gold & Silver Mine in Davao de Oro. SCIC has been sole contractor since 2010, utilizing jumbo drills and mechanized mucking equipment in rugged mountainous geology with highest environmental protection standards. Scope includes 8m dam raise and 2M+ m³ embankment.",
-    "latitude": 7.3711,
-    "longitude": 126.0461,
-    "islandGroup": "MINDANAO",
-    "region": "Region XI (Davao Region)",
-    "province": "Davao de Oro",
-    "municipality": "Maco",
-    "barangay": "Masara",
-    "locationDescription": "Apex Mining Maco Underground Infrastructure & TSF Expansion - Masara, Maco, Davao de Oro (Region XI (Davao Region))",
-    "location": "Masara, Maco, Davao de Oro",
-    "capacity": null,
-    "capacityMw": null,
-    "plantType": null,
-    "percentComplete": null,
-    "projectStartDate": null,
-    "projectEndDate": null,
-    "client": "Apex Mining Company, Inc.",
-    "projectValue": "₱2.10 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
-    "boundaryGeometry": null,
-    "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
-    "leadPMLicense": null,
-    "leadPMContact": null,
-    "engineeringScope": [
-      "3.4 km Underground Mine Access & Drainage Drift Tunnels",
-      "Tailings Storage Facility (TSF) Upstream Dam Raise (Phase 3C)",
-      "Mechanized Shotcreting & Rock Bolting Underground Support",
-      "Surface Drainage Diversion Canals & Runoff Management"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2023-Q1",
-        "title": "Portal Opening & Drift Development",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q2",
-        "title": "TSF Dam Raise Concreting & Buttressing",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Deep Drainage Drift Integration",
-        "status": "SCHEDULED"
-      }
-    ],
-    "metrics": {
-      "safeManHours": "1,680,000 Safe Hours",
-      "tunnelLength": "3.4 km underground drifts",
-      "contractValue": "₱2.10 Billion",
-      "workforcePeak": 520
-    },
-    "featured": true,
-    "targetCodDate": null,
-    "createdById": null,
-    "updatedById": null,
-    "deletedAt": null,
-    "deletedById": null,
-    "createdAt": "2026-09-18T02:48:30.114Z",
-    "updatedAt": "2026-09-19T06:08:08.881Z"
-  },
-  {
     "id": "cmus19cn0000h8c96oda5iq6t",
     "organizationId": "scic-org-001",
     "name": "Bahay Toro Sewage Treatment Plant",
@@ -97,8 +25,12 @@
     "projectEndDate": "2016-10-01T00:00:00.000Z",
     "client": "Maynilad Water Services, Inc. (MWSI)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/bahay-toro-stp-1.jpg",
+    "gallery": [
+      "/project-images/bahay-toro-stp-1.jpg",
+      "/project-images/bahay-toro-stp-2.jpg",
+      "/project-images/bahay-toro-stp-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -125,7 +57,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.020Z",
-    "updatedAt": "2026-10-03T06:50:49.020Z"
+    "updatedAt": "2026-10-05T00:37:45.273Z"
   },
   {
     "id": "cmu6czvey0002m496fyfhuq3n",
@@ -135,7 +67,7 @@
     "projectCode": "SCIC-HEPP-03",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "SCIC's legendary underground tunnel breakthrough: excavation, rock stabilization, and concrete lining of a massive 9.6-kilometer headrace tunnel through complex geological faults in Northern Luzon, delivering 70 MW of clean peak power. One of the longest hydro tunnels in the Philippines.",
+    "description": "Civil and tunnel works for the 70 MW Bakun AC hydroelectric power plant on the Ilocos Sur - Benguet boundary, where Sta. Clara was subcontractor to Transfield Philippines, Inc. Completed April 2000. The work covered excavation and permanent support of the 10.5 km tunnel (3.4 m diameter), twin desander chambers with a transition tunnel, a 1.5 km underground penstock (2.1 m diameter), grouting and the switchyard. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Mining and Tunnelling Works), checked 5 October 2026.",
     "latitude": 16.897,
     "longitude": 120.678,
     "islandGroup": "LUZON",
@@ -145,16 +77,20 @@
     "barangay": null,
     "locationDescription": "Bakun AC Hydroelectric Power Plant - Bakun & Alilem, Benguet / Ilocos Sur (CAR / Region I)",
     "location": "Bakun & Alilem, Benguet / Ilocos Sur",
-    "capacity": "70.0 MW",
+    "capacity": "70 MW",
     "capacityMw": 70,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2000-04-01T00:00:00.000Z",
     "client": "Transfield Philippines, Inc.",
-    "projectValue": "₱4.8 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/bakun-hydro-1.jpg",
+    "gallery": [
+      "/project-images/bakun-hydro-1.jpg",
+      "/project-images/bakun-hydro-2.jpg",
+      "/project-images/bakun-hydro-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -162,37 +98,31 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "9.6 km deep rock tunneling with sequential excavation and steel arches",
-      "High-pressure underground surge shaft and penstock incline",
-      "Weir diversion structures along the Bakun River",
-      "Overground powerhouse and tailrace canal"
+      "Tunnel excavation, 3.4 m diameter x 10.5 km, with shotcrete, rock bolts, steel ribs and concrete lining",
+      "Twin desander chambers and transition tunnel",
+      "Underground penstock, 2.1 m diameter x 1.5 km",
+      "Consolidation and contact grouting",
+      "Switchyard"
     ],
     "keyMilestones": [
       {
-        "date": "Feb 2001",
-        "title": "Tunnel Breakthrough Milestone",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "Aug 2001",
-        "title": "Commercial Grid Synchronization",
+        "date": "2000-04",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "70.0 MW",
-      "safeManHours": "3,500,000 Safe Hours",
-      "tunnelLength": "9.6 km deep rock tunnel",
-      "contractValue": "₱4.8 Billion"
+      "capacity": "70 MW",
+      "tunnelLength": "10.5 km"
     },
-    "featured": false,
+    "featured": true,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.314Z",
-    "updatedAt": "2026-10-03T07:25:13.895Z"
+    "updatedAt": "2026-10-05T01:20:56.891Z"
   },
   {
     "id": "cmus19c4i00088c96e8j78lpq",
@@ -220,8 +150,12 @@
     "projectEndDate": "2017-04-01T00:00:00.000Z",
     "client": "Mitsubishi Corporation",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/balingasag-thermal-1.jpg",
+    "gallery": [
+      "/project-images/balingasag-thermal-1.jpg",
+      "/project-images/balingasag-thermal-2.jpg",
+      "/project-images/balingasag-thermal-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -246,14 +180,14 @@
     "metrics": {
       "capacity": "3 x 55 MW"
     },
-    "featured": false,
+    "featured": true,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.354Z",
-    "updatedAt": "2026-10-03T06:50:48.354Z"
+    "updatedAt": "2026-10-05T00:37:44.821Z"
   },
   {
     "id": "cmu7yoxn5000eog96o6spwfk7",
@@ -280,7 +214,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱20.54 Billion (Phase II)",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -297,49 +231,28 @@
       "43.5 MW hydroelectric powerhouse civil works and high-pressure penstock conduits",
       "Access road restoration, mountain slope stabilization, and drainage networks"
     ],
-    "keyMilestones": [
-      {
-        "date": "Q1 2024",
-        "title": "Site Mobilization & Heavy Haul Road Rehabilitation",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "Q2 2026",
-        "title": "Tunnel Excavation, Grouting & Dam Embankment (45.79% Progress)",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "CY 2028",
-        "title": "Target Reservoir Impounding & Commercial Commissioning",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "559M cu.m Storage • 43.5 MW Hydro • 34,410 ha Irrigation",
-      "safeManHours": "1,850,000 Safe Hours",
-      "tunnelLength": "Diversion & Power Tunnels",
-      "contractValue": "₱20.54 Billion (Phase II)",
-      "workforcePeak": 680,
-      "generationOutput": "43.5 MW Clean Hydro"
+      "capacity": "559M cu.m Storage • 43.5 MW Hydro • 34,410 ha Irrigation"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:43:33.713Z",
-    "updatedAt": "2026-10-03T07:47:26.475Z"
+    "updatedAt": "2026-10-05T00:37:43.831Z"
   },
   {
     "id": "cmu6czxo60012m496kiqnxlef",
     "organizationId": "scic-org-001",
-    "name": "Bataan-Cavite Interlink Bridge (BCIB) Preliminary Civil Works",
+    "name": "Bataan-Cavite Interlink Bridge (bid)",
     "slug": "bcib-interlink",
     "projectCode": "SCIC-PIPE-01",
-    "category": "ROADS_HIGHWAYS",
+    "category": "BRIDGES",
     "status": "UPCOMING",
-    "description": "A game-changing 32-kilometer maritime mega-bridge across Manila Bay connecting Mariveles, Bataan and Naic, Cavite. SCIC's specialized deep marine engineering, tunneling, and viaduct expertise is positioned for major civil packages.",
+    "description": "The Bataan-Cavite Interlink Bridge across Manila Bay, between Mariveles, Bataan and Naic, Cavite. Press reports (September 2025) describe only a bid by POSCO E&C with Sta. Clara; no award has been found. Not confirmed by public sources: as of 5 October 2026, no public source confirms that Sta. Clara holds a contract on this project. The details in this record are unverified.",
     "latitude": 14.38,
     "longitude": 120.6,
     "islandGroup": "LUZON",
@@ -356,7 +269,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "Mega National Project (Tender / Preparation)",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -365,30 +278,17 @@
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "Deep marine bored piling in high-seismic marine waters",
-      "Cable-stayed navigation channel span substructures",
-      "Land approach viaducts and interchange connections in Bataan and Cavite"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2025-2026",
-        "title": "Tendering & Civil Packages Award",
-        "status": "SCHEDULED"
-      }
-    ],
-    "metrics": {
-      "roadLength": "32.15 km maritime bridge corridor",
-      "contractValue": "Mega National Project (Tender / Preparation)"
-    },
-    "featured": true,
+    "engineeringScope": [],
+    "keyMilestones": [],
+    "metrics": {},
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.238Z",
-    "updatedAt": "2026-10-03T07:25:17.268Z"
+    "updatedAt": "2026-10-05T01:20:59.453Z"
   },
   {
     "id": "cmus19ce1000d8c96vusedf7x",
@@ -416,8 +316,10 @@
     "projectEndDate": null,
     "client": "Black & Veatch Singapore Pte. Ltd.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/batangas-ccpp-site-development-1.jpg",
+    "gallery": [
+      "/project-images/batangas-ccpp-site-development-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -441,7 +343,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.697Z",
-    "updatedAt": "2026-10-03T07:02:09.250Z"
+    "updatedAt": "2026-10-05T00:37:45.342Z"
   },
   {
     "id": "cmu6czw94000fm496fawejbmr",
@@ -451,26 +353,28 @@
     "projectCode": "SCIC-HEPP-06",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "Restoration of penstock, intake structures, and mechanical balance of plant for one of the oldest operating hydro power facilities in the country, part of the CBK complex.",
+    "description": "Works at the 2 x 10 MW Botocan hydroelectric power plant in Majayjay, Laguna, for the CBK Hydro Power Consortium. Completed August 2004. The company lists the dam, the reservoir, rehabilitation and improvement of the 1.18 km headrace tunnel, and the powerhouse. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 14.1436,
     "longitude": 121.4989,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Laguna",
     "municipality": "Majayjay",
     "barangay": null,
     "locationDescription": "Botocan Hydroelectric Power Plant Rehabilitation - Majayjay, Laguna (Region IV-A)",
     "location": "Majayjay, Laguna",
-    "capacity": "20.0 MW (2x10 MW)",
+    "capacity": "2 x 10 MW",
     "capacityMw": 20,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2004-08-01T00:00:00.000Z",
     "client": "CBK Hydro Power Consortium",
-    "projectValue": "₱950 Million",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/botocan-hydro-1.jpg",
+    "gallery": [
+      "/project-images/botocan-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -478,21 +382,20 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Intake tunnel descaling and concrete re-lining",
-      "Penstock saddle reinforcement on steep volcanic terrain",
-      "Powerhouse machine hall civil retrofitting"
+      "Dam and reservoir",
+      "Rehabilitation and improvement of the headrace tunnel (1.18 km)",
+      "Powerhouse"
     ],
     "keyMilestones": [
       {
-        "date": "2004",
-        "title": "Handover & Grid Energization",
+        "date": "2004-08",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "20.0 MW (2x10 MW)",
-      "safeManHours": "820,000 Safe Hours",
-      "contractValue": "₱950 Million"
+      "capacity": "2 x 10 MW",
+      "tunnelLength": "1.18 km"
     },
     "featured": false,
     "targetCodDate": null,
@@ -501,7 +404,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.400Z",
-    "updatedAt": "2026-10-03T07:25:14.594Z"
+    "updatedAt": "2026-10-05T01:20:57.376Z"
   },
   {
     "id": "cmus19bpx00018c96oni4s718",
@@ -529,8 +432,10 @@
     "projectEndDate": "2013-10-01T00:00:00.000Z",
     "client": "Bubunawan Power Company, Inc.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/bubunawan-hepp-rehab-1.jpg",
+    "gallery": [
+      "/project-images/bubunawan-hepp-rehab-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -560,7 +465,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.829Z",
-    "updatedAt": "2026-10-03T06:50:47.829Z"
+    "updatedAt": "2026-10-05T00:37:43.227Z"
   },
   {
     "id": "cmu7z82wk001ijo96b6vab6o4",
@@ -570,7 +475,7 @@
     "projectCode": "SCIC-HEPP-13",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "A flagship run-of-river clean power generation facility in Claveria, Misamis Oriental, where SCIC served as the sole general contractor. Features a 38-meter high concrete gravity dam across the Cabulig River, intake tower, low-loss headrace tunnel, cylindrical surge tank, high-pressure surface penstock, and an overground powerhouse with two 4 MW Francis turbines. Commissioned in December 2012.",
+    "description": "The 8 MW Cabulig hydroelectric power plant in Claveria, Misamis Oriental, built for Mindanao Energy Systems, Inc. Completed December 2012. The company lists a 38 m high concrete gravity dam (94,000 cubic metres) with foundation grouting, the dam intake, a 6 km reinforced-concrete box culvert headrace (3 m x 3 m), silting basin, forebay and surge pool, powerhouse, tailrace, substation and outlet channel. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 8.6167,
     "longitude": 124.8833,
     "islandGroup": "MINDANAO",
@@ -580,16 +485,18 @@
     "barangay": null,
     "locationDescription": "Cabulig Hydroelectric Power Plant (8 MW) - Claveria, Misamis Oriental (Region X (Northern Mindanao))",
     "location": "Claveria, Misamis Oriental",
-    "capacity": "8.0 MW (38m Concrete Dam)",
+    "capacity": "8 MW",
     "capacityMw": 8,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2012-12-01T00:00:00.000Z",
     "client": "Mindanao Energy Systems, Inc.",
-    "projectValue": "₱1.80 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/cabulig-hydro-1.jpg",
+    "gallery": [
+      "/project-images/cabulig-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -597,34 +504,21 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "38-meter high concrete gravity dam with gated crest spillway across Cabulig River",
-      "Low-loss underground headrace tunnel excavated through mixed volcanic rock geology",
-      "Steel-lined surge tank structure and high-pressure surface penstock conduit",
-      "Powerhouse civil installation housing 2x 4.0 MW horizontal Francis turbine generator sets",
-      "69kV step-up substation and transmission line connection to CEPALCO grid"
+      "Concrete gravity dam, 38 m high, with consolidation grouting",
+      "Dam intake (38 m depth)",
+      "Headrace: 3 m x 3 m box culvert, 6 km",
+      "Silting basin, forebay and surge pool",
+      "Powerhouse, tailrace, substation and outlet channel"
     ],
     "keyMilestones": [
       {
-        "date": "2009",
-        "title": "Project Commencement & River Diversion",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2011",
-        "title": "38-meter Dam Embankment & Headrace Breakthrough",
-        "status": "ACHIEVED"
-      },
-      {
         "date": "2012-12",
-        "title": "Commercial Commissioning & COD Energization",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "8.0 MW (38m Concrete Dam)",
-      "safeManHours": "1,400,000 Safe Hours",
-      "contractValue": "₱1.80 Billion",
-      "generationOutput": "48 GWh / year"
+      "capacity": "8 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -633,7 +527,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.996Z",
-    "updatedAt": "2026-10-03T07:25:17.746Z"
+    "updatedAt": "2026-10-05T01:20:58.971Z"
   },
   {
     "id": "cmu6czxqq0013m496lrabj7gz",
@@ -647,7 +541,7 @@
     "latitude": 17.5,
     "longitude": 121.75,
     "islandGroup": "LUZON",
-    "region": "Region II",
+    "region": "Region II (Cagayan Valley)",
     "province": "Cagayan & Isabela",
     "municipality": "Tuguegarao to Ilagan",
     "barangay": null,
@@ -660,7 +554,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱3.5 Billion (Planned)",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -674,17 +568,8 @@
       "Heavy revetment dykes protecting agricultural lowlands",
       "Integrated regional farm-to-market service roads along canal alignments"
     ],
-    "keyMilestones": [
-      {
-        "date": "2026",
-        "title": "Feasibility & Civil Tender",
-        "status": "SCHEDULED"
-      }
-    ],
-    "metrics": {
-      "roadLength": "45 km canal & dike network",
-      "contractValue": "₱3.5 Billion (Planned)"
-    },
+    "keyMilestones": [],
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -692,7 +577,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.330Z",
-    "updatedAt": "2026-10-03T07:47:27.015Z"
+    "updatedAt": "2026-10-05T00:37:43.390Z"
   },
   {
     "id": "cmu6czw6z000em496y3mfgqfk",
@@ -702,26 +587,28 @@
     "projectCode": "SCIC-HEPP-05",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "Comprehensive civil rehabilitation, penstock structural re-sleeving, spillway restoration, and intake gate overhaul for the historic Caliraya hydroelectric plant, part of the Caliraya-Botocan-Kalayaan (CBK) complex.",
+    "description": "Civil works at the 4 x 8 MW Caliraya hydroelectric power plant in Laguna, where Sta. Clara was subcontractor for civil works to the CBK Hydro Power Consortium. Completed August 2004. The company lists work on the upstream and downstream dam faces, rehabilitation of the Lumot-Caliraya waterway, a new open gated spillway (ogee crest at elevation 284.46 m, designed for more than 500 cubic metres per second) and rehabilitation of the existing tunnel. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 14.2981,
     "longitude": 121.5033,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Laguna",
     "municipality": "Lumban",
     "barangay": null,
     "locationDescription": "Caliraya Hydroelectric Power Plant Rehabilitation - Lumban, Laguna (Region IV-A)",
     "location": "Lumban, Laguna",
-    "capacity": "32.0 MW (4x8 MW)",
+    "capacity": "4 x 8 MW",
     "capacityMw": 32,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2004-08-01T00:00:00.000Z",
     "client": "CBK Hydro Power Consortium",
-    "projectValue": "₱1.2 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/caliraya-hydro-1.jpg",
+    "gallery": [
+      "/project-images/caliraya-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -729,21 +616,20 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Penstock structural relining and anchor block reinforcement",
-      "Spillway concrete resurfacing and automated gate refurbishment",
-      "Powerhouse tailrace de-silting and underwater inspection"
+      "Upstream and downstream dam face works",
+      "Rehabilitation of the Lumot-Caliraya waterway",
+      "New open gated spillway (ogee crest at elevation 284.46 m)",
+      "Rehabilitation and improvement of the existing tunnel"
     ],
     "keyMilestones": [
       {
-        "date": "2004",
-        "title": "Restoration Commissioning",
+        "date": "2004-08",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "32.0 MW (4x8 MW)",
-      "safeManHours": "980,000 Safe Hours",
-      "contractValue": "₱1.2 Billion"
+      "capacity": "4 x 8 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -752,7 +638,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.323Z",
-    "updatedAt": "2026-10-03T07:25:14.521Z"
+    "updatedAt": "2026-10-05T01:20:57.138Z"
   },
   {
     "id": "cmu6czx1z000sm496gy6r05jt",
@@ -762,7 +648,7 @@
     "projectCode": "SCIC-HEPP-08",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "A landmark off-grid renewable energy investment delivering clean, reliable baseload electricity to Oriental Mindoro. SCIC served as sole EPC contractor, delivering an intake weir, 4km canal, tunnel, desander, and modern powerhouse. Won recognition for achieving 1 Million Safe Man-Hours. Completed December 2018.",
+    "description": "Engineering, procurement and construction of the 8 MW Catuiran hydroelectric power plant in Naujan, Oriental Mindoro, for Catuiran Hydro Power Corp. Completed December 2018. The company lists an access road and bailey bridge, the intake dam, an underground twin-chamber desander, a 3.2 km headrace tunnel (3.2 m diameter), a surge shaft, a 160 m penstock, the powerhouse with tailrace, the switchyard and a 19 km, 69 kV transmission line. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 13.2833,
     "longitude": 121.1333,
     "islandGroup": "LUZON",
@@ -772,16 +658,20 @@
     "barangay": null,
     "locationDescription": "Catuiran Hydroelectric Power Plant - Naujan & Baco, Oriental Mindoro (MIMAROPA (Region IV-B))",
     "location": "Naujan & Baco, Oriental Mindoro",
-    "capacity": "8.0 MW",
+    "capacity": "8 MW",
     "capacityMw": 8,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2018-12-01T00:00:00.000Z",
     "client": "Catuiran Hydro Power Corp.",
-    "projectValue": "₱1.5 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/catuiran-hydro-1.jpg",
+    "gallery": [
+      "/project-images/catuiran-hydro-1.jpg",
+      "/project-images/catuiran-hydro-2.jpg",
+      "/project-images/catuiran-hydro-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -789,36 +679,32 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Concrete diversion intake weir and sediment flushing bypass",
-      "4 km open conveyance canal and drill-and-blast rock tunnel",
-      "Two-unit Francis hydro turbine powerhouse and 69kV transmission link"
+      "Access road and bailey bridge",
+      "Intake dam and underground twin-chamber desander",
+      "Headrace tunnel, 3.2 m diameter x 3.2 km",
+      "Surge shaft (5 m diameter x 25 m) and penstock (2.7 m diameter x 160 m)",
+      "Powerhouse with tailrace, switchyard",
+      "69 kV transmission line, 19 km"
     ],
     "keyMilestones": [
       {
-        "date": "2016",
-        "title": "1 Million Safe Man-Hours Safety Award",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "Dec 2018",
-        "title": "Commercial Plant Energization",
+        "date": "2018-12",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "8.0 MW",
-      "safeManHours": "1,000,000+ Safe Hours",
-      "tunnelLength": "Headrace tunnel & 4km canal",
-      "contractValue": "₱1.5 Billion"
+      "capacity": "8 MW",
+      "tunnelLength": "3.2 km"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.439Z",
-    "updatedAt": "2026-10-03T07:25:15.253Z"
+    "updatedAt": "2026-10-05T01:20:59.971Z"
   },
   {
     "id": "cmus19cql000j8c96b05wzwhp",
@@ -846,8 +732,11 @@
     "projectEndDate": null,
     "client": "Maynilad Water Services, Inc. (MWSI)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/valenzuela-sewerage-interceptor-1.jpg",
+    "gallery": [
+      "/project-images/valenzuela-sewerage-interceptor-1.jpg",
+      "/project-images/valenzuela-sewerage-interceptor-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -869,7 +758,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.149Z",
-    "updatedAt": "2026-10-03T06:50:49.149Z"
+    "updatedAt": "2026-10-05T00:37:45.476Z"
   },
   {
     "id": "cmus19c6b00098c96r1eowfet",
@@ -897,8 +786,12 @@
     "projectEndDate": "2014-08-01T00:00:00.000Z",
     "client": "Calamian Islands Power Corporation (CIPC)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/coron-bunker-power-plant-1.jpg",
+    "gallery": [
+      "/project-images/coron-bunker-power-plant-1.jpg",
+      "/project-images/coron-bunker-power-plant-2.jpg",
+      "/project-images/coron-bunker-power-plant-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -928,7 +821,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.419Z",
-    "updatedAt": "2026-10-03T06:50:48.419Z"
+    "updatedAt": "2026-10-05T00:37:44.901Z"
   },
   {
     "id": "cmu6czxhh000zm496o8b74rrt",
@@ -938,7 +831,7 @@
     "projectCode": "SCIC-WTP-03",
     "category": "WATER_RESOURCES",
     "status": "COMPLETED",
-    "description": "One of the most ambitious bulk water supply facilities in Southeast Asia. Powered completely by an integrated hydroelectric plant from the Tamugan River, delivering 300 Million Liters per Day (300 MLD) of treated potable water to over 1 million Davao residents.",
+    "description": "Works on the Davao City Bulk Water Supply Project for Apo Agua Infrastructura, Inc. A Sta. Clara news post of December 2022 reports that Apo Agua tapped the company for the project. The post is the only source used here: the company's project lists do not describe its scope, completion date or contract value, so none is given. 300 MLD is the project's published capacity. Source: Sta. Clara International Corporation news post on the Davao City Bulk Water Supply Project (December 2022), checked 5 October 2026.",
     "latitude": 7.1833,
     "longitude": 125.45,
     "islandGroup": "MINDANAO",
@@ -948,47 +841,43 @@
     "barangay": "Calinan District",
     "locationDescription": "Davao City Bulk Water Supply Project (WTP) - Calinan District, Davao City, Davao del Sur (Region XI (Davao Region))",
     "location": "Calinan District, Davao City, Davao del Sur",
-    "capacity": "300 MLD (Mega Facility)",
+    "capacity": "300 MLD",
     "capacityMw": null,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Apo Agua Infrastructura, Inc.",
-    "projectValue": "₱4.8 Billion (JV Scope)",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/davao-wtp-1.jpg",
+    "gallery": [
+      "/project-images/davao-wtp-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "Massive coagulation, flocculation, and lamella clarifier basins",
-      "Rapid gravity dual-media filtration gallery with backwash recovery",
-      "Twin 50-megaliter post-tensioned treated water storage reservoirs"
-    ],
+    "engineeringScope": [],
     "keyMilestones": [
       {
-        "date": "2023",
-        "title": "Full Commercial Water Supply COD",
+        "date": "2022-12",
+        "title": "Tapped by Apo Agua (company news post, December 2022)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "300 MLD (Mega Facility)",
-      "safeManHours": "3,200,000 Safe Hours",
-      "contractValue": "₱4.8 Billion (JV Scope)"
+      "capacity": "300 MLD"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.997Z",
-    "updatedAt": "2026-10-03T07:25:17.050Z"
+    "updatedAt": "2026-10-05T02:02:59.400Z"
   },
   {
     "id": "cmu6czy1j0018m496don3vk83",
@@ -1058,7 +947,7 @@
     "projectCode": "SCIC-WTP-04",
     "category": "WATER_RESOURCES",
     "status": "ONGOING",
-    "description": "A strategic water security lifeline plant tapping the eastern bay of Laguna de Bay in Pakil, Laguna. SCIC as part of the EPC consortium is constructing an advanced multi-barrier treatment facility featuring dissolved air flotation (DAF), multi-media filtration, ultrafiltration membranes, reverse osmosis, and clearwater storage reservoirs supplying clean potable water to over 2 million residents across Rizal and eastern Metro Manila.",
+    "description": "The East Bay Phase 2 water treatment plant in Pakil, Laguna, for Manila Water Company, Inc. ACCIONA's press release states that Manila Water awarded the contract to the consortium of ACCIONA, PrimeBMD and Sta. Clara. Sta. Clara's own share of the work, the completion date and the contract value are not published, so none is given. Source: ACCIONA press release on the East Bay Phase 2 contract, checked 5 October 2026.",
     "latitude": 14.3985,
     "longitude": 121.488,
     "islandGroup": "LUZON",
@@ -1068,14 +957,14 @@
     "barangay": "Kabulusan",
     "locationDescription": "East Bay Phase 2 Water Treatment Plant (200 MLD) - Kabulusan, Pakil, Laguna (Region IV-A (CALABARZON))",
     "location": "Kabulusan, Pakil, Laguna",
-    "capacity": "200 MLD Potable Water Output",
+    "capacity": "200 MLD",
     "capacityMw": null,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Manila Water Company, Inc.",
-    "projectValue": "₱4.50 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -1084,44 +973,19 @@
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "Offshore/shoreline raw water intake structure and low-lift pumping station",
-      "Dissolved Air Flotation (DAF) clarifying basins and chemical coagulation-flocculation systems",
-      "High-flux ultrafiltration membrane filtration and automated backwash facility",
-      "Reverse Osmosis (RO) brackish desalination treatment units for dry-season salinity control",
-      "50,000 cu.m reinforced concrete treated water reservoir and high-head distribution pumps"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2023-Q4",
-        "title": "Consortium EPC Award & Groundbreaking",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q1",
-        "title": "Civil Foundations & Intake Basin Construction",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Full Commercial Commissioning & Potable Water Delivery",
-        "status": "SCHEDULED"
-      }
-    ],
+    "engineeringScope": [],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "200 MLD Potable Water Output",
-      "safeManHours": "1,150,000 Safe Hours",
-      "contractValue": "₱4.50 Billion",
-      "workforcePeak": 520
+      "capacity": "200 MLD"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.558Z",
-    "updatedAt": "2026-10-03T07:25:14.952Z"
+    "updatedAt": "2026-10-05T01:20:57.762Z"
   },
   {
     "id": "cmu7z82ol001ejo96wuyr7108",
@@ -1148,7 +1012,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱3.20 Billion (Phase 1 Package)",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -1163,28 +1027,8 @@
       "Underground power distribution, telecommunication ductbanks, and street lighting",
       "Potable water distribution lines, sewage collection, and modern drainage infrastructure"
     ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q2",
-        "title": "BCDA Partnership Signing & Site Turnover",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q1",
-        "title": "Civil Grading & Substructure Construction",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Phase 1 Housing Handover & Civil Handover",
-        "status": "SCHEDULED"
-      }
-    ],
-    "metrics": {
-      "safeManHours": "620,000 Safe Hours",
-      "contractValue": "₱3.20 Billion (Phase 1 Package)",
-      "workforcePeak": 480
-    },
+    "keyMilestones": [],
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -1192,7 +1036,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.709Z",
-    "updatedAt": "2026-10-03T07:47:27.140Z"
+    "updatedAt": "2026-10-05T00:37:44.307Z"
   },
   {
     "id": "cmu7z82um001hjo9622gs3gcq",
@@ -1202,7 +1046,7 @@
     "projectCode": "SCIC-DAM-03",
     "category": "WATER_RESOURCES",
     "status": "ONGOING",
-    "description": "A vital agricultural water security dam project undertaken by the National Irrigation Administration (NIA) in upland Bohol. SCIC is constructing a zoned earthfill reservoir storage dam, reinforced concrete chute spillway, outlet works, and primary irrigation canal networks to irrigate over 400 hectares of rice paddies and high-value crops, transforming agricultural productivity in the municipality of Danao.",
+    "description": "The Hibale Small Reservoir Irrigation Project in Danao, Bohol, for the National Irrigation Administration, Region VII. According to NIA Region VII and the Provincial Government of Bohol (July 2025), the zoned earthfill dam and its structures were awarded to Sta. Clara in October 2024. The storage volume, the irrigated area and the contract value are not given here because the source used does not state them. Source: NIA Region VII and Provincial Government of Bohol announcements (July 2025), checked 5 October 2026.",
     "latitude": 9.95,
     "longitude": 124.2,
     "islandGroup": "VISAYAS",
@@ -1212,14 +1056,14 @@
     "barangay": "Hibale",
     "locationDescription": "Hibale Small Reservoir Irrigation Project (SRIP) - Hibale, Danao, Bohol (Region VII (Central Visayas))",
     "location": "Hibale, Danao, Bohol",
-    "capacity": "4.5M cu.m Water Storage • 400+ ha Irrigation",
+    "capacity": null,
     "capacityMw": null,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "National Irrigation Administration (NIA) Region VII",
-    "projectValue": "₱970 Million",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -1229,34 +1073,16 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Zoned earthfill embankment dam across the local catchment with impervious clay core",
-      "Reinforced concrete overflow spillway with energy dissipating stilling basin",
-      "Submerged intake conduit and multi-level outlet works with hydraulic gate controls",
-      "12 km trapezoidal concrete-lined main and secondary irrigation distribution canals"
+      "Zoned earthfill dam and appurtenant structures"
     ],
     "keyMilestones": [
       {
-        "date": "2025-07",
-        "title": "Official Groundbreaking in Danao, Bohol",
+        "date": "2024-10",
+        "title": "Contract awarded (NIA Region VII)",
         "status": "ACHIEVED"
-      },
-      {
-        "date": "2026-Q2",
-        "title": "River Diversion & Dam Embankment Fill",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2028",
-        "title": "Target Reservoir Impounding & Irrigation Handover",
-        "status": "SCHEDULED"
       }
     ],
-    "metrics": {
-      "capacity": "4.5M cu.m Water Storage • 400+ ha Irrigation",
-      "safeManHours": "480,000 Safe Hours",
-      "contractValue": "₱970 Million",
-      "workforcePeak": 320
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -1264,7 +1090,63 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.926Z",
-    "updatedAt": "2026-10-03T07:38:19.432Z"
+    "updatedAt": "2026-10-05T02:02:59.144Z"
+  },
+  {
+    "id": "cmu6czx0b000rm496xecxcbmm",
+    "organizationId": "scic-org-001",
+    "name": "Highway 54 Plaza",
+    "slug": "hq-mandaluyong",
+    "projectCode": "SCIC-HQ-01",
+    "category": "BUILDINGS",
+    "status": "COMPLETED",
+    "description": "Highway 54 Plaza, a four-storey building on EDSA in Mandaluyong City, built for BC Manila. Completed August 2006. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Buildings), checked 5 October 2026.",
+    "latitude": 14.588,
+    "longitude": 121.0545,
+    "islandGroup": "LUZON",
+    "region": "NCR (Metro Manila)",
+    "province": "Metro Manila",
+    "municipality": "Mandaluyong City",
+    "barangay": "Wack-Wack Greenhills",
+    "locationDescription": "SCIC National Headquarters (Highway 54 Plaza) - Wack-Wack Greenhills, Mandaluyong City, Metro Manila (NCR)",
+    "location": "Wack-Wack Greenhills, Mandaluyong City, Metro Manila",
+    "capacity": null,
+    "capacityMw": null,
+    "plantType": null,
+    "percentComplete": null,
+    "projectStartDate": null,
+    "projectEndDate": "2006-08-01T00:00:00.000Z",
+    "client": "BC Manila",
+    "projectValue": null,
+    "featuredImage": "/project-images/hq-mandaluyong-1.jpg",
+    "gallery": [
+      "/project-images/hq-mandaluyong-1.jpg"
+    ],
+    "boundaryGeometry": null,
+    "leadPMName": null,
+    "leadPMRole": null,
+    "leadPMDivision": null,
+    "leadPMLicense": null,
+    "leadPMContact": null,
+    "engineeringScope": [
+      "Four-storey building"
+    ],
+    "keyMilestones": [
+      {
+        "date": "2006-08",
+        "title": "Completed (per the company's project list)",
+        "status": "ACHIEVED"
+      }
+    ],
+    "metrics": {},
+    "featured": false,
+    "targetCodDate": null,
+    "createdById": null,
+    "updatedById": null,
+    "deletedAt": null,
+    "deletedById": null,
+    "createdAt": "2026-09-18T02:48:28.379Z",
+    "updatedAt": "2026-10-05T01:20:59.596Z"
   },
   {
     "id": "cmus19cae000b8c96c489i0cs",
@@ -1292,8 +1174,10 @@
     "projectEndDate": null,
     "client": "D & L Industries, Inc.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/ilijan-lng-site-development-1.jpg",
+    "gallery": [
+      "/project-images/ilijan-lng-site-development-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1314,7 +1198,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.566Z",
-    "updatedAt": "2026-10-03T07:02:09.105Z"
+    "updatedAt": "2026-10-05T00:37:46.169Z"
   },
   {
     "id": "cmus19bs400028c96oo9jg606",
@@ -1342,8 +1226,10 @@
     "projectEndDate": "2012-01-01T00:00:00.000Z",
     "client": "Hedcor, Inc.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/irisan-1-hepp-1.jpg",
+    "gallery": [
+      "/project-images/irisan-1-hepp-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1373,7 +1259,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.908Z",
-    "updatedAt": "2026-10-03T06:50:47.908Z"
+    "updatedAt": "2026-10-05T00:37:43.451Z"
   },
   {
     "id": "cmu6czwsp000om4961fsevc3t",
@@ -1381,13 +1267,13 @@
     "name": "JTI Flex Manufacturing Facility",
     "slug": "jti-flex",
     "projectCode": "SCIC-IND-02",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
-    "description": "A high-precision, cleanroom-standard manufacturing complex inside Lima Technology Center featuring climate-controlled process halls and state-of-the-art HVAC systems. Sole contractor. Completed September 2018.",
+    "description": "The JTI Flex project in Malvar, Batangas, built for JTI International Manufacturing Corporation. Completed September 2018. The company lists the main factory building, roads and connection pipes. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Buildings), checked 5 October 2026.",
     "latitude": 14.0333,
     "longitude": 121.1556,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Batangas",
     "municipality": "Malvar",
     "barangay": null,
@@ -1398,11 +1284,15 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2018-09-01T00:00:00.000Z",
     "client": "JTI International Manufacturing Corporation",
-    "projectValue": "₱2.1 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/jti-flex-1.jpg",
+    "gallery": [
+      "/project-images/jti-flex-1.jpg",
+      "/project-images/jti-flex-2.jpg",
+      "/project-images/jti-flex-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1410,21 +1300,18 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Precision structural steel framing with high thermal performance envelope",
-      "Epoxy terrazzo and dust-free production floor slabs",
-      "Advanced industrial utility piping (compressed air, chilled water, steam)"
+      "Main factory building",
+      "Roads",
+      "Connection pipes"
     ],
     "keyMilestones": [
       {
-        "date": "Sep 2018",
-        "title": "Factory Completion & Handover",
+        "date": "2018-09",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "2,500,000 Safe Hours",
-      "contractValue": "₱2.1 Billion"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -1432,7 +1319,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.105Z",
-    "updatedAt": "2026-10-03T07:25:16.453Z"
+    "updatedAt": "2026-10-05T01:20:59.660Z"
   },
   {
     "id": "cmu7z82g5001ajo96xjhgz38d",
@@ -1442,7 +1329,7 @@
     "projectCode": "SCIC-WIND-02",
     "category": "WIND_POWER",
     "status": "ONGOING",
-    "description": "A high-capacity mountain ridgeline wind development along the rugged crests of Paete and Kalayaan overlooking Laguna de Bay. SCIC and ACCIONA are constructing the comprehensive Civil Balance of Plant (CBOP) and Electrical Balance of Plant (EBOP), including 17 heavy wind turbine gravity foundations, specialized subsoil ground improvement, mountain haul roads (KLY2-AR), and the 115kV/230kV Paete Main Substation.",
+    "description": "Works on the Kalayaan 2 wind power project in Laguna. The ground-improvement specialist Menard names Sta. Clara as its client on this project, which is the only published link found; who Sta. Clara's own client is was not found, so none is recorded. The number of turbines, the scope and the contract value are not published. Source: Menard project reference for the Kalayaan 2 wind power project, checked 5 October 2026.",
     "latitude": 14.354,
     "longitude": 121.505,
     "islandGroup": "LUZON",
@@ -1452,14 +1339,14 @@
     "barangay": "Paete Mountain Ridge",
     "locationDescription": "Kalayaan 2 Wind Power Project (100 MW Balance of Plant) - Paete Mountain Ridge, Paete & Kalayaan, Laguna (Region IV-A (CALABARZON))",
     "location": "Paete Mountain Ridge, Paete & Kalayaan, Laguna",
-    "capacity": "100 MW (17 Heavy WTGs)",
+    "capacity": "100 MW",
     "capacityMw": 100,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱6.20 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [
       "/project-images/scic-project-placeholder.png"
@@ -1470,45 +1357,19 @@
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "17 Reinforced concrete wind turbine generator (WTG) gravity spread foundations",
-      "Specialized subsoil ground improvement (vibro-replacement stone columns and soil stabilization)",
-      "14 km heavy-haul mountain ridge transport roads and crane hardstand platforms (KLY2-AR)",
-      "Electrical Balance of Plant (EBOP): 33kV subterranean collector network and 115kV/230kV Paete Substation",
-      "Mountain slope stabilization, drainage gullies, and environmental erosion control structures"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q1",
-        "title": "Site Mobilization & Paete Logistics Yard Setup",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q2",
-        "title": "Foundation Excavation & Subsoil Stabilization",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Turbine Erection & 230kV Grid Energization",
-        "status": "SCHEDULED"
-      }
-    ],
+    "engineeringScope": [],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "100 MW (17 Heavy WTGs)",
-      "roadLength": "14 km Mountain Access Roads",
-      "safeManHours": "750,000 Safe Hours",
-      "contractValue": "₱6.20 Billion",
-      "workforcePeak": 450
+      "capacity": "100 MW"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.405Z",
-    "updatedAt": "2026-10-03T07:25:18.048Z"
+    "updatedAt": "2026-10-05T01:20:59.890Z"
   },
   {
     "id": "cmu6czwbh000gm4964a8rca4v",
@@ -1518,26 +1379,28 @@
     "projectCode": "SCIC-HEPP-07",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "Civil works, underground high-pressure penstock, and intake channel enlargement for the Kalayaan Pumped Storage Hydroelectric Power Plant — the primary spinning reserve and grid stabilizer for Luzon.",
+    "description": "Civil and underground penstock works at the 2 x 150 MW Kalayaan hydroelectric power plant in Kalayaan, Laguna, where Sta. Clara was subcontractor to the CBK Hydro Power Consortium. Completed August 2004. The company lists new access and service roads, upper penstock earthworks, the sub-horizontal penstock, an inclined shaft (9 m diameter x 154 m), an access tunnel (5 m diameter x 120 m), a twin penstock gallery, a bifurcation cavern and concrete backfill of the penstock along the inclined shaft. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 14.3564,
     "longitude": 121.5089,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Laguna",
     "municipality": "Kalayaan",
     "barangay": null,
     "locationDescription": "Kalayaan Pumped Storage Hydroelectric Plant - Kalayaan, Laguna (Region IV-A)",
     "location": "Kalayaan, Laguna",
-    "capacity": "300 MW (Expansion Units)",
+    "capacity": "2 x 150 MW",
     "capacityMw": 300,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2004-08-01T00:00:00.000Z",
     "client": "CBK Hydro Power Consortium",
-    "projectValue": "₱3.8 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/kalayaan-hydro-1.jpg",
+    "gallery": [
+      "/project-images/kalayaan-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1545,21 +1408,21 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "High-pressure underground penstock tunnel excavation and encasement",
-      "Tailrace channel dredging and concrete stabilization at Laguna de Bay",
-      "Upper reservoir intake tower structural modifications"
+      "New access roads and service roads",
+      "Upper penstock earthworks and sub-horizontal penstock",
+      "Inclined shaft excavation, 9 m diameter x 154 m",
+      "Access tunnel, 5 m diameter x 120 m",
+      "Twin penstock gallery and bifurcation cavern"
     ],
     "keyMilestones": [
       {
-        "date": "2004",
-        "title": "Commercial Pumped-Storage Operations",
+        "date": "2004-08",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "300 MW (Expansion Units)",
-      "safeManHours": "2,600,000 Safe Hours",
-      "contractValue": "₱3.8 Billion"
+      "capacity": "2 x 150 MW"
     },
     "featured": true,
     "targetCodDate": null,
@@ -1568,7 +1431,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.485Z",
-    "updatedAt": "2026-10-03T07:25:15.938Z"
+    "updatedAt": "2026-10-05T01:20:58.653Z"
   },
   {
     "id": "cmu6czxut0015m496svmbppv0",
@@ -1595,7 +1458,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱9.20 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -1611,48 +1474,28 @@
       "Surface Powerhouse housing 3x High-Efficiency Francis Turbine Units",
       "69 kV High-Voltage Transmission Interconnection to La Trinidad Grid"
     ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q3",
-        "title": "Site Mobilization & Tunnel Portal Stabilization",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q2",
-        "title": "Headrace Tunnel Underground Breakthrough",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Commercial Operations Date (COD) & Grid Synchronization",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "60.0 MW",
-      "safeManHours": "1,450,000 Safe Hours",
-      "tunnelLength": "8.2 km",
-      "contractValue": "₱9.20 Billion",
-      "workforcePeak": 680
+      "capacity": "60.0 MW"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.477Z",
-    "updatedAt": "2026-10-03T07:47:26.176Z"
+    "updatedAt": "2026-10-05T00:37:42.778Z"
   },
   {
     "id": "cmu6czygt001fm4969x7bquyj",
     "organizationId": "scic-org-001",
-    "name": "Kiangan Mini-Hydroelectric Power Project (17.5 MW)",
+    "name": "Kiangan Mini Hydro Project (17.8 MW)",
     "slug": "kiangan-mini-hydro",
     "projectCode": "SCIC-HEPP-04",
     "category": "HYDROPOWER",
     "status": "ONGOING",
-    "description": "A high-head run-of-river mini hydroelectric installation in the scenic highlands of Ifugao. SCIC is executing the construction of a 2.8 km drill-and-blast headrace tunnel, concrete diversion weir, surface desander tanks, steel surface penstock, and powerhouse with high-efficiency Pelton turbines.",
+    "description": "Construction of the 17.8 MW Kiangan mini hydro project in Barangays Munggayang, Bokiawan and Dalligan, Kiangan, Ifugao, for Kiangan Mini Hydro Corporation. The company lists works on the Ibulao, Asin and Hungduan schemes: weirs, open channels, desanders, headrace conduits (3,798 m, 2,300 m and 3,575 m), forebays, penstocks, spillways, powerhouses, stilling basins, substations and bridges. The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 16.7833,
     "longitude": 121.0833,
     "islandGroup": "LUZON",
@@ -1662,16 +1505,18 @@
     "barangay": null,
     "locationDescription": "Kiangan Mini-Hydroelectric Power Project (17.5 MW) - Kiangan, Ifugao (Cordillera Administrative Region (CAR))",
     "location": "Kiangan, Ifugao",
-    "capacity": "17.5 MW",
+    "capacity": "17.8 MW",
     "capacityMw": 17.5,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Kiangan Mini Hydro Corporation",
-    "projectValue": "₱2.30 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/kiangan-mini-hydro-1.jpg",
+    "gallery": [
+      "/project-images/kiangan-mini-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1679,34 +1524,15 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "2.8 km Drill-and-Blast Headrace Tunnel in High-Altitude Cordillera",
-      "Surface Steel Penstock on Reinforced Concrete Anchor Blocks",
-      "Run-of-River Diversion Weir with Sand Flushing Gates",
-      "Powerhouse Construction & Pelton Turbine Installation"
+      "Weirs, open channels and desanders (Asin and Hungduan)",
+      "Headrace conduits: 3,798 m (Ibulao), 2,300 m (Asin), 3,575 m (Hungduan)",
+      "Forebays, penstocks (2,300 mm diameter) and spillways",
+      "Powerhouses, stilling basins and substations",
+      "Bridges"
     ],
-    "keyMilestones": [
-      {
-        "date": "2023-Q2",
-        "title": "Access Road Construction to Mountain Portal",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2024-Q3",
-        "title": "Tunnel Excavation & Headrace Development",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Target Commercial Commissioning (COD)",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "17.5 MW",
-      "safeManHours": "1,800,000 Safe Hours",
-      "tunnelLength": "2.8 km",
-      "contractValue": "₱2.30 Billion",
-      "workforcePeak": 480
+      "capacity": "17.8 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -1715,7 +1541,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:30.269Z",
-    "updatedAt": "2026-10-03T07:25:13.806Z"
+    "updatedAt": "2026-10-05T01:20:56.796Z"
   },
   {
     "id": "cmu6czvyl000bm496qwy0ss3j",
@@ -1743,8 +1569,12 @@
     "projectEndDate": null,
     "client": "Maynilad Water Services, Inc. (MWSI)",
     "projectValue": null,
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "featuredImage": "/project-images/la-mesa-wtp-1.jpg",
+    "gallery": [
+      "/project-images/la-mesa-wtp-1.jpg",
+      "/project-images/la-mesa-wtp-2.jpg",
+      "/project-images/la-mesa-wtp-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1760,14 +1590,14 @@
     "metrics": {
       "capacity": "1,500 MLD"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.021Z",
-    "updatedAt": "2026-10-03T07:39:52.183Z"
+    "updatedAt": "2026-10-05T00:37:41.005Z"
   },
   {
     "id": "cmus19bn100008c96bsobk40v",
@@ -1795,8 +1625,10 @@
     "projectEndDate": null,
     "client": "Agusan Power Corporation",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/lake-mainit-hepp-1.jpg",
+    "gallery": [
+      "/project-images/lake-mainit-hepp-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1821,7 +1653,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.725Z",
-    "updatedAt": "2026-10-03T06:50:47.725Z"
+    "updatedAt": "2026-10-05T00:37:42.627Z"
   },
   {
     "id": "cmu6czwy6000qm496o7syz29v",
@@ -1831,11 +1663,11 @@
     "projectCode": "SCIC-FLD-01",
     "category": "ROADS_HIGHWAYS",
     "status": "COMPLETED",
-    "description": "Major river basin flood control including compacted earth dikes, concrete revetments, spur dikes, and multi-barrel sluiceways shielding Laoag City from severe monsoon flooding.",
+    "description": "River improvement under the Laoag River Basin Flood Control and Sabo Project in Ilocos Norte, where Sta. Clara was subcontractor to TOYO Construction Co., Ltd. Completed June 2007. The company lists the Laoag-Bongo and alluvial fan river improvement: preparatory works, earth dike works, sluiceway and spur dike works. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Flood Control and Dams), checked 5 October 2026.",
     "latitude": 18.196,
     "longitude": 120.5927,
     "islandGroup": "LUZON",
-    "region": "Region I",
+    "region": "Region I (Ilocos Region)",
     "province": "Ilocos Norte",
     "municipality": "Laoag City & San Nicolas",
     "barangay": null,
@@ -1846,11 +1678,13 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2007-06-01T00:00:00.000Z",
     "client": "TOYO Construction Co., Ltd.",
-    "projectValue": "₱1.3 Billion",
-    "featuredImage": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1200&auto=format&fit=crop&q=80",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/laoag-bongo-1.jpg",
+    "gallery": [
+      "/project-images/laoag-bongo-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": "Engr. Ramon Valenzuela",
     "leadPMRole": "Flood Mitigation Specialist",
@@ -1858,22 +1692,19 @@
     "leadPMLicense": null,
     "leadPMContact": "r.valenzuela@staclara.com.ph",
     "engineeringScope": [
-      "12 km rock gabion and concrete slope protection dikes",
-      "Automated tidal flap sluiceway discharge gates",
-      "Extensive channel dredging and river training groins"
+      "Preparatory works",
+      "Earth dike works",
+      "Sluiceway works",
+      "Spur dike works"
     ],
     "keyMilestones": [
       {
-        "date": "2007",
-        "title": "Project Handover to DPWH",
+        "date": "2007-06",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "roadLength": "12 km revetments & dikes",
-      "safeManHours": "1,500,000 Safe Hours",
-      "contractValue": "₱1.3 Billion"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -1881,7 +1712,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.302Z",
-    "updatedAt": "2026-10-03T07:25:14.722Z"
+    "updatedAt": "2026-10-05T01:20:57.531Z"
   },
   {
     "id": "cmu6czxwu0016m496snjoh39a",
@@ -1908,7 +1739,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱3.80 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -1924,37 +1755,18 @@
       "Crawler Crane Hardstand Assembly Platforms (1,200-ton capacity)",
       "Medium Voltage Underground Collector Trenching and Padmount Substations"
     ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q4",
-        "title": "Geotechnical Survey & Soil Grouting",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q3",
-        "title": "WTG Foundation Cap Concreting",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q2",
-        "title": "Substation Interconnection & Energization",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "70.0 MW",
-      "safeManHours": "820,000 Safe Hours",
-      "contractValue": "₱3.80 Billion",
-      "workforcePeak": 420
+      "capacity": "70.0 MW"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.550Z",
-    "updatedAt": "2026-10-03T07:47:26.333Z"
+    "updatedAt": "2026-10-05T00:37:46.404Z"
   },
   {
     "id": "cmu6czx6i000um4968am2gukb",
@@ -1964,11 +1776,11 @@
     "projectCode": "SCIC-HEPP-09",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "A run-of-river mini hydro installation on the renowned Loboc River in Bohol, combining eco-sensitive architectural design with dependable clean energy production.",
+    "description": "The 1.2 MW Loboc mini hydroelectric power plant in Loboc, Bohol, built for Sta. Clara Power Corporation. The company lists an access road and temporary bridge, a 260 m penstock (2.1 m diameter), the intake structure, an inflatable dam, the powerhouse, slope protection, fencing and landscaping. The company does not publish the completion date or the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 9.6417,
     "longitude": 124.0333,
     "islandGroup": "VISAYAS",
-    "region": "Region VII",
+    "region": "Region VII (Central Visayas)",
     "province": "Bohol",
     "municipality": "Loboc",
     "barangay": null,
@@ -1981,9 +1793,11 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Sta. Clara Power Corporation",
-    "projectValue": "₱380 Million",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/loboc-hydro-1.jpg",
+    "gallery": [
+      "/project-images/loboc-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -1991,21 +1805,15 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Concrete gravity weir and automated intake screen",
-      "Short penstock conduit feeding compact horizontal Francis turbines",
-      "Architectural riverside powerhouse blending into tourism corridor"
+      "Access road and temporary bridge",
+      "Penstock, 2.1 m diameter x 260 m",
+      "Intake structure and inflatable dam",
+      "Powerhouse",
+      "Slope protection, fencing and landscaping"
     ],
-    "keyMilestones": [
-      {
-        "date": "2012",
-        "title": "Plant Commissioning",
-        "status": "ACHIEVED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "1.2 MW",
-      "safeManHours": "480,000 Safe Hours",
-      "contractValue": "₱380 Million"
+      "capacity": "1.2 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -2014,17 +1822,17 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.602Z",
-    "updatedAt": "2026-10-03T07:25:15.112Z"
+    "updatedAt": "2026-10-05T01:20:57.933Z"
   },
   {
     "id": "cmu6czvom0006m496rujhvx9i",
     "organizationId": "scic-org-001",
-    "name": "LRT-1 Cavite Extension Viaduct Works",
+    "name": "LRT-1 Cavite Extension Railway Viaduct",
     "slug": "lrt1-cavite",
     "projectCode": "SCIC-RAIL-02",
     "category": "RAIL_TRANSIT",
     "status": "ONGOING",
-    "description": "Civil works, substructure piers, and elevated guideway construction extending the Light Rail Transit Line 1 southward from Baclaran to Niog, Bacoor, easing traffic congestion for over 300,000 daily commuters.",
+    "description": "Railway viaduct works on the LRT-1 Cavite Extension, for Bouygues Travaux Publics Philippines, Inc. The company gives the location as Cavite and the component as the railway viaduct; it does not publish the length, the stations served or the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Roads, Bridges and Railways), checked 5 October 2026.",
     "latitude": 14.4792,
     "longitude": 120.9856,
     "islandGroup": "LUZON",
@@ -2041,9 +1849,11 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Bouygues Travaux Publics Philippines, Inc.",
-    "projectValue": "₱4.5 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/lrt1-cavite-1.jpg",
+    "gallery": [
+      "/project-images/lrt1-cavite-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2051,35 +1861,18 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Urban viaduct bored piling in dense utility-rich right-of-way",
-      "Specialized girder launching over major arterial highways and tollways",
-      "Intermodal station substructures and pedestrian overpass civil works"
+      "Railway viaduct"
     ],
-    "keyMilestones": [
-      {
-        "date": "Nov 2024",
-        "title": "Phase 1 (Dr. Santos Station) Opening",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2026",
-        "title": "Phase 2 Bacoor Extension Completion",
-        "status": "IN_PROGRESS"
-      }
-    ],
-    "metrics": {
-      "roadLength": "11.7 km rail corridor",
-      "safeManHours": "4,200,000 Safe Hours",
-      "contractValue": "₱4.5 Billion"
-    },
-    "featured": true,
+    "keyMilestones": [],
+    "metrics": {},
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.662Z",
-    "updatedAt": "2026-10-03T07:25:15.712Z"
+    "updatedAt": "2026-10-05T01:20:58.276Z"
   },
   {
     "id": "cmu6czxjn0010m496oho8ni4k",
@@ -2089,11 +1882,11 @@
     "projectCode": "SCIC-MINE-01",
     "category": "MINING_TUNNELING",
     "status": "ONGOING",
-    "description": "Critical environmental protection and mine safety infrastructure in Davao de Oro. Scope entails deep drainage tunnels, decant towers, rock starter dams, and spillways engineered to withstand severe tropical storms and seismic events.",
+    "description": "Phase 3C of the Maco Tailings Management Facility in Maco, Davao de Oro, for Apex Mining Company, Inc.: an eight-metre dam raise from elevation 655 m to 663 m. The company says the combined rockfill and earthfill embankment (Phase 1 to Phase 3C) totals more than 2 million cubic metres, 106 m high, with a crest 300 m long and 34 m wide. The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Mining and Tunnelling Works), checked 5 October 2026.",
     "latitude": 7.3667,
     "longitude": 125.8667,
     "islandGroup": "MINDANAO",
-    "region": "Region XI",
+    "region": "Region XI (Davao Region)",
     "province": "Davao de Oro",
     "municipality": "Maco",
     "barangay": null,
@@ -2106,9 +1899,11 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Apex Mining Company, Inc.",
-    "projectValue": "₱1.9 Billion",
-    "featuredImage": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200&auto=format&fit=crop&q=80",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/maco-tmf-1.jpg",
+    "gallery": [
+      "/project-images/maco-tmf-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": "Engr. Bernardo Reyes",
     "leadPMRole": "Underground Mining & Tunnel Manager",
@@ -2116,35 +1911,75 @@
     "leadPMLicense": null,
     "leadPMContact": "b.reyes@staclara.com.ph",
     "engineeringScope": [
-      "Deep underground rock diversion tunnel excavation and concrete lining",
-      "Engineered rockfill containment dam embankment with geo-membrane liner",
-      "Decant towers and high-capacity emergency flood spillways"
+      "Dam raise, 8.0 m (elevation 655.00 to 663.00)",
+      "Rockfill and earthfill embankment"
     ],
-    "keyMilestones": [
-      {
-        "date": "2022",
-        "title": "Diversion Tunnel Breakthrough",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025",
-        "title": "Phase 3C Dam Raise Completion",
-        "status": "IN_PROGRESS"
-      }
-    ],
-    "metrics": {
-      "safeManHours": "1,500,000 Safe Hours",
-      "tunnelLength": "Deep diversion drainage tunnel",
-      "contractValue": "₱1.9 Billion"
-    },
-    "featured": true,
+    "keyMilestones": [],
+    "metrics": {},
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.075Z",
-    "updatedAt": "2026-10-03T07:25:15.406Z"
+    "updatedAt": "2026-10-05T01:20:57.999Z"
+  },
+  {
+    "id": "cmu6czyci001dm496humy19k0",
+    "organizationId": "scic-org-001",
+    "name": "Maco Tailings Management Facility Phase 3B (Apex Mining)",
+    "slug": "apex-mining-maco",
+    "projectCode": "SCIC-MINE-02",
+    "category": "MINING_TUNNELING",
+    "status": "COMPLETED",
+    "description": "A five-metre raise of the tailings dam (elevation 650 m to 655 m, Phase 3B) at the Maco Tailings Management Facility in Maco, Davao de Oro, for Apex Mining Company, Inc. Completed January 2019. The company says it has worked for Apex Mining at Maco since 2010; the later raise is recorded separately as Phase 3C. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Mining and Tunnelling Works), checked 5 October 2026.",
+    "latitude": 7.3711,
+    "longitude": 126.0461,
+    "islandGroup": "MINDANAO",
+    "region": "Region XI (Davao Region)",
+    "province": "Davao de Oro",
+    "municipality": "Maco",
+    "barangay": "Masara",
+    "locationDescription": "Apex Mining Maco Underground Infrastructure & TSF Expansion - Masara, Maco, Davao de Oro (Region XI (Davao Region))",
+    "location": "Masara, Maco, Davao de Oro",
+    "capacity": null,
+    "capacityMw": null,
+    "plantType": null,
+    "percentComplete": null,
+    "projectStartDate": null,
+    "projectEndDate": "2019-01-01T00:00:00.000Z",
+    "client": "Apex Mining Company, Inc.",
+    "projectValue": null,
+    "featuredImage": "/project-images/apex-mining-maco-1.jpg",
+    "gallery": [
+      "/project-images/apex-mining-maco-1.jpg"
+    ],
+    "boundaryGeometry": null,
+    "leadPMName": null,
+    "leadPMRole": null,
+    "leadPMDivision": null,
+    "leadPMLicense": null,
+    "leadPMContact": null,
+    "engineeringScope": [
+      "Tailings dam raise, 5.0 m (elevation 650.00 to 655.00, Phase 3B)"
+    ],
+    "keyMilestones": [
+      {
+        "date": "2019-01",
+        "title": "Completed (per the company's project list)",
+        "status": "ACHIEVED"
+      }
+    ],
+    "metrics": {},
+    "featured": false,
+    "targetCodDate": null,
+    "createdById": null,
+    "updatedById": null,
+    "deletedAt": null,
+    "deletedById": null,
+    "createdAt": "2026-09-18T02:48:30.114Z",
+    "updatedAt": "2026-10-05T01:20:56.990Z"
   },
   {
     "id": "cmu6czy69001am496tbxblctb",
@@ -2152,9 +1987,9 @@
     "name": "Maersk - LF Logistics South Luzon Distribution Mega Hub",
     "slug": "maersk-calamba",
     "projectCode": "SCIC-LOG-MAERSK",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
-    "description": "A 100,000-square-meter automated distribution center in Calamba, Laguna. SCIC served as the general contractor on a 10-hectare site, constructing high-bay multi-temperature warehouses, massive structural steel truss systems, 75 loading docks, and high-efficiency logistics aprons. Groundbreaking November 2022.",
+    "description": "Main building works for the Maersk - LF Logistics South Luzon facility in Calamba, Laguna, which the company lists as \"Solid LF Main Building Works\", as general contractor for Precos, Inc. The company lists civil, structural, architectural, mechanical, electrical, fire protection, plumbing and sanitary works. Maersk inaugurated the facility on 30 October 2024 (the company's own list still shows it as ongoing). The company does not publish the floor area or the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Buildings) and news post on the Maersk - LF Logistics South Luzon facility (December 2022), checked 5 October 2026.",
     "latitude": 14.2117,
     "longitude": 121.1656,
     "islandGroup": "LUZON",
@@ -2169,9 +2004,9 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2024-10-01T00:00:00.000Z",
     "client": "Precos, Inc.",
-    "projectValue": "₱2.80 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-maersk-logistics-groundbreaking.jpg",
     "gallery": [
       "/project-images/scic-maersk-logistics-groundbreaking.jpg"
@@ -2183,33 +2018,24 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "10-Hectare Master Site Civil Development & Industrial Grading",
-      "High-Bay Structural Steel Warehouse Enclosures with Insulated Panels",
-      "Laser-Screed Post-Tensioned Superflat Floor Slabs (FM2 Tolerance)",
-      "Complete MEPF, Fire Suppression, and Automated Sorting Infrastructure"
+      "Civil and structural works",
+      "Architectural works",
+      "Mechanical, electrical and fire protection works",
+      "Plumbing and sanitary works"
     ],
     "keyMilestones": [
       {
-        "date": "2022-11",
-        "title": "Groundbreaking Ceremony",
+        "date": "2022-12",
+        "title": "Groundbreaking ceremony (company news post, December 2022)",
         "status": "ACHIEVED"
       },
       {
-        "date": "2023-Q4",
-        "title": "Structural Steel Frame Completion",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2024-Q3",
-        "title": "Turnkey Handover to Maersk Logistics",
+        "date": "2024-10",
+        "title": "Facility inaugurated by Maersk (30 October 2024)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "1,900,000 Safe Hours",
-      "contractValue": "₱2.80 Billion",
-      "workforcePeak": 750
-    },
+    "metrics": {},
     "featured": true,
     "targetCodDate": null,
     "createdById": null,
@@ -2217,7 +2043,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.889Z",
-    "updatedAt": "2026-10-03T07:25:15.870Z"
+    "updatedAt": "2026-10-05T02:02:58.746Z"
   },
   {
     "id": "cmu6czw0l000cm496bqlhj9j5",
@@ -2226,27 +2052,29 @@
     "slug": "magdiwang-reservoir",
     "projectCode": "SCIC-RES-01",
     "category": "WATER_RESOURCES",
-    "status": "COMPLETED",
-    "description": "High-magnitude seismic retrofitting of a massive 40-megaliter covered water reservoir in Bacoor, Cavite, utilizing carbon-fiber reinforced polymer (CFRP) wraps, post-tensioned tendon stabilization, and leak-proof interior lining.",
+    "status": "ONGOING",
+    "description": "Seismic resiliency enhancement of the 40 ML Magdiwang reservoir on Marcos Alvarez Extension, Bacoor City, Cavite, for Maynilad Water Services, Inc. The company lists a seismic evaluation and analysis to the latest code requirements, the detailed engineering drawings and the structural strengthening works. The company shows it on its ongoing list, and no published source was found that reports the work finished, so it is recorded as ongoing. The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Water and Wastewater Systems), checked 5 October 2026.",
     "latitude": 14.458,
     "longitude": 120.974,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Cavite",
     "municipality": "Bacoor City",
     "barangay": null,
     "locationDescription": "Magdiwang Reservoir Seismic Resiliency Enhancement (40 ML) - Bacoor City, Cavite (Region IV-A)",
     "location": "Bacoor City, Cavite",
-    "capacity": "40 Million Liters (40 ML)",
+    "capacity": "40 ML",
     "capacityMw": null,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Maynilad Water Services, Inc. (MWSI)",
-    "projectValue": "₱750 Million",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/magdiwang-reservoir-1.jpg",
+    "gallery": [
+      "/project-images/magdiwang-reservoir-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2254,21 +2082,13 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Seismic shear wall retrofitting and foundation micro-piling",
-      "Advanced waterproofing membrane replacement over 15,000 sq.m",
-      "Pressure-equalizing overflow and telemetry monitoring conduits"
+      "Seismic evaluation and analysis",
+      "Detailed engineering drawings",
+      "Structural strengthening works"
     ],
-    "keyMilestones": [
-      {
-        "date": "2021",
-        "title": "Structural Certification Handover",
-        "status": "ACHIEVED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "40 Million Liters (40 ML)",
-      "safeManHours": "650,000 Safe Hours",
-      "contractValue": "₱750 Million"
+      "capacity": "40 ML"
     },
     "featured": false,
     "targetCodDate": null,
@@ -2277,7 +2097,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.093Z",
-    "updatedAt": "2026-10-03T07:25:14.368Z"
+    "updatedAt": "2026-10-05T01:54:14.848Z"
   },
   {
     "id": "cmu6czxdm000xm496e6yu9a56",
@@ -2287,11 +2107,11 @@
     "projectCode": "SCIC-HEPP-11",
     "category": "HYDROPOWER",
     "status": "ONGOING",
-    "description": "A high-efficiency run-of-river cascading hydro plant under active construction in Kalilangan, Bukidnon. Contract signed late 2022; will feed green baseload power directly into the Mindanao transmission grid.",
+    "description": "The Maladugao hydroelectric power project in Kalilangan, Bukidnon. A Sta. Clara news post of October 2022 reports the project and names Investco BHPI Inc. as the partner; it does not say who awarded the contract, so no client is recorded. The plant's components, the completion date and the contract value are not published. The 8.4 MW on this record is not stated in the source used. Source: Sta. Clara International Corporation news post on the Maladugao project (October 2022), checked 5 October 2026.",
     "latitude": 7.7333,
     "longitude": 124.75,
     "islandGroup": "MINDANAO",
-    "region": "Region X",
+    "region": "Region X (Northern Mindanao)",
     "province": "Bukidnon",
     "municipality": "Kalilangan",
     "barangay": null,
@@ -2304,51 +2124,30 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱1.7 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/maladugao-hydro-1.jpg",
+    "gallery": [
+      "/project-images/maladugao-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "Reinforced concrete diversion weir and desander basin",
-      "Surface penstock and steep slope rock excavation",
-      "Reinforced concrete powerhouse machine hall with dual turbine units"
-    ],
-    "keyMilestones": [
-      {
-        "date": "Oct 2022",
-        "title": "EPC Contract Signing",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2024",
-        "title": "Intake & Weir Substructure Completion",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2026",
-        "title": "Target Commercial Operation Date",
-        "status": "IN_PROGRESS"
-      }
-    ],
+    "engineeringScope": [],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "8.4 MW",
-      "safeManHours": "780,000 Safe Hours",
-      "contractValue": "₱1.7 Billion",
-      "workforcePeak": 310
+      "capacity": "8.4 MW"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.858Z",
-    "updatedAt": "2026-10-03T07:25:15.323Z"
+    "updatedAt": "2026-10-05T01:20:58.064Z"
   },
   {
     "id": "cmu7z830g001kjo96enhldv86",
@@ -2375,7 +2174,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱1.65 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -2391,28 +2190,9 @@
       "Semi-underground powerhouse civil works and electro-mechanical installation",
       "Dedicated 34.5kV distribution tie-line linking to the regional power distribution grid"
     ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q1",
-        "title": "Camp Construction & Heavy Equipment Deployment",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q2",
-        "title": "Weir Foundation Grouting & Conduit Trenching",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2027",
-        "title": "Commercial Operations & Power Generation",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "7.4 MW",
-      "safeManHours": "620,000 Safe Hours",
-      "contractValue": "₱1.65 Billion",
-      "workforcePeak": 350
+      "capacity": "7.4 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -2421,7 +2201,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:27.136Z",
-    "updatedAt": "2026-10-03T07:47:26.609Z"
+    "updatedAt": "2026-10-05T00:37:44.526Z"
   },
   {
     "id": "cmu7z82ye001jjo96xq2thqvn",
@@ -2431,7 +2211,7 @@
     "projectCode": "SCIC-HEPP-14",
     "category": "HYDROPOWER",
     "status": "ONGOING",
-    "description": "A high-head run-of-river hydroelectric development harnessing the pristine waters of the Mangima River in Manolo Fortich, Bukidnon. Designed by EDCOP and built by SCIC as EPC contractor, the project features a low-environmental-impact diversion weir, automated sand settling desander, 3.2 km high-pressure penstock, and an advanced powerhouse equipped with multi-jet Pelton turbines feeding clean energy to the Mindanao grid.",
+    "description": "Engineering, procurement and construction of the 12 MW Mangima hydroelectric power plant in Manolo Fortich, Bukidnon, for Mangima Hydro Power Corporation (MHPC). The designer, EDCOP, states on its project page that MHPC awarded the EPC contract to Sta. Clara and that EDCOP prepared the detailed engineering design. The plant's components and the contract value are not given here because that page is the only source used. Source: EDCOP project page, detailed engineering design of the 12 MW Mangima hydroelectric power plant, checked 5 October 2026.",
     "latitude": 8.3714,
     "longitude": 124.8844,
     "islandGroup": "MINDANAO",
@@ -2441,14 +2221,14 @@
     "barangay": "Dahilayan / Tankulan",
     "locationDescription": "Mangima Hydroelectric Power Plant (12 MW) - Dahilayan / Tankulan, Manolo Fortich, Bukidnon (Region X (Northern Mindanao))",
     "location": "Dahilayan / Tankulan, Manolo Fortich, Bukidnon",
-    "capacity": "12.0 MW",
+    "capacity": "12 MW",
     "capacityMw": 12,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Mangima Hydro Power Corporation (MHPC)",
-    "projectValue": "₱2.40 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -2458,44 +2238,20 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Reinforced concrete overflow diversion weir and automated trash rack intake structure",
-      "Two-chamber desander settling basin with continuous sediment scouring sluiceway",
-      "3.2 km high-pressure surface and buried steel penstock conduit on concrete saddle blocks",
-      "Multi-jet Pelton turbine powerhouse equipped with brushless synchronous generators",
-      "69kV switchyard with SF6 circuit breakers feeding the local electric cooperative grid"
+      "Engineering, procurement and construction (EPC)"
     ],
-    "keyMilestones": [
-      {
-        "date": "2023-Q2",
-        "title": "Access Roads & Intake Weir Excavation",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q1",
-        "title": "Penstock Line Assembly & Powerhouse Civil Works",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q4",
-        "title": "Commercial Grid Synchronization & COD",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "12.0 MW",
-      "safeManHours": "950,000 Safe Hours",
-      "contractValue": "₱2.40 Billion",
-      "workforcePeak": 420,
-      "generationOutput": "64 GWh / year"
+      "capacity": "12 MW"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:27.062Z",
-    "updatedAt": "2026-10-03T07:25:15.481Z"
+    "updatedAt": "2026-10-05T01:20:58.135Z"
   },
   {
     "id": "cmu6czxav000wm496g59oe0xw",
@@ -2505,7 +2261,7 @@
     "projectCode": "SCIC-HEPP-10",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "A monumental cascading run-of-river hydro development in Mindanao. SCIC served as sole contractor for the massive 6-kilometer headrace tunnel, complex desander basins, and tandem powerhouses (MF1: 43.4 MW, MF2: 25.4 MW), achieving 2 Million Safe Man-Hours without loss-time injuries. Completed December 2018.",
+    "description": "The Manolo Fortich hydroelectric power plant in Manolo Fortich, Bukidnon, built for Hedcor Bukidnon, Inc. (Aboitiz Power Corporation). Completed December 2018. The company lists the weir, a 700 m concrete box culvert, the desander, a 6 km headrace tunnel (4 m diameter, drill and blast), a surge tank (13 m diameter x 24 m), a 440 m penstock, the powerhouse, the switchyard and an 8 km access road with river crossings. The company's page does not state the plant's capacity; 68.8 MW is the figure already on this record. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants; Mining and Tunnelling Works), checked 5 October 2026.",
     "latitude": 8.3667,
     "longitude": 124.8667,
     "islandGroup": "MINDANAO",
@@ -2515,16 +2271,19 @@
     "barangay": null,
     "locationDescription": "Manolo Fortich 1 & 2 Hydroelectric Power Plants - Manolo Fortich, Bukidnon (Region X (Northern Mindanao))",
     "location": "Manolo Fortich, Bukidnon",
-    "capacity": "68.8 MW (Combined)",
+    "capacity": "68.8 MW",
     "capacityMw": 68.8,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2018-12-01T00:00:00.000Z",
     "client": "Hedcor Bukidnon, Inc. / Aboitiz Power Corporation",
-    "projectValue": "₱5.8 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/manolo-fortich-1.jpg",
+    "gallery": [
+      "/project-images/manolo-fortich-1.jpg",
+      "/project-images/manolo-fortich-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2532,38 +2291,32 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "6 km continuous headrace rock tunnel with sequential drill-and-blast excavation",
-      "Twin concrete overflow diversion weirs along the Tagoloan River basin",
-      "Two distinct powerhouse facilities housing 4x Francis and 4x Pelton generating units",
-      "Substation switchyards and 138kV transmission grid interconnect"
+      "Weir and concrete box culvert (3 m x 3 m x 700 m)",
+      "Desander",
+      "Headrace tunnel, 4 m diameter x 6 km (drill and blast)",
+      "Surge tank and penstock (2.17 m diameter x 440 m)",
+      "Powerhouse and switchyard",
+      "Access road (8 km) and river crossing structures"
     ],
     "keyMilestones": [
       {
-        "date": "Dec 2018",
-        "title": "Full Commercial Operations Handover",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2019",
-        "title": "2 Million Safe Hours National Award",
+        "date": "2018-12",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "68.8 MW (Combined)",
-      "safeManHours": "2,000,000+ Safe Hours",
-      "tunnelLength": "6.0 km headrace tunnel",
-      "contractValue": "₱5.8 Billion",
-      "generationOutput": "360 GWh / year"
+      "capacity": "68.8 MW",
+      "tunnelLength": "6 km"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.759Z",
-    "updatedAt": "2026-10-03T07:25:17.407Z"
+    "updatedAt": "2026-10-05T01:20:59.528Z"
   },
   {
     "id": "cmus19ci5000f8c96g83ffad2",
@@ -2591,8 +2344,12 @@
     "projectEndDate": "2017-08-01T00:00:00.000Z",
     "client": "Manila Water Company, Inc. (MWCI)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/marikina-north-stp-1.jpg",
+    "gallery": [
+      "/project-images/marikina-north-stp-1.jpg",
+      "/project-images/marikina-north-stp-2.jpg",
+      "/project-images/marikina-north-stp-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2615,14 +2372,14 @@
     "metrics": {
       "capacity": "100 MLD"
     },
-    "featured": false,
+    "featured": true,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.845Z",
-    "updatedAt": "2026-10-03T06:50:48.845Z"
+    "updatedAt": "2026-10-05T00:37:45.129Z"
   },
   {
     "id": "cmus19ckm000g8c96os6pennu",
@@ -2633,8 +2390,8 @@
     "category": "WATER_RESOURCES",
     "status": "COMPLETED",
     "description": "Sole Contractor to Manila Water Company, Inc. (MWCI), completed May 2015. Scope: Sub-catchment sewer system; Sewer lines; Lift stations; Terminal pumping station. Map position: approximate, at Barangay Nangka, beside the Marikina North Sewage Treatment Plant (the station is not mapped separately). Source: Sta. Clara International Corporation website (https://staclara.com.ph/what-we-do/completed/water-and-wastewater-systems/), checked 3 October 2026.",
-    "latitude": 14.6676,
-    "longitude": 121.1012,
+    "latitude": 14.6689,
+    "longitude": 121.1024,
     "islandGroup": "LUZON",
     "region": "NCR (Metro Manila)",
     "province": "Metro Manila",
@@ -2650,8 +2407,11 @@
     "projectEndDate": "2015-05-01T00:00:00.000Z",
     "client": "Manila Water Company, Inc. (MWCI)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/marikina-north-pumping-station-1.jpg",
+    "gallery": [
+      "/project-images/marikina-north-pumping-station-1.jpg",
+      "/project-images/marikina-north-pumping-station-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2679,36 +2439,38 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.934Z",
-    "updatedAt": "2026-10-03T06:50:48.934Z"
+    "updatedAt": "2026-10-05T00:37:45.194Z"
   },
   {
     "id": "cmu6czwm9000lm4967uubn1t4",
     "organizationId": "scic-org-001",
-    "name": "Marilao 500kV/230kV EHV Substation",
+    "name": "Marilao EHV Substation",
     "slug": "marilao-substation",
     "projectCode": "SCIC-GRID-02",
     "category": "ENERGY_GRID",
-    "status": "COMPLETED",
-    "description": "Turnkey civil works, high-voltage transformer foundations, blast shield walls, control building, and switchyard grounding for NGCP's crucial Bulacan power hub.",
+    "status": "ONGOING",
+    "description": "The Marilao extra-high-voltage substation at La Loma de Gato, Marilao, Bulacan, for the National Grid Corporation of the Philippines. The company lists electrical, protection, control and communication, civil, architectural and mechanical works, and a transmission line. The company shows it on its ongoing list, and no published source was found that reports the substation finished, so it is recorded as ongoing. The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Energy), checked 5 October 2026.",
     "latitude": 14.7583,
     "longitude": 120.9583,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Bulacan",
     "municipality": "Marilao",
     "barangay": null,
     "locationDescription": "Marilao 500kV/230kV EHV Substation - Marilao, Bulacan (Region III)",
     "location": "Marilao, Bulacan",
-    "capacity": "500kV / 230kV Substation",
+    "capacity": "EHV substation",
     "capacityMw": null,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "National Grid Corporation of the Philippines (NGCP)",
-    "projectValue": "₱1.3 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/marilao-substation-1.jpg",
+    "gallery": [
+      "/project-images/marilao-substation-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2716,21 +2478,14 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Massive reinforced concrete oil containment pits and transformer pads",
-      "Switchyard control building with modern SCADA automation",
-      "Heavy perimeter blast walls, stormwater drainage, and switchyard graveling"
+      "Electrical, protection, control and communication works",
+      "Civil and architectural works",
+      "Mechanical works",
+      "Transmission line"
     ],
-    "keyMilestones": [
-      {
-        "date": "2022",
-        "title": "Substation Energization",
-        "status": "ACHIEVED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "500kV / 230kV Substation",
-      "safeManHours": "1,100,000 Safe Hours",
-      "contractValue": "₱1.3 Billion"
+      "capacity": "EHV substation"
     },
     "featured": false,
     "targetCodDate": null,
@@ -2739,7 +2494,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.873Z",
-    "updatedAt": "2026-09-19T06:08:07.523Z"
+    "updatedAt": "2026-10-05T01:54:14.692Z"
   },
   {
     "id": "cmu6czwjv000km496rwznyo5v",
@@ -2749,26 +2504,29 @@
     "projectCode": "SCIC-GRID-01",
     "category": "ENERGY_GRID",
     "status": "COMPLETED",
-    "description": "Erection of heavy steel lattice transmission towers and quadruple-bundle conductor stringing across rugged mountainous terrain in the Bataan peninsula, transmitting power from major power plants into the Luzon 500kV grid backbone.",
+    "description": "Erection and construction of the Mariveles - Balsik (Hermosa) 500 kV extra-high-voltage transmission line in Bataan for the National Grid Corporation of the Philippines. Completed April 2022. The company lists the main civil works and installation of conductors: 136 concrete foundations, 136 double-circuit steel towers and stringing over a 51 km span. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Energy), checked 5 October 2026. Tower count and span are from the company's ongoing projects list.",
     "latitude": 14.5,
     "longitude": 120.5,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Bataan",
     "municipality": "Mariveles to Hermosa",
     "barangay": null,
     "locationDescription": "Mariveles–Hermosa (Balsik) 500kV Transmission Line - Mariveles to Hermosa, Bataan (Region III)",
     "location": "Mariveles to Hermosa, Bataan",
-    "capacity": "500kV Extra-High Voltage (EHV)",
+    "capacity": "500 kV",
     "capacityMw": null,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2022-04-01T00:00:00.000Z",
     "client": "National Grid Corporation of the Philippines (NGCP)",
-    "projectValue": "₱2.1 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/mariveles-500kv-1.jpg",
+    "gallery": [
+      "/project-images/mariveles-500kv-1.jpg",
+      "/project-images/mariveles-500kv-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2776,60 +2534,61 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Foundation micropiling on steep mountain ridges",
-      "Erection of over 140 self-supporting double-circuit 500kV steel towers",
-      "Helicopter and drone-assisted conductor stringing across deep valleys"
+      "Steel tower foundations (pad and chimney; bored pile with tie beam), 136 units",
+      "Erection of 136 double-circuit steel towers",
+      "Stringing and installation of conductors, 51 km span"
     ],
     "keyMilestones": [
       {
-        "date": "2023",
-        "title": "Energization Milestone",
+        "date": "2022-04",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "500kV Extra-High Voltage (EHV)",
-      "roadLength": "45 km line route",
-      "safeManHours": "1,600,000 Safe Hours",
-      "contractValue": "₱2.1 Billion"
+      "capacity": "500 kV"
     },
-    "featured": false,
+    "featured": true,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.787Z",
-    "updatedAt": "2026-09-19T06:08:07.440Z"
+    "updatedAt": "2026-10-05T01:20:57.286Z"
   },
   {
     "id": "cmu6czwon000mm496bh0bonvz",
     "organizationId": "scic-org-001",
-    "name": "Masinloc 20 MW Battery Energy Storage System (BESS)",
+    "name": "Masinloc 20 MW Battery Energy Storage System Expansion",
     "slug": "masinloc-bess",
     "projectCode": "SCIC-BESS-01",
     "category": "ENERGY_GRID",
     "status": "COMPLETED",
-    "description": "Civil works, containerized lithium-ion battery array plinths, power conversion system (PCS) foundations, fire suppression vaults, and medium-voltage switchyard for fast-response frequency regulation. Initially 10 MW, expanded to 20 MW. Completed November 2016.",
+    "description": "The 20 MW battery energy storage system expansion at the Masinloc power plant (Barangay Bani, Masinloc, Zambales), for Fluence Energy, Inc. The company's scope is to design, engineer, procure, permit, fabricate, construct, deliver, install, integrate, commission, start up and test the balance of plant and complete the works for the battery system. The earlier 10 MW system is recorded separately. Press reports give the Masinloc Phase 2 battery as substantially complete by September 2024 (the company's own list still shows it as ongoing). The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Energy), checked 5 October 2026.",
     "latitude": 15.5342,
     "longitude": 119.9531,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Zambales",
     "municipality": "Masinloc",
     "barangay": null,
     "locationDescription": "Masinloc 20 MW Battery Energy Storage System (BESS) - Masinloc, Zambales (Region III)",
     "location": "Masinloc, Zambales",
-    "capacity": "20 MW / 40 MWh Storage",
+    "capacity": "20 MW",
     "capacityMw": 20,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2024-09-01T00:00:00.000Z",
     "client": "Fluence Energy, Inc.",
-    "projectValue": "₱890 Million (Civil & Balance of Plant)",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/masinloc-bess-1.jpg",
+    "gallery": [
+      "/project-images/masinloc-bess-1.jpg",
+      "/project-images/masinloc-bess-2.jpg",
+      "/project-images/masinloc-bess-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2837,21 +2596,19 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Vibration and seismic-resistant container plinths for 30+ BESS units",
-      "Automated clean-agent gas fire suppression and blast containment",
-      "Underground MV cable duct banks and connection to thermal plant bus"
+      "Balance of plant: design, engineering, procurement and construction",
+      "Installation, integration, commissioning, start-up and testing",
+      "Completion of works for the battery energy storage system"
     ],
     "keyMilestones": [
       {
-        "date": "Nov 2016",
-        "title": "Commercial Frequency Support COD",
+        "date": "2024-09",
+        "title": "Substantial completion (press reports, September 2024)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "20 MW / 40 MWh Storage",
-      "safeManHours": "750,000 Safe Hours",
-      "contractValue": "₱890 Million (Civil & Balance of Plant)"
+      "capacity": "20 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -2860,7 +2617,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.960Z",
-    "updatedAt": "2026-10-03T07:25:14.796Z"
+    "updatedAt": "2026-10-05T01:54:14.381Z"
   },
   {
     "id": "cmus1mvmq0001r4962jatjsdt",
@@ -2888,8 +2645,11 @@
     "projectEndDate": "2016-11-01T00:00:00.000Z",
     "client": "Masinloc Power Partners Co. Ltd. / AES Philippines",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/masinloc-bess-10mw-1.jpg",
+    "gallery": [
+      "/project-images/masinloc-bess-10mw-1.jpg",
+      "/project-images/masinloc-bess-10mw-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2917,7 +2677,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T07:01:20.162Z",
-    "updatedAt": "2026-10-03T07:01:20.162Z"
+    "updatedAt": "2026-10-05T00:37:46.089Z"
   },
   {
     "id": "cmus19cu7000l8c968xjgt3mi",
@@ -2928,8 +2688,8 @@
     "category": "MINING_TUNNELING",
     "status": "ONGOING",
     "description": "Sole Contractor to Manila Electric Company (MERALCO). Scope: EPC of underground civil works for the relocation of facilities affected by the DOTr PNR North 1 project; Horizontal directional drilling for Meralco lines crossing the North-South Commuter Railway; 12 crossings. Listed under ongoing works on Sta. Clara's website; no completion has been published. Map position: approximate, at Valenzuela City, the southern end of the Valenzuela to Guiguinto stretch. Source: Sta. Clara International Corporation website (https://staclara.com.ph/what-we-do/ongoing/hdd-projects/), checked 3 October 2026.",
-    "latitude": 14.69169,
-    "longitude": 120.9701,
+    "latitude": 14.6985,
+    "longitude": 120.9742,
     "islandGroup": "LUZON",
     "region": "NCR / Region III",
     "province": "Metro Manila and Bulacan",
@@ -2945,8 +2705,11 @@
     "projectEndDate": null,
     "client": "Manila Electric Company (MERALCO)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/meralco-hdd-pnr-north-1-batch-1-1.jpg",
+    "gallery": [
+      "/project-images/meralco-hdd-pnr-north-1-batch-1-1.jpg",
+      "/project-images/meralco-hdd-pnr-north-1-batch-1-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -2969,7 +2732,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.279Z",
-    "updatedAt": "2026-10-03T06:50:49.279Z"
+    "updatedAt": "2026-10-05T00:37:45.629Z"
   },
   {
     "id": "cmus19cw1000m8c968qqf89kt",
@@ -2997,8 +2760,11 @@
     "projectEndDate": null,
     "client": "Manila Electric Company (MERALCO)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/meralco-hdd-pnr-north-1-batch-2-1.jpg",
+    "gallery": [
+      "/project-images/meralco-hdd-pnr-north-1-batch-2-1.jpg",
+      "/project-images/meralco-hdd-pnr-north-1-batch-2-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3021,7 +2787,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.345Z",
-    "updatedAt": "2026-10-03T06:50:49.345Z"
+    "updatedAt": "2026-10-05T00:37:45.710Z"
   },
   {
     "id": "cmu6czxsh0014m496l18di2ru",
@@ -3035,7 +2801,7 @@
     "latitude": 7.25,
     "longitude": 125.6,
     "islandGroup": "MINDANAO",
-    "region": "Region XI",
+    "region": "Region XI (Davao Region)",
     "province": "Davao Region",
     "municipality": "Tagum–Davao–Digos (TDD)",
     "barangay": null,
@@ -3048,7 +2814,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "Mega Rail Initiative",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -3062,17 +2828,8 @@
       "Station substructures and maintenance depot civil works",
       "Right-of-way ground improvement across varied terrain"
     ],
-    "keyMilestones": [
-      {
-        "date": "2026-2027",
-        "title": "Civil Works Implementation",
-        "status": "SCHEDULED"
-      }
-    ],
-    "metrics": {
-      "roadLength": "102 km railway corridor",
-      "contractValue": "Mega Rail Initiative"
-    },
+    "keyMilestones": [],
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -3080,7 +2837,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.393Z",
-    "updatedAt": "2026-10-03T07:47:26.866Z"
+    "updatedAt": "2026-10-05T00:37:42.231Z"
   },
   {
     "id": "cmu6czwqv000nm496cnxi94wl",
@@ -3088,13 +2845,13 @@
     "name": "Monde Nissin Corporation Facility (Project Alviera)",
     "slug": "monde-nissin",
     "projectCode": "SCIC-IND-01",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
-    "description": "A massive modern food manufacturing and automated distribution facility built to strict international hygiene and seismic standards inside Alviera Industrial Park. Sole contractor. Completed July 2019.",
+    "description": "Project Alviera in Porac, Pampanga, built for Monde Nissin Corporation. Completed July 2019. The company lists 4,000 square metres of site development and a 9,000 square metre building. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Buildings), checked 5 October 2026.",
     "latitude": 15.0833,
     "longitude": 120.5333,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Pampanga",
     "municipality": "Porac",
     "barangay": null,
@@ -3105,11 +2862,13 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2019-07-01T00:00:00.000Z",
     "client": "Monde Nissin Corporation",
-    "projectValue": "₱1.75 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/monde-nissin-1.jpg",
+    "gallery": [
+      "/project-images/monde-nissin-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3117,21 +2876,17 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Large-span structural steel manufacturing halls and high-bay warehouse",
-      "Heavy industrial post-tensioned slab-on-grade floors",
-      "Industrial effluent treatment and automated logistics docking bays"
+      "Site development, 4,000 sq m",
+      "Building, 9,000 sq m"
     ],
     "keyMilestones": [
       {
-        "date": "Jul 2019",
-        "title": "Handover & Production Launch",
+        "date": "2019-07",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "1,900,000 Safe Hours",
-      "contractValue": "₱1.75 Billion"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -3139,7 +2894,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.039Z",
-    "updatedAt": "2026-09-19T06:08:07.689Z"
+    "updatedAt": "2026-10-05T01:20:58.790Z"
   },
   {
     "id": "cmus19cxz000n8c96itdo0k7s",
@@ -3147,7 +2902,7 @@
     "name": "Monde Nissin Megamall Project (Office and Warehouse)",
     "slug": "monde-nissin-megamall-sta-rosa",
     "projectCode": "SCIC-IND-05",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
     "description": "CSAP Contractor to Monde Nissin Corporation, completed January 2016. Scope: Five-storey office building with multi-floor warehouse; Automated storage and retrieval system; Distribution centre. Map position: approximate, at the Monde Nissin plant in Balibago, Santa Rosa (the building itself is not mapped). Source: Sta. Clara International Corporation website (https://staclara.com.ph/what-we-do/completed/buildings/), checked 3 October 2026.",
     "latitude": 14.29305,
@@ -3167,8 +2922,10 @@
     "projectEndDate": "2016-01-01T00:00:00.000Z",
     "client": "Monde Nissin Corporation",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/monde-nissin-megamall-sta-rosa-1.jpg",
+    "gallery": [
+      "/project-images/monde-nissin-megamall-sta-rosa-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3195,7 +2952,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.415Z",
-    "updatedAt": "2026-10-03T06:50:49.415Z"
+    "updatedAt": "2026-10-05T00:43:21.880Z"
   },
   {
     "id": "cmus19czx000o8c961y7ologj",
@@ -3203,7 +2960,7 @@
     "name": "Monde Nissin Pomelo Project (Manufacturing Plant)",
     "slug": "monde-nissin-pomelo-davao",
     "projectCode": "SCIC-IND-06",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
     "description": "CSAP and Electrical Contractor to Monde Nissin Corporation, completed December 2012. Scope: Manufacturing plant; Office; Warehouse facility. Map position: approximate, at Davao City (the company page gives only the city; the plant itself is not mapped). Source: Sta. Clara International Corporation website (https://staclara.com.ph/what-we-do/completed/buildings/), checked 3 October 2026.",
     "latitude": 7.06483,
@@ -3251,7 +3008,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.485Z",
-    "updatedAt": "2026-10-03T06:50:49.485Z"
+    "updatedAt": "2026-10-05T00:43:21.812Z"
   },
   {
     "id": "cmu6czyab001cm496jos42tbn",
@@ -3341,8 +3098,10 @@
     "projectEndDate": "2016-03-01T00:00:00.000Z",
     "client": "Solar Powered Agri-rural Communities Corp.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/morong-solar-pv-1.jpg",
+    "gallery": [
+      "/project-images/morong-solar-pv-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3371,7 +3130,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.283Z",
-    "updatedAt": "2026-10-03T06:50:48.283Z"
+    "updatedAt": "2026-10-05T00:37:44.755Z"
   },
   {
     "id": "cmu6czvwn000am49610l9pqnw",
@@ -3385,7 +3144,7 @@
     "latitude": 14.68443,
     "longitude": 120.26381,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Bataan",
     "municipality": "Morong",
     "barangay": "Sabang",
@@ -3399,8 +3158,12 @@
     "projectEndDate": null,
     "client": "Morong Power & Water Corporation",
     "projectValue": null,
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "featuredImage": "/project-images/morong-wtp-1.jpg",
+    "gallery": [
+      "/project-images/morong-wtp-1.jpg",
+      "/project-images/morong-wtp-2.jpg",
+      "/project-images/morong-wtp-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3422,7 +3185,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.951Z",
-    "updatedAt": "2026-10-03T07:35:26.969Z"
+    "updatedAt": "2026-10-05T00:37:40.864Z"
   },
   {
     "id": "cmu7z82m7001djo96rydccjwj",
@@ -3432,7 +3195,7 @@
     "projectCode": "SCIC-CIVIC-01",
     "category": "BUILDINGS",
     "status": "ONGOING",
-    "description": "A generational civic redevelopment replacing the aged municipal hall with a resilient, seismically isolated urban civic center. SCIC is a member of the Pasig City Hall Construction Consortium (PCHCC), which is constructing three interconnected towers equipped with elastomeric base seismic isolators, civic plaza parklands, subterranean multi-level parking, emergency disaster coordination hub, and integrated government service offices.",
+    "description": "The new Pasig City Hall complex in Pasig City, Metro Manila, for the City Government of Pasig. The contract was signed on 13 January 2025 with the Pasig City Hall Construction Consortium, of which Sta. Clara is a member. Sta. Clara's own share of the work, the building details and the contract value are not given here. Source: press reports of the contract signing (January 2025), checked 5 October 2026.",
     "latitude": 14.5583,
     "longitude": 121.0827,
     "islandGroup": "LUZON",
@@ -3449,7 +3212,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "City Government of Pasig",
-    "projectValue": "₱9.26 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -3458,43 +3221,23 @@
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "Three interconnected institutional towers (up to 8 stories) with high-performance curtain walls",
-      "Lead-rubber elastomeric seismic base isolator system for catastrophic earthquake resilience",
-      "Extensive diaphragm deep foundation retaining walls and multi-level subterranean basement parking",
-      "Centralized Command and Control Disaster Operations Center (C4i) and smart building automation",
-      "Public civic park, rainwater harvesting retention cisterns, and solar rooftop installations"
-    ],
+    "engineeringScope": [],
     "keyMilestones": [
       {
-        "date": "2024-Q3",
-        "title": "Official Groundbreaking & Phased Demolition",
+        "date": "2025-01-13",
+        "title": "Contract signed with the Pasig City Hall Construction Consortium",
         "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q2",
-        "title": "Diaphragm Wall Piling & Substructure Excavation",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2027-Q4",
-        "title": "Target Complex Handover & Inauguration",
-        "status": "SCHEDULED"
       }
     ],
-    "metrics": {
-      "safeManHours": "850,000 Safe Hours",
-      "contractValue": "₱9.26 Billion",
-      "workforcePeak": 750
-    },
-    "featured": true,
+    "metrics": {},
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.623Z",
-    "updatedAt": "2026-10-03T07:39:52.338Z"
+    "updatedAt": "2026-10-05T02:02:59.008Z"
   },
   {
     "id": "cmu6czvm90005m49601rruv12",
@@ -3504,7 +3247,7 @@
     "projectCode": "SCIC-RAIL-01",
     "category": "RAIL_TRANSIT",
     "status": "ONGOING",
-    "description": "A flagship national rail corridor contract connecting NCR and Central Luzon. Scope involves bored piling foundations up to 60 meters deep, casting of reinforced concrete viaduct piers, precast girder launching, and substructure civil works for elevated passenger stations along the Bocaue–Malolos segment.",
+    "description": "Package CP02 of the North-South Commuter Railway, from Bocaue to Malolos, Bulacan, for Sumitomo Mitsui Construction Co. Ltd. The company lists elevated structures and three stations: bored piling and foundations, substructure works and building works, including demolition. The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Roads, Bridges and Railways), checked 5 October 2026.",
     "latitude": 14.8295,
     "longitude": 120.841,
     "islandGroup": "LUZON",
@@ -3521,9 +3264,11 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Sumitomo Mitsui Construction Co. Ltd.",
-    "projectValue": "₱7.2 Billion (Joint Scope)",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/nscr-cp02-1.jpg",
+    "gallery": [
+      "/project-images/nscr-cp02-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3531,42 +3276,21 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Over 1,200 large-diameter cast-in-place bored piles",
-      "Reinforced concrete hammerhead pier columns & portal frames",
-      "Precast segmental box girder erection with high-capacity launching gantries",
-      "Underground drainage corridors and station foundation tie-ins"
+      "Bored piling and foundations",
+      "Substructure works for the elevated structures",
+      "Building works for three stations",
+      "Demolition works"
     ],
-    "keyMilestones": [
-      {
-        "date": "2021",
-        "title": "Piling Operations Commencement",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2024",
-        "title": "Viaduct Pier Substructure Completion",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2026",
-        "title": "Superstructure Track Bed Handover",
-        "status": "IN_PROGRESS"
-      }
-    ],
-    "metrics": {
-      "roadLength": "14 km elevated viaduct",
-      "safeManHours": "3,800,000 Safe Hours",
-      "contractValue": "₱7.2 Billion (Joint Scope)",
-      "workforcePeak": 850
-    },
-    "featured": true,
+    "keyMilestones": [],
+    "metrics": {},
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.577Z",
-    "updatedAt": "2026-10-03T07:25:16.893Z"
+    "updatedAt": "2026-10-05T01:20:59.049Z"
   },
   {
     "id": "cmu6czwfu000im4964c0tfh02",
@@ -3576,26 +3300,28 @@
     "projectCode": "SCIC-PWR-02",
     "category": "ENERGY_GRID",
     "status": "COMPLETED",
-    "description": "Extensive rock hill removal, benching, terracing, and civil site development on Pagbilao Grande Island for the 375 MW supercritical expansion unit. Completed October 2014.",
+    "description": "Hill removal and site development for the coal-fired Pagbilao Unit 3 project in Pagbilao, Quezon, a civil works contract for Team Energy Corporation. Completed October 2014. The company lists site development, hill removal, excavation for the proposed Unit 3 and landfill of the existing raw water lagoon, over 77,580 square metres with 422,633 cubic metres excavated. The company lists the project as 375 MW; other public sources give Unit 3 as 420 MW. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Site Development Works), checked 5 October 2026.",
     "latitude": 13.8967,
     "longitude": 121.745,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Quezon",
     "municipality": "Pagbilao",
     "barangay": null,
     "locationDescription": "Pagbilao Power Plant Unit 3 Hill Removal - Pagbilao, Quezon (Region IV-A)",
     "location": "Pagbilao, Quezon",
-    "capacity": "420 MW Supercritical Unit",
+    "capacity": "375 MW",
     "capacityMw": 420,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2014-10-01T00:00:00.000Z",
     "client": "Team Energy Corporation",
-    "projectValue": "₱1.85 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/pagbilao-unit3-1.jpg",
+    "gallery": [
+      "/project-images/pagbilao-unit3-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3603,21 +3329,19 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Controlled blasting and excavation of 1.2 million cubic meters of rock",
-      "Reinforced sea wall revetments and heavy industrial platform drainage",
-      "Switchyard foundation pads and transformer blast barrier walls"
+      "Hill removal and site development (77,580 sq m)",
+      "Excavation for the proposed Unit 3 (422,633 cubic metres in total)",
+      "Landfill of the existing raw water lagoon"
     ],
     "keyMilestones": [
       {
-        "date": "Oct 2014",
-        "title": "Civil Site Works Handover",
+        "date": "2014-10",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "420 MW Supercritical Unit",
-      "safeManHours": "2,200,000 Safe Hours",
-      "contractValue": "₱1.85 Billion"
+      "capacity": "375 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -3626,7 +3350,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.642Z",
-    "updatedAt": "2026-10-03T07:25:16.009Z"
+    "updatedAt": "2026-10-05T01:20:58.584Z"
   },
   {
     "id": "cmu6czvjl0004m4968wt4k4en",
@@ -3640,7 +3364,7 @@
     "latitude": 18.61947,
     "longitude": 120.85643,
     "islandGroup": "LUZON",
-    "region": "Region I (Ilocos)",
+    "region": "Region I (Ilocos Region)",
     "province": "Ilocos Norte",
     "municipality": "Pagudpud",
     "barangay": "Balaoi and Caunayan",
@@ -3689,7 +3413,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.481Z",
-    "updatedAt": "2026-10-03T07:35:26.046Z"
+    "updatedAt": "2026-10-05T00:37:40.453Z"
   },
   {
     "id": "cmus19bwh00048c96krllmzvo",
@@ -3717,8 +3441,10 @@
     "projectEndDate": "2015-08-01T00:00:00.000Z",
     "client": "Gamesa Eolica S.L. Unipersonal - Phils (owner: Alternergy Philippine Holdings Corp.)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/pililla-wind-farm-1.jpg",
+    "gallery": [
+      "/project-images/pililla-wind-farm-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3749,17 +3475,17 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.065Z",
-    "updatedAt": "2026-10-03T06:50:48.065Z"
+    "updatedAt": "2026-10-05T00:37:44.598Z"
   },
   {
     "id": "cmu6czy86001bm496wxp02bh2",
     "organizationId": "scic-org-001",
-    "name": "PMFTC Tanauan Manufacturing Facility Extension",
+    "name": "PMFTC Batangas Factory Extension Project",
     "slug": "pmftc-tanauan",
     "projectCode": "SCIC-IND-PMFTC",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
-    "description": "Multi-billion extension of PMFTC's premier manufacturing plant in Tanauan, Batangas. SCIC delivered complex structural additions, clean room manufacturing bays, high-capacity utility networks, and specialized heavy equipment foundation blocks under strict operational safety standards.",
+    "description": "The factory extension for Philip Morris Fortune Tobacco Corporation (PMFTC) in Tanauan, Batangas. A Sta. Clara news post of December 2022 reports that the company secured the deal. The post is the only source used here: the scope, the completion date and the contract value are not published, so none is given. Source: Sta. Clara International Corporation news post \"SCIC Secures Deal for PMFTC Batangas Factory Extension Project\" (December 2022), checked 5 October 2026.",
     "latitude": 14.0867,
     "longitude": 121.15,
     "islandGroup": "LUZON",
@@ -3776,43 +3502,26 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Philip Morris Fortune Tobacco Corporation (PMFTC)",
-    "projectValue": "₱1.90 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/pmftc-tanauan-1.jpg",
+    "gallery": [
+      "/project-images/pmftc-tanauan-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "Industrial Steel Superstructure & Specialized Thermal Cladding",
-      "Clean Room Production Floors with Anti-Static Epoxy Coating",
-      "Heavy Vibration-Isolated Machine Foundations",
-      "Stormwater Detention & Industrial Environmental Containment Systems"
-    ],
+    "engineeringScope": [],
     "keyMilestones": [
       {
-        "date": "2022-11",
-        "title": "Contract Execution",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2023-Q3",
-        "title": "Structural Framing Completion",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2024-Q2",
-        "title": "Operational Turnkey Handover",
+        "date": "2022-12",
+        "title": "Contract secured (company news post, December 2022)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "1,250,000 Safe Hours",
-      "contractValue": "₱1.90 Billion",
-      "workforcePeak": 450
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -3820,7 +3529,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.958Z",
-    "updatedAt": "2026-10-03T07:25:17.328Z"
+    "updatedAt": "2026-10-05T02:02:59.280Z"
   },
   {
     "id": "cmus19ccf000c8c9613p8x9ib",
@@ -3828,7 +3537,7 @@
     "name": "Project EPIC (AG&P Bauan)",
     "slug": "project-epic-bauan",
     "projectCode": "SCIC-IND-04",
-    "category": "INDUSTRIAL",
+    "category": "BUILDINGS",
     "status": "ONGOING",
     "description": "Civil works to AG&P / D & L Industries Inc. Scope: Site development for building works; Two-storey office, laboratory and warehouse (1,066 sqm); Utilities building (324 sqm); TTLR (794 sqm); Control room and MCC (72 sqm). Listed under ongoing works on Sta. Clara's website; no completion has been published. Map position: approximate, at Barangay San Roque, Bauan (the yard itself is not mapped). Source: Sta. Clara International Corporation website (https://staclara.com.ph/what-we-do/ongoing/site-development-works/), checked 3 October 2026.",
     "latitude": 13.79209,
@@ -3848,8 +3557,10 @@
     "projectEndDate": null,
     "client": "AG&P / D & L Industries Inc.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/project-epic-bauan-1.jpg",
+    "gallery": [
+      "/project-images/project-epic-bauan-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3872,7 +3583,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.639Z",
-    "updatedAt": "2026-10-03T07:02:09.178Z"
+    "updatedAt": "2026-10-05T00:43:21.954Z"
   },
   {
     "id": "cmus19bu800038c96vle8cgbb",
@@ -3900,8 +3611,10 @@
     "projectEndDate": "2018-09-01T00:00:00.000Z",
     "client": "Philippine Hybrid Energy Systems, Inc. (PHESI)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/puerto-galera-wind-1.jpg",
+    "gallery": [
+      "/project-images/puerto-galera-wind-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -3932,7 +3645,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.984Z",
-    "updatedAt": "2026-10-03T06:50:47.984Z"
+    "updatedAt": "2026-10-05T00:37:43.770Z"
   },
   {
     "id": "cmu7z82ig001bjo96xjb0tj36",
@@ -3959,7 +3672,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱14.80 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -3974,38 +3687,18 @@
       "High-bearing capacity crane hardstand pads and assembly laydown zones on mountain ridges",
       "Substation structural foundations and high-voltage grid interconnection corridors"
     ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q3",
-        "title": "Access Road Right-of-Way & Environmental Compliance",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q3",
-        "title": "Sierra Madre Ridge Earthworks & Hardstand Preparation",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2027",
-        "title": "Full Commercial Grid Interconnection",
-        "status": "SCHEDULED"
-      }
-    ],
+    "keyMilestones": [],
     "metrics": {
-      "capacity": "335 MW (Multi-Cluster Wind Farm)",
-      "roadLength": "32 km Heavy Access Corridors",
-      "safeManHours": "920,000 Safe Hours",
-      "contractValue": "₱14.80 Billion",
-      "workforcePeak": 620
+      "capacity": "335 MW (Multi-Cluster Wind Farm)"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.488Z",
-    "updatedAt": "2026-10-03T07:47:26.741Z"
+    "updatedAt": "2026-10-05T00:37:46.617Z"
   },
   {
     "id": "cmus19cga000e8c960v8fkg7s",
@@ -4033,8 +3726,10 @@
     "projectEndDate": "2019-04-01T00:00:00.000Z",
     "client": "Manila Water Company, Inc.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/rizal-province-water-supply-1.jpg",
+    "gallery": [
+      "/project-images/rizal-province-water-supply-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4064,7 +3759,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.778Z",
-    "updatedAt": "2026-10-03T06:50:48.778Z"
+    "updatedAt": "2026-10-05T00:37:45.051Z"
   },
   {
     "id": "cmu6czx8p000vm4962cosp4r7",
@@ -4074,11 +3769,11 @@
     "projectCode": "SCIC-COM-01",
     "category": "BUILDINGS",
     "status": "COMPLETED",
-    "description": "Turnkey general construction of the iconic S&R membership retail warehouse in Metro Cebu, featuring post-tensioned super-flat floor slabs and cold storage freezers.",
+    "description": "The S&R Membership Shopping facility in Mandaue City, Cebu, one of four S&R stores (Shaw, Davao, Pampanga and Cebu) the company built for Kareila Management Corporation. Completed October 2013. The company lists the building and its parking areas. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Buildings), checked 5 October 2026.",
     "latitude": 10.3217,
     "longitude": 123.9283,
     "islandGroup": "VISAYAS",
-    "region": "Region VII",
+    "region": "Region VII (Central Visayas)",
     "province": "Cebu",
     "municipality": "Mandaue City",
     "barangay": "Subangdaku",
@@ -4089,11 +3784,13 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2013-10-01T00:00:00.000Z",
     "client": "Kareila Management Corporation",
-    "projectValue": "₱650 Million",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/sr-cebu-1.jpg",
+    "gallery": [
+      "/project-images/sr-cebu-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4101,21 +3798,17 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Pre-engineered structural steel building with clear-span roof trusses",
-      "Super-flat commercial warehouse concrete floor slab system",
-      "Industrial walk-in refrigeration units and rooftop solar array integration"
+      "Store building",
+      "Parking areas"
     ],
     "keyMilestones": [
       {
-        "date": "2010",
-        "title": "Commercial Grand Opening",
+        "date": "2013-10",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "720,000 Safe Hours",
-      "contractValue": "₱650 Million"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -4123,7 +3816,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.681Z",
-    "updatedAt": "2026-10-03T07:25:16.975Z"
+    "updatedAt": "2026-10-05T01:20:59.307Z"
   },
   {
     "id": "cmu6czxm70011m496avet6awi",
@@ -4133,11 +3826,11 @@
     "projectCode": "SCIC-COM-02",
     "category": "BUILDINGS",
     "status": "COMPLETED",
-    "description": "Construction of Davao City's premier membership warehouse shopping facility along McArthur Highway, featuring clear-span steel portals, modern loading docks, and customer amenities.",
+    "description": "The S&R Membership Shopping facility in Davao City, one of four S&R stores (Shaw, Davao, Pampanga and Cebu) the company built for Kareila Management Corporation. Completed October 2013. The company lists the building and its parking areas. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Buildings), checked 5 October 2026.",
     "latitude": 7.0583,
     "longitude": 125.5833,
     "islandGroup": "MINDANAO",
-    "region": "Region XI",
+    "region": "Region XI (Davao Region)",
     "province": "Davao del Sur",
     "municipality": "Davao City",
     "barangay": "Matina",
@@ -4148,11 +3841,13 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2013-10-01T00:00:00.000Z",
     "client": "Kareila Management Corporation",
-    "projectValue": "₱680 Million",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/sr-davao-1.jpg",
+    "gallery": [
+      "/project-images/sr-davao-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4160,21 +3855,17 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Turnkey structural steel building and wide-span truss erection",
-      "Industrial floor slab with chemical hardening and joint sealing",
-      "Refrigerated perishables warehouse and multi-bay receiving dock"
+      "Store building",
+      "Parking areas"
     ],
     "keyMilestones": [
       {
-        "date": "2013",
-        "title": "Commercial Grand Opening",
+        "date": "2013-10",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "810,000 Safe Hours",
-      "contractValue": "₱680 Million"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -4182,7 +3873,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.167Z",
-    "updatedAt": "2026-10-03T07:25:15.178Z"
+    "updatedAt": "2026-10-05T01:20:57.843Z"
   },
   {
     "id": "cmus19d3g000q8c96qe1bhcso",
@@ -4210,8 +3901,10 @@
     "projectEndDate": "2013-10-01T00:00:00.000Z",
     "client": "Kareila Management Corporation",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/sr-pampanga-1.jpg",
+    "gallery": [
+      "/project-images/sr-pampanga-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4237,7 +3930,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.612Z",
-    "updatedAt": "2026-10-03T06:50:49.612Z"
+    "updatedAt": "2026-10-05T00:37:45.934Z"
   },
   {
     "id": "cmus19d1k000p8c964z72bznr",
@@ -4265,8 +3958,10 @@
     "projectEndDate": "2013-10-01T00:00:00.000Z",
     "client": "Kareila Management Corporation",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/sr-shaw-1.jpg",
+    "gallery": [
+      "/project-images/sr-shaw-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4292,7 +3987,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.544Z",
-    "updatedAt": "2026-10-03T06:50:49.544Z"
+    "updatedAt": "2026-10-05T00:37:45.858Z"
   },
   {
     "id": "cmu6czvcn0001m496zujvgg79",
@@ -4302,7 +3997,7 @@
     "projectCode": "SCIC-HEPP-02",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "A monumental engineering feat in the rugged Cordillera mountain range. SCIC was the sole general contractor, delivering a 12-kilometer rugged mountain access road, high-velocity intake weir, desander, 3.1-kilometer rock-hewn headrace tunnel, and a modern riverside powerhouse. Commissioned May 2015.",
+    "description": "The 14 MW Sabangan hydroelectric power plant in Sabangan, Mountain Province, built for Hedcor Sabangan, Inc. (Aboitiz Power Corporation). Completed May 2015. The company lists 12 km of access roads, slope protection, the powerhouse and switchyard, the weir intake, the desander, a 700 m underground penstock (1.5 m diameter) and a 3.1 km headrace tunnel (3 m diameter, 7.8% gradient, drill and blast). The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Renewable Energy Power Plants; Mining and Tunnelling Works), checked 5 October 2026.",
     "latitude": 17.0225,
     "longitude": 120.9231,
     "islandGroup": "LUZON",
@@ -4312,16 +4007,19 @@
     "barangay": "Namatec",
     "locationDescription": "Sabangan Hydroelectric Power Plant - Namatec, Sabangan, Mountain Province (Cordillera Administrative Region (CAR))",
     "location": "Namatec, Sabangan, Mountain Province",
-    "capacity": "14.0 MW",
+    "capacity": "14 MW",
     "capacityMw": 14,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2015-05-01T00:00:00.000Z",
     "client": "Hedcor Sabangan, Inc. / Aboitiz Power Corporation",
-    "projectValue": "₱2.4 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/sabangan-hydro-1.jpg",
+    "gallery": [
+      "/project-images/sabangan-hydro-1.jpg",
+      "/project-images/sabangan-hydro-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4329,38 +4027,31 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "12 km mountain access road construction across treacherous cliffs",
-      "Intake weir with high-capacity radial sluice gates",
-      "3.1 km drill-and-blast headrace tunnel with shotcrete and rock bolting",
-      "High-head steel penstock and Pelton turbine installation"
+      "Access roads (12 km) and slope protection",
+      "Weir intake structure and desander",
+      "Headrace tunnel, 3 m diameter x 3.1 km",
+      "Underground penstock, 1.5 m diameter x 700 m",
+      "Powerhouse and switchyard"
     ],
     "keyMilestones": [
       {
-        "date": "May 2015",
-        "title": "Commercial Commissioning (Inauguration)",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2016",
-        "title": "National Award for Engineering Excellence",
+        "date": "2015-05",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "14.0 MW",
-      "safeManHours": "2,100,000 Safe Hours",
-      "tunnelLength": "3.1 km headrace tunnel",
-      "contractValue": "₱2.4 Billion",
-      "generationOutput": "55 GWh / year"
+      "capacity": "14 MW",
+      "tunnelLength": "3.1 km"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.231Z",
-    "updatedAt": "2026-10-03T07:25:17.119Z"
+    "updatedAt": "2026-10-05T01:20:59.134Z"
   },
   {
     "id": "cmus19by600058c96xuzl67rl",
@@ -4388,8 +4079,10 @@
     "projectEndDate": "2015-01-01T00:00:00.000Z",
     "client": "Trans-Asia Renewable Energy Corp. and Kanematsu Corporation",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/san-lorenzo-wind-farm-1.jpg",
+    "gallery": [
+      "/project-images/san-lorenzo-wind-farm-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4420,68 +4113,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.126Z",
-    "updatedAt": "2026-10-03T06:50:48.126Z"
-  },
-  {
-    "id": "cmu6czx0b000rm496xecxcbmm",
-    "organizationId": "scic-org-001",
-    "name": "SCIC National Headquarters (Highway 54 Plaza)",
-    "slug": "hq-mandaluyong",
-    "projectCode": "SCIC-HQ-01",
-    "category": "BUILDINGS",
-    "status": "COMPLETED",
-    "description": "The national nerve center and engineering headquarters of Sta. Clara International Corporation at 986 EDSA, Mandaluyong City, housing centralized project monitoring, executive operations, and geospatial engineering laboratories. Founded 1976.",
-    "latitude": 14.588,
-    "longitude": 121.0545,
-    "islandGroup": "LUZON",
-    "region": "NCR",
-    "province": "Metro Manila",
-    "municipality": "Mandaluyong City",
-    "barangay": "Wack-Wack Greenhills",
-    "locationDescription": "SCIC National Headquarters (Highway 54 Plaza) - Wack-Wack Greenhills, Mandaluyong City, Metro Manila (NCR)",
-    "location": "Wack-Wack Greenhills, Mandaluyong City, Metro Manila",
-    "capacity": null,
-    "capacityMw": null,
-    "plantType": null,
-    "percentComplete": null,
-    "projectStartDate": null,
-    "projectEndDate": null,
-    "client": "BC Manila",
-    "projectValue": "₱1.2 Billion",
-    "featuredImage": "https://staclara.com.ph/wp-content/uploads/2025/11/Untitled-design-3.png",
-    "gallery": [
-      "https://staclara.com.ph/wp-content/uploads/2025/11/Untitled-design-3.png"
-    ],
-    "boundaryGeometry": null,
-    "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
-    "leadPMLicense": null,
-    "leadPMContact": null,
-    "engineeringScope": [
-      "Commercial office tower development with subterranean parking",
-      "Centralized project monitoring telemetry hub and BIM design studios",
-      "Corporate boardrooms, engineering library, and mission command centers"
-    ],
-    "keyMilestones": [
-      {
-        "date": "1976 - Present",
-        "title": "Continuous Operations",
-        "status": "ACHIEVED"
-      }
-    ],
-    "metrics": {
-      "safeManHours": "Corporate Central",
-      "contractValue": "₱1.2 Billion"
-    },
-    "featured": true,
-    "targetCodDate": null,
-    "createdById": null,
-    "updatedById": null,
-    "deletedAt": null,
-    "deletedById": null,
-    "createdAt": "2026-09-18T02:48:28.379Z",
-    "updatedAt": "2026-10-03T07:25:16.078Z"
+    "updatedAt": "2026-10-05T00:37:41.872Z"
   },
   {
     "id": "cmu6czxfs000ym4962x42xi79",
@@ -4491,7 +4123,7 @@
     "projectCode": "SCIC-HEPP-12",
     "category": "HYDROPOWER",
     "status": "COMPLETED",
-    "description": "SCIC was the sole EPC contractor for this 14.5 MW renewable energy facility in Southern Mindanao. Works included complex cliff access roads, intake weir, desander, 1.2-kilometer headrace tunnel, penstock, and a riverside powerhouse.",
+    "description": "Engineering, procurement and construction of the 14.5 MW Siguil hydro power plant in Maasim, Sarangani, for Siguil Hydro Power Corporation. The company lists access roads, the weir, the desander, a 2.1 m diameter headrace (16 km basic section, 4 km of pipe bridges and a 1.2 km tunnel), the forebay, a 1.2 km penstock, the powerhouse, the substation, electrical and mechanical works, and testing and commissioning. The plant's owner, Alsons Power, reported in February 2025 that the plant was completed in 2024 (the company's own list still shows it as ongoing). The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Renewable Energy Power Plants), checked 5 October 2026.",
     "latitude": 5.8667,
     "longitude": 124.9667,
     "islandGroup": "MINDANAO",
@@ -4506,11 +4138,13 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2024-09-01T00:00:00.000Z",
     "client": "Siguil Hydro Power Corporation",
-    "projectValue": "₱2.7 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/siguil-hydro-1.jpg",
+    "gallery": [
+      "/project-images/siguil-hydro-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4518,45 +4152,49 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "River intake structure with automated sediment sluice gates",
-      "1.2 km drill-and-blast rock tunnel and high-pressure steel penstock",
-      "Powerhouse machine hall, electromechanical turbine erection, and switchyard"
+      "Access roads, weir and desander",
+      "Headrace, 2.1 m diameter: 16 km basic section, 4 km pipe bridges, 1.2 km tunnel",
+      "Forebay and penstock (1.8 m diameter x 1.2 km)",
+      "Powerhouse and substation",
+      "Electrical and mechanical works, testing and commissioning"
     ],
     "keyMilestones": [
       {
-        "date": "2023",
-        "title": "Commercial Grid Synchronization",
+        "date": "2019",
+        "title": "Construction started (Alsons Power)",
+        "status": "ACHIEVED"
+      },
+      {
+        "date": "2024-09",
+        "title": "Plant completed (Alsons Power, reported February 2025)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "14.5 MW",
-      "safeManHours": "1,750,000 Safe Hours",
-      "tunnelLength": "1.2 km headrace tunnel",
-      "contractValue": "₱2.7 Billion"
+      "capacity": "14.5 MW"
     },
-    "featured": true,
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.936Z",
-    "updatedAt": "2026-10-03T07:25:16.538Z"
+    "updatedAt": "2026-10-05T02:02:58.881Z"
   },
   {
     "id": "cmu6czwi7000jm4964il4b71n",
     "organizationId": "scic-org-001",
-    "name": "SLEX Toll Road 4 (TR4) San Pablo to Tiaong / Lucena",
+    "name": "SLEX Toll Road 4 (TR4)",
     "slug": "slex-tr4",
     "projectCode": "SCIC-HWY-03",
     "category": "ROADS_HIGHWAYS",
     "status": "ONGOING",
-    "description": "Construction of expressway viaducts, overpass bridges, highway grading, and drainage systems extending the South Luzon Expressway into Quezon province, drastically cutting travel time to the Bicol corridor.",
+    "description": "The South Luzon Expressway Toll Road 4 project, from San Pablo, Laguna to Lucena, Quezon, for South Luzon Tollway Corporation. The company lists earthworks, sub-base and base course, surface courses, a bridge, drainage and slope protection structures, miscellaneous structures, electrical works, an interchange pass and a toll plaza. The company does not say which sections it is building. The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Roads, Bridges and Railways), checked 5 October 2026.",
     "latitude": 14.03,
     "longitude": 121.36,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Laguna & Quezon",
     "municipality": "San Pablo to Tiaong",
     "barangay": null,
@@ -4569,9 +4207,11 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "South Luzon Tollway Corporation",
-    "projectValue": "₱3.8 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/slex-tr4-1.jpg",
+    "gallery": [
+      "/project-images/slex-tr4-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4579,36 +4219,22 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Dual four-lane rigid concrete and asphalt pavement",
-      "River crossing bridges using pre-stressed AASHTO girders",
-      "Automated electronic toll collection plazas and interchange flyovers"
+      "Earthworks, sub-base, base and surface courses",
+      "Bridge",
+      "Drainage and slope protection structures",
+      "Electrical works",
+      "Interchange pass and toll plaza"
     ],
-    "keyMilestones": [
-      {
-        "date": "2023",
-        "title": "Viaduct Superstructure Erection",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2026",
-        "title": "Target Segment Substantial Completion",
-        "status": "IN_PROGRESS"
-      }
-    ],
-    "metrics": {
-      "roadLength": "22 km expressway package",
-      "safeManHours": "1,900,000 Safe Hours",
-      "contractValue": "₱3.8 Billion",
-      "workforcePeak": 450
-    },
-    "featured": true,
+    "keyMilestones": [],
+    "metrics": {},
+    "featured": false,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.727Z",
-    "updatedAt": "2026-10-03T07:25:15.794Z"
+    "updatedAt": "2026-10-05T01:20:58.438Z"
   },
   {
     "id": "cmu6czwdo000hm4967yrnjcwv",
@@ -4618,26 +4244,28 @@
     "projectCode": "SCIC-PWR-01",
     "category": "ENERGY_GRID",
     "status": "COMPLETED",
-    "description": "35-hectare coastal site preparation, massive earthworks, heavy turbine foundations, and seawater cooling conduits for one of the largest natural gas-fired power stations in Southeast Asia. Site development completed November 1999.",
+    "description": "Site development for the 1,000 MW Sta. Rita combined cycle power station in Batangas, for First Philippine Balfour Beatty Inc. Completed November 1999. The company lists site development of a 35-hectare area: clearing, levelling, drainage, roads and sheet piling for wall structures. The megawatt figure is the plant's rating, not a measure of Sta. Clara's share of the work. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Site Development Works), checked 5 October 2026.",
     "latitude": 13.75,
     "longitude": 121.0333,
     "islandGroup": "LUZON",
-    "region": "Region IV-A",
+    "region": "Region IV-A (CALABARZON)",
     "province": "Batangas",
     "municipality": "Batangas City",
     "barangay": "Sta. Rita Aplaya",
     "locationDescription": "Sta. Rita 1,000 MW Combined Cycle Power Plant - Sta. Rita Aplaya, Batangas City, Batangas (Region IV-A)",
     "location": "Sta. Rita Aplaya, Batangas City, Batangas",
-    "capacity": "1,000 MW Combined Cycle",
+    "capacity": "1,000 MW",
     "capacityMw": 0,
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "1999-11-01T00:00:00.000Z",
     "client": "First Philippine Balfour Beatty Inc.",
-    "projectValue": "₱4.2 Billion (Civil & Site Works)",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/sta-rita-ccpp-1.jpg",
+    "gallery": [
+      "/project-images/sta-rita-ccpp-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4645,21 +4273,20 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Bulk excavation and engineered fill of 35-hectare industrial complex",
-      "Vibration-isolated reinforced concrete gas turbine foundation blocks",
-      "Large-diameter offshore seawater intake pipelines and discharge canal"
+      "Site development, 35 hectares",
+      "Clearing, levelling and drainage",
+      "Roads",
+      "Sheet piling for wall structures"
     ],
     "keyMilestones": [
       {
-        "date": "Nov 1999",
-        "title": "Site Development & Civil Handover",
+        "date": "1999-11",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
     "metrics": {
-      "capacity": "1,000 MW Combined Cycle",
-      "safeManHours": "5,000,000 Safe Hours",
-      "contractValue": "₱4.2 Billion (Civil & Site Works)"
+      "capacity": "1,000 MW"
     },
     "featured": false,
     "targetCodDate": null,
@@ -4668,7 +4295,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.564Z",
-    "updatedAt": "2026-10-03T07:25:14.662Z"
+    "updatedAt": "2026-10-05T01:20:57.467Z"
   },
   {
     "id": "cmu7z82sm001gjo96z6li8xiu",
@@ -4695,7 +4322,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱3.85 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -4711,28 +4338,8 @@
       "Deep reinforced concrete Scale Pit with heavy abrasion-resistant linings for continuous scale flushing",
       "SCIC central fabrication and staging yard supporting regional equipment deployment"
     ],
-    "keyMilestones": [
-      {
-        "date": "2022",
-        "title": "Heavy Machine Foundation Block Completion",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2023",
-        "title": "ECR 1 & 2 Substation Energization",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2024",
-        "title": "WTP Process Testing & Commercial Handover",
-        "status": "ACHIEVED"
-      }
-    ],
-    "metrics": {
-      "safeManHours": "1,600,000 Safe Hours",
-      "contractValue": "₱3.85 Billion",
-      "workforcePeak": 550
-    },
+    "keyMilestones": [],
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -4740,21 +4347,21 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.854Z",
-    "updatedAt": "2026-10-03T07:47:27.291Z"
+    "updatedAt": "2026-10-05T00:37:43.076Z"
   },
   {
     "id": "cmu6czww3000pm4969a1m7klq",
     "organizationId": "scic-org-001",
-    "name": "Subic Bay Flour Mill & Marine Offloading Terminal",
+    "name": "Subic Bay Flour Mill (MP1284)",
     "slug": "subic-flour-mill",
     "projectCode": "SCIC-IND-03",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "COMPLETED",
-    "description": "Specialized slip-form concrete grain storage silos, pneumatic ship offloading conveyors, and deep-water berth integration for industrial grain import and processing.",
+    "description": "The Subic Bay flour mill in the Subic Bay Freeport Zone, Zambales, built for Mabuhay Interflour Mill Inc. Completed February 2017. The company lists the mill building and storage silos. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Buildings), checked 5 October 2026.",
     "latitude": 14.82,
     "longitude": 120.27,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Zambales",
     "municipality": "Subic Bay Freeport Zone",
     "barangay": null,
@@ -4765,11 +4372,14 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2017-02-01T00:00:00.000Z",
     "client": "Mabuhay Interflour Mill Inc.",
-    "projectValue": "₱1.4 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/subic-flour-mill-1.jpg",
+    "gallery": [
+      "/project-images/subic-flour-mill-1.jpg",
+      "/project-images/subic-flour-mill-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4777,21 +4387,17 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Slip-form continuous pour vertical concrete storage silos (60m height)",
-      "Heavy marine piling for ship unloader rail trackway",
-      "Automated bulk bagging and logistics warehouse facilities"
+      "Mill building",
+      "Storage silos"
     ],
     "keyMilestones": [
       {
-        "date": "2018",
-        "title": "Terminal Handover",
+        "date": "2017-02",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "safeManHours": "1,400,000 Safe Hours",
-      "contractValue": "₱1.4 Billion"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -4799,7 +4405,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.227Z",
-    "updatedAt": "2026-10-03T07:25:14.874Z"
+    "updatedAt": "2026-10-05T01:20:57.683Z"
   },
   {
     "id": "cmu6czvqk0007m4965vosqk8c",
@@ -4813,7 +4419,7 @@
     "latitude": 14.8392,
     "longitude": 120.3542,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Bataan / Zambales",
     "municipality": "Hermosa, Bataan to the Subic Bay Freeport (SBMA)",
     "barangay": null,
@@ -4827,8 +4433,13 @@
     "projectEndDate": "2021-03-01T00:00:00.000Z",
     "client": "NLEX Corporation",
     "projectValue": null,
-    "featuredImage": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1200&auto=format&fit=crop&q=80",
-    "gallery": [],
+    "featuredImage": "/project-images/sfex-tunnel-1.jpg",
+    "gallery": [
+      "/project-images/sfex-tunnel-1.jpg",
+      "/project-images/sfex-tunnel-2.jpg",
+      "/project-images/sfex-tunnel-3.jpg",
+      "/project-images/sfex-tunnel-4.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": "Engr. Carlito Perez",
     "leadPMRole": "Senior Highway & Tunnel Superintendent",
@@ -4861,7 +4472,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.732Z",
-    "updatedAt": "2026-10-03T07:38:19.519Z"
+    "updatedAt": "2026-10-05T00:37:46.544Z"
   },
   {
     "id": "cmu6czvsu0008m496n350u9x3",
@@ -4871,11 +4482,11 @@
     "projectCode": "SCIC-HWY-02",
     "category": "ROADS_HIGHWAYS",
     "status": "COMPLETED",
-    "description": "SCIC's critical role in the landmark Subic-Clark-Tarlac Expressway. Earthworks, river bridges, drainage structures, and asphalt pavements connecting Central Luzon's premier economic freeport zones.",
+    "description": "Package 1 of the Subic-Clark-Tarlac Expressway at Dinalupihan, Bataan, built for Obayashi Corporation. Completed 2007. The company lists an embankment of 1.2 million cubic metres of lahar for an 8 km section with base course and cement-treated base, eight reinforced-concrete deck girder bridges, two underpasses, box and pipe culverts, drainage structures, slope protection and a four-lane asphalt pavement. The company does not publish the contract value. Source: Sta. Clara International Corporation, completed projects list (Roads, Bridges and Railways), checked 5 October 2026.",
     "latitude": 14.9833,
     "longitude": 120.4833,
     "islandGroup": "LUZON",
-    "region": "Region III",
+    "region": "Region III (Central Luzon)",
     "province": "Bataan & Pampanga",
     "municipality": "Subic to Clark",
     "barangay": null,
@@ -4886,11 +4497,15 @@
     "plantType": null,
     "percentComplete": null,
     "projectStartDate": null,
-    "projectEndDate": null,
+    "projectEndDate": "2007-12-01T00:00:00.000Z",
     "client": "Obayashi Corporation",
-    "projectValue": "₱6.5 Billion (Consortium)",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/sctex-pkg1-1.jpg",
+    "gallery": [
+      "/project-images/sctex-pkg1-1.jpg",
+      "/project-images/sctex-pkg1-2.jpg",
+      "/project-images/sctex-pkg1-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -4898,22 +4513,19 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "Over 4 million cubic meters of cut-and-fill bulk earthworks",
-      "Multiple river bridge crossings including pre-stressed girder spans",
-      "Toll plazas, interchange ramps, and high-spec drainage culverts"
+      "Embankment, 1.2 million cubic metres of lahar over an 8 km section",
+      "Base course and cement-treated base; four-lane asphalt pavement",
+      "Eight reinforced-concrete deck girder bridges and two underpasses",
+      "Culverts, drainage structures and slope protection"
     ],
     "keyMilestones": [
       {
-        "date": "2008",
-        "title": "Full Commercial Inauguration",
+        "date": "2007-12",
+        "title": "Completed (per the company's project list)",
         "status": "ACHIEVED"
       }
     ],
-    "metrics": {
-      "roadLength": "50.5 km expressway segment",
-      "safeManHours": "4,000,000 Safe Hours",
-      "contractValue": "₱6.5 Billion (Consortium)"
-    },
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -4921,7 +4533,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.814Z",
-    "updatedAt": "2026-10-03T07:25:14.145Z"
+    "updatedAt": "2026-10-05T01:20:57.058Z"
   },
   {
     "id": "cmus1mvjq0000r496orcg90yj",
@@ -5002,8 +4614,12 @@
     "projectEndDate": "2016-02-01T00:00:00.000Z",
     "client": "Citicore Power, Inc.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/toledo-solar-1.jpg",
+    "gallery": [
+      "/project-images/toledo-solar-1.jpg",
+      "/project-images/toledo-solar-2.jpg",
+      "/project-images/toledo-solar-3.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -5026,14 +4642,14 @@
     "metrics": {
       "capacity": "60 MW"
     },
-    "featured": false,
+    "featured": true,
     "targetCodDate": null,
     "createdById": null,
     "updatedById": null,
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.211Z",
-    "updatedAt": "2026-10-03T06:50:48.211Z"
+    "updatedAt": "2026-10-05T00:37:44.681Z"
   },
   {
     "id": "cmus19c84000a8c96ejoff2dn",
@@ -5061,8 +4677,11 @@
     "projectEndDate": null,
     "client": "National Grid Corporation of the Philippines (NGCP)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/tuguegarao-lallo-230kv-1.jpg",
+    "gallery": [
+      "/project-images/tuguegarao-lallo-230kv-1.jpg",
+      "/project-images/tuguegarao-lallo-230kv-2.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -5085,7 +4704,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.484Z",
-    "updatedAt": "2026-10-03T06:50:48.484Z"
+    "updatedAt": "2026-10-05T00:37:44.968Z"
   },
   {
     "id": "cmqvwzn750000r8w1zidk116i",
@@ -5174,12 +4793,12 @@
   {
     "id": "cmu6czw2y000dm496fq6djrye",
     "organizationId": "scic-org-001",
-    "name": "Upper Wawa Dam Access Roads & Infrastructure",
+    "name": "Upper Wawa Dam Access Roads Improvement Works",
     "slug": "upper-wawa-roads",
     "projectCode": "SCIC-DAM-01",
     "category": "ROADS_HIGHWAYS",
     "status": "COMPLETED",
-    "description": "Permanent and temporary heavy-haul access roads, deep ravine bridges, and massive slope stabilization built to support construction of the Philippines' newest mega water security dam across the Sierra Madre.",
+    "description": "Improvement works for the Upper Wawa Dam access roads in San Mateo and Rodriguez (Montalban), Rizal, as road general contractor for Wawa Joint Venture Corp., Inc. The company lists temporary access roads to the dam structure (1,762 m and 1,784 m), a permanent access road to the quarry (2,850 m), earthworks, drainage structures, slope protection and concrete pavements, 6,396 m in total. The Upper Wawa Dam project as a whole was reported complete in June 2025; no completion date is published for the access roads themselves (the company's own list still shows them as ongoing). The company does not publish the contract value. Source: Sta. Clara International Corporation, ongoing projects list (Roads, Bridges and Railways), checked 5 October 2026.",
     "latitude": 14.7317,
     "longitude": 121.2056,
     "islandGroup": "LUZON",
@@ -5196,9 +4815,11 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": "Wawa Joint Venture Corp., Inc.",
-    "projectValue": "₱1.45 Billion",
-    "featuredImage": "/project-images/scic-project-placeholder.png",
-    "gallery": [],
+    "projectValue": null,
+    "featuredImage": "/project-images/upper-wawa-roads-1.jpg",
+    "gallery": [
+      "/project-images/upper-wawa-roads-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -5206,22 +4827,13 @@
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
-      "16 km all-weather heavy transport corridors for quarry equipment",
-      "Reinforced concrete river crossing bridges and high-capacity box culverts",
-      "Extensive soil-nailing, shotcreting, and rockfall barrier installations"
+      "Temporary access roads to the dam structure (1,762 m and 1,784 m)",
+      "Permanent access road to the quarry (2,850 m)",
+      "Earthworks and drainage structures",
+      "Slope protection and concrete pavements"
     ],
-    "keyMilestones": [
-      {
-        "date": "2023",
-        "title": "Access Corridor Completion",
-        "status": "ACHIEVED"
-      }
-    ],
-    "metrics": {
-      "roadLength": "16 km heavy mountainous roads",
-      "safeManHours": "1,350,000 Safe Hours",
-      "contractValue": "₱1.45 Billion"
-    },
+    "keyMilestones": [],
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -5229,17 +4841,17 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.178Z",
-    "updatedAt": "2026-10-03T07:25:16.379Z"
+    "updatedAt": "2026-10-05T01:54:14.542Z"
   },
   {
     "id": "cmu7z82qj001fjo963ynh1x41",
     "organizationId": "scic-org-001",
-    "name": "UPS Express Air Cargo Services Hub Expansion",
+    "name": "UPS Warehouse at Clark",
     "slug": "ups-clark-hub",
     "projectCode": "SCIC-LOG-UPS",
-    "category": "BUILDINGS",
+    "category": "INDUSTRIAL",
     "status": "ONGOING",
-    "description": "A world-class international air cargo sorting and logistics facility situated within the Clark Civil Aviation Complex at Clark International Airport. SCIC is delivering the heavy-duty industrial structural package featuring super-flat reinforced concrete floor slabs, automated parcel conveyor mezzanines, aircraft airside tarmac interface gates, cold-chain temperature vaults, and customs clearance staging.",
+    "description": "A warehouse for UPS at Clark, Pampanga. A consultant's project page states that Sta. Clara is building it; who the contract is with is not stated, so no client is recorded. The floor area, the scope and the contract value are not published. Source: consultant's project page for the UPS warehouse at Clark, checked 5 October 2026.",
     "latitude": 15.1858,
     "longitude": 120.5597,
     "islandGroup": "LUZON",
@@ -5256,7 +4868,7 @@
     "projectStartDate": null,
     "projectEndDate": null,
     "client": null,
-    "projectValue": "₱2.10 Billion",
+    "projectValue": null,
     "featuredImage": "/project-images/scic-project-placeholder.png",
     "gallery": [],
     "boundaryGeometry": null,
@@ -5265,34 +4877,9 @@
     "leadPMDivision": null,
     "leadPMLicense": null,
     "leadPMContact": null,
-    "engineeringScope": [
-      "High-clearance pre-engineered steel warehouse superstructure with wide column spacing",
-      "Heavy-duty laser-guided super-flat concrete industrial floor slabs designed for automated robotics",
-      "Airside aircraft parking apron interface, security boundary perimeter, and customs inspection gates",
-      "Integrated cold-storage pharmaceutical rooms and high-capacity electrical backup substations"
-    ],
-    "keyMilestones": [
-      {
-        "date": "2024-Q1",
-        "title": "Airport Land Lease & Civil Mobilization",
-        "status": "ACHIEVED"
-      },
-      {
-        "date": "2025-Q2",
-        "title": "Warehouse Steel Erection & Super-Flat Slabs",
-        "status": "IN_PROGRESS"
-      },
-      {
-        "date": "2026-Q3",
-        "title": "Automated Sortation Testing & Operations Launch",
-        "status": "SCHEDULED"
-      }
-    ],
-    "metrics": {
-      "safeManHours": "580,000 Safe Hours",
-      "contractValue": "₱2.10 Billion",
-      "workforcePeak": 380
-    },
+    "engineeringScope": [],
+    "keyMilestones": [],
+    "metrics": {},
     "featured": false,
     "targetCodDate": null,
     "createdById": null,
@@ -5300,7 +4887,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.779Z",
-    "updatedAt": "2026-10-03T07:25:17.588Z"
+    "updatedAt": "2026-10-05T01:20:58.718Z"
   },
   {
     "id": "cmus19csa000k8c96a2aknni8",
@@ -5328,8 +4915,10 @@
     "projectEndDate": "2008-01-01T00:00:00.000Z",
     "client": "TOYO Construction Co., Ltd.",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/urgent-bridges-package-3-1.jpg",
+    "gallery": [
+      "/project-images/urgent-bridges-package-3-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -5359,7 +4948,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.210Z",
-    "updatedAt": "2026-10-03T06:50:49.210Z"
+    "updatedAt": "2026-10-05T00:37:45.550Z"
   },
   {
     "id": "cmus19cop000i8c967495bu1r",
@@ -5387,8 +4976,10 @@
     "projectEndDate": null,
     "client": "VA Tech Wabag (Philippines) Inc. (for Maynilad Water Services, Inc.)",
     "projectValue": null,
-    "featuredImage": null,
-    "gallery": [],
+    "featuredImage": "/project-images/valenzuela-stp-1.jpg",
+    "gallery": [
+      "/project-images/valenzuela-stp-1.jpg"
+    ],
     "boundaryGeometry": null,
     "leadPMName": null,
     "leadPMRole": null,
@@ -5412,6 +5003,6 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.081Z",
-    "updatedAt": "2026-10-03T06:50:49.081Z"
+    "updatedAt": "2026-10-05T00:37:45.408Z"
   }
 ]

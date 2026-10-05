@@ -267,6 +267,29 @@ export function createUnifiedStyleSpec(initialStyle: AtlasBaseStyle = "DARK"): m
   };
 }
 
+/** Category -> marker icon, built from the registry (every category, including new ones) */
+const CATEGORY_ICON_EXPRESSION = [
+  "match",
+  ["get", "category"],
+  ...Object.values(CATEGORY_ICON_REGISTRY)
+    .filter((c) => c.categoryId !== "OTHER")
+    .flatMap((c) => [c.categoryId, c.iconName]),
+  CATEGORY_ICON_REGISTRY.OTHER.iconName,
+] as unknown as maplibregl.ExpressionSpecification;
+
+/** The power projects among what is on the map, for the capacity view */
+function capacityDataOf(data: AtlasFeatureCollection | null | undefined): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: (data?.features ?? []).filter((f) => Number(f.properties?.mw) > 0),
+  };
+}
+
+/** Free elevation tiles (Mapzen Terrarium on AWS Open Data): no key, no account */
+const TERRAIN_TILES = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
+const escapeHtml = (v: unknown) =>
+  String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
+
 /**
  * Retrieves all leaves (individual project points) for a given cluster
  * through pagination to avoid the 100-leaf ceiling.
@@ -842,21 +865,7 @@ export function ProjectAtlasMap({
         source: "scic-projects",
         filter: ["!", ["has", "point_count"]],
         layout: {
-          "icon-image": [
-            "match",
-            ["get", "category"],
-            "HYDROPOWER", "marker-hydro",
-            "WIND_POWER", "marker-wind",
-            "WATER_RESOURCES", "marker-water",
-            "ROADS_HIGHWAYS", "marker-roads",
-            "BRIDGES", "marker-bridge",
-            "RAIL_TRANSIT", "marker-rail",
-            "BUILDINGS", "marker-buildings",
-            "INDUSTRIAL", "marker-industrial",
-            "ENERGY_GRID", "marker-grid",
-            "MINING_TUNNELING", "marker-tunnel",
-            "marker-other",
-          ],
+          "icon-image": CATEGORY_ICON_EXPRESSION,
           "icon-size": [
             "interpolate",
             ["linear"],
@@ -884,21 +893,7 @@ export function ProjectAtlasMap({
         source: "scic-projects",
         filter: ["==", ["get", "id"], "__NONE__"],
         layout: {
-          "icon-image": [
-            "match",
-            ["get", "category"],
-            "HYDROPOWER", "marker-hydro",
-            "WIND_POWER", "marker-wind",
-            "WATER_RESOURCES", "marker-water",
-            "ROADS_HIGHWAYS", "marker-roads",
-            "BRIDGES", "marker-bridge",
-            "RAIL_TRANSIT", "marker-rail",
-            "BUILDINGS", "marker-buildings",
-            "INDUSTRIAL", "marker-industrial",
-            "ENERGY_GRID", "marker-grid",
-            "MINING_TUNNELING", "marker-tunnel",
-            "marker-other",
-          ],
+          "icon-image": CATEGORY_ICON_EXPRESSION,
           "icon-size": [
             "interpolate",
             ["linear"],
@@ -928,21 +923,7 @@ export function ProjectAtlasMap({
           ["==", ["get", "id"], selectedId || "__NONE__"],
         ],
         layout: {
-          "icon-image": [
-            "match",
-            ["get", "category"],
-            "HYDROPOWER", "marker-hydro",
-            "WIND_POWER", "marker-wind",
-            "WATER_RESOURCES", "marker-water",
-            "ROADS_HIGHWAYS", "marker-roads",
-            "BRIDGES", "marker-bridge",
-            "RAIL_TRANSIT", "marker-rail",
-            "BUILDINGS", "marker-buildings",
-            "INDUSTRIAL", "marker-industrial",
-            "ENERGY_GRID", "marker-grid",
-            "MINING_TUNNELING", "marker-tunnel",
-            "marker-other",
-          ],
+          "icon-image": CATEGORY_ICON_EXPRESSION,
           "icon-size": [
             "interpolate",
             ["linear"],
@@ -987,6 +968,29 @@ export function ProjectAtlasMap({
         },
       });
 
+      // Entrance: markers and groups fade in rather than pop (skipped for reduced motion)
+      if (!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        const fade: Array<[string, "icon-opacity" | "circle-opacity" | "text-opacity", number]> = [
+          ["project-points", "icon-opacity", 1],
+          ["clusters", "circle-opacity", 0.95],
+          ["cluster-count", "text-opacity", 1],
+        ];
+        for (const [id, prop] of fade) {
+          if (!map.getLayer(id)) continue;
+          map.setPaintProperty(id, `${prop}-transition`, { duration: 0, delay: 0 });
+          map.setPaintProperty(id, prop, 0);
+        }
+        // (a timer, not an animation frame: a tab opened in the background must still end up
+        //  with its markers showing)
+        window.setTimeout(() => {
+          fade.forEach(([id, prop, to], i) => {
+            if (!map.getLayer(id)) return;
+            map.setPaintProperty(id, `${prop}-transition`, { duration: 700, delay: 120 * i });
+            map.setPaintProperty(id, prop, to);
+          });
+        }, 60);
+      }
+
       // Synchronize active GIS layers according to registry
       await syncGisRef.current?.(map, activeGisLayersRef.current, selectedId);
     },
@@ -995,6 +999,7 @@ export function ProjectAtlasMap({
 
   // Synchronize GIS layers (Administrative Boundaries, Footprints, Infrastructure)
   const pendingGisSyncRef = useRef(false);
+  const terrainOnRef = useRef(false);
   const syncGisLayers = useCallback(
     async (
       map: maplibregl.Map,
@@ -1188,6 +1193,109 @@ export function ProjectAtlasMap({
           }
         }
       }
+
+      // 5. Capacity view: each power project as a bubble sized by its megawatts (area ~ MW).
+      //    Unconfirmed records carry mw = 0 and are left out, as they are from the header total.
+      if (layers.has("capacity-view")) {
+        const data = capacityDataOf(geoJsonRef.current);
+        const src = map.getSource("scic-capacity") as maplibregl.GeoJSONSource | undefined;
+        if (src) src.setData(data);
+        else map.addSource("scic-capacity", { type: "geojson", data });
+        const below = ["clusters-pulse", "clusters", "project-points"].find((id) => map.getLayer(id));
+        if (!map.getLayer("capacity-bubbles")) {
+          const radius = (k: number) => ["max", 5, ["*", ["sqrt", ["get", "mw"]], k]];
+          map.addLayer(
+            {
+              id: "capacity-bubbles",
+              type: "circle",
+              source: "scic-capacity",
+              paint: {
+                "circle-radius": ["interpolate", ["exponential", 1.5], ["zoom"], 5, radius(1.5), 9, radius(3.2), 13, radius(6)] as any,
+                "circle-color": ["get", "color"],
+                "circle-opacity": 0,
+                "circle-stroke-color": ["get", "color"],
+                "circle-stroke-width": 1.5,
+                "circle-stroke-opacity": 0,
+                "circle-opacity-transition": { duration: 700, delay: 0 },
+                "circle-stroke-opacity-transition": { duration: 700, delay: 0 },
+              },
+            },
+            below
+          );
+          map.addLayer({
+            id: "capacity-labels",
+            type: "symbol",
+            source: "scic-capacity",
+            layout: {
+              "text-field": ["concat", ["get", "mwLabel"], " MW"],
+              "text-font": ["Noto Sans Bold"],
+              "text-size": ["interpolate", ["linear"], ["zoom"], 5, 10, 10, 12.5],
+              "text-anchor": "bottom",
+              "text-offset": [0, -1.5],
+              "text-padding": 3,
+              // (where labels would collide, the larger plant keeps its label)
+              "symbol-sort-key": ["-", 0, ["get", "mw"]],
+            },
+            paint: {
+              "text-color": "#ffffff",
+              "text-halo-color": "rgba(5, 20, 14, 0.92)",
+              "text-halo-width": 1.6,
+            },
+          });
+          window.setTimeout(() => {
+            if (!map.getLayer("capacity-bubbles")) return;
+            map.setPaintProperty("capacity-bubbles", "circle-opacity", 0.24);
+            map.setPaintProperty("capacity-bubbles", "circle-stroke-opacity", 0.9);
+          }, 60);
+        }
+        for (const id of ["capacity-bubbles", "capacity-labels"]) map.setLayoutProperty(id, "visibility", "visible");
+      } else {
+        for (const id of ["capacity-bubbles", "capacity-labels"]) {
+          if (map.getLayer(id)) map.removeLayer(id);
+        }
+        if (map.getSource("scic-capacity")) map.removeSource("scic-capacity");
+      }
+
+      // 6. 3D terrain: real relief under the map, with hill shading. The camera tilts once when
+      //    the layer is switched on (an ordinary, interruptible ease) and levels when it goes off.
+      const wantTerrain = layers.has("terrain-3d");
+      try {
+        if (wantTerrain) {
+          for (const id of ["scic-terrain-dem", "scic-hillshade-dem"]) {
+            if (!map.getSource(id)) {
+              map.addSource(id, {
+                type: "raster-dem",
+                tiles: [TERRAIN_TILES],
+                tileSize: 256,
+                maxzoom: 13,
+                encoding: "terrarium",
+                attribution: "Terrain: Mapzen, AWS Open Data",
+              });
+            }
+          }
+          if (!map.getLayer("scic-hillshade")) {
+            const below = ["capacity-bubbles", "clusters-pulse", "clusters", "project-points"].find((id) => map.getLayer(id));
+            map.addLayer(
+              {
+                id: "scic-hillshade",
+                type: "hillshade",
+                source: "scic-hillshade-dem",
+                paint: { "hillshade-exaggeration": 0.38, "hillshade-shadow-color": "#07120e", "hillshade-highlight-color": "#d8f3e6" },
+              },
+              below
+            );
+          }
+          if (!map.getTerrain()) map.setTerrain({ source: "scic-terrain-dem", exaggeration: 1.5 });
+          if (!terrainOnRef.current && map.getPitch() < 30) map.easeTo({ pitch: 58, duration: 1100 });
+        } else {
+          if (map.getTerrain()) map.setTerrain(null);
+          if (map.getLayer("scic-hillshade")) map.removeLayer("scic-hillshade");
+          if (terrainOnRef.current && map.getPitch() > 1) map.easeTo({ pitch: 0, duration: 800 });
+        }
+        terrainOnRef.current = wantTerrain;
+      } catch (err) {
+        console.warn("[ProjectAtlasMap] 3D terrain is not available:", err);
+      }
     },
     []
   );
@@ -1243,10 +1351,43 @@ export function ProjectAtlasMap({
       context?.updateViewportState({ bearing: b });
     });
 
+    // Groups split and merge at whole zoom levels. The map library swaps them in one frame (a
+    // pop), so at each crossing the markers dip and fade back in: the regrouping reads as a soft
+    // dissolve instead. (Timers, not animation frames; skipped for reduced motion.)
+    let clusterLevel = Math.floor(map.getZoom());
+    let clusterFadeTimer = 0;
+    const softRegroup = () => {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      const fades: Array<[string, string, number, number]> = [
+        ["clusters", "circle-opacity", 0.25, 0.95],
+        ["cluster-count", "text-opacity", 0, 1],
+        ["project-points", "icon-opacity", 0.3, 1],
+      ];
+      const paint = map.setPaintProperty.bind(map) as (layer: string, name: string, v: unknown) => void;
+      for (const [id, prop, low] of fades) {
+        if (!map.getLayer(id)) continue;
+        paint(id, `${prop}-transition`, { duration: 0, delay: 0 });
+        paint(id, prop, low);
+      }
+      window.clearTimeout(clusterFadeTimer);
+      clusterFadeTimer = window.setTimeout(() => {
+        for (const [id, prop, , full] of fades) {
+          if (!map.getLayer(id)) continue;
+          paint(id, `${prop}-transition`, { duration: 420, delay: 0 });
+          paint(id, prop, full);
+        }
+      }, 40);
+    };
+
     map.on("zoom", () => {
       const z = Number(map.getZoom().toFixed(1));
       setZoom(z);
       context?.updateViewportState({ zoom: z });
+      const level = Math.floor(map.getZoom());
+      if (level !== clusterLevel && map.getZoom() <= 14) {
+        clusterLevel = level;
+        softRegroup();
+      }
     });
 
     // 1. Cluster Click: Smooth Bounds Fit with Pagination & Edge Case Guard
@@ -1422,23 +1563,21 @@ export function ProjectAtlasMap({
         `;
       }
 
+      // (only what the record holds: capacity, else the verified client, else the region)
       let metricLabel = "CAPACITY";
       let metricValue = props.capacity || "";
-
-      if (!metricValue && props.projectValue) {
-        metricLabel = "INVESTMENT";
-        metricValue = props.projectValue;
-      } else if (!metricValue && props.client) {
+      if (!metricValue && props.client) {
         metricLabel = "CLIENT";
         metricValue = props.client;
       } else if (!metricValue) {
-        metricLabel = "LEAD PM";
-        metricValue = props.leadPM || "SCIC Engineering";
+        metricLabel = "REGION";
+        metricValue = props.region || "Philippines";
       }
+      metricValue = escapeHtml(metricValue);
 
       const municipality = props.municipality || "";
       const province = props.province || "";
-      const locationMain = [municipality, province].filter(Boolean).join(", ") || props.region || "Philippines";
+      const locationMain = escapeHtml([municipality, province].filter(Boolean).join(", ") || props.region || "Philippines");
       const regionTag = props.region && props.region !== province ? `<span class="ml-auto text-[8px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 scic-popup-region-tag">${props.region}</span>` : "";
       const codeBadge = props.projectCode ? `<span class="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold tracking-wider scic-popup-code mr-1.5">${props.projectCode}</span>` : "";
 
@@ -1467,7 +1606,7 @@ export function ProjectAtlasMap({
               <!-- Project Title -->
               <div class="mb-2">
                 <h4 class="text-[12.5px] font-bold scic-popup-title leading-[1.32] tracking-tight line-clamp-2">
-                  ${props.name}
+                  ${escapeHtml(props.name)}
                 </h4>
               </div>
 
@@ -1564,6 +1703,7 @@ export function ProjectAtlasMap({
         }
       );
     }
+    (map.getSource("scic-capacity") as maplibregl.GeoJSONSource | undefined)?.setData(capacityDataOf(geoJson));
   }, [geoJson, isMapLoaded]);
 
   // Sync selected project highlight ring & prominent icon filters & tactical HUD reticle
@@ -1825,6 +1965,7 @@ export function ProjectAtlasMap({
             }}
             activeGisLayers={activeGisLayers}
             onToggleGisLayer={onToggleGisLayer}
+            projectCount={geoJson?.features?.length}
           />
         </div>
 

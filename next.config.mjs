@@ -47,6 +47,31 @@ const nextConfig = {
   },
   async headers() {
     return [
+      // Large files that never change under the same address: let the browser keep them instead
+      // of asking the server again on every visit (they were all "max-age=0, must-revalidate").
+      {
+        // voice clips are named by the hash of their text: a given file can never change
+        source: "/voice/:file([0-9a-f]+\.mp3)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        // 3D characters: the address carries a version (?v=7) that is raised with every new file
+        source: "/models/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }],
+      },
+      {
+        source: "/project-images/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
+      },
+      {
+        source: "/audio/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
+      },
+      {
+        // GIS overlays (river flow lines, boundaries)
+        source: "/data/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      },
       {
         // matching all API routes
         source: "/api/:path*",

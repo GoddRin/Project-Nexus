@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { ATLAS_INTRO_DONE_EVENT, atlasIntroFinished } from "@/components/atlas/effects/AtlasIntro";
+import React, { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Sparkles,
@@ -61,6 +62,22 @@ import {
   type OverlayId,
   type QuipKind,
 } from "./navigatorLines";
+
+/** A tenth of a second of silence: playing it tells us whether the browser allows sound yet */
+const SILENT_WAV = "data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==";
+async function browserAllowsSound(): Promise<boolean> {
+  const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
+  if (ua?.hasBeenActive) return true;
+  try {
+    const probe = new Audio(SILENT_WAV);
+    probe.volume = 0.01;
+    await probe.play();
+    probe.pause();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export interface AtlasNavigatorAvatarProps {
   state: AtlasNavigatorState;
@@ -311,12 +328,14 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
   // sound yet (nothing on the page has been clicked or typed since it loaded), or when the caller
   // explicitly asks for silence (the microphone is open).
   const presentLine = useCallback(
-    (l: NavigatorLine, opts?: { speak?: boolean; showBubble?: boolean }) => {
+    (l: NavigatorLine, opts?: { speak?: boolean; showBubble?: boolean; soundChecked?: boolean }) => {
       lastLineIdRef.current = l.id;
       setLine(l);
       setTypedLen(0);
       if (opts?.showBubble !== false) setSpeechBubbleVisible(true);
       const soundAllowed =
+        // (the caller has already tested that the browser will play sound without a click)
+        opts?.soundChecked === true ||
         typeof navigator === "undefined" ||
         !(navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation ||
         (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation!.hasBeenActive;
@@ -405,17 +424,56 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
     return () => clearTimeout(id);
   }, [voiced, line, typedLen, prefersReducedMotion]);
 
-  // First impression: a wave and a friendly greeting (spoken if the browser already allows sound)
+  // First impression: a wave and a spoken greeting, once the opening animation has finished.
+  // Browsers may refuse sound until something on the page has been clicked: that is tested first
+  // (a silent clip). If sound is refused, the greeting is shown and then SPOKEN at the first
+  // click or key press, so his first line is never left without a voice.
+  const presentLineRef = useRef(presentLine);
+  useEffect(() => {
+    presentLineRef.current = presentLine;
+  }, [presentLine]);
   useEffect(() => {
     if (!mounted) return;
-    const id = setTimeout(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let removeGesture: (() => void) | undefined;
+    const greet = async () => {
+      if (cancelled) return;
       const now = new Date();
-      presentLine(
-        greetingLine({ hour: now.getHours(), day: now.getDay(), tapCount: 0, personality: getPersonality(), visit: visitRef.current, speak: true, favourite: favouriteName() })
-      );
-    }, 1400);
-    return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      const l = greetingLine({ hour: now.getHours(), day: now.getDay(), tapCount: 0, personality: getPersonality(), visit: visitRef.current, speak: true, favourite: favouriteName() });
+      const allowed = await browserAllowsSound();
+      if (cancelled) return;
+      if (allowed) return presentLineRef.current(l, { soundChecked: true });
+      presentLineRef.current(l, { speak: false });
+      const onGesture = () => {
+        removeGesture?.();
+        // (only if he has not moved on to another line in the meantime)
+        if (!cancelled && lastLineIdRef.current === l.id) presentLineRef.current(l);
+      };
+      window.addEventListener("pointerdown", onGesture, { once: true });
+      window.addEventListener("keydown", onGesture, { once: true });
+      removeGesture = () => {
+        window.removeEventListener("pointerdown", onGesture);
+        window.removeEventListener("keydown", onGesture);
+      };
+    };
+    const afterIntro = () => {
+      window.removeEventListener(ATLAS_INTRO_DONE_EVENT, afterIntro);
+      clearTimeout(timer);
+      timer = setTimeout(greet, 450);
+    };
+    if (atlasIntroFinished()) timer = setTimeout(greet, 900);
+    else {
+      window.addEventListener(ATLAS_INTRO_DONE_EVENT, afterIntro);
+      // (a page without the opening, or one that never reports: greet anyway)
+      timer = setTimeout(afterIntro, 9000);
+    }
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      window.removeEventListener(ATLAS_INTRO_DONE_EVENT, afterIntro);
+      removeGesture?.();
+    };
   }, [mounted]);
 
   // Have his stock lines ready in the neural voice before they are needed
@@ -947,6 +1005,61 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
     );
   };
 
+  // ── Walk controller ──
+  // Whenever the layout engine gives him a new spot, he first stays where he visibly is (the
+  // difference is held as a transform), and once the spot has settled he goes there: a quick
+  // slide for a short step, a walk (recorded stride, full figure in frame) for a longer way.
+  const spotRef = useRef<{ left: number; top: number; mode: string; hidden: boolean } | null>(null);
+  const moveTimerRef = useRef(0);
+  const walkEndRef = useRef(0);
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+    const rect = el.getBoundingClientRect();
+    const spot = { left: rect.left - m.m41, top: rect.top - m.m42, mode: layoutStyle.visualMode, hidden: !!layoutStyle.hidden };
+    const prev = spotRef.current;
+    spotRef.current = spot;
+    if (!prev) return;
+    // where he is on screen now, relative to the new spot
+    const dx = prev.left + m.m41 - spot.left;
+    const dy = prev.top + m.m42 - spot.top;
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+    el.style.setProperty("--nav-move", "0s");
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+    window.clearTimeout(moveTimerRef.current);
+    window.clearTimeout(walkEndRef.current);
+    navigatorBus.walk = null;
+    moveTimerRef.current = window.setTimeout(() => {
+      const dist = Math.abs(dx);
+      const plain = prefersReducedMotion || spot.hidden || prev.hidden || spot.mode !== "companion" || prev.mode !== "companion" || dist < 110;
+      if (plain) {
+        el.style.setProperty("--nav-move", prefersReducedMotion ? "0s" : "0.35s");
+        el.style.setProperty("--nav-ease", "cubic-bezier(0.16, 1, 0.3, 1)");
+      } else {
+        // the recording walks at about 150 px a second at this size: longer ways are taken a
+        // little brisker (the stride speeds up to match, so his feet do not slide)
+        const seconds = Math.min(4.2, Math.max(1.1, dist / 150));
+        const rate = Math.min(1.7, Math.max(0.85, dist / 150 / seconds));
+        el.style.setProperty("--nav-move", `${seconds}s`);
+        el.style.setProperty("--nav-ease", "linear");
+        navigatorBus.walk = { dir: dx > 0 ? -1 : 1, until: performance.now() + seconds * 1000, rate };
+        walkEndRef.current = window.setTimeout(() => {
+          navigatorBus.walk = null;
+        }, seconds * 1000);
+      }
+      el.style.transform = "translate(0px, 0px)";
+    }, 280);
+  }, [layoutStyle, prefersReducedMotion]);
+  useEffect(
+    () => () => {
+      window.clearTimeout(moveTimerRef.current);
+      window.clearTimeout(walkEndRef.current);
+      navigatorBus.walk = null;
+    },
+    []
+  );
+
   const cameraProp = useMemo(() => ({ position: [0, 1.25, 2.3] as [number, number, number], fov: 38 }), []);
   const glProp = useMemo(() => ({ antialias: true, alpha: true, powerPreference: "high-performance" as const }), []);
 
@@ -1000,9 +1113,11 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
           : isHeroic
           ? ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE + 2
           : ATLAS_Z_INDEX.INSPECTION_DRAWER + 5,
+        // (his position changes at once; the move between spots is the transform below, driven
+        //  by the walk controller: a short slide for a small step, a walk for a longer way)
         transition:
-          "width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), right 0.35s cubic-bezier(0.16, 1, 0.3, 1), left 0.35s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
-        willChange: "width, height, left, right, bottom",
+          "width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform var(--nav-move, 0s) var(--nav-ease, linear)",
+        willChange: "width, height, transform",
       }}
       className={cn(
         "pointer-events-auto select-none",

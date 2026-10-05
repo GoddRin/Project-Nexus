@@ -31,6 +31,8 @@ export interface AtlasNavigatorModelProps {
   reaction: AtlasNavigatorReaction;
   gazeTarget: AtlasNavigatorGazeTarget;
   visualMode: "companion" | "bust" | "heroic_center";
+  /** The computer asks for less motion. He is not frozen: he keeps breathing, looking and
+   *  gesturing gently while he speaks ("calm"), and leaves out the big reactions and recorded moves. */
   reducedMotion?: boolean;
   lipSyncRef?: React.MutableRefObject<LipSyncTelemetry>;
   isTapInteracting?: boolean;
@@ -188,6 +190,10 @@ function steadyClip(source: THREE.AnimationClip): THREE.AnimationClip {
   }
   return clip;
 }
+
+/** Camera while he walks: far enough back to show the whole figure */
+const WALK_CAM_POS = new THREE.Vector3(0, 1.0, 3.5);
+const WALK_CAM_LOOK = new THREE.Vector3(0, 0.94, 0);
 
 /** How much larger expressions are played in the small companion view (see section 9) */
 const COMPANION_EXPRESSION_GAIN = 1.8;
@@ -426,6 +432,7 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     shot: null as null | (ShotDef & { t0: number; gesture?: boolean; cut?: boolean }),
     lastGestureSince: -1,
     idleSince: 0,
+    walkW: 0,
     invScene: new THREE.Quaternion(),
     // the mixer's own output for every bone we adjust (see 8a)
     animCache: DRIVEN.map(() => new THREE.Quaternion()),
@@ -498,6 +505,14 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     } else {
       st.tPos.set(0, 1.45, 1.68); st.tLook.set(0, 1.39, 0);
     }
+    // Walking to a new spot: the camera steps back to show him head to boots, and returns after
+    const walkNow = navigatorBus.walk;
+    const walking = !!walkNow && performance.now() < walkNow.until && !reducedMotion && visualMode === "companion";
+    st.walkW += ((walking ? 1 : 0) - st.walkW) * (1 - Math.exp(-dt / 0.22));
+    if (st.walkW > 0.002) {
+      st.tPos.lerp(WALK_CAM_POS, st.walkW);
+      st.tLook.lerp(WALK_CAM_LOOK, st.walkW);
+    }
     const camK = 1 - Math.exp(-4.5 * dt);
     st.camPos.lerp(st.tPos, camK);
     st.camLook.lerp(st.tLook, camK);
@@ -535,7 +550,7 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     const rawEnergy = lip?.energy ?? 0;
     const hover = navigatorBus.pointer.isDirectHover;
 
-    st.speakW = THREE.MathUtils.damp(st.speakW, speaking && !reducedMotion ? 1 : 0, 4, dt);
+    st.speakW = THREE.MathUtils.damp(st.speakW, speaking ? (reducedMotion ? 0.55 : 1) : 0, 4, dt);
 
     // Beat detector: positive energy derivative = stressed syllable
     const rise = Math.max(0, rawEnergy - st.lastEnergy);
@@ -600,7 +615,7 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     /** -1..1: how far to his screen-left (-) or screen-right (+) the target is */
     const targetSide = target ? THREE.MathUtils.clamp((target.x - st.canvasCenter.x) / 600, -1, 1) : -0.7;
 
-    if (!reducedMotion) {
+    if (true) { // (calm mode still gestures while speaking, at about half size: see speakW)
       // a tour guide always has the site to show, and "where is it" is answered at the map
       const hasPeek = freshPeek || (!!target && (activity === "tour" || (activity === "answer" && navigatorBus.narrationHint === "location")));
       const hasClips = !!animRef.current?.actions.presentR;
@@ -784,7 +799,7 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     }
 
     // 6. Breathing, weight shift, lean ----------------------------------------
-    if (!reducedMotion) {
+    if (true) { // breathing is kept in calm mode
       const breath = Math.sin(t * 1.65);
       addModel("spine1", -breath * 0.012, 0, 0);
       addModel("spine2", -breath * 0.016, 0, 0);
@@ -807,7 +822,7 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
     const peekActive = !!peek && (dbg?.peek ? true : peekAge < 4500) && !hover;
     const glancePeek = peekActive && (!speaking || Math.sin(t * 0.55) > -0.2);
 
-    if (!reducedMotion) {
+    if (true) { // so is where he looks
       if (hover) {
         yaw = 0; pitch = 0.02; // eye contact
       } else if (glanceWrist) {
@@ -904,6 +919,13 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
         if (an.actions[alt]) base = alt;
       }
 
+      // on his way to a new spot: the recorded walk (in place; the page moves him across the screen)
+      if (walking && walkNow && an.actions.walk) {
+        base = "walk";
+        an.actions.walk.timeScale = walkNow.rate;
+        st.shot = null;
+      }
+
       // one-shot reaction clip, scrubbed by hand
       let shotW = 0;
       const shot = st.shot;
@@ -944,7 +966,7 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
         for (let i = 0; i < DRIVEN.length; i++) r.bones[i]?.quaternion.copy(st.animCache[i]);
         for (let i = 0; i < r.fingers.length; i++) r.fingers[i].bone.quaternion.copy(st.fingerCache[i]);
       }
-      an.mixer.update(reducedMotion ? 0 : dt);
+      an.mixer.update(reducedMotion ? dt * 0.6 : dt); // calm: the standing loop runs, slower
       for (let i = 0; i < DRIVEN.length; i++) {
         const bone = r.bones[i];
         if (bone) st.animCache[i].copy(bone.quaternion);
@@ -1117,7 +1139,9 @@ export const AtlasNavigatorModel: React.FC<AtlasNavigatorModelProps> = ({
 
     // 10. Click-and-drag "turntable" nudge (springs back to centre on release)
     if (groupRef.current) {
-      groupRef.current.rotation.y = stepSpring(st.dragSpring, reducedMotion ? 0 : navigatorBus.dragYaw, 10, dt);
+      // (walking: he turns to face the way he is going, and squares up again on arrival)
+      const walkYaw = walking && walkNow ? walkNow.dir * 1.2 : 0;
+      groupRef.current.rotation.y = stepSpring(st.dragSpring, reducedMotion ? 0 : navigatorBus.dragYaw + walkYaw, walking ? 7 : 10, dt);
     }
 
     // 11. Telemetry for behavioural verification --------------------------------

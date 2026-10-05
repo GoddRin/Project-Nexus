@@ -42,7 +42,12 @@ import {
   AlertCircle,
   Filter,
   BookOpen,
+  Star,
+  Columns3,
+  BadgeCheck,
+  CircleHelp,
 } from "lucide-react";
+import { VERIFICATION_LABEL, verificationOf } from "@/lib/atlas/projectFacts";
 import { SCICProject } from "@/lib/data/scicProjectsData";
 import { ATLAS_STATUSES } from "./AtlasTokens";
 import {
@@ -67,6 +72,11 @@ export interface ProjectInspectionDrawerProps {
   isTourSpeaking?: boolean;
   /** Plays the narrated site story for this project (omitted when the record is too thin for one) */
   onTellStory?: () => void;
+  /** Starred projects and the comparison tray (the map's tool dock owns both lists) */
+  isStarred?: boolean;
+  onToggleStar?: () => void;
+  isCompared?: boolean;
+  onToggleCompare?: () => void;
 }
 
 export function ProjectInspectionDrawer({
@@ -80,6 +90,10 @@ export function ProjectInspectionDrawer({
   tourSpokenWordIndex,
   isTourSpeaking = false,
   onTellStory,
+  isStarred = false,
+  onToggleStar,
+  isCompared = false,
+  onToggleCompare,
 }: ProjectInspectionDrawerProps) {
   const {
     flyToProject,
@@ -375,6 +389,58 @@ export function ProjectInspectionDrawer({
               </span>
             </div>
 
+            <div className="flex items-center gap-1.5">
+              {(() => {
+                const v = verificationOf(project);
+                return (
+                  <span
+                    title={VERIFICATION_LABEL[v].hint}
+                    className={cn(
+                      "inline-flex items-center gap-1 h-6 px-2 rounded-full border text-[10px] font-medium",
+                      v === "verified" && "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                      v === "unconfirmed" && "border-amber-500/35 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+                      v === "listed" && "border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300"
+                    )}
+                  >
+                    {v === "verified" ? <BadgeCheck className="h-3 w-3" /> : <CircleHelp className="h-3 w-3" />}
+                    {VERIFICATION_LABEL[v].label}
+                  </span>
+                );
+              })()}
+              {onToggleCompare && (
+                <button
+                  type="button"
+                  onClick={onToggleCompare}
+                  aria-pressed={isCompared}
+                  className={cn(
+                    "p-1.5 rounded-lg border transition-colors cursor-pointer",
+                    isCompared
+                      ? "border-[#007B3E]/50 bg-[#007B3E]/15 text-[#007B3E] dark:text-emerald-300"
+                      : "border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 dark:text-slate-300"
+                  )}
+                  aria-label={isCompared ? "Remove from comparison" : "Add to comparison"}
+                  title={isCompared ? "Remove from comparison" : "Compare with other projects"}
+                >
+                  <Columns3 className="h-3.5 w-3.5" />
+                </button>
+              )}
+              {onToggleStar && (
+                <button
+                  type="button"
+                  onClick={onToggleStar}
+                  aria-pressed={isStarred}
+                  className={cn(
+                    "p-1.5 rounded-lg border transition-colors cursor-pointer",
+                    isStarred
+                      ? "border-amber-400/50 bg-amber-400/15 text-amber-500"
+                      : "border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 dark:text-slate-300"
+                  )}
+                  aria-label={isStarred ? "Remove star" : "Star this project"}
+                  title={isStarred ? "Starred: click to remove (S)" : "Star this project (S)"}
+                >
+                  <Star className={cn("h-3.5 w-3.5 transition-transform", isStarred && "fill-current scale-110")} />
+                </button>
+              )}
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
@@ -383,6 +449,7 @@ export function ProjectInspectionDrawer({
             >
               <X className="h-3.5 w-3.5" />
             </button>
+            </div>
           </div>
 
           {/* Filter Exclusion Notice (Phase 11: Explained graceful state when project is selected via Spotlight/Discovery but hidden by active directory filters) */}
@@ -481,7 +548,7 @@ export function ProjectInspectionDrawer({
               </div>
 
               {/* Featured Project Image (Directives 10 & 11) */}
-              <motion.div layoutId={`project-photo-${project.id}`} transition={BRAND_SPRING} className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-100 dark:bg-atlas-sunken">
+              <motion.div layoutId={`project-photo-${project.id}`} transition={BRAND_SPRING} className="atlas-skeleton relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-100 dark:bg-atlas-sunken">
                 {activePhotoUrl ? (
                   <button
                     ref={triggerImageRef}

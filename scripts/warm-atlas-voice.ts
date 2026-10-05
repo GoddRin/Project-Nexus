@@ -4,6 +4,7 @@
  *
  *   npx tsx scripts/warm-atlas-voice.ts            fixed lines only
  *   npx tsx scripts/warm-atlas-voice.ts --projects also the lines built around each project name
+ *   npx tsx scripts/warm-atlas-voice.ts --timeline also the narrated timeline (one line per year)
  *   npx tsx scripts/warm-atlas-voice.ts --list     print the lines and whether each is ready
  *
  * Needs the dev server running (it calls /api/atlas-ai/tts, which writes the cache). The speech
@@ -15,6 +16,8 @@ import fs from "fs";
 import path from "path";
 import projects from "../lib/data/scicAtlasInitialProjects.json";
 import { allStockLines, projectStockLines } from "../components/atlas/ai/navigatorLines";
+import { completionYearOf, timelineLine } from "../lib/atlas/projectFacts";
+import type { SCICProject } from "../lib/data/scicProjectsData";
 import { buildSpokenAlignment, limitSpokenText, MAX_SPOKEN_CHARS } from "../lib/atlas-ai/spokenText";
 
 const BASE = process.env.ATLAS_URL || "http://localhost:3000";
@@ -44,6 +47,16 @@ async function main() {
     const lines: string[] = [];
     for (const p of projects as Array<{ name: string; category?: string | null }>) lines.push(...projectStockLines(p.name, p.category));
     groups.push({ name: "project lines", lines: [...new Set(lines)] });
+  }
+
+  if (args.has("--timeline")) {
+    // the narrated timeline: one line per year in which something was finished
+    const byYear = new Map<number, string[]>();
+    for (const p of projects as unknown as SCICProject[]) {
+      const y = completionYearOf(p);
+      if (y !== null) byYear.set(y, [...(byYear.get(y) || []), p.name]);
+    }
+    groups.push({ name: "timeline lines", lines: [...byYear.entries()].sort((x, z) => x[0] - z[0]).map(([y, names]) => timelineLine(y, names.sort((m, n) => m.localeCompare(n, undefined, { sensitivity: "base" })))) });
   }
 
   for (const group of groups) {

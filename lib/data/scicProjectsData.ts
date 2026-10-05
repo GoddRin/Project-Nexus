@@ -2411,9 +2411,18 @@ export function computeNationalKPIs(projects: SCICProject[]): NationalKPIs {
       cat.includes("SOLAR") ||
       cat.includes("RENEWABLE");
 
+    // Totals count only what is confirmed: a project flagged "Not confirmed by public sources"
+    // stays on the map, but its megawatts, kilometres and litres are not added to the headline.
+    const unconfirmed = /Not confirmed by public sources/.test(p.description || "");
+    if (unconfirmed) continue;
+
     if (isRenewable && p.metrics?.capacity) {
+      // ("2 x 150 MW" is 300, not 150)
+      const units = String(p.metrics.capacity).match(/(\d+)\s*[xX×]\s*([\d,.]+)\s*MW/);
       const match = String(p.metrics.capacity).match(/([\d,.]+)\s*MW/i);
-      if (match) {
+      if (units) {
+        totalRenewableCapacityMw += Number(units[1]) * parseFloat(units[2].replace(/,/g, ""));
+      } else if (match) {
         totalRenewableCapacityMw += parseFloat(match[1].replace(/,/g, ""));
       }
     }

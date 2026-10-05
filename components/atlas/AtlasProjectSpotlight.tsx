@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { BRAND_SPRING } from "@/components/shared/motion";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -27,6 +27,7 @@ import {
 } from "./AtlasMarkerIcons";
 import { ATLAS_STATUSES } from "./AtlasTokens";
 import { cn } from "@/lib/utils";
+import { completionYearOf } from "@/lib/atlas/projectFacts";
 
 export interface AtlasProjectSpotlightProps {
   featuredProjects: SCICProject[];
@@ -35,6 +36,8 @@ export interface AtlasProjectSpotlightProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   onScrollToDirectory?: () => void;
+  /** Projects listed in the directory below the spotlight */
+  directoryCount?: number;
   className?: string;
 }
 
@@ -46,19 +49,28 @@ export interface AtlasProjectSpotlightProps {
  */
 function sortFeaturedProjects(projects: SCICProject[]): SCICProject[] {
   return [...projects].sort((a, b) => {
-    // 1. Tumauini HEPP is always the prime management showcase
-    if (a.code === "SCIC-HEPP-01") return -1;
-    if (b.code === "SCIC-HEPP-01") return 1;
-
-    // 2. Projects with verified custom photography take precedence over placeholder
+    // 1. Projects with verified custom photography take precedence over placeholder
     const aHasPhoto = a.imageUrl && !a.imageUrl.includes("placeholder") && !a.imageUrl.includes("logo");
     const bHasPhoto = b.imageUrl && !b.imageUrl.includes("placeholder") && !b.imageUrl.includes("logo");
     if (aHasPhoto && !bHasPhoto) return -1;
     if (!aHasPhoto && bHasPhoto) return 1;
 
-    // 3. Deterministic alphabetical fallback by code or name
+    // 2. Deterministic alphabetical fallback by code or name
     return (a.code || a.name).localeCompare(b.code || b.name);
   });
+}
+
+/**
+ * Spotlight of the day: the featured project shown first changes once a day (Philippine time),
+ * going through the whole featured set in order, so every flagship gets its day and the card is
+ * not the same one each visit. Everyone sees the same project on the same day. The arrows still
+ * step through the rest.
+ */
+export function spotlightIndexForToday(count: number, now: Date = new Date()): number {
+  if (count <= 0) return 0;
+  const manila = new Date(now.getTime() + 8 * 3600 * 1000); // UTC+8, no daylight saving
+  const day = Math.floor(manila.getTime() / 86400000);
+  return ((day % count) + count) % count;
 }
 
 function formatTargetDate(val?: string | null): string {
@@ -81,13 +93,21 @@ export function AtlasProjectSpotlight({
   isCollapsed: isCollapsedProp,
   onToggleCollapse: onToggleCollapseProp,
   onScrollToDirectory,
+  directoryCount,
   className,
 }: AtlasProjectSpotlightProps) {
   // Sort deterministically
   const sorted = useMemo(() => sortFeaturedProjects(featuredProjects), [featuredProjects]);
 
   // Active spotlight project index (supports management presentation cycling)
+  // (starts on today's project once mounted: the server and the first client render must agree)
   const [currentIndex, setCurrentIndex] = useState(0);
+  const dailyAppliedRef = useRef(false);
+  useEffect(() => {
+    if (dailyAppliedRef.current || sorted.length === 0) return;
+    dailyAppliedRef.current = true;
+    setCurrentIndex(spotlightIndexForToday(sorted.length));
+  }, [sorted.length]);
 
   // Active photo gallery slide index for multi-image projects
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -97,37 +117,23 @@ export function AtlasProjectSpotlight({
   const isCollapsed = isCollapsedProp !== undefined ? isCollapsedProp : internalCollapsed;
   const toggleCollapse = onToggleCollapseProp || (() => setInternalCollapsed((prev) => !prev));
 
-  // If no projects are marked as featured, gracefully disappear (Test C)
-  if (!sorted || sorted.length === 0) {
-    return null;
-  }
-
-  // Ensure index is within range
+  // Ensure index is within range. (Every hook below runs on every render, also when there is
+  // nothing featured: returning early above them broke React's rule of hooks and would crash the
+  // panel the moment the featured list went from empty to filled.)
   const safeIndex = currentIndex < sorted.length ? currentIndex : 0;
-  const project = sorted[safeIndex];
+  const project: SCICProject | undefined = sorted[safeIndex];
 
   // Resolve available photos (primary imageUrl + galleryImages)
   const allPhotos: string[] = useMemo(() => {
     const list: string[] = [];
-    if (project.imageUrl) list.push(project.imageUrl);
-    if (project.galleryImages) {
+    if (project?.imageUrl) list.push(project.imageUrl);
+    if (project?.galleryImages) {
       for (const img of project.galleryImages) {
         if (!list.includes(img)) list.push(img);
       }
     }
     return list.length > 0 ? list : ["/logo.png"];
   }, [project]);
-
-  const activePhoto = allPhotos[photoIndex < allPhotos.length ? photoIndex : 0];
-
-  const canonicalCat = toCanonicalCategory(
-    project.sector,
-    project.name,
-    project.description
-  );
-  const catConfig = CATEGORY_ICON_REGISTRY[canonicalCat];
-  const statusConfig = ATLAS_STATUSES[project.status] || ATLAS_STATUSES.ONGOING;
-  const isSelected = selectedProjectId === project.id;
 
   // Auto-sync spotlight when selectedProjectId changes to a featured project
   useEffect(() => {
@@ -172,6 +178,22 @@ export function AtlasProjectSpotlight({
     return () => window.removeEventListener("atlas:drive_spotlight", handleDriveSpotlight);
   }, [sorted]);
 
+  // If no projects are marked as featured, gracefully disappear (Test C)
+  if (!project) {
+    return null;
+  }
+
+  const activePhoto = allPhotos[photoIndex < allPhotos.length ? photoIndex : 0];
+
+  const canonicalCat = toCanonicalCategory(
+    project.sector,
+    project.name,
+    project.description
+  );
+  const catConfig = CATEGORY_ICON_REGISTRY[canonicalCat];
+  const statusConfig = ATLAS_STATUSES[project.status] || ATLAS_STATUSES.ONGOING;
+  const isSelected = selectedProjectId === project.id;
+
   const handlePrevProject = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPhotoIndex(0);
@@ -199,7 +221,7 @@ export function AtlasProjectSpotlight({
       <div className="flex items-center gap-2 min-w-0">
         <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 dark:text-amber-400 text-[10px] font-mono font-bold tracking-wider uppercase shrink-0">
           <Sparkles className="h-3 w-3 text-amber-500 dark:text-amber-400 animate-pulse" />
-          <span>Featured Spotlight</span>
+          <span>{safeIndex === spotlightIndexForToday(sorted.length) ? "Spotlight of the Day" : "Featured Spotlight"}</span>
         </div>
 
         {/* Presentation Carousel Navigation */}
@@ -290,7 +312,7 @@ export function AtlasProjectSpotlight({
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-[9px] font-mono text-sky-700 dark:text-sky-400 font-bold truncate">
-                  {project.metrics?.capacity || "Flagship"}
+                  {project.metrics?.capacity || catConfig.label}
                 </span>
                 <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400">·</span>
                 <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold truncate">
@@ -337,7 +359,7 @@ export function AtlasProjectSpotlight({
         )}
       >
         {/* 1. CINEMATIC HERO IMAGE STAGE (Expanded High-Definition Photo Area) */}
-        <motion.div layoutId={`project-photo-${project.id}`} transition={BRAND_SPRING} className="photo-brand relative w-full h-48 sm:h-52 overflow-hidden bg-slate-950 select-none">
+        <motion.div layoutId={`project-photo-${project.id}`} transition={BRAND_SPRING} className="photo-brand atlas-skeleton relative w-full h-48 sm:h-52 overflow-hidden bg-slate-950 select-none">
           {/* Project Photography with smooth hover zoom */}
           <img
             key={activePhoto}
@@ -435,20 +457,22 @@ export function AtlasProjectSpotlight({
                 Capacity
               </span>
               <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 truncate mt-0.5">
-                {project.metrics?.capacity || "Flagship"}
+                {project.metrics?.capacity || "Not on record"}
               </span>
             </div>
 
             {/* Tile 2: Target / Milestone */}
             <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-white/5 flex flex-col">
               <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Target COD
+                {project.status === "COMPLETED" ? "Completed" : "Target date"}
               </span>
-              <span
-                className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 truncate mt-0.5"
-                title={(project as any).targetCodDate || project.metrics?.generationOutput || "Active"}
-              >
-                {formatTargetDate((project as any).targetCodDate) || project.metrics?.generationOutput || "Active"}
+              <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 truncate mt-0.5">
+                {/* only what the record holds: no filler words where a date is not published */}
+                {project.status === "COMPLETED"
+                  ? completionYearOf(project) ?? "Not published"
+                  : (project as any).targetCodDate
+                    ? formatTargetDate((project as any).targetCodDate)
+                    : "Not published"}
               </span>
             </div>
 
@@ -501,7 +525,7 @@ export function AtlasProjectSpotlight({
               className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/80 dark:hover:bg-slate-800/90 border border-slate-200 dark:border-white/10 hover:border-sky-500/40 text-sky-700 hover:text-sky-800 dark:text-sky-300 dark:hover:text-sky-200 font-mono text-[10px] font-semibold transition-all cursor-pointer group/scroll"
             >
               <ChevronDown className="h-3.5 w-3.5 animate-bounce text-sky-700 dark:text-sky-400 group-hover/scroll:translate-y-0.5 transition-transform" />
-              <span>Scroll Down to Filters & 65 Projects</span>
+              <span>Scroll Down to Filters{typeof directoryCount === "number" ? ` & ${directoryCount} Projects` : ""}</span>
             </button>
           )}
         </div>
