@@ -91,7 +91,10 @@ type E3 = [number, number, number];
 // (elbow by the ribs, forearm up in front of the shoulder, open palm: solved with pose_render.py.
 //  The earlier pose and the Mixamo "Waving" recording both held the upper arm out sideways at
 //  shoulder height, which the user called bent / "halfway sideways".)
-const WAVE = { arm: [0.55, -0.6, 0.05] as E3, fore: [2.3, 1.2, 0] as E3 };
+// The upper arm is lifted forward to chest height so the elbow bends about 90 degrees: the
+// earlier pose left it hanging and folded the forearm all the way up, which pinched the sleeve
+// at the elbow (rendered with pose_render.py, front and quarter views).
+const WAVE = { arm: [1.3, -0.6, 0.25] as E3, fore: [1.5, 1.2, 0] as E3 };
 const PRESENT = { arm: [-0.63, 0.2, 0.27] as E3, fore: [2.01, -0.81, 0] as E3 };
 const POINT = { arm: [-0.48, -0.58, 0.25] as E3, fore: [1.69, 1.3, 0] as E3 };
 /** "Easy / hold on": one hand low in front, palm down */
