@@ -9,9 +9,13 @@ const globalForPrisma = globalThis as unknown as {
 
 function getPool(): Pool {
   if (!globalForPrisma.pool) {
+    // The app talks to Supabase's transaction pooler (DATABASE_URL, port 6543): a connection is
+    // borrowed per query, so up to 200 app connections share the database's 15. DIRECT_URL is the
+    // session pooler, which caps at 15 clients in total across the live site and every developer;
+    // it is for migrations and seed scripts (prisma.config.ts) and is only a fallback here.
     const connectionString =
-      process.env.DIRECT_URL ||
       process.env.DATABASE_URL ||
+      process.env.DIRECT_URL ||
       "postgresql://postgres:postgres@localhost:5432/postgres";
 
     const isLocal = connectionString.includes("localhost") || connectionString.includes("127.0.0.1");
@@ -19,8 +23,9 @@ function getPool(): Pool {
     globalForPrisma.pool = new Pool({
       connectionString,
       ssl: isLocal ? false : { rejectUnauthorized: false },
-      max: 10,
-      idleTimeoutMillis: 30000,
+      // small and quick to let go, so many server instances fit under the pooler's client limit
+      max: 5,
+      idleTimeoutMillis: 10000,
       connectionTimeoutMillis: 20000,
     });
   }

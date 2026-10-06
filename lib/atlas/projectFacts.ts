@@ -29,7 +29,10 @@ export const VERIFICATION_LABEL: Record<Verification, { label: string; hint: str
 
 /** A project's name short enough for a map label or a one-line list ("Bakun AC Hydroelectric Power Plant") */
 export function shortLabelOf(name: string, max = 40): string {
-  const base = name.replace(/\s*\([^)]*\)/g, "").split(/\s+[-–]\s+/)[0].trim() || name;
+  const plain = name.replace(/\s*\([^)]*\)/g, "").trim() || name;
+  // ("X - civil works" keeps X; a one- or two-word lead such as "Maersk - LF Logistics ..." is kept whole)
+  const lead = plain.split(/\s+[-–]\s+/)[0].trim();
+  const base = lead.split(/\s+/).length >= 3 ? lead : plain.replace(/\s+[-–]\s+/g, " ");
   if (base.length <= max) return base;
   const cut = base.slice(0, max);
   return `${cut.slice(0, Math.max(cut.lastIndexOf(" "), 12))}…`;

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Box, MapPin, CloudLightning, Menu } from "lucide-react";
+import { House, LayoutDashboard, Box, MapPin, CloudLightning, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMobileNav } from "./MobileNavContext";
 
@@ -15,8 +15,12 @@ interface BottomTab {
 }
 
 const BOTTOM_TABS: BottomTab[] = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Digital Twin", href: "/digital-twin", icon: Box },
+  // Nexus Home first (active on /home and anything under it). All earlier tabs are kept: six
+  // tabs still clear the 44 px touch target at 360 px wide. "Command" is the Command Center.
+  { label: "Home", href: "/home", icon: House },
+  { label: "Command", href: "/dashboard", icon: LayoutDashboard },
+  // ("Twin": with six tabs "Digital Twin" wrapped onto two lines at 360 px)
+  { label: "Twin", href: "/digital-twin", icon: Box },
   { label: "Site Map", href: "/dashboard/sitemap", icon: MapPin },
   { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
   { label: "Menu", icon: Menu, isAction: true },

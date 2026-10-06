@@ -12,3 +12,7 @@ visible wherever the rivers are displayed.
 
 Subic-Tipo (Subic Freeport) Expressway, the Mariveles-Balsik 500 kV transmission line, the North-South Commuter Railway between Bocaue and Malolos, and the part of the South Luzon Expressway mapped as under construction between San Pablo and Lucena.
 Source: OpenStreetMap contributors, through the Overpass API (scripts/fetch-line-project-geometry.mjs, 5 October 2026). Licence: ODbL 1.0. Each is the project corridor as mapped, not a survey of the works.
+
+## Dot-matrix map of the Philippines on Nexus Home (ph-dotmap.json)
+
+Source: Natural Earth, 1:10m Admin 0 Countries (naturalearthdata.com), public domain. Built by scripts/build-ph-dotmap.mjs on 6 October 2026: the country outline sampled on a 0.125-degree grid. The file holds grid positions only.

@@ -8,6 +8,7 @@ import {
   Search,
   X,
   LayoutDashboard,
+  House,
   Box,
   MapPin,
   TrendingUp,
@@ -53,13 +54,22 @@ interface SearchItem {
 const SEARCH_ITEMS: SearchItem[] = [
   // Navigation
   {
+    id: "nav-home",
+    title: "Nexus Home",
+    subtitle: "Front page: weather, company news, portfolio and the flagship site",
+    category: "Navigation",
+    href: "/home",
+    icon: House,
+    keywords: ["home", "front page", "news", "newsroom", "start"],
+  },
+  {
     id: "nav-dashboard",
     title: "Command & Operations Center",
     subtitle: "Executive KPI dashboard & project status",
     category: "Navigation",
     href: "/dashboard",
     icon: LayoutDashboard,
-    keywords: ["home", "overview", "kpi", "summary"],
+    keywords: ["command center", "dashboard", "overview", "kpi", "summary"],
   },
   {
     id: "nav-digital-twin",

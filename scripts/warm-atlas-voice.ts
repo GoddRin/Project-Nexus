@@ -58,7 +58,8 @@ async function main() {
       const y = completionYearOf(p);
       if (y !== null) byYear.set(y, [...(byYear.get(y) || []), p.name]);
     }
-    groups.push({ name: "timeline lines", lines: [...byYear.entries()].sort((x, z) => x[0] - z[0]).map(([y, names]) => timelineLine(y, names.sort((m, n) => m.localeCompare(n, undefined, { sensitivity: "base" })))) });
+    // (ahead of the per-project lines: there are only a dozen or so, and the timeline needs them all)
+    groups.splice(1, 0, { name: "timeline lines", lines: [...byYear.entries()].sort((x, z) => x[0] - z[0]).map(([y, names]) => timelineLine(y, names.sort((m, n) => m.localeCompare(n, undefined, { sensitivity: "base" })))) });
   }
 
   for (const group of groups) {

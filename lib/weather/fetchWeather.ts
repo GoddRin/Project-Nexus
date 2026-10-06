@@ -808,21 +808,32 @@ function blendMultiModelResponse(data: any): WeatherData {
   };
 }
 
-export async function fetchWeather(): Promise<WeatherData | null> {
+/** The Tumauini HEPP site: the forecast point when no other site is asked for */
+const TUMAUINI_SITE = { lat: 17.318823, lon: 121.974925 } as const;
+
+/**
+ * Forecast for a site. Called with no argument it is the Tumauini site, exactly as before (the
+ * same request URL, and the wttr.in fallback). Another site (e.g. Manila HQ for Nexus Home) gets
+ * the same request with its own coordinates; it has no fallback, because wttr.in is asked for
+ * Tumauini, so a failure returns null rather than another place's weather.
+ */
+export async function fetchWeather(site?: { lat: number; lon: number }): Promise<WeatherData | null> {
+  const { lat, lon } = site ?? TUMAUINI_SITE;
+  // (every parameter after the coordinates is the same for every site)
   const url =
-    "https://api.open-meteo.com/v1/forecast?latitude=17.318823&longitude=121.974925&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&timezone=Asia%2FManila&forecast_days=8&models=ecmwf_ifs025,gfs_seamless,icon_global";
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&timezone=Asia%2FManila&forecast_days=8&models=ecmwf_ifs025,gfs_seamless,icon_global`;
 
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
       console.warn("Open-Meteo API returned an error, falling back to wttr.in:", res.status, res.statusText);
-      return await fetchWeatherFromWttr();
+      return site ? null : await fetchWeatherFromWttr();
     }
     const data = await res.json();
     return blendMultiModelResponse(data);
   } catch (error) {
     console.warn("Failed to fetch weather data from Open-Meteo, falling back to wttr.in:", error);
-    return await fetchWeatherFromWttr();
+    return site ? null : await fetchWeatherFromWttr();
   }
 }
 

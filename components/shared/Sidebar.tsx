@@ -7,6 +7,7 @@ import { useClerk } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
+  House,
   Box,
   Ticket,
   Package,
@@ -37,7 +38,9 @@ import { cn } from "@/lib/utils";
 import { HydroPowerLogo } from "./HydroPowerLogo";
 
 const CORE_NAV_ITEMS = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  // Nexus Home is the front page; it is active on /home and anything under it (/home/news/...)
+  { label: "Home", href: "/home", icon: House },
+  { label: "Command Center", href: "/dashboard", icon: LayoutDashboard },
   { label: "Digital Twin", href: "/digital-twin", icon: Box },
   { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
   { label: "Site Map", href: "/dashboard/sitemap", icon: MapPin },

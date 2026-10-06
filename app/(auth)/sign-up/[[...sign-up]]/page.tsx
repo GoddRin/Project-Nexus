@@ -61,7 +61,7 @@ export default function SignUpPage() {
               : "!text-slate-800 !font-medium",
           },
         }}
-        fallbackRedirectUrl="/dashboard"
+        fallbackRedirectUrl="/home"
       />
     </div>
   );

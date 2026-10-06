@@ -21,6 +21,8 @@ const nextConfig = {
   },
   transpilePackages: ['three'],
   images: {
+    // 90 is for news cover photographs, which carry fine lettering
+    qualities: [75, 90],
     remotePatterns: [
       {
         protocol: 'https',
