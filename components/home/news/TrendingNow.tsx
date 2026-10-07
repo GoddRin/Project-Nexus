@@ -21,8 +21,9 @@ const TABS: { key: NewsCategoryKey; label: string }[] = [
   { key: "WORLD", label: "World" },
 ];
 /** rows under the slideshow, and rows when a tab has no photographs */
-const ROWS_WITH_REEL = 5;
-const ROWS_PLAIN = 6;
+// visible rows before the list scrolls (the rest stay reachable by scrolling)
+const ROWS_WITH_REEL_HEIGHT = "max-h-[23rem]"; // about 5 rows under the photo reel
+const ROWS_PLAIN_HEIGHT = "max-h-[30rem]"; // about 6 rows
 /** a tab needs at least this many stories with photographs to run as a slideshow */
 const MIN_REEL = 3;
 
@@ -85,10 +86,22 @@ export function TrendingNow({ initial }: { initial: Record<NewsCategoryKey, Tren
   const current = data[tab];
   const photos = current?.photos ?? [];
   const reel = photos.length >= MIN_REEL;
-  const rows: Row[] = reel ? photos.slice(0, ROWS_WITH_REEL) : (current?.items.slice(0, ROWS_PLAIN) ?? []);
+  // every story is listed; the list scrolls inside the card past the first few rows
+  const rows: Row[] = reel ? photos : (current?.items ?? []);
   const label = TABS.find((t) => t.key === tab)?.label ?? "";
   // (a refresh can shorten the list under the slideshow's feet)
   const onShow = reel ? Math.min(slide, photos.length - 1) : -1;
+  // keep the story on show visible in the list (scrolls the list only, never the page)
+  const listRef = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    const row = onShow >= 0 ? (list?.children[onShow] as HTMLElement | undefined) : undefined;
+    if (!list || !row) return;
+    const top = row.offsetTop;
+    if (top < list.scrollTop) list.scrollTo({ top, behavior: "smooth" });
+    else if (top + row.offsetHeight > list.scrollTop + list.clientHeight)
+      list.scrollTo({ top: top + row.offsetHeight - list.clientHeight, behavior: "smooth" });
+  }, [onShow, tab]);
 
   return (
     <HomeSection
@@ -132,7 +145,14 @@ export function TrendingNow({ initial }: { initial: Record<NewsCategoryKey, Tren
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={tab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: BRAND_EASE }} className="pt-3">
               {reel && <Newsreel stories={photos} index={onShow} onIndex={onIndex} held={held} now={now} label={`${label} stories`} />}
-              <ol className={cn(reel && "mt-1.5")} onPointerLeave={() => setHeld(false)} onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setHeld(false)}>
+              <ol
+                ref={listRef}
+                className={cn(
+                  "relative overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin] [scrollbar-color:var(--border-hairline)_transparent]",
+                  reel ? "mt-1.5" : "",
+                  reel ? ROWS_WITH_REEL_HEIGHT : ROWS_PLAIN_HEIGHT
+                )}
+                onPointerLeave={() => setHeld(false)} onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setHeld(false)}>
                 {rows.map((h, i) => {
                   const active = reel && i === onShow;
                   return (
