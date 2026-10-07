@@ -3,9 +3,9 @@
  *
  *   node scripts/audit-home.mjs
  *
- * Runs against the dev server on http://localhost:3000. /home is behind sign-in, so (like
- * scripts/screenshot-home.mjs) it audits the public development gallery's copy of the page
- * unless HOME_SHOT_STATE names a signed-in Playwright storage state. It reports:
+ * Runs against the dev server on http://localhost:3000. /home is behind sign-in, so it needs a
+ * signed-in Playwright storage state: HOME_SHOT_STATE=<storageState.json> (sign in once in a
+ * Playwright browser and save the state; sign-in is never bypassed). It reports:
  *   - axe-core violations inside the page's own content (WCAG 2 A and AA), in both themes;
  *   - the heading outline, and controls without an accessible name;
  *   - horizontal overflow at 320, 390, 768, 1024, 1440 and 1920 px;
@@ -18,7 +18,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 const BASE = process.env.HOME_SHOT_BASE || "http://localhost:3000";
-const PAGE = process.env.HOME_SHOT_PATH || "/dashboard/projects-home-gallery?view=home";
+const PAGE = process.env.HOME_SHOT_PATH || "/home";
 const STATE = process.env.HOME_SHOT_STATE;
 const ROOT = "main .max-w-7xl"; // the page's own content (the app's sidebar and top bar are not part of this audit)
 const axeSource = fs.readFileSync(path.join("node_modules", "axe-core", "axe.min.js"), "utf8");

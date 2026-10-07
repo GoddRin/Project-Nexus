@@ -7,16 +7,28 @@ const globalForPrisma = globalThis as unknown as {
   pool: Pool | undefined;
 };
 
+/**
+ * Supabase's pooler serves both modes on one host: port 5432 is the session pooler (15 clients
+ * in total, shared by the live site and every developer) and port 6543 the transaction pooler
+ * (a connection is borrowed per query). The app must be on 6543, so a pooler address that
+ * arrives with 5432 is moved to 6543 here: the app is then right whatever the environment
+ * variable holds. Anything that is not a Supabase pooler address is left exactly as it is.
+ */
+export function viaTransactionPooler(connectionString: string): string {
+  return connectionString.replace(/(\.pooler\.supabase\.com):5432(?=[/?]|$)/i, "$1:6543");
+}
+
 function getPool(): Pool {
   if (!globalForPrisma.pool) {
     // The app talks to Supabase's transaction pooler (DATABASE_URL, port 6543): a connection is
     // borrowed per query, so up to 200 app connections share the database's 15. DIRECT_URL is the
     // session pooler, which caps at 15 clients in total across the live site and every developer;
     // it is for migrations and seed scripts (prisma.config.ts) and is only a fallback here.
-    const connectionString =
+    const configured =
       process.env.DATABASE_URL ||
       process.env.DIRECT_URL ||
       "postgresql://postgres:postgres@localhost:5432/postgres";
+    const connectionString = viaTransactionPooler(configured);
 
     const isLocal = connectionString.includes("localhost") || connectionString.includes("127.0.0.1");
 

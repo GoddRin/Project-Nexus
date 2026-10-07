@@ -1,12 +1,11 @@
 /**
  * Screenshots of Nexus Home in light and dark, at 1440 px and 390 px (Playwright, headless).
  *
- *   node scripts/screenshot-home.mjs                 # the page given by HOME_SHOT_PATH (default: the dev gallery)
- *   HOME_SHOT_PATH=/home node scripts/screenshot-home.mjs
+ *   HOME_SHOT_STATE=<storageState.json> node scripts/screenshot-home.mjs
  *
- * Needs the dev server on http://localhost:3000 (or HOME_SHOT_BASE). /home is behind sign-in:
- * headless Chromium has no session, so until a signed-in storage state is supplied
- * (HOME_SHOT_STATE=<playwright storageState.json>) this captures the public development gallery.
+ * Needs the dev server on http://localhost:3000 (or HOME_SHOT_BASE). /home is behind sign-in, so
+ * a signed-in Playwright storage state must be supplied (HOME_SHOT_STATE); without one nothing
+ * is captured. HOME_SHOT_PATH and HOME_SHOT_NAME choose another page and file name.
  * Auth is never bypassed. Output: .cache/home-shots/<name>-<theme>-<width>.png
  */
 import fs from "node:fs";
@@ -14,7 +13,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 const BASE = process.env.HOME_SHOT_BASE || "http://localhost:3000";
-const PAGE = process.env.HOME_SHOT_PATH || "/dashboard/projects-home-gallery";
+const PAGE = process.env.HOME_SHOT_PATH || "/home";
 const STATE = process.env.HOME_SHOT_STATE;
 const REDUCED = process.env.HOME_SHOT_REDUCED === "1";
 const OUT = path.join(".cache", "home-shots");
