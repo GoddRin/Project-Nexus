@@ -23,7 +23,7 @@ const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
 const compass = (deg: number) => COMPASS[Math.round((((deg % 360) + 360) % 360) / 45) % 8];
 
 const VERDICT = {
-  GO: { word: "Go", pill: "bg-scic-green text-white", ring: "border-scic-green/35 bg-scic-green/[0.07]" },
+  GO: { word: "Go", pill: "bg-[var(--home-solid)] text-white", ring: "border-scic-green/35 bg-scic-green/[0.07]" },
   CAUTION: { word: "Caution", pill: "bg-scic-amber text-scic-navy-dark", ring: "border-scic-amber/45 bg-scic-amber/[0.09]" },
   HOLD: { word: "Hold", pill: "bg-scic-red text-white", ring: "border-scic-red/45 bg-scic-red/[0.08]" },
 } as const;
@@ -160,7 +160,7 @@ export function WeatherGlanceCard({ initial }: { initial: Record<WeatherSiteKey,
                   selected ? "text-white" : "text-text-secondary hover:text-text-primary"
                 )}
               >
-                {selected && <motion.span layoutId={`${tabsId}-site`} transition={BRAND_SPRING} className="absolute inset-0 -z-[1] rounded-full bg-scic-green" />}
+                {selected && <motion.span layoutId={`${tabsId}-site`} transition={BRAND_SPRING} className="absolute inset-0 -z-[1] rounded-full bg-[var(--home-solid)]" />}
                 {s.label}
               </button>
             );
@@ -295,12 +295,9 @@ export function WeatherGlanceCard({ initial }: { initial: Record<WeatherSiteKey,
       <footer className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border-hairline pt-3">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <LivePulse updatedAt={feed.updatedAt} isRefreshing={feed.isRefreshing} isStale={feed.isStale} />
-          {/* Open-Meteo's licence (CC BY 4.0) asks for this credit next to the data */}
-          <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] text-text-muted hover:text-text-secondary hover:underline">
-            Weather data by Open-Meteo
-          </a>
+          {/* (the forecast's source, Open-Meteo, is credited in the page's footer strip) */}
         </span>
-        <Link href="/dashboard/weather" className="group inline-flex items-center gap-1 text-sm font-medium text-scic-green hover:text-scic-green-energy dark:text-scic-green-bright">
+        <Link href="/dashboard/weather" className="group inline-flex items-center gap-1 py-1 text-sm font-medium text-scic-green hover:text-scic-green-energy dark:text-scic-green-bright">
           Full forecast <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
         </Link>
       </footer>

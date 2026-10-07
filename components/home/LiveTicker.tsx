@@ -23,7 +23,7 @@ function Entry({ item, tabbable }: { item: TickerItem; tabbable: boolean }) {
       {item.source && <span className="ml-2 text-text-muted">{item.source}</span>}
     </>
   );
-  const cls = "mx-5 inline-flex items-center whitespace-nowrap text-sm hover:underline focus-visible:underline focus-visible:outline-none";
+  const cls = "mx-5 inline-flex items-center whitespace-nowrap text-sm hover:underline focus-visible:underline focus-visible:outline-none py-2.5";
   return item.external ? (
     <a href={item.href} target="_blank" rel="noopener noreferrer" tabIndex={tabbable ? 0 : -1} className={cls}>
       {content}
@@ -53,7 +53,7 @@ export function LiveTicker({ items: initial, className }: { items: TickerItem[];
         <span className={cn("home-heartbeat", isStale ? "text-scic-amber" : "text-scic-red")} aria-hidden />
         Live
       </span>
-      <div className="home-marquee min-w-0 flex-1 py-2.5" style={{ ["--marquee-duration" as string]: `${durationFor(items)}s` }} aria-hidden>
+      <div className="home-marquee min-w-0 flex-1" style={{ ["--marquee-duration" as string]: `${durationFor(items)}s` }} aria-hidden>
         <div className="home-marquee-track">
           {[0, 1].map((copy) => (
             <div key={copy} className="flex shrink-0">

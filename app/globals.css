@@ -1481,9 +1481,9 @@ html[data-nexus-intro="play"] .home-intro-ribbon { display: block; }
 
 .home-marker {
   position: absolute;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1696,13 +1696,6 @@ html[data-theme-wipe]::view-transition-new(root) {
   border-top-color: var(--jubilee-hi);
   border-bottom-color: var(--jubilee-lo);
 }
-.home-jubilee-band {
-  background: linear-gradient(180deg, var(--jubilee-hi), var(--jubilee-mid) 50%, var(--jubilee-lo));
-  box-shadow: 0 6px 18px -6px color-mix(in srgb, #000000 70%, transparent), inset 0 1px 0 color-mix(in srgb, #ffffff 55%, transparent), inset 0 -1px 0 color-mix(in srgb, #000000 25%, transparent);
-  transition: filter 300ms ease;
-}
-.home-jubilee-band:hover,
-.home-jubilee-band:focus-visible { filter: brightness(1.08); }
 .home-jubilee-numeral { display: inline-flex; }
 .home-jubilee-numeral:hover,
 .home-jubilee-numeral:focus-visible { transform: scale(1.03); }
@@ -1737,4 +1730,13 @@ html[data-theme-wipe]::view-transition-new(root) {
 @media (prefers-reduced-motion: reduce) {
   .home-newsreel-photo { animation: none; }
   .home-newsreel-progress { animation: none; transform: scaleX(0); }
+}
+
+/* ── Nexus Home: solid brand fill under white text ────────────────────────────────────────── */
+/* The theme's --scic-green is lightened for the dark theme, where white text on it falls to
+   2.9:1. Fills that carry white text use the corporate green itself in both themes (5.3:1). */
+:root,
+.dark {
+  --home-solid: #007B3E;
+  --home-solid-hover: #006334;
 }

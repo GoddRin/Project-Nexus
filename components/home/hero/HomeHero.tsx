@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import React from "react";
 import { currentUser } from "@clerk/nextjs/server";
 import { FlowLine } from "@/components/shared/FlowLine";
@@ -8,8 +7,7 @@ import { HERO_IMAGES, HERO_TINT, dayPartFor, greetingFor } from "@/lib/home/hero
 import { getPortfolioStats } from "@/lib/home/portfolio";
 import { manilaHour } from "@/lib/home/time";
 import { getWeatherGlance } from "@/lib/home/weatherGlance";
-import type { JubileeVariant } from "@/lib/home/jubilee";
-import { JubileeEmblem, JubileePicker } from "./JubileeVariants";
+import { JubileeRotator } from "./JubileeVariants";
 import { HeroChips } from "./HeroChips";
 import { HeroHeadline } from "./HeroHeadline";
 import { HeroSlideshow } from "./HeroSlideshow";
@@ -33,7 +31,7 @@ async function firstName(fallbackName?: string | null): Promise<string> {
  * chips with their first values) with small client islands for what moves: the slideshow, the
  * clock, the word reveal, the seal and the live chips. The greeting is the page's only h1.
  */
-export async function HomeHero({ userName, seal = "medal" }: { userName?: string | null; seal?: JubileeVariant }) {
+export async function HomeHero({ userName }: { userName?: string | null }) {
   const now = new Date();
   const hour = manilaHour(now);
   const [name, weather, portfolio, flagship] = await Promise.all([
@@ -63,17 +61,9 @@ export async function HomeHero({ userName, seal = "medal" }: { userName?: string
       </div>
       <div className="home-contours z-[1]" aria-hidden />
 
-      {seal === "ribbon" && <JubileeEmblem variant="ribbon" {...emblem} />}
-      {/* TEMPORARY: the emblem designs can be tried from here in development */}
-      {process.env.NODE_ENV === "development" && (
-        <Suspense fallback={null}>
-          <JubileePicker current={seal} />
-        </Suspense>
-      )}
-
       <div className="relative z-[2] flex flex-col justify-end gap-5 p-6 pt-16 md:min-h-[min(76vh,720px)] md:p-10 lg:p-12">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="min-w-0 max-w-3xl">
+        <div className="flex items-end justify-between gap-6">
+          <div className="min-w-0 max-w-3xl flex-1">
             <h1 className="font-display text-xl font-semibold tracking-[-0.01em] text-text-primary md:text-2xl">
               {greetingFor(hour)}, <span className="home-hero-accent">{name}</span>
             </h1>
@@ -84,7 +74,7 @@ export async function HomeHero({ userName, seal = "medal" }: { userName?: string
             />
             <p className="mt-4 max-w-xl text-base leading-7 text-text-secondary md:text-lg">{MISSION_LINE}</p>
           </div>
-          {seal !== "ribbon" && <JubileeEmblem variant={seal} {...emblem} className="mb-1 hidden sm:inline-flex" />}
+          <JubileeRotator {...emblem} className="mb-1 hidden sm:flex" />
         </div>
 
         <HeroChips

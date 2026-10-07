@@ -74,7 +74,7 @@ export function FlagshipSpotlight({ slug, name, ongoing, facts, photos, progress
           </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/25" aria-hidden />
           {ongoing && (
-            <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-scic-green px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
+            <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-[var(--home-solid)] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
               <span className="home-heartbeat" aria-hidden />
               Under construction
             </div>
@@ -170,7 +170,7 @@ export function FlagshipSpotlight({ slug, name, ongoing, facts, photos, progress
           <div className="mt-6 flex flex-wrap gap-2.5">
             <Link
               href={atlasHref(slug)}
-              className="group inline-flex items-center gap-2 rounded-full bg-scic-green px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-scic-green-energy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green-energy focus-visible:ring-offset-2 focus-visible:ring-offset-bg-panel"
+              className="group inline-flex items-center gap-2 rounded-full bg-[var(--home-solid)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--home-solid-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green-energy focus-visible:ring-offset-2 focus-visible:ring-offset-bg-panel"
             >
               <MapPin className="h-4 w-4" aria-hidden />
               Open on the Atlas

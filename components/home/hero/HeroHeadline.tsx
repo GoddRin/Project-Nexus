@@ -11,7 +11,8 @@ import { wordRevealContainer, wordRevealWord } from "@/components/home/motionPre
 export function HeroHeadline({ text, className }: { text: string; className?: string }) {
   const words = text.split(" ");
   return (
-    <motion.p variants={wordRevealContainer} initial="hidden" animate="show" className={className} aria-label={text}>
+    <motion.p variants={wordRevealContainer} initial="hidden" animate="show" className={className}>
+      <span className="sr-only">{text}</span>
       {words.map((word, i) => (
         <motion.span key={`${word}-${i}`} variants={wordRevealWord} aria-hidden className={i === words.length - 1 ? "home-hero-accent inline-block" : "mr-[0.24em] inline-block"}>
           {word}

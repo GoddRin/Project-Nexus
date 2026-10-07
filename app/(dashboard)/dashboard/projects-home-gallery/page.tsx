@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { IntroOverlay } from "@/components/home/IntroOverlay";
 import { LiveTicker } from "@/components/home/LiveTicker";
 import { HomeHero } from "@/components/home/hero/HomeHero";
-import { isJubileeVariant } from "@/lib/home/jubilee";
 import { NewsroomSection, TrendingSection } from "@/components/home/NewsRow";
 import { FlagshipSection, LegacySection, PortfolioSection } from "@/components/home/PortfolioRow";
 import { DailyBriefSection, OpsSection, WeatherGlanceSection } from "@/components/home/GlanceRow";
@@ -27,16 +26,16 @@ function Boom(): never {
   throw new Error("test failure for the section boundary");
 }
 
-export default async function HomeGalleryPage({ searchParams }: { searchParams: Promise<{ view?: string; mockAlert?: string; fail?: string; seal?: string }> }) {
+export default async function HomeGalleryPage({ searchParams }: { searchParams: Promise<{ view?: string; mockAlert?: string; fail?: string }> }) {
   if (process.env.NODE_ENV !== "development") notFound();
-  const { view, mockAlert, fail, seal } = await searchParams;
+  const { view, mockAlert, fail } = await searchParams;
   // ?view=home: the real sections as they are on /home (signed out, so the greeting says "Team")
   if (view === "home") {
     return (
       <div className="mx-auto w-full max-w-7xl space-y-6 px-4 pb-24 pt-6 md:px-6">
         <IntroOverlay />
         <Suspense fallback={<HeroSkeleton />}>
-          <HomeHero seal={isJubileeVariant(seal) ? seal : undefined} />
+          <HomeHero />
         </Suspense>
         <LiveTicker items={await getTickerItems()} />
         <HomeToolbar />

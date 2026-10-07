@@ -28,7 +28,7 @@ export function FeaturedStory({ item, now }: { item: CompanyFeedItem; now: Date 
               alt=""
               fill
               quality={90}
-              sizes="(max-width: 1024px) 200vw, 1280px"
+              sizes="(max-width: 768px) 100vw, 640px"
               className="object-cover transition-transform duration-[9000ms] ease-out group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
           ) : (
@@ -51,7 +51,7 @@ export function FeaturedStory({ item, now }: { item: CompanyFeedItem; now: Date 
       </div>
       <div className="relative flex h-full min-h-[320px] flex-col justify-end p-5 md:p-6">
         <p className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-scic-green px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+          <span className="rounded-full bg-[var(--home-solid)] px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
             {FEED_LABEL[item.category] ?? item.category}
           </span>
           {item.pinned && (

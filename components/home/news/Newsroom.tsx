@@ -123,7 +123,7 @@ export function Newsroom({ initial, composer }: { initial: CompanyFeedResult; co
                 selected ? "border-transparent text-white" : "border-border-subtle text-text-secondary hover:border-scic-green/40 hover:text-text-primary"
               )}
             >
-              {selected && <motion.span layoutId="newsroom-filter" transition={BRAND_SPRING} className="absolute inset-0 -z-[1] rounded-full bg-scic-green" />}
+              {selected && <motion.span layoutId="newsroom-filter" transition={BRAND_SPRING} className="absolute inset-0 -z-[1] rounded-full bg-[var(--home-solid)]" />}
               {f.label}
               <span className={cn("ml-1.5 font-mono tabular-nums", selected ? "text-white/75" : "text-text-muted")}>{counts[f.key]}</span>
             </button>

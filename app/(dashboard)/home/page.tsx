@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { IntroOverlay } from "@/components/home/IntroOverlay";
 import { LiveTicker } from "@/components/home/LiveTicker";
 import { HomeHero } from "@/components/home/hero/HomeHero";
-import { isJubileeVariant } from "@/lib/home/jubilee";
 import { DailyBriefSection, OpsSection, WeatherGlanceSection } from "@/components/home/GlanceRow";
 import { HomeFooterStrip } from "@/components/home/HomeFooterStrip";
 import { HomeToolbar } from "@/components/home/HomeToolbar";
@@ -23,9 +22,9 @@ export const metadata: Metadata = {
     "The front page of Project Nexus: live site weather, company news, the national project portfolio and the Tumauini flagship, for Sta. Clara International Corporation.",
 };
 
-async function Hero({ seal }: { seal?: string }) {
+async function Hero() {
   const viewer = await getNewsViewer();
-  return <HomeHero userName={viewer.user?.name} seal={isJubileeVariant(seal) ? seal : undefined} />;
+  return <HomeHero userName={viewer.user?.name} />;
 }
 
 async function Ticker() {
@@ -37,16 +36,15 @@ async function Ticker() {
  * so the hero streams first and a slow source never holds the page; and in its own error
  * boundary, so a section that fails says so in its own place and the rest carries on.
  */
-export default async function NexusHomePage({ searchParams }: { searchParams: Promise<{ mockAlert?: string; seal?: string }> }) {
+export default async function NexusHomePage({ searchParams }: { searchParams: Promise<{ mockAlert?: string }> }) {
   // (?mockAlert=1..3 forces a wind-signal state in development only: see lib/home/devMocks.ts)
-  // (?seal=medal|lockup|ribbon|numeral tries an anniversary emblem design: see JubileeVariants.tsx)
-  const { mockAlert, seal } = await searchParams;
+  const { mockAlert } = await searchParams;
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-4 pb-24 pt-6 md:px-6 lg:pb-10">
       <IntroOverlay />
       <SectionBoundary label="hero" className="min-h-[420px]">
         <Suspense fallback={<HeroSkeleton />}>
-          <Hero seal={seal} />
+          <Hero />
         </Suspense>
       </SectionBoundary>
       <SectionBoundary label="news ticker" className="min-h-0 !p-3">

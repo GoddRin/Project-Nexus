@@ -113,7 +113,7 @@ export function NewsComposerDialog({ categories, projects, covers, post }: NewsC
         <button
           type="button"
           onClick={() => openComposer(true)}
-          className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-scic-green px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-scic-green-energy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40"
+          className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[var(--home-solid)] px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[var(--home-solid-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40"
         >
           <Plus className="h-4 w-4" aria-hidden /> New Post
         </button>
@@ -175,7 +175,7 @@ export function NewsComposerDialog({ categories, projects, covers, post }: NewsC
                     role="tab"
                     aria-selected={tab === t}
                     onClick={() => setTab(t)}
-                    className={cn("inline-flex items-center gap-1 rounded-md px-2.5 py-1 font-medium capitalize transition-colors", tab === t ? "bg-scic-green text-white" : "text-text-muted hover:text-text-primary")}
+                    className={cn("inline-flex items-center gap-1 rounded-md px-2.5 py-1 font-medium capitalize transition-colors", tab === t ? "bg-[var(--home-solid)] text-white" : "text-text-muted hover:text-text-primary")}
                   >
                     {t === "write" ? <PenLine className="h-3.5 w-3.5" aria-hidden /> : <Eye className="h-3.5 w-3.5" aria-hidden />}
                     {t}
@@ -258,7 +258,7 @@ export function NewsComposerDialog({ categories, projects, covers, post }: NewsC
               <button
                 type="submit"
                 disabled={pending}
-                className="inline-flex h-10 items-center gap-2 rounded-xl bg-scic-green px-5 text-sm font-semibold text-white transition-colors hover:bg-scic-green-energy disabled:opacity-60"
+                className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--home-solid)] px-5 text-sm font-semibold text-white transition-colors hover:bg-[var(--home-solid-hover)] disabled:opacity-60"
               >
                 {pending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
                 {post ? "Save changes" : "Publish"}

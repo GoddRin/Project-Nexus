@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useId, useRef } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useId, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { BRAND_EASE } from "@/components/shared/motion";
 import { usePauseOffscreen } from "@/components/home/usePauseOffscreen";
 import { useSeenOnce } from "@/components/home/useSeenOnce";
-import { JUBILEE_VARIANTS, type JubileeVariant } from "@/lib/home/jubilee";
 import { FiftyYearSeal, type FiftyYearSealProps } from "./FiftyYearSeal";
-
-const LABEL: Record<JubileeVariant, string> = { medal: "Medal", lockup: "Wordmark", ribbon: "Corner ribbon", numeral: "Rising numeral" };
 
 /** Scroll to the timeline without a page jump (shared by every design: each one is a link there) */
 function jumpTo(targetId: string) {
@@ -55,34 +53,6 @@ function JubileeLockup(p: FiftyYearSealProps) {
         </span>
       </span>
     </a>
-  );
-}
-
-/**
- * Corner ribbon: a gold band laid diagonally across the hero's top-right corner. It is placed by
- * the hero itself (absolutely, in the corner), not in the emblem's usual slot.
- */
-function JubileeRibbon(p: FiftyYearSealProps) {
-  const ref = useRef<HTMLAnchorElement>(null);
-  const seen = useSeenOnce(ref, 0.3);
-  return (
-    <div className={cn("pointer-events-none absolute right-0 top-0 z-[3] h-44 w-44 overflow-hidden rounded-tr-3xl md:h-52 md:w-52", p.className)}>
-      <a
-        ref={ref}
-        href={`#${p.targetId}`}
-        onClick={jumpTo(p.targetId)}
-        data-inview={seen ? "true" : undefined}
-        aria-label={spoken(p)}
-        className="home-jubilee-band home-seal-shine pointer-events-auto absolute left-1/2 top-1/2 flex w-[150%] -translate-x-[38%] -translate-y-[62%] rotate-45 flex-col items-center !rounded-none py-2 text-center focus-visible:outline-none"
-      >
-        <span aria-hidden className="font-display text-xl font-extrabold leading-none tracking-[-0.01em] text-[var(--jubilee-ink)] md:text-2xl">
-          {p.years} YEARS
-        </span>
-        <span aria-hidden className="mt-1 font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[var(--jubilee-ink)]/80">
-          {p.founded} — {p.anniversary}
-        </span>
-      </a>
-    </div>
   );
 }
 
@@ -137,43 +107,59 @@ function JubileeNumeral(p: FiftyYearSealProps) {
   );
 }
 
-/** The anniversary emblem in the chosen design (the ribbon is the one the hero places in its corner) */
-export function JubileeEmblem({ variant, ...props }: FiftyYearSealProps & { variant: JubileeVariant }) {
-  if (variant === "lockup") return <JubileeLockup {...props} />;
-  if (variant === "ribbon") return <JubileeRibbon {...props} />;
-  if (variant === "numeral") return <JubileeNumeral {...props} />;
-  return <FiftyYearSeal {...props} />;
-}
+/** The designs that take turns on the hero, in order */
+const DESIGNS = [FiftyYearSeal, JubileeLockup, JubileeNumeral] as const;
+/** how long each design stays */
+export const JUBILEE_TURN_MS = 60_000;
 
 /**
- * TEMPORARY (development only): chips on the hero for trying each emblem design. They set
- * `?seal=` in the address, so a design can be compared and shared. Removed once one is chosen.
+ * The anniversary emblem. Three designs take turns, one minute each: the medal, the wordmark and
+ * the rising numeral. One leaves by sinking back out of focus and the next arrives the same way
+ * in reverse, then plays its own entrance (the wreath grows, the gold rises). They share one
+ * fixed box, so nothing else on the hero moves when they change. The turn rests while the hero
+ * is off-screen or the tab is hidden, and under reduced motion the medal simply stays.
  */
-export function JubileePicker({ current }: { current: JubileeVariant }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
+export function JubileeRotator({ className, ...props }: FiftyYearSealProps) {
+  const box = useRef<HTMLDivElement>(null);
+  const [turn, setTurn] = useState(0);
+  useEffect(() => {
+    const el = box.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let onScreen = true;
+    let timer = 0;
+    const start = () => {
+      window.clearInterval(timer);
+      if (onScreen && document.visibilityState === "visible") timer = window.setInterval(() => setTurn((t) => (t + 1) % DESIGNS.length), JUBILEE_TURN_MS);
+    };
+    const io = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      start();
+    });
+    io.observe(el);
+    document.addEventListener("visibilitychange", start);
+    start();
+    return () => {
+      window.clearInterval(timer);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", start);
+    };
+  }, []);
+
+  const Design = DESIGNS[turn];
   return (
-    <div role="group" aria-label="Try an anniversary emblem design" className="home-chip absolute left-4 top-4 z-[4] hidden flex-wrap items-center gap-1 rounded-full p-1 md:flex">
-      <span className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">Emblem</span>
-      {JUBILEE_VARIANTS.map((v) => (
-        <button
-          key={v}
-          type="button"
-          aria-pressed={v === current}
-          onClick={() => {
-            const next = new URLSearchParams(params.toString());
-            next.set("seal", v);
-            router.replace(`${pathname}?${next.toString()}`, { scroll: false });
-          }}
-          className={cn(
-            "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40",
-            v === current ? "bg-scic-green text-white" : "text-text-secondary hover:text-text-primary"
-          )}
+    <div ref={box} data-jubilee-slot className={cn("relative h-[152px] w-[272px] shrink-0 items-end justify-end", className)}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={turn}
+          initial={{ opacity: 0, scale: 0.9, y: 10, filter: "blur(8px)" }}
+          animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 0.94, y: -8, filter: "blur(8px)" }}
+          transition={{ duration: 0.7, ease: BRAND_EASE }}
+          className="flex origin-bottom-right items-end justify-end"
         >
-          {LABEL[v]}
-        </button>
-      ))}
+          <Design {...props} />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

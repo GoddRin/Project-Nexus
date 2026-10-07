@@ -125,7 +125,7 @@ export function PhDotMap({ grid, points }: { grid: DotMapGrid; points: Point[] }
               }}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40",
-                selected ? "border-scic-green bg-scic-green text-white" : "border-border-subtle text-text-secondary hover:border-scic-green/40 hover:text-text-primary"
+                selected ? "border-[var(--home-solid)] bg-[var(--home-solid)] text-white" : "border-border-subtle text-text-secondary hover:border-scic-green/40 hover:text-text-primary"
               )}
             >
               {g.key !== "ALL" && <span className={cn("h-2 w-2 rounded-full", selected ? "bg-white" : TONE[g.key])} aria-hidden />}
@@ -236,7 +236,7 @@ export function PhDotMap({ grid, points }: { grid: DotMapGrid; points: Point[] }
                   <Link
                     href={atlasHref(current.slug)}
                     tabIndex={-1}
-                    className="group mt-2 inline-flex items-center gap-1 text-xs font-medium text-scic-green hover:text-scic-green-energy dark:text-scic-green-bright"
+                    className="group mt-1 inline-flex items-center gap-1 py-1.5 text-xs font-medium text-scic-green hover:text-scic-green-energy dark:text-scic-green-bright"
                   >
                     Open on the Atlas
                     <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />

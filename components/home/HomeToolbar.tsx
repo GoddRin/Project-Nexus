@@ -141,7 +141,7 @@ export function HomeToolbar() {
                   on ? "text-white" : "text-text-secondary hover:text-text-primary"
                 )}
               >
-                {on && <motion.span layoutId="home-toolbar-active" transition={BRAND_SPRING} className="absolute inset-0 -z-[1] rounded-full bg-scic-green" />}
+                {on && <motion.span layoutId="home-toolbar-active" transition={BRAND_SPRING} className="absolute inset-0 -z-[1] rounded-full bg-[var(--home-solid)]" />}
                 {s.label}
               </button>
             );

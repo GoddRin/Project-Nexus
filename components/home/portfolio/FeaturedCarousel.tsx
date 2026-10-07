@@ -13,7 +13,7 @@ import type { PortfolioStats } from "@/lib/home/types";
 
 type Featured = PortfolioStats["featured"][number];
 const STATUS_CHIP = {
-  ONGOING: "bg-scic-green text-white",
+  ONGOING: "bg-[var(--home-solid)] text-white",
   COMPLETED: "bg-scic-blue text-white",
   UPCOMING: "bg-scic-amber text-white",
 } as const;
