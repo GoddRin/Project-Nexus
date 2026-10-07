@@ -295,6 +295,10 @@ export function WeatherGlanceCard({ initial }: { initial: Record<WeatherSiteKey,
       <footer className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border-hairline pt-3">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <LivePulse updatedAt={feed.updatedAt} isRefreshing={feed.isRefreshing} isStale={feed.isStale} />
+          {/* Open-Meteo's licence (CC BY 4.0) asks for this credit next to the data */}
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] text-text-muted hover:text-text-secondary hover:underline">
+            Weather data by Open-Meteo
+          </a>
         </span>
         <Link href="/dashboard/weather" className="group inline-flex items-center gap-1 text-sm font-medium text-scic-green hover:text-scic-green-energy dark:text-scic-green-bright">
           Full forecast <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
