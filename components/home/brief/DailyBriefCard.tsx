@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import { fadeUp, stagger } from "@/components/home/motionPresets";
 import { useLiveFeed } from "@/components/home/useLiveFeed";
 import { CLIENT_REFRESH } from "@/lib/home/refreshPolicy";
-import type { DailyBrief } from "@/lib/home/types";
+import { WeatherGlyph } from "@/components/home/weather/WeatherGlyph";
+import type { DailyBrief, WeatherGlance } from "@/lib/home/types";
 
 const EDITION: Record<DailyBrief["slot"], string> = { MORNING: "Morning edition", MIDDAY: "Midday edition", EVENING: "Evening edition" };
 const MOOD = {
@@ -22,6 +23,7 @@ const SECTIONS = [
   { label: "In the news", Icon: Newspaper, tone: "text-scic-amber bg-scic-amber/10" },
 ] as const;
 
+const weekday = (date: string) => new Intl.DateTimeFormat("en-PH", { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));
 const manilaDate = (iso: string) =>
   new Intl.DateTimeFormat("en-PH", { timeZone: "Asia/Manila", weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
 const manilaShortDate = (iso: string) =>
@@ -66,13 +68,15 @@ function Typewriter({ text, play }: { text: string; play: boolean }) {
   );
 }
 
+export type BriefOutlookDay = NonNullable<WeatherGlance["outlook"]>[number];
+
 /**
  * The Daily Brief: three editions a day (morning, midday, evening), each a headline and three
  * items in a fixed order: the site today, the flagship project, and the news. It is set like the
  * front of a small newspaper: masthead with the date and edition, a rule, the lead, then the
  * numbered items. It checks for a new edition every ten minutes.
  */
-export function DailyBriefCard({ initial }: { initial: DailyBrief }) {
+export function DailyBriefCard({ initial, outlook = [] }: { initial: DailyBrief; outlook?: BriefOutlookDay[] }) {
   const ref = useRef<HTMLElement>(null);
   const seen = useInView(ref, { once: true, amount: 0.3 });
   const { data: brief } = useLiveFeed<DailyBrief>("/api/home/brief", CLIENT_REFRESH.brief, initial, {
@@ -106,7 +110,7 @@ export function DailyBriefCard({ initial }: { initial: DailyBrief }) {
         <motion.h2 id="home-brief-title" variants={fadeUp} className="font-display text-xl font-bold leading-snug tracking-[-0.02em] text-text-primary md:text-[1.4rem]">
           {brief.headline}
         </motion.h2>
-        <ol className="mt-4 space-y-3.5">
+        <ol className="mb-5 mt-4 space-y-3.5">
           {brief.bullets.map((text, i) => {
             const section = SECTIONS[i] ?? SECTIONS[2];
             return (
@@ -125,6 +129,27 @@ export function DailyBriefCard({ initial }: { initial: DailyBrief }) {
             );
           })}
         </ol>
+        {/* the days ahead at the site: the one part of the forecast the weather card does not show */}
+        {outlook.length > 0 && (
+          <motion.div variants={fadeUp} className="mt-auto">
+            <p className="home-eyebrow mb-2">Site outlook · the days ahead</p>
+            <ul className="grid gap-px overflow-hidden rounded-xl border border-border-hairline bg-border-hairline" style={{ gridTemplateColumns: `repeat(${outlook.length}, minmax(0, 1fr))` }}>
+              {outlook.map((d) => (
+                <li key={d.date} className="flex flex-col items-center gap-1 bg-bg-panel px-2 py-3 text-center">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">{weekday(d.date)}</span>
+                  <WeatherGlyph kind={d.icon} size={34} title="" />
+                  <span className="font-mono text-sm font-semibold tabular-nums text-text-primary">
+                    {d.maxC}° <span className="font-normal text-text-muted">/ {d.minC}°</span>
+                  </span>
+                  <span className="font-mono text-[10px] tabular-nums text-scic-cyan">
+                    {d.rainChance}% rain
+                  </span>
+                  {d.rainMm > 0 && <span className="-mt-0.5 font-mono text-[10px] tabular-nums text-text-muted">{d.rainMm} mm</span>}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
       </motion.div>
 
       <footer className="mt-4 border-t border-border-hairline pt-3">

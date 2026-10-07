@@ -200,7 +200,7 @@ export function WeatherGlanceCard({ initial }: { initial: Record<WeatherSiteKey,
               className="flex min-w-0 flex-1 flex-col gap-4"
             >
               {/* now: a panel in the colour of the sky it reports */}
-              <div className="home-sky px-4 py-4 md:px-5" data-sky={skyOf(w)}>
+              <div className="home-sky @container px-4 py-4 md:px-5" data-sky={skyOf(w)}>
                 <span className="home-sky-halo" aria-hidden />
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-4">
@@ -219,7 +219,7 @@ export function WeatherGlanceCard({ initial }: { initial: Record<WeatherSiteKey,
                       </p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-y-3 border-t border-border-hairline pt-3 sm:grid-cols-4 sm:divide-x sm:divide-border-hairline [&>*:nth-child(odd)]:pl-0 sm:[&>*:nth-child(odd)]:pl-3 sm:[&>*:first-child]:pl-0">
+                  <div className="grid grid-cols-2 gap-y-3 border-t border-border-hairline pt-3 @md:grid-cols-4 @md:divide-x @md:divide-border-hairline [&>*:nth-child(odd)]:pl-0 @md:[&>*:nth-child(odd)]:pl-3 @md:[&>*:first-child]:pl-0">
                     <Fact icon={<Thermometer className="h-3.5 w-3.5" aria-hidden />} label="High / low">
                       {w.today.maxC}° / {w.today.minC}°
                     </Fact>

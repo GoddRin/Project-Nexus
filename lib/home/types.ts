@@ -16,6 +16,8 @@ export interface WeatherGlance {
   today: { maxC: number; minC: number; rainChance: number; rainMm: number };
   /** the next 24 hours, hour by hour (local time of the site, "2026-10-06T14:00") */
   hours: { time: string; tempC: number; rainChance: number; rainMm: number; windKph: number; code: number; icon: WeatherGlyphKind }[];
+  /** the days after today, as the forecast gives them (date is the site's local day, "2026-10-07") */
+  outlook?: { date: string; maxC: number; minC: number; rainChance: number; rainMm: number; icon: WeatherGlyphKind }[];
   /** Go / caution / hold for site work. Construction sites only: absent for Manila HQ. */
   operational?: {
     verdict: "GO" | "CAUTION" | "HOLD";
@@ -45,9 +47,24 @@ export interface Headline {
   publishedAt: string;
   category: NewsCategoryKey | "SCIC_PRESS";
 }
+/** A story with the photograph its publisher attached to it (see lib/home/newsPhotos.ts) */
+export interface PhotoStory {
+  id: string;
+  title: string;
+  summary?: string;
+  url: string;
+  source: string;
+  sourceDomain: string;
+  /** the publisher's own picture for this story, loaded from the publisher */
+  image: string;
+  publishedAt: string;
+  category: NewsCategoryKey;
+}
 export interface TrendingResult {
   category: NewsCategoryKey;
   items: Headline[];
+  /** stories with photographs for the slideshow; empty when the publishers' feeds cannot be read */
+  photos: PhotoStory[];
   status: SourceStatus;
 }
 

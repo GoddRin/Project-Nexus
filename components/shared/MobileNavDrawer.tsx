@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydroPowerLogo } from "./HydroPowerLogo";
+import { SafetyStreak } from "./SafetyStreak";
 import { useMobileNav } from "./MobileNavContext";
 
 const CORE_NAV_ITEMS = [
@@ -262,19 +263,9 @@ export function MobileNavDrawer({
                 })}
               </div>
 
-              {/* SCIC Safety Hours Milestone Pill */}
+              {/* Site safety board: days since the last lost-time accident */}
               <div className="pt-2">
-                <div className="flex items-center gap-2.5 rounded-xl border border-scic-green/30 bg-emerald-500/10 dark:bg-emerald-950/40 p-3 text-scic-green dark:text-emerald-400">
-                  <Shield className="h-4 w-4 shrink-0 text-scic-green dark:text-emerald-400" />
-                  <div className="min-w-0">
-                    <p className="font-mono text-xs font-bold leading-none text-text-primary dark:text-white">
-                      1,420,500 HRS
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-text-muted">
-                      Safe Man-Hours · LTI Free
-                    </p>
-                  </div>
-                </div>
+                <SafetyStreak variant="drawer" />
               </div>
             </div>
 

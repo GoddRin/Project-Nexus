@@ -160,9 +160,9 @@ const SEARCH_ITEMS: SearchItem[] = [
   {
     id: "ops-safety",
     title: "Safety & HSE Incident Portal",
-    subtitle: "1.42M+ Safe Man-Hours, zero-LTI safety compliance",
+    subtitle: "Incident log, emergency response and the site safety record",
     category: "Operations",
-    href: "/dashboard/operations/safety",
+    href: "/dashboard/incidents",
     icon: Shield,
     keywords: ["lti", "incident", "hazard", "ppe", "safe hours", "toolbox"],
   },

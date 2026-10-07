@@ -12,7 +12,8 @@ import type { Headline, NewsCategoryKey, TrendingResult } from "./types";
 const GN = "hl=en-PH&gl=PH&ceid=PH:en";
 const ENERGY_QUERY = '(hydropower OR "renewable energy" OR "Department of Energy" OR infrastructure OR DPWH) Philippines when:3d';
 export const TRENDING_FEEDS: Record<NewsCategoryKey, string> = {
-  PH: `https://news.google.com/rss?${GN}`,
+  // (the Philippines' national-news section: politics, government, the regions; not the mixed front page)
+  PH: `https://news.google.com/rss/headlines/section/topic/NATION?${GN}`,
   WORLD: `https://news.google.com/rss/headlines/section/topic/WORLD?${GN}`,
   BUSINESS: `https://news.google.com/rss/headlines/section/topic/BUSINESS?${GN}`,
   ENERGY: `https://news.google.com/rss/search?q=${encodeURIComponent(ENERGY_QUERY)}&${GN}`,
@@ -38,6 +39,8 @@ export const HEADLINE_NOISE: string[] = [
   // promotions, shopping and celebrity items
   "pop-up", "wedding dress", "bridal", "shopping experience", "on sale", "discount", "giveaway", "raffle", "fashion week", "red carpet",
   "guesting", "love team", "pageant", "showbiz", "celebrity", "birthday bash", "music video", "concert tickets", "box office",
+  "pinoy big brother", "pbb", "actress", "actor", "singer", "vlogger", "influencer", "k-pop", "kpop", "idol", "beauty queen", "miss universe",
+  "teleserye", "housemate", "fan meet", "choral", "talent show",
 ];
 const DENY = new RegExp(`(?:^|[^a-z])(?:${[...HEADLINE_DENYLIST, ...HEADLINE_NOISE].map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/[ -]/g, "[ -]")).join("|")})(?:[^a-z]|$)`, "i");
 /** Not publishers: a "headline" from one of these is somebody's post, not news */
@@ -78,7 +81,7 @@ async function loadCategory(category: NewsCategoryKey): Promise<{ items: Headlin
 const cached = Object.fromEntries(
   NEWS_CATEGORIES.map((c) => [
     c,
-    unstable_cache(() => loadCategory(c), ["home-trending", c, "v2"], { revalidate: SERVER_TTL.trending, tags: [CACHE_TAGS.trending, `${CACHE_TAGS.trending}:${c}`] }),
+    unstable_cache(() => loadCategory(c), ["home-trending", c, "v3"], { revalidate: SERVER_TTL.trending, tags: [CACHE_TAGS.trending, `${CACHE_TAGS.trending}:${c}`] }),
   ])
 ) as Record<NewsCategoryKey, () => Promise<{ items: Headline[]; updatedAt: string }>>;
 
@@ -88,11 +91,14 @@ export async function getTrending(category: NewsCategoryKey): Promise<TrendingRe
   return {
     category,
     items: data?.items ?? [],
+    photos: [],
     status: { source: "Google News", updatedAt: data?.updatedAt ?? new Date().toISOString(), ok, nextRefreshAt: nextRefreshAt(SERVER_TTL.trending) },
   };
 }
 
 export async function getAllTrending(): Promise<Record<NewsCategoryKey, TrendingResult>> {
-  const results = await Promise.all(NEWS_CATEGORIES.map((c) => getTrending(c)));
-  return Object.fromEntries(results.map((r) => [r.category, r])) as Record<NewsCategoryKey, TrendingResult>;
+  // (imported here, not at the top: newsPhotos.ts uses this file's workplace filter)
+  const { getPhotoStories } = await import("./newsPhotos");
+  const [results, photos] = await Promise.all([Promise.all(NEWS_CATEGORIES.map((c) => getTrending(c))), getPhotoStories()]);
+  return Object.fromEntries(results.map((r) => [r.category, { ...r, photos: photos[r.category] ?? [] }])) as Record<NewsCategoryKey, TrendingResult>;
 }

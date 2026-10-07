@@ -17,6 +17,13 @@ export const ANNIVERSARY_YEAR = FOUNDED_YEAR + 50; // 2026
 export const PCAB_RATING = "AAAA";
 export const PCAB_FIRST_RATING = "AAA";
 
+/**
+ * The date of the site's last lost-time accident (LTA), as stated by the company, in Philippine
+ * time. The safety streak on Nexus Home counts from here, or from a later incident if one is
+ * logged in the Incidents module. Update this date when the company reports a new LTA.
+ */
+export const LAST_LTA_DATE = "2026-09-25";
+
 /** Whole years in service, counted in Philippine time (so it turns over at midnight in Manila) */
 export function yearsInService(now: Date = new Date()): number {
   const manilaYear = Number(new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Manila", year: "numeric" }).format(now));

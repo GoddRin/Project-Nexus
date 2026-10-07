@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydroPowerLogo } from "./HydroPowerLogo";
+import { SafetyStreak } from "./SafetyStreak";
 
 const CORE_NAV_ITEMS = [
   // Nexus Home is the front page; it is active on /home and anything under it (/home/news/...)
@@ -347,19 +348,14 @@ export function Sidebar({ userName = "Site Admin", userEmail = "", role = "EMPLO
   </div>
  </nav>
 
- {/* HSE Safe Man-Hours Badge */}
- {!collapsed && (
-   <div className="mx-2 mb-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5 max-md:hidden">
-     <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-     <div className="min-w-0 flex-1">
-       <p className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 leading-tight">
-         1,420,500 HRS
-       </p>
-       <p className="text-[9px] text-text-muted font-medium truncate">
-         Safe Man-Hours · LTI Free
-       </p>
-     </div>
-   </div>
+ {/* Site safety board: days since the last lost-time accident (see SafetyStreak) */}
+ {collapsed ? (
+   <SafetyStreak variant="compact" className="mx-2 mb-2" />
+ ) : (
+   <>
+     <SafetyStreak className="mx-2 mb-2 max-md:hidden" />
+     <SafetyStreak variant="compact" className="mx-2 mb-2 md:hidden" />
+   </>
  )}
 
  {/* User menu & collapse toggle */}

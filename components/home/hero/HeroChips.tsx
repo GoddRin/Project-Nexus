@@ -2,8 +2,9 @@
 
 import React, { useRef } from "react";
 import Link from "next/link";
-import { Building2, ShieldAlert, ShieldCheck, TrendingUp } from "lucide-react";
+import { Building2, HardHat, ShieldAlert, ShieldCheck, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSafetyStreak } from "@/components/shared/SafetyStreak";
 import { useLiveFeed } from "@/components/home/useLiveFeed";
 import { usePauseOffscreen } from "@/components/home/usePauseOffscreen";
 import { WeatherGlyph } from "@/components/home/weather/WeatherGlyph";
@@ -38,10 +39,10 @@ export interface HeroChipsProps {
 }
 
 /**
- * The hero's live chips: weather now at the Tumauini site, the PAGASA wind-signal status over it
- * (amber or red, pulsing, when a signal is up), projects under way, and the flagship's progress.
- * Each is a link to where that figure lives. A chip without real data behind it is not shown
- * (there is no safety chip: no incident has ever been logged, and no rows is not a record).
+ * The hero's live chips: weather now at the Tumauini site; the PAGASA wind signal over it when a
+ * storm is about (amber or red, pulsing, when a signal is up), and otherwise the days since the
+ * last lost-time accident; projects under way; and the flagship's progress. Each is a link to
+ * where that figure lives. A chip without real data behind it is not shown.
  * Weather and the signal refresh on their own; faster while a signal is up.
  */
 export function HeroChips({ weather: initial, activeProjects, flagship }: HeroChipsProps) {
@@ -57,9 +58,11 @@ export function HeroChips({ weather: initial, activeProjects, flagship }: HeroCh
   const alert = weather?.alert;
   const pagasa = alert
     ? { label: "PAGASA", value: `Signal No. ${alert.signal}${alert.stormName ? ` · ${alert.stormName}` : ""}`, tone: (alert.signal >= 2 ? "red" : "amber") as "red" | "amber" }
-    : weather?.bulletin.available
-      ? { label: "PAGASA", value: weather.bulletin.active ? `No signal here${weather.bulletin.stormName ? ` · ${weather.bulletin.stormName} in PAR` : ""}` : "No wind signal", tone: undefined }
+    : weather?.bulletin.available && weather.bulletin.active
+      ? { label: "PAGASA", value: `No signal here${weather.bulletin.stormName ? ` · ${weather.bulletin.stormName} in PAR` : ""}`, tone: undefined }
       : null;
+  // with no storm about, that place goes to the site's safety record
+  const { streak, days } = useSafetyStreak();
 
   return (
     <div ref={row} className="home-chip-row -mx-6 px-6 md:mx-0 md:flex-wrap md:overflow-visible md:px-0" aria-label="Live figures">
@@ -91,6 +94,19 @@ export function HeroChips({ weather: initial, activeProjects, flagship }: HeroCh
           tone={pagasa.tone}
           pulse={!!alert}
           title="Tropical cyclone wind signal over the Tumauini site (PAGASA)"
+        />
+      )}
+      {!pagasa && streak && (
+        <Chip
+          href="/dashboard/incidents"
+          icon={<HardHat className="h-6 w-6 text-scic-green dark:text-scic-green-bright" aria-hidden />}
+          label="Site safety"
+          value={
+            <>
+              <span className="font-mono tabular-nums">{days ?? "–"}</span> {days === 1 ? "day" : "days"} {streak.kind === "lta" ? "without an LTA" : "since last incident"}
+            </>
+          }
+          title={streak.kind === "lta" ? "Days since the last lost-time accident at the Tumauini site" : "Days since the last reported incident at the Tumauini site"}
         />
       )}
       {typeof activeProjects === "number" && (

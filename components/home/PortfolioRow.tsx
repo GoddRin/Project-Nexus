@@ -60,7 +60,7 @@ export async function PortfolioSection() {
         provinces={stats.provinces}
       />
       <p className="mt-2 font-mono text-[10px] leading-relaxed text-text-muted">
-        Megawatts are the rated capacity of the plants the company has worked on, as the records state them; records not confirmed by public sources are left out.
+        Plant capacity is the rated megawatts of the power plants the company has worked on, as the records state them; renewable is the hydro, wind and solar share. Records not confirmed by public sources are left out.
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">

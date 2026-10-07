@@ -3,6 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CLIENT_REFRESH } from "@/lib/home/refreshPolicy";
 
+/**
+ * Fired on `window` by "Refresh all" (components/home/HomeToolbar.tsx): every live section
+ * fetches at once, and hands its fetch back through `detail.waitUntil` so the button knows when
+ * all of them have answered.
+ */
+export const HOME_REFRESH_EVENT = "nexus-home:refresh";
+export interface HomeRefreshDetail {
+  waitUntil: (work: Promise<unknown>) => void;
+}
+
 export interface LiveFeed<T> {
   data: T;
   /** when the data on screen was fetched (ISO) */
@@ -96,14 +106,23 @@ export function useLiveFeed<T>(url: string, intervalMs: number, initialData: T, 
       if (document.visibilityState !== "visible") return;
       if (Date.now() - lastFetch.current >= intervalMs) void load().then(() => !cancelled && schedule());
     };
+    // "Refresh all": fetch now, then carry on from a fresh interval
+    const refreshNow = (event: Event) => {
+      const work = load().then(() => {
+        if (!cancelled) schedule();
+      });
+      (event as CustomEvent<HomeRefreshDetail | undefined>).detail?.waitUntil(work);
+    };
     schedule();
     document.addEventListener("visibilitychange", wake);
     window.addEventListener("online", wake);
+    window.addEventListener(HOME_REFRESH_EVENT, refreshNow);
     return () => {
       cancelled = true;
       window.clearTimeout(timer.current);
       document.removeEventListener("visibilitychange", wake);
       window.removeEventListener("online", wake);
+      window.removeEventListener(HOME_REFRESH_EVENT, refreshNow);
       inFlight.current?.abort();
     };
   }, [enabled, intervalMs, load]);

@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/db/prisma";
+import { countOnSiteVisitors, countOpenTickets, findOpsProject, findRecentActivity } from "@/lib/home/ops";
 import { fetchWeather, getWeatherInfo, evaluateDayOperationalStatus } from "@/lib/weather/fetchWeather";
 
 /* Card uses the shared .glass-card CSS utility from globals.css */
@@ -88,14 +88,9 @@ export async function OpenTicketsWidget({ delay = 0 }: { delay?: number }) {
   let openTickets = 0;
 
   try {
-    const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
+    const project = await findOpsProject();
     if (project) {
-      openTickets = await prisma.ticket.count({
-        where: {
-          projectId: project.id,
-          status: { in: ["OPEN", "IN_PROGRESS"] },
-        }
-      });
+      openTickets = await countOpenTickets(project.id);
     }
   } catch (err) {
     console.error("OpenTicketsWidget: safe fallback on DB query:", err);
@@ -139,14 +134,9 @@ export async function OnSiteWidget({ delay = 0 }: { delay?: number }) {
   let onSiteVisitors = 0;
 
   try {
-    const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
+    const project = await findOpsProject();
     if (project) {
-      onSiteVisitors = await prisma.visitor.count({
-        where: {
-          projectId: project.id,
-          status: "CHECKED_IN",
-        }
-      });
+      onSiteVisitors = await countOnSiteVisitors(project.id);
     }
   } catch (err) {
     console.error("OnSiteWidget: safe fallback on DB query:", err);
@@ -310,36 +300,10 @@ export async function RecentActivityWidget({ delay = 0 }: { delay?: number }) {
   let activities: Activity[] = [];
 
   try {
-    const project = await prisma.project.findUnique({ where: { slug: "tumauini-hepp" }});
+    const project = await findOpsProject();
     
     if (project) {
-      const [reports, transactions, visitors] = await Promise.all([
-        prisma.accomplishmentReport.findMany({
-          where: { projectId: project.id },
-          include: {
-            submittedBy: true,
-            reviewedBy: true,
-          },
-          orderBy: { updatedAt: "desc" },
-          take: 4,
-        }),
-        prisma.inventoryTransaction.findMany({
-          where: { projectId: project.id, status: "APPROVED" },
-          include: {
-            item: true,
-            approvedBy: true,
-            requestedBy: true
-          },
-          orderBy: { updatedAt: "desc" },
-          take: 4,
-        }),
-        prisma.visitor.findMany({
-          where: { projectId: project.id },
-          include: { host: true, loggedBy: true },
-          orderBy: { createdAt: "desc" },
-          take: 4,
-        }),
-      ]);
+      const [reports, transactions, visitors] = await findRecentActivity(project.id);
 
       activities = [
         ...reports.map(r => ({ type: 'report' as const, date: r.updatedAt, data: r })),

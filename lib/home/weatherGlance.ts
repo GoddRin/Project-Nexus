@@ -79,6 +79,14 @@ async function loadGlance(siteKey: WeatherSiteKey): Promise<WeatherGlance> {
       rainMm: Math.round((daily.precipitation_sum[0] ?? 0) * 10) / 10,
     },
     hours,
+    outlook: daily.time.slice(1, 4).map((date, i) => ({
+      date,
+      maxC: Math.round(daily.temperature_2m_max[i + 1]),
+      minC: Math.round(daily.temperature_2m_min[i + 1]),
+      rainChance: Math.round(daily.precipitation_probability_max[i + 1] ?? 0),
+      rainMm: Math.round((daily.precipitation_sum[i + 1] ?? 0) * 10) / 10,
+      icon: glyphForWmo(daily.weather_code[i + 1] ?? 0, false),
+    })),
     bulletin: {
       available: pagasa?.source === "pagasa",
       active: pagasa?.source === "pagasa" && !!pagasa.hasActiveBulletin,
@@ -111,11 +119,11 @@ async function loadGlance(siteKey: WeatherSiteKey): Promise<WeatherGlance> {
 }
 
 const cached: Record<WeatherSiteKey, () => Promise<WeatherGlance>> = {
-  tumauini: unstable_cache(() => loadGlance("tumauini"), ["home-weather-glance", "tumauini", "v2"], {
+  tumauini: unstable_cache(() => loadGlance("tumauini"), ["home-weather-glance", "tumauini", "v3"], {
     revalidate: SERVER_TTL.weather,
     tags: [CACHE_TAGS.weather, `${CACHE_TAGS.weather}:tumauini`],
   }),
-  manila: unstable_cache(() => loadGlance("manila"), ["home-weather-glance", "manila", "v2"], {
+  manila: unstable_cache(() => loadGlance("manila"), ["home-weather-glance", "manila", "v3"], {
     revalidate: SERVER_TTL.weather,
     tags: [CACHE_TAGS.weather, `${CACHE_TAGS.weather}:manila`],
   }),

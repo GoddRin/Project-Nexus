@@ -26,6 +26,7 @@ export const CLIENT_REFRESH = {
   trending: 15 * MIN * S,
   press: 30 * MIN * S,
   companyFeed: 5 * MIN * S,
+  ops: 1 * MIN * S,
   /** how often the brief card checks whether the slot has changed */
   brief: 10 * MIN * S,
   /** the "updated x ago" text */

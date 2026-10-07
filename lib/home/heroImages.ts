@@ -1,16 +1,14 @@
 /**
- * The hero's photographs. Chosen by looking at every landscape photograph in
- * public/project-images (5 October 2026): sharp single-frame shots of the works themselves
- * (a weir, a dam, solar fields, a bridge, a tunnel portal, transmission towers, a power plant),
+ * The hero's photographs: sixteen sharp, single-frame shots of the works themselves (a weir,
+ * solar fields, bridges, a tunnel portal, transmission towers, treatment plants, a power plant),
  * with no people as the subject and no collages. They are the company's own photographs of
- * these projects, taken from its website.
+ * these projects, from its website, at full size: scripts/fetch-hero-images.mjs fetches the
+ * originals (the Atlas uses the 768 px renditions of the same uploads) and writes them to
+ * public/hero at up to 2400 px wide. The list of originals is scripts/hero-images.json.
  *
  * `focus` is the CSS object-position that keeps the subject in frame: the wide desktop hero
  * crops top and bottom (so the vertical figure matters there), the tall phone hero crops the
  * sides (so the horizontal one matters there). The first entry is the page's LCP image.
- *
- * Note: the company publishes these at about 770 px wide, so on a large screen they are shown
- * enlarged under the overlay. Replace a file with a larger original when one is available.
  */
 export interface HeroImage {
   src: string;
@@ -24,44 +22,84 @@ export interface HeroImage {
 
 export const HERO_IMAGES: HeroImage[] = [
   {
-    src: "/project-images/catuiran-hydro-2.jpg",
+    src: "/hero/catuiran-weir.jpg",
     alt: "Water running over the concrete intake weir of the Catuiran hydroelectric plant, between rock banks",
     project: "Catuiran HEPP", location: "Naujan, Oriental Mindoro", slug: "catuiran-hydro", focus: "62% 46%",
   },
   {
-    src: "/project-images/toledo-solar-1.jpg",
+    src: "/hero/toledo-solar-aerial.jpg",
     alt: "Aerial view of the Toledo solar power plant: rows of panels across rolling ground, hills behind",
     project: "Toledo Solar Power Plant", location: "Toledo, Cebu", slug: "toledo-solar", focus: "60% 55%",
   },
   {
-    src: "/project-images/sfex-tunnel-3.jpg",
+    src: "/hero/sfex-bridge.jpg",
     alt: "The Subic Freeport Expressway crossing a forested valley on a bridge, seen from the air",
     project: "SFEX Capacity Expansion", location: "Bataan to Subic Bay", slug: "sfex-tunnel", focus: "58% 50%",
   },
   {
-    src: "/project-images/catuiran-hydro-1.jpg",
-    alt: "The Catuiran intake dam and its green reservoir in a steep river gorge",
-    project: "Catuiran HEPP", location: "Naujan, Oriental Mindoro", slug: "catuiran-hydro", focus: "45% 45%",
-  },
-  {
-    src: "/project-images/mariveles-500kv-1.jpg",
+    src: "/hero/mariveles-tower.jpg",
     alt: "A steel lattice tower of the Mariveles to Balsik 500 kV transmission line against a blue sky",
     project: "Mariveles–Balsik 500 kV Line", location: "Bataan", slug: "mariveles-500kv", focus: "58% 40%",
   },
   {
-    src: "/project-images/toledo-solar-2.jpg",
-    alt: "Solar panel arrays of the Toledo plant stretching to the horizon along a service road",
-    project: "Toledo Solar Power Plant", location: "Toledo, Cebu", slug: "toledo-solar", focus: "62% 60%",
+    src: "/hero/la-mesa-wtp.jpg",
+    alt: "Aerial view of the La Mesa water treatment plant: rows of filter basins among trees",
+    project: "La Mesa Water Treatment Plant 1", location: "Novaliches, Quezon City", slug: "la-mesa-wtp", focus: "55% 50%",
   },
   {
-    src: "/project-images/sfex-tunnel-1.jpg",
+    src: "/hero/sfex-portal.jpg",
     alt: "The concrete portal of the Subic Freeport Expressway bypass tunnel, cut into a rock face",
     project: "SFEX Bypass Tunnel", location: "Bataan to Subic Bay", slug: "sfex-tunnel", focus: "70% 50%",
   },
   {
-    src: "/project-images/balingasag-thermal-1.jpg",
+    src: "/hero/tuguegarao-tower.jpg",
+    alt: "A transmission tower of the Tuguegarao to Lal-lo 230 kV line standing over green fields",
+    project: "Tuguegarao–Lal-lo 230 kV Line", location: "Cagayan", slug: "tuguegarao-lallo-230kv", focus: "70% 45%",
+  },
+  {
+    src: "/hero/toledo-solar-rows.jpg",
+    alt: "Solar panel rows of the Toledo plant running to the horizon",
+    project: "Toledo Solar Power Plant", location: "Toledo, Cebu", slug: "toledo-solar", focus: "55% 60%",
+  },
+  {
+    src: "/hero/marikina-north-stp.jpg",
+    alt: "Aerial view of the Marikina North sewage treatment plant beside the city",
+    project: "Marikina North Sewage Treatment Plant", location: "Marikina City", slug: "marikina-north-stp", focus: "55% 62%",
+  },
+  {
+    src: "/hero/sfex-valley.jpg",
+    alt: "The Subic Freeport Expressway running through forest, seen from above",
+    project: "SFEX Capacity Expansion", location: "Bataan to Subic Bay", slug: "sfex-tunnel", focus: "55% 50%",
+  },
+  {
+    src: "/hero/balingasag-thermal.jpg",
     alt: "Aerial view of the Balingasag thermal power plant: turbine halls, switchyard and coal yard",
     project: "Balingasag Thermal Power Plant", location: "Balingasag, Misamis Oriental", slug: "balingasag-thermal", focus: "55% 45%",
+  },
+  {
+    src: "/hero/mariveles-line.jpg",
+    alt: "Towers of the Mariveles to Balsik 500 kV line crossing wooded hills under a wide sky",
+    project: "Mariveles–Balsik 500 kV Line", location: "Bataan", slug: "mariveles-500kv", focus: "60% 45%",
+  },
+  {
+    src: "/hero/subic-flour-mill.jpg",
+    alt: "Aerial view of the Subic Bay flour mill: silos, mill buildings and warehouses",
+    project: "Subic Bay Flour Mill", location: "Subic Bay Freeport Zone", slug: "subic-flour-mill", focus: "50% 55%",
+  },
+  {
+    src: "/hero/sctex.jpg",
+    alt: "The Subic-Clark-Tarlac Expressway running along an embankment toward the mountains",
+    project: "SCTEX Package 1", location: "Subic to Clark", slug: "sctex-pkg1", focus: "60% 55%",
+  },
+  {
+    src: "/hero/toledo-solar-field.jpg",
+    alt: "The Toledo solar field from the air, with its service road and control building",
+    project: "Toledo Solar Power Plant", location: "Toledo, Cebu", slug: "toledo-solar", focus: "62% 60%",
+  },
+  {
+    src: "/hero/la-mesa-basins.jpg",
+    alt: "Settling ponds and clarifiers of the La Mesa water treatment plant from the air",
+    project: "La Mesa Water Treatment Plant 1", location: "Novaliches, Quezon City", slug: "la-mesa-wtp", focus: "50% 50%",
   },
 ];
 

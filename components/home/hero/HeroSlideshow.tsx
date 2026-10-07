@@ -77,7 +77,8 @@ export function HeroSlideshow({ images }: { images: HeroImage[] }) {
               alt={i === index ? img.alt : ""}
               fill
               priority={i === 0}
-              sizes="100vw"
+              sizes="(max-width: 1536px) 100vw, 1280px"
+              quality={90}
               className={animate && i === index ? "home-kenburns object-cover" : "object-cover"}
               style={{ objectPosition: img.focus }}
             />

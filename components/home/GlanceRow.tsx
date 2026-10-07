@@ -1,4 +1,6 @@
 import React from "react";
+import { OpsSnapshotCard } from "@/components/home/ops/OpsSnapshotCard";
+import { getOpsSnapshot } from "@/lib/home/ops";
 import { DailyBriefCard } from "@/components/home/brief/DailyBriefCard";
 import { WeatherGlanceCard } from "@/components/home/weather/WeatherGlanceCard";
 import { getDailyBrief } from "@/lib/home/dailyBrief";
@@ -13,5 +15,12 @@ export async function WeatherGlanceSection({ mockAlert }: { mockAlert?: string }
 
 /** Server loader for the brief card (the AI is asked at most once per edition; see lib/home/dailyBrief.ts) */
 export async function DailyBriefSection() {
-  return <DailyBriefCard initial={await getDailyBrief()} />;
+  const [brief, site] = await Promise.all([getDailyBrief(), getWeatherGlance("tumauini").catch(() => null)]);
+  return <DailyBriefCard initial={brief} outlook={site?.outlook ?? []} />;
+}
+
+/** Server loader for the operations card (left out if the site records cannot be read) */
+export async function OpsSection() {
+  const ops = await getOpsSnapshot();
+  return ops ? <OpsSnapshotCard initial={ops} /> : null;
 }

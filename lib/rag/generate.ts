@@ -1198,7 +1198,7 @@ function generateToolboxTalk(topic: string, workZone?: string) {
       { step: "3. Mandatory PPE Verification", details: "Hardhat (Type 1 Class E/G), high-vis vest, safety glasses, steel-toe boots, and task-specific gear (fall harness / arc-flash shield / welding apron)." },
       { step: "4. Emergency Response & Clinic", details: "TEMFACIL Clinic contact: Nurse Russelle Alcantara (Ext. 104). Immediate emergency evacuation route to TEMFACIL assembly ground." }
     ],
-    safeManHoursPledge: "Maintaining 1,420,580 Safe Man-Hours LTI-Free at Tumauini HEPP!"
+    safeManHoursPledge: "Every task starts with a safety check. Nobody gets hurt at Tumauini HEPP today."
   };
 }
 

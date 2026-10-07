@@ -13,6 +13,7 @@ import {
 } from "@/components/dashboard/DashboardWidgets";
 import { Zap, ShieldCheck, HardHat, Waves, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { SafetyStreakFigure } from "@/components/shared/SafetyStreak";
 
 export const dynamic = "force-dynamic";
 
@@ -47,9 +48,11 @@ export default function DashboardPage() {
             <ShieldCheck className="h-4 sm:h-5 w-4 sm:h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Safety Milestone</p>
-            <p className="font-display text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">1.42M hrs</p>
-            <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium truncate">Zero Lost Time Injury</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Site Safety</p>
+            <SafetyStreakFigure
+              valueClassName="font-display text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400"
+              captionClassName="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium truncate"
+            />
           </div>
         </div>
 

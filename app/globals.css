@@ -1242,32 +1242,42 @@ html:not(.dark) .leaflet-control-zoom a:hover {
 }
 
 /* ── Nexus Home: hero ─────────────────────────────────────────────────────────────────────── */
-/* Photo overlay. Light ("Morning Mist"): the page colour washes in from the left so forest text
-   reads on it. Dark ("Night Powerhouse"): deep navy from the left, white text. Both fade into
-   the page at the bottom. */
+/* The hero is a photograph, so it is dressed the same in both themes: the hero element carries
+   the dark tokens itself (class "dark"), a deep green-navy scrim comes in from the left and the
+   bottom so white text reads on any picture, and the picture is graded toward the brand's
+   greens, under a faint dot screen like a printed photograph. */
 .home-hero-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(0deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 55%, transparent) 14%, transparent 34%),
-    linear-gradient(100deg, color-mix(in srgb, var(--bg-base) 94%, transparent) 0%, color-mix(in srgb, var(--bg-base) 66%, transparent) 40%, transparent 74%);
-}
-.dark .home-hero-overlay {
-  background:
-    linear-gradient(0deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 55%, transparent) 14%, transparent 34%),
-    linear-gradient(100deg, color-mix(in srgb, var(--scic-navy-dark) 92%, transparent) 0%, color-mix(in srgb, var(--scic-navy-dark) 55%, transparent) 45%, transparent 85%);
+    linear-gradient(0deg, color-mix(in srgb, var(--scic-navy-dark) 96%, transparent) 0%, color-mix(in srgb, var(--scic-navy-dark) 62%, transparent) 20%, transparent 52%),
+    linear-gradient(100deg, color-mix(in srgb, var(--scic-navy-dark) 94%, transparent) 0%, color-mix(in srgb, var(--scic-navy-dark) 62%, transparent) 42%, color-mix(in srgb, var(--scic-navy-dark) 12%, transparent) 78%, transparent 100%);
 }
 @media (max-width: 767px) {
-  /* a narrow hero has the text over the whole photograph: the wash covers all of it */
+  /* a narrow hero has the text over the whole photograph: the scrim covers all of it */
   .home-hero-overlay {
-    background:
-      linear-gradient(0deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 82%, transparent) 40%, color-mix(in srgb, var(--bg-base) 62%, transparent) 100%);
+    background: linear-gradient(0deg, color-mix(in srgb, var(--scic-navy-dark) 97%, transparent) 0%, color-mix(in srgb, var(--scic-navy-dark) 80%, transparent) 45%, color-mix(in srgb, var(--scic-navy-dark) 52%, transparent) 100%);
   }
-  .dark .home-hero-overlay {
-    background:
-      linear-gradient(0deg, var(--bg-base) 0%, color-mix(in srgb, var(--scic-navy-dark) 84%, transparent) 40%, color-mix(in srgb, var(--scic-navy-dark) 60%, transparent) 100%);
-  }
+}
+/* the grade: shadows pulled toward forest green, highlights kept */
+.home-hero-photo img { filter: saturate(0.82) contrast(1.1) brightness(0.94); }
+.home-hero-grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--scic-green) 70%, var(--scic-navy-dark)) 0%, var(--scic-navy-dark) 100%);
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
+}
+/* a fine dot screen, like a printed photograph */
+.home-hero-screen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, #000000 55%, transparent) 0.6px, transparent 1.1px);
+  background-size: 3px 3px;
+  opacity: 0.14;
 }
 /* Time-of-day wash (the colour is set on the hero by the server from the hour in Manila) */
 .home-hero-tint {
@@ -1602,4 +1612,129 @@ html[data-nexus-intro="play"] .home-intro-ribbon { display: block; }
   .home-timeline-pin,
   [data-inview="true"] .home-timeline-node,
   [data-inview="true"] .home-timeline-pin { animation: none; opacity: 1; transform: none; }
+}
+
+/* ── Nexus Home: the section bar ──────────────────────────────────────────────────────────── */
+.home-toolbar {
+  background: color-mix(in srgb, var(--bg-panel) 82%, transparent);
+  border: 1px solid var(--home-chip-border);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  box-shadow: 0 8px 24px -16px color-mix(in srgb, #000000 55%, transparent);
+}
+
+/* ── Theme switch: the new theme spreads out from the button (components/ThemeToggle.tsx) ──── */
+html[data-theme-wipe]::view-transition-old(root),
+html[data-theme-wipe]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-wipe]::view-transition-old(root) { z-index: 0; }
+html[data-theme-wipe]::view-transition-new(root) {
+  z-index: 1;
+  animation: theme-wipe 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes theme-wipe {
+  from { clip-path: circle(0 at var(--theme-wipe-x, 100%) var(--theme-wipe-y, 0%)); }
+  to { clip-path: circle(var(--theme-wipe-r, 150vmax) at var(--theme-wipe-x, 100%) var(--theme-wipe-y, 0%)); }
+}
+
+/* ── Golden Jubilee emblem (components/home/hero/FiftyYearSeal.tsx) ───────────────────────── */
+/* It always sits on a photograph, so it carries its own dark face and gold in both themes. */
+:root,
+.dark {
+  --jubilee-hi: color-mix(in srgb, var(--scic-amber) 22%, #fff1bf);
+  --jubilee-mid: color-mix(in srgb, var(--scic-amber) 55%, #f2c14a);
+  --jubilee-lo: color-mix(in srgb, var(--scic-amber) 88%, #5a3a00);
+  --jubilee-face-a: color-mix(in srgb, var(--scic-green) 26%, #06120e);
+  --jubilee-face-b: #040b09;
+  --jubilee-ink: #0a1a14;
+}
+.home-jubilee {
+  filter: drop-shadow(0 10px 22px color-mix(in srgb, #000000 55%, transparent));
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), filter 420ms ease;
+}
+.home-jubilee:hover,
+.home-jubilee:focus-visible {
+  transform: scale(1.05) rotate(-2deg);
+  filter: drop-shadow(0 12px 26px color-mix(in srgb, #000000 55%, transparent)) drop-shadow(0 0 18px color-mix(in srgb, var(--jubilee-mid) 45%, transparent));
+}
+.home-jubilee-ticks { animation: home-spin 90s linear infinite; transform-origin: 80px 80px; }
+.home-jubilee-leaf { opacity: 0; transform-box: fill-box; transform-origin: 0% 50%; }
+.home-jubilee[data-inview="true"] .home-jubilee-leaf {
+  animation: home-jubilee-leaf 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(0.25s + var(--i) * 45ms);
+}
+@keyframes home-jubilee-leaf { from { opacity: 0; scale: 0.2; } to { opacity: 1; scale: 1; } }
+[data-paused="true"] .home-jubilee-ticks,
+[data-paused="true"].home-jubilee .home-jubilee-ticks { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .home-jubilee { transition: none; }
+  .home-jubilee:hover,
+  .home-jubilee:focus-visible { transform: none; }
+  .home-jubilee-ticks { animation: none; }
+  .home-jubilee-leaf,
+  .home-jubilee[data-inview="true"] .home-jubilee-leaf { animation: none; opacity: 1; }
+}
+
+/* ── Golden Jubilee: the alternate emblem designs (components/home/hero/JubileeVariants.tsx) ─ */
+.home-jubilee-plate {
+  display: inline-flex;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--jubilee-face-a), var(--jubilee-face-b));
+  border: 1px solid color-mix(in srgb, var(--jubilee-mid) 60%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--jubilee-hi) 22%, transparent);
+}
+.home-jubilee-text {
+  background: linear-gradient(160deg, var(--jubilee-hi), var(--jubilee-mid) 45%, var(--jubilee-lo));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.home-jubilee-ring {
+  border: 0.42rem solid var(--jubilee-mid);
+  border-top-color: var(--jubilee-hi);
+  border-bottom-color: var(--jubilee-lo);
+}
+.home-jubilee-band {
+  background: linear-gradient(180deg, var(--jubilee-hi), var(--jubilee-mid) 50%, var(--jubilee-lo));
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, #000000 70%, transparent), inset 0 1px 0 color-mix(in srgb, #ffffff 55%, transparent), inset 0 -1px 0 color-mix(in srgb, #000000 25%, transparent);
+  transition: filter 300ms ease;
+}
+.home-jubilee-band:hover,
+.home-jubilee-band:focus-visible { filter: brightness(1.08); }
+.home-jubilee-numeral { display: inline-flex; }
+.home-jubilee-numeral:hover,
+.home-jubilee-numeral:focus-visible { transform: scale(1.03); }
+/* the gold block starts below the figure and rises to fill it */
+.home-jubilee-level { transform: translate3d(0, 112px, 0); }
+[data-inview="true"] .home-jubilee-level { animation: home-jubilee-rise 2.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+@keyframes home-jubilee-rise { from { transform: translate3d(0, 112px, 0); } to { transform: translate3d(0, -4px, 0); } }
+.home-jubilee-wave { animation: home-jubilee-wave 3.6s linear infinite; }
+@keyframes home-jubilee-wave { to { transform: translate3d(95px, 0, 0); } }
+[data-paused="true"] .home-jubilee-wave,
+[data-paused="true"].home-jubilee .home-jubilee-wave { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .home-jubilee-level,
+  [data-inview="true"] .home-jubilee-level { animation: none; transform: translate3d(0, -4px, 0); }
+  .home-jubilee-wave { animation: none; }
+  .home-jubilee-numeral:hover,
+  .home-jubilee-numeral:focus-visible { transform: none; }
+}
+
+/* ── Nexus Home: the Headlines slideshow ──────────────────────────────────────────────────── */
+/* It sits on a photograph, so its text and scrim are the same in both themes. */
+.home-newsreel-photo { animation: home-newsreel-push 14s ease-out both; }
+@keyframes home-newsreel-push { from { transform: scale(1.02); } to { transform: scale(1.1); } }
+.home-newsreel-scrim {
+  background: linear-gradient(0deg, color-mix(in srgb, #000000 90%, transparent) 0%, color-mix(in srgb, #000000 58%, transparent) 38%, color-mix(in srgb, #000000 8%, transparent) 72%, color-mix(in srgb, #000000 28%, transparent) 100%);
+}
+/* the line that shows how long the story on show has left */
+.home-newsreel-progress { transform: scaleX(0); transform-origin: 0 50%; animation: home-newsreel-progress var(--newsreel-ms, 10000ms) linear both; }
+@keyframes home-newsreel-progress { to { transform: scaleX(1); } }
+[data-newsreel-paused="true"] .home-newsreel-progress,
+[data-newsreel-paused="true"] .home-newsreel-photo { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .home-newsreel-photo { animation: none; }
+  .home-newsreel-progress { animation: none; transform: scaleX(0); }
 }

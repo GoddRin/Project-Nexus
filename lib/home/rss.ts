@@ -12,6 +12,10 @@ export interface RssItem {
   pubDate: string; // ISO, or "" when the feed gave none
   source: string;
   sourceUrl: string;
+  /** the story's picture, when the feed carries one (publishers' own feeds do; Google News does not) */
+  image?: string;
+  /** the feed's summary, as plain text (at most 240 characters) */
+  summary?: string;
 }
 
 const NAMED: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", ndash: "–", mdash: "—", hellip: "…", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“" };
@@ -32,6 +36,27 @@ function field(block: string, tag: string): string {
   return decodeEntities(m[1].replace(/^<!\[CDATA\[([\s\S]*?)\]\]>$/, "$1").trim());
 }
 
+/**
+ * The picture a feed attaches to a story: media:content, media:thumbnail or an image enclosure,
+ * else the first <img> in the item (publishers put one at the head of the description).
+ */
+function imageOf(block: string): string | undefined {
+  const tagged =
+    block.match(/<media:content\b[^>]*\burl="([^"]+)"[^>]*>/i)?.[1] ??
+    block.match(/<enclosure\b[^>]*\burl="([^"]+)"[^>]*\btype="image\/[^"]*"[^>]*>/i)?.[1] ??
+    block.match(/<enclosure\b[^>]*\btype="image\/[^"]*"[^>]*\burl="([^"]+)"[^>]*>/i)?.[1] ??
+    block.match(/<media:thumbnail\b[^>]*\burl="([^"]+)"[^>]*>/i)?.[1];
+  const inline = block.match(/<img\b[^>]*\bsrc="([^"]+)"/i)?.[1] ?? decodeEntities(block).match(/<img\b[^>]*\bsrc="([^"]+)"/i)?.[1];
+  const url = tagged ?? inline;
+  return url ? decodeEntities(url).trim() : undefined;
+}
+
+function summaryOf(block: string): string | undefined {
+  const text = field(block, "description").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (!text) return undefined;
+  return text.length > 240 ? `${text.slice(0, 239).replace(/\s+\S*$/, "")}…` : text;
+}
+
 export function parseRss(xml: string): RssItem[] {
   const items: RssItem[] = [];
   const blocks = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || [];
@@ -48,6 +73,8 @@ export function parseRss(xml: string): RssItem[] {
       pubDate: Number.isFinite(time) ? new Date(time).toISOString() : "",
       source: field(block, "source"),
       sourceUrl,
+      image: imageOf(block),
+      summary: summaryOf(block),
     });
   }
   return items;
