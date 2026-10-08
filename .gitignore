@@ -58,6 +58,7 @@ next-env.d.ts
 *.apk
 *.blend1
 test_weather.js
+scripts/tmp-*.mjs
 
 
 # generated speech audio cache (lib/atlas-ai/speechService.ts)

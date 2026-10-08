@@ -28,6 +28,7 @@ import {
   ContactShadows,
 } from "@react-three/drei";
 import { EffectComposer, Bloom, BrightnessContrast, SMAA } from "@react-three/postprocessing";
+import { StaticBatcher, STATIC_BATCH_LAYER } from "./StaticBatcher";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import {
@@ -1566,6 +1567,8 @@ function CameraController({
   useEffect(() => {
     const domElement = gl.domElement;
     const raycaster = new THREE.Raycaster();
+    // (statically batched meshes are parked on this layer: rays must still hit them)
+    raycaster.layers.enable(STATIC_BATCH_LAYER);
     const mouse = new THREE.Vector2();
 
     const handleWheel = (e: WheelEvent) => {
@@ -1690,6 +1693,8 @@ function CameraController({
   useEffect(() => {
     const domElement = gl.domElement;
     const raycaster = new THREE.Raycaster();
+    // (statically batched meshes are parked on this layer: rays must still hit them)
+    raycaster.layers.enable(STATIC_BATCH_LAYER);
     const mouse = new THREE.Vector2();
 
     const handleDblClick = (event: MouseEvent) => {
@@ -2492,7 +2497,7 @@ interface PerfStats {
 }
 
 function RenderInfoLogger({ onStatsUpdate }: { onStatsUpdate?: (stats: PerfStats) => void }) {
-  const { gl, scene } = useThree();
+  const { gl, scene, camera } = useThree();
   const frameCount = useRef(0);
   const lastTime = useRef(typeof performance !== "undefined" ? performance.now() : 0);
   const lastCalls = useRef(0);
@@ -2543,6 +2548,7 @@ function RenderInfoLogger({ onStatsUpdate }: { onStatsUpdate?: (stats: PerfStats
     if (typeof window !== "undefined") {
       (window as any).__THREE_SCENE__ = scene;
       (window as any).__THREE_GL__ = gl;
+      (window as any).__THREE_CAMERA__ = camera;
       (window as unknown as { __R3F_INFO__?: Record<string, number> }).__R3F_INFO__ = {
         calls: lastCalls.current,
         triangles: lastTris.current,
@@ -2816,6 +2822,8 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           className="h-full w-full"
         >
           <RenderInfoLogger />
+          {/* small meshes that never move are drawn together, one draw call per material (see the component) */}
+          <StaticBatcher />
           <PlantSceneInner
             activePreset={activePreset}
             equipments={equipments}
