@@ -1410,7 +1410,7 @@ function ScicNationalMapContent() {
                 : "top-14 lg:top-3"
             )}
           >
-            <div className="w-full max-w-sm sm:max-w-md lg:max-w-xl flex justify-center">
+            <div className={cn("w-full max-w-sm sm:max-w-md lg:max-w-xl flex justify-center", !showProjectPanel && "max-lg:pr-14")}>
             <AtlasCommandBar
               onSend={atlasAI.sendMessage}
               onOpenDrawer={() => atlasAI.setIsOpen(true)}

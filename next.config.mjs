@@ -62,6 +62,11 @@ const nextConfig = {
         headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }],
       },
       {
+        // 3D scene textures and the hero photographs: files that change only when replaced
+        source: "/:folder(textures|hero)/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
+      },
+      {
         source: "/project-images/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
       },

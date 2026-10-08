@@ -28,6 +28,7 @@ import {
 import { ATLAS_STATUSES } from "./AtlasTokens";
 import { cn } from "@/lib/utils";
 import { completionYearOf } from "@/lib/atlas/projectFacts";
+import { optimizedImage } from "@/lib/images/optimized";
 
 export interface AtlasProjectSpotlightProps {
   featuredProjects: SCICProject[];
@@ -298,7 +299,8 @@ export function AtlasProjectSpotlight({
             {/* Thumbnail Image */}
             <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-950">
               <img
-                src={activePhoto}
+                // (a 44 px thumbnail: a small resized copy, not the full photograph)
+                src={optimizedImage(activePhoto, 96)}
                 alt={project.name}
                 className="w-full h-full object-cover object-center"
                 onError={(e) => {
@@ -363,7 +365,7 @@ export function AtlasProjectSpotlight({
           {/* Project Photography with smooth hover zoom */}
           <img
             key={activePhoto}
-            src={activePhoto}
+            src={optimizedImage(activePhoto, 828)}
             alt={project.name}
             className="w-full h-full object-cover object-center filter brightness-90 contrast-105 transition-transform duration-700 ease-out group-hover:scale-105"
             onError={(e) => {

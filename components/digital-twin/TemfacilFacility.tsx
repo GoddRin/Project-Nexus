@@ -2773,9 +2773,9 @@ function FilipinoCanteenFoodCounter() {
   const [mealPeriod, setMealPeriod] = React.useState<"BREAKFAST" | "LUNCH" | "DINNER">(initialPeriod);
 
   // Load realistic high-resolution orthographic Filipino food textures
-  const lunchFoodTex = useLoader(THREE.TextureLoader, "/textures/canteen_lunch_food.png");
-  const bfastFoodTex = useLoader(THREE.TextureLoader, "/textures/canteen_breakfast_food.png");
-  const dinnerFoodTex = useLoader(THREE.TextureLoader, "/textures/canteen_dinner_food.png");
+  const lunchFoodTex = useLoader(THREE.TextureLoader, "/textures/canteen_lunch_food.webp");
+  const bfastFoodTex = useLoader(THREE.TextureLoader, "/textures/canteen_breakfast_food.webp");
+  const dinnerFoodTex = useLoader(THREE.TextureLoader, "/textures/canteen_dinner_food.webp");
 
   // Keep meal period updated according to actual routine time of day
   useFrame(() => {
@@ -9109,7 +9109,7 @@ function Instanced3DGrassLawn({ position, size }: { position: [number, number, n
     let isMounted = true;
     const loader = new THREE.TextureLoader();
     loader.load(
-      "/textures/forest_grass_pbr.png",
+      "/textures/forest_grass_pbr.webp",
       (tex) => {
         if (!isMounted) return;
         tex.wrapS = THREE.RepeatWrapping;

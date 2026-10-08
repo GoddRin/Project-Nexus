@@ -727,6 +727,8 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
     if (!mounted) return;
     const winW = window.innerWidth;
     const isDesktop = winW >= 768;
+    // On a phone the app's bottom navigation bar covers the foot of the screen: he stands above it
+    const barLift = isDesktop ? 0 : Math.round(document.querySelector('nav[aria-label="Mobile Navigation"]')?.getBoundingClientRect().height ?? 0);
     let next: LayoutStyle;
 
     if (isSpotlight && !isOpen) {
@@ -735,7 +737,7 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
       const left = autoStage && isDesktop
         ? Math.max(16, Math.round(winW - w - Math.max(24, winW * 0.1)))
         : Math.round((winW - w) / 2);
-      next = { bottom: isDesktop ? 36 : 24, left, width: w, height: h, visualMode: "heroic_center" };
+      next = { bottom: (isDesktop ? 36 : 24) + barLift, left, width: w, height: h, visualMode: "heroic_center" };
     } else if (isTourActive || isOpen) {
       // Never sit on top of the directory / sidebar: stay inside the map canvas.
       let w = isDesktop ? 190 : 160;
@@ -747,7 +749,7 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
       const mapLeft = mapRect ? Math.round(mapRect.left) : 16;
       // Left spot starts past the GIS legend button so the legend stays reachable
       let left = mapLeft + 12 + (isDesktop ? 128 : 0);
-      let bottom = isDesktop ? 24 : 16;
+      let bottom = (isDesktop ? 24 : 16) + barLift;
       let bubbleSide: "left" | "right" = "left";
       if (mapRect && isDesktop) {
         // Prefer the usual bottom-right corner of the visible map: the map's right edge, or the
@@ -803,7 +805,7 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
           rightOffset = (winW >= 1280 ? 430 : winW >= 1024 ? 410 : 380) + 12 + 24;
         }
       }
-      next = { bottom: 20, right: rightOffset, width: isDesktop ? 190 : 160, height: isDesktop ? 250 : 210, visualMode: "companion", bubbleSide: "right" };
+      next = { bottom: 20 + barLift, right: rightOffset, width: isDesktop ? 190 : 160, height: isDesktop ? 250 : 210, visualMode: "companion", bubbleSide: "right" };
     }
 
     // Only touch React state when something actually changed (the old loop re-rendered every frame)

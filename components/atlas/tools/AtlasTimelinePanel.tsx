@@ -8,6 +8,7 @@ import type { SCICProject } from "@/lib/data/scicProjectsData";
 import {
   capacityMwOf, completionYearOf, shortLabelOf, timelineLine, underConstructionIn, verificationOf, type EraChapter,
 } from "@/lib/atlas/projectFacts";
+import { optimizedImage } from "@/lib/images/optimized";
 
 /**
  * The timeline panel: a journey through the years of the portfolio.
@@ -418,7 +419,7 @@ export function AtlasTimelinePanel({
                 <span className="atlas-skeleton block h-[72px] w-full overflow-hidden bg-slate-200 dark:bg-white/5">
                   {photo && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={photo} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src={optimizedImage(photo, 384)} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   )}
                 </span>
                 <span className="block px-2 py-1.5">

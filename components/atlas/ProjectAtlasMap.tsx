@@ -1940,7 +1940,7 @@ export function ProjectAtlasMap({
       className={cn("relative w-full h-full overflow-hidden bg-slate-100 dark:bg-atlas-sunken", className)}
     >
       {/* Floating Map Legend (Bottom-Left above Scale Bar) */}
-      <div className="absolute bottom-10 left-3 z-30 pointer-events-auto">
+      <div className="absolute bottom-10 max-md:bottom-[4.75rem] left-3 z-30 pointer-events-auto">
         <AtlasMapLegend />
       </div>
 

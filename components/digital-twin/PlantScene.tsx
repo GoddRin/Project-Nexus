@@ -2025,7 +2025,7 @@ function PlantSceneInner({
       {/* PBR Lighting Rig — Dynamic Time of Day (Morning / Afternoon / Sunset / Night) */}
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
       <hemisphereLight intensity={isNight ? 0.35 : 0.55} color={hemiTopColor} groundColor={hemiGroundColor} />
-      <Environment preset="apartment" environmentIntensity={isStormActive ? 0.25 : isNight ? 0.12 : 0.38} />
+      <Environment files="/models/hdri/lebombo_1k.hdr" environmentIntensity={isStormActive ? 0.25 : isNight ? 0.12 : 0.38} />
 
       {/* Primary Key Light (Sun / Moon) - High-Performance Clean Directional Illumination */}
       <directionalLight

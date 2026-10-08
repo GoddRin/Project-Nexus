@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, MapPin, Pause, Play, X } from "lucide-react"
 import { cn } from "@/lib/utils";
 import type { SCICProject } from "@/lib/data/scicProjectsData";
 import { completionYearOf } from "@/lib/atlas/projectFacts";
+import { optimizedImage } from "@/lib/images/optimized";
 
 /**
  * Presentation mode: the map fills the screen and the flagship projects pass one after another,
@@ -121,7 +122,7 @@ export function AtlasPresentationMode({ projects, onShow, onExit, map }: AtlasPr
           >
             {photo && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt="" className="hidden sm:block w-52 h-36 object-cover shrink-0" />
+              <img src={optimizedImage(photo, 640)} alt="" className="hidden sm:block w-52 h-36 object-cover shrink-0" />
             )}
             <div className={cn("flex-1 min-w-0 py-3.5 pr-4", photo ? "pl-0" : "pl-5")}>
               <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-300">

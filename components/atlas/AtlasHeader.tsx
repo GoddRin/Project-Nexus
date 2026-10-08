@@ -109,7 +109,8 @@ export function AtlasHeader({
       )}
       {/* Brand: official Sta. Clara wordmark (green on light, reversed white on dark) */}
       <div className="flex items-center gap-3 min-w-0">
-        <BrandLogo variant="wordmark" height={22} priority />
+        <BrandLogo variant="wordmark" height={22} priority className="max-sm:hidden" />
+        <BrandLogo variant="mark" height={28} priority className="sm:hidden" />
         <span className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-white/10" />
         <h1 className="hidden sm:block text-[15px] font-semibold font-display text-slate-900 dark:text-white truncate">
           Project Atlas
