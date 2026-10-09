@@ -1,0 +1,19 @@
+"use client";
+
+import { use } from "react";
+import dynamic from "next/dynamic";
+
+// P01a renderer spike (docs/twin-v2/P01-foundation.md). Not linked anywhere; deleted when P01a closes.
+const SpikeWebGL = dynamic(() => import("./SpikeWebGL"), { ssr: false });
+const SpikeWebGPU = dynamic(() => import("./SpikeWebGPU"), { ssr: false });
+
+export default function SpikePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { r } = use(searchParams);
+  return (
+    <div className="fixed inset-0 z-[9999] bg-black">{r === "webgpu" ? <SpikeWebGPU /> : <SpikeWebGL />}</div>
+  );
+}

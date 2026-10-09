@@ -4,9 +4,9 @@ Appended when a risk appears; a row is marked retired, not deleted.
 
 | Risk | Early test | Fallback | Status |
 | --- | --- | --- | --- |
-| WebGPU slower or unstable on Iris Xe | P01a spike | WebGL2 path | open |
+| WebGPU slower or unstable on Iris Xe | P01a spike | WebGL2 path | retired (P01a): not slower (12 to 14% faster on the specified scene, 17 to 26% on a budget-sized one) and stable in 45 production runs, but under the 20% bar and twice as slow to start on its WebGL2 fallback. WebGL2 chosen |
 | Free human bases do not beat the navigator | P02b: one finished person side by side | Derive bodies from the navigator's Sketchfab base; fewer body shapes, more variation by texture and outfit | open |
-| 80 skinned people too slow | P02c measurement | Lower crew count in view; vertex-animated far crowd; throttle animation by distance | open |
+| 80 skinned people too slow | P02c measurement | Lower crew count in view; vertex-animated far crowd; throttle animation by distance | open. First evidence (P01a): 60 navigators at 66 thousand triangles and 10 skinned meshes each, with 3 shadow cascades, ran at 11 to 13 fps on either renderer. LODs and one skinned mesh per person are not optional |
 | No good free model for a species or machine | Search in the phase before modelling | Model it in Blender from references; drop the species rather than ship a poor one | open |
 | Mixamo lacks a trade-specific motion | P08a list review | Author the clip in Blender with IK | open |
 | Download too large | P01c pipeline numbers | Stream by zone, lower texture sizes on Low and Medium | open |
@@ -21,3 +21,6 @@ Appended when a risk appears; a row is marked retired, not deleted.
 | **The public equipment action returns more than the page shows** (P00a): serial numbers, internal user ids and free-text maintenance findings reach signed-out visitors (`INVENTORY.md` section 11) | P14a | A v2-only action that selects the shown fields | open; v1 is not changed by this plan, so the owner may want it fixed sooner |
 | **Most v1 assets have no recorded licence** (P00a) | Licence table in `INVENTORY.md` section 12 | None is reused in v2; all are replaced | retired for v2 (nothing is carried over) |
 | **Working `.blend` files are served from `public/models/characters/`** (P00a): about 9 MB that anyone can download | Listed in the P00a report | Move them to `scripts/blender/source/` (outside this plan's scope) | open, owner to decide |
+| **Ambient occlusion halves the frame rate on Iris Xe** (P01a): the budget-sized scene ran at 54 fps without post effects and 29 with full-resolution GTAO | P02c: measure half resolution and fewer samples | Half-resolution occlusion on Medium, none on Low; baked occlusion in textures carries the look | open |
+| **KTX2 textures are unproven on this machine** (P01a): no encoder is installed, so no real KTX2 file was loaded in the spike | P01c step 1 and step 11 | WebP textures, as P01c already allows | open |
+| **Loading a dashboard page makes the app write speech clips into `public/voice/` and `voice-bank/`** (P01a): 36 new files appeared during the bench | Before each commit: `git status`, and stage only the sub-phase's files | Owner to decide whether those folders belong in git | open, owner to decide |

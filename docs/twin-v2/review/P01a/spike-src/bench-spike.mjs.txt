@@ -1,0 +1,143 @@
+/**
+ * P01a renderer spike bench (docs/twin-v2/P01-foundation.md). Throwaway, like the spike page.
+ *
+ *   npx next build && npx next start -p 3100
+ *   node scripts/twin/bench-spike.mjs <label> [--browser=chrome|msedge|chromium] [--headed] [--runs=3]
+ *        [--profiles=desktop,phone] [--paths=webgl,webgpu,webgpu-forced] [--query=chars=20&ao=0] [--shots]
+ *
+ * Every run is a fresh browser with an empty profile (so shader and pipeline caches are cold), the GPU on
+ * and the 60 fps cap off. It waits for the spike to report ready, lets it settle, then counts frames.
+ */
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { chromium } from "playwright";
+
+const arg = (k, d) => {
+  const hit = process.argv.find((a) => a.startsWith(`--${k}=`));
+  return hit ? hit.slice(k.length + 3) : d;
+};
+const BASE = process.env.BENCH_BASE || "http://localhost:3100";
+const LABEL = process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[2] : "spike";
+const BROWSER = arg("browser", "chrome");
+const HEADED = process.argv.includes("--headed");
+const SHOTS = process.argv.includes("--shots");
+const RUNS = Number(arg("runs", "3"));
+const EXTRA = arg("query", "");
+const OUT = arg("out", path.join("docs", "twin-v2", "review", "P01a"));
+const PROFILES = {
+  desktop: { viewport: { width: 1440, height: 900 } },
+  phone: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
+};
+const PATHS = { webgl: "r=webgl", webgpu: "r=webgpu", "webgpu-forced": "r=webgpu&force=webgl" };
+const profiles = arg("profiles", "desktop,phone").split(",");
+const paths = arg("paths", "webgl,webgpu").split(",");
+fs.mkdirSync(OUT, { recursive: true });
+
+const VSYNC = process.argv.includes("--vsync"); // leave the display's frame cap on, to see real pacing
+const ARGS = [
+  "--use-angle=d3d11",
+  "--enable-gpu",
+  "--ignore-gpu-blocklist",
+  ...(VSYNC ? [] : ["--disable-gpu-vsync", "--disable-frame-rate-limit"]),
+  "--disable-backgrounding-occluded-windows",
+  "--disable-renderer-backgrounding",
+  "--disable-background-timer-throttling",
+];
+
+const frames = (page, ms) =>
+  page.evaluate(
+    (dur) =>
+      new Promise((resolve) => {
+        const gaps = [];
+        let last = performance.now();
+        const end = last + dur;
+        const tick = (now) => {
+          gaps.push(now - last);
+          last = now;
+          if (now < end) requestAnimationFrame(tick);
+          else {
+            gaps.sort((a, b) => a - b);
+            const pick = (q) => Number((gaps[Math.min(gaps.length - 1, Math.floor(gaps.length * q))] || 0).toFixed(1));
+            resolve({ fps: Number(((gaps.length / dur) * 1000).toFixed(1)), medianMs: pick(0.5), p95: pick(0.95), maxMs: pick(1), frames: gaps.length });
+          }
+        };
+        requestAnimationFrame(tick);
+      }),
+    ms
+  );
+
+/** Working set and private bytes (MB) of this browser's GPU process, found by its profile folder. */
+function gpuProcessMemory(profileDir) {
+  try {
+    const needle = path.basename(profileDir);
+    const ps = `Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*--type=gpu-process*' -and $_.CommandLine -like '*${needle}*' } | ForEach-Object { "$($_.WorkingSetSize) $($_.PrivatePageCount)" }`;
+    const out = execFileSync("powershell", ["-NoProfile", "-Command", ps], { encoding: "utf8" }).trim().split(/\r?\n/)[0];
+    if (!out) return null;
+    const [ws, priv] = out.split(" ").map(Number);
+    return { workingSetMB: Math.round(ws / 1048576), privateMB: Math.round(priv / 1048576) };
+  } catch {
+    return null;
+  }
+}
+
+const rows = [];
+for (const profileName of profiles) {
+  for (const pathName of paths) {
+    for (let run = 1; run <= RUNS; run++) {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twin-spike-"));
+      const row = { label: LABEL, browser: BROWSER, headed: HEADED, vsync: VSYNC, profile: profileName, path: pathName, run };
+      let context;
+      try {
+        context = await chromium.launchPersistentContext(dir, {
+          channel: BROWSER === "chromium" ? undefined : BROWSER,
+          headless: !HEADED,
+          args: ARGS,
+          ...PROFILES[profileName],
+        });
+        const page = context.pages()[0] || (await context.newPage());
+        const errors = [];
+        page.on("pageerror", (e) => errors.push(e.message.slice(0, 200)));
+        page.on("console", (m) => {
+          if (m.type() === "error" || m.type() === "warning") errors.push(`${m.type()}: ${m.text().slice(0, 200)}`);
+        });
+        const url = `${BASE}/digital-twin/spike?${PATHS[pathName]}${EXTRA ? `&${EXTRA}` : ""}`;
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120_000 });
+        await page.waitForFunction(() => window.__SPIKE__ && (window.__SPIKE__.ready || window.__SPIKE__.error), null, { timeout: 300_000 });
+        const head = await page.evaluate(async () => {
+          const s = window.__SPIKE__;
+          let adapter = null;
+          try {
+            const a = navigator.gpu ? await navigator.gpu.requestAdapter() : null;
+            adapter = a ? `${a.info?.vendor} ${a.info?.architecture} ${a.info?.description || ""}`.trim() : "none";
+          } catch (e) {
+            adapter = `error ${e}`;
+          }
+          const c = document.createElement("canvas").getContext("webgl2");
+          const e = c?.getExtension("WEBGL_debug_renderer_info");
+          return { backend: s.backend, error: s.error, canvas: s.canvas, timings: s.timings, scene: s.scene, checks: s.checks, webgpuAdapter: adapter, glRenderer: e ? c.getParameter(e.UNMASKED_RENDERER_WEBGL) : "?", ua: navigator.userAgent.match(/(Edg|Chrome)\/[\d.]+/g)?.pop(), htmlLabel: !!document.querySelector("[data-spike-label]") };
+        });
+        Object.assign(row, head);
+        if (!head.error) {
+          row.firstSeconds = await frames(page, 4000); // includes any late compiles: the longest frame is the hitch
+          await page.waitForTimeout(3000);
+          row.steady = await frames(page, 10000);
+          row.info = await page.evaluate(() => window.__SPIKE__.info());
+          row.heapMB = await page.evaluate(() => (performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null));
+          row.gpuProcess = gpuProcessMemory(dir);
+          if (SHOTS && run === 1) await page.screenshot({ path: path.join(OUT, `${LABEL}-${profileName}-${pathName}.jpg`), type: "jpeg", quality: 85 });
+        }
+        row.errors = [...new Set(errors)].slice(0, 6);
+      } catch (err) {
+        row.error = String(err).slice(0, 400);
+      } finally {
+        await context?.close().catch(() => {});
+        fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 400 });
+      }
+      rows.push(row);
+      console.log(JSON.stringify(row));
+    }
+  }
+}
+fs.writeFileSync(path.join(OUT, `bench-${LABEL}.json`), JSON.stringify(rows, null, 1));

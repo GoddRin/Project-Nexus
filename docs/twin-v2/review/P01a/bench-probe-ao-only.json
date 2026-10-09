@@ -1,0 +1,142 @@
+[
+ {
+  "label": "probe-ao-only",
+  "browser": "chrome",
+  "headed": false,
+  "vsync": false,
+  "profile": "desktop",
+  "path": "webgl",
+  "run": 1,
+  "backend": "WebGLRenderer (WebGL2)",
+  "canvas": [
+   1440,
+   900
+  ],
+  "timings": {
+   "loadMs": 436,
+   "compileMs": 828,
+   "firstRenderMs": 3843,
+   "navToFirstFrameMs": 8810
+  },
+  "scene": {
+   "meshes": 87,
+   "skinned": 80,
+   "instanced": 6,
+   "lights": 12,
+   "charHeight": 1.8419440435356682,
+   "clip": "walk"
+  },
+  "checks": {
+   "cameraControls": true,
+   "aoDepthOnly": true
+  },
+  "webgpuAdapter": "intel gen-12lp",
+  "glRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A1) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "ua": "Chrome/154.0.0.0",
+  "htmlLabel": true,
+  "firstSeconds": {
+   "fps": 40.8,
+   "medianMs": 9.8,
+   "p95": 34.2,
+   "maxMs": 488.2,
+   "frames": 163
+  },
+  "steady": {
+   "fps": 29.1,
+   "medianMs": 9.1,
+   "p95": 448,
+   "maxMs": 478.8,
+   "frames": 291
+  },
+  "info": {
+   "calls": 350,
+   "triangles": 2840965,
+   "programs": 27,
+   "geometries": 18,
+   "textures": 134
+  },
+  "heapMB": 65,
+  "gpuProcess": {
+   "workingSetMB": 1772,
+   "privateMB": 1736
+  },
+  "errors": [
+   "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "warning: Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/d",
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+   "warning: Clerk: Structural CSS detected that may break on updates.\n\nFound:\n  - CSS \".cl-signIn-root .cl-headerTitle::after\"\n  - CSS \".cl-signUp-root .cl-headerTitle::after\"\n\nThese selectors depend on the inter",
+   "warning: THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead."
+  ]
+ },
+ {
+  "label": "probe-ao-only",
+  "browser": "chrome",
+  "headed": false,
+  "vsync": false,
+  "profile": "desktop",
+  "path": "webgpu",
+  "run": 1,
+  "backend": "WebGPURenderer (WebGPU)",
+  "canvas": [
+   1440,
+   900
+  ],
+  "timings": {
+   "loadMs": 401,
+   "compileMs": 3077,
+   "firstRenderMs": 1184,
+   "navToFirstFrameMs": 8340
+  },
+  "scene": {
+   "meshes": 87,
+   "skinned": 80,
+   "instanced": 6,
+   "lights": 10,
+   "charHeight": 1.8419440435356682,
+   "clip": "walk"
+  },
+  "checks": {
+   "cameraControls": true,
+   "aoDepthOnly": true
+  },
+  "webgpuAdapter": "intel gen-12lp",
+  "glRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A1) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "ua": "Chrome/154.0.0.0",
+  "htmlLabel": true,
+  "firstSeconds": {
+   "fps": 40,
+   "medianMs": 27.3,
+   "p95": 31.5,
+   "maxMs": 45.8,
+   "frames": 160
+  },
+  "steady": {
+   "fps": 38,
+   "medianMs": 26.4,
+   "p95": 30.4,
+   "maxMs": 42.2,
+   "frames": 380
+  },
+  "info": {
+   "calls": 347,
+   "passes": 3936,
+   "triangles": 2840962,
+   "programs": 39,
+   "shaderPrograms": 56,
+   "geometries": 18,
+   "textures": 52
+  },
+  "heapMB": 77,
+  "gpuProcess": {
+   "workingSetMB": 1735,
+   "privateMB": 1628
+  },
+  "errors": [
+   "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "warning: Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/d",
+   "warning: Clerk: Structural CSS detected that may break on updates.\n\nFound:\n  - CSS \".cl-signIn-root .cl-headerTitle::after\"\n  - CSS \".cl-signUp-root .cl-headerTitle::after\"\n\nThese selectors depend on the inter",
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+   "warning: The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127"
+  ]
+ }
+]

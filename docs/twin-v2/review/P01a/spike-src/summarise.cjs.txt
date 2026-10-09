@@ -1,0 +1,28 @@
+const fs = require("fs");
+const dir = "docs/twin-v2/review/P01a/";
+const med = (a) => {
+  const s = a.filter((x) => x != null).sort((x, y) => x - y);
+  return s.length ? s[Math.floor((s.length - 1) / 2)] : null;
+};
+for (const f of process.argv.slice(2)) {
+  const rows = JSON.parse(fs.readFileSync(dir + `bench-${f}.json`, "utf8"));
+  console.log(`\n== ${f}`);
+  const groups = {};
+  for (const r of rows) (groups[`${r.profile} ${r.path}`] ||= []).push(r);
+  for (const [k, g] of Object.entries(groups)) {
+    const ok = g.filter((r) => !r.error && r.steady);
+    const fps = ok.map((r) => r.steady.fps);
+    const bad = g.flatMap((r) => (r.error ? [r.error] : []).concat((r.errors || []).filter((e) => !/Clerk|401|Clock|PCFSoft|powerPref/.test(e)).map((e) => e.slice(0, 130))));
+    console.log(
+      k.padEnd(24),
+      "fps", fps.join("/"), "med", med(fps),
+      "| frame med", med(ok.map((r) => r.steady.medianMs)), "p95", med(ok.map((r) => r.steady.p95)),
+      "| compile", med(ok.map((r) => r.timings.compileMs)), "first", med(ok.map((r) => r.timings.firstRenderMs)), "nav→frame", med(ok.map((r) => r.timings.navToFirstFrameMs)),
+      "| hitch", med(ok.map((r) => r.firstSeconds.maxMs)),
+      "| calls", ok[0]?.info.calls, "tris", ok[0] && (ok[0].info.triangles / 1e6).toFixed(2) + "M", "progs", ok[0]?.info.programs,
+      "| heap", med(ok.map((r) => r.heapMB)), "gpuMB", med(ok.map((r) => r.gpuProcess?.privateMB)),
+      "| tris all", [...new Set(ok.map((r) => r.info.triangles))].length === 1 ? "same" : ok.map((r) => r.info.triangles).join(","),
+      bad.length ? "| ERR " + JSON.stringify([...new Set(bad)]) : ""
+    );
+  }
+}

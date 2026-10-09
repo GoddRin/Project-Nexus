@@ -1,0 +1,205 @@
+"use client";
+
+/**
+ * P01a renderer spike, WebGPU path: WebGPURenderer (three/webgpu), TSL ground material, CSMShadowNode
+ * (3 cascades), GTAO and bloom nodes, AgX output. `?force=webgl` puts the same renderer on its WebGL2 fallback.
+ * Throwaway. See shared.ts.
+ */
+import { useEffect, useRef } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { CameraControls, Html } from "@react-three/drei";
+import * as THREE from "three/webgpu";
+import { attribute, mrt, normalMap, normalView, output, pass, texture, uv, vec3, vec4 } from "three/tsl";
+import { CSMShadowNode } from "three/examples/jsm/csm/CSMShadowNode.js";
+import { ao } from "three/examples/jsm/tsl/display/GTAONode.js";
+import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
+import {
+  BLOOM,
+  CAMERA_POS,
+  CAMERA_TARGET,
+  SHADOW_FAR,
+  SUN_DIR,
+  buildCrowd,
+  buildPointLights,
+  countScene,
+  loadAssets,
+  readOptions,
+  type GroundTextures,
+  type SpikeStats,
+} from "./shared";
+
+function groundMaterial(g: GroundTextures) {
+  const mat = new THREE.MeshStandardNodeMaterial({ roughness: 1, metalness: 0 });
+  const w = attribute<"vec4">("layerW", "vec4");
+  const at = uv();
+  const blend = (t: THREE.Texture[]) =>
+    texture(t[0], at).mul(w.x).add(texture(t[1], at).mul(w.y)).add(texture(t[2], at).mul(w.z)).add(texture(t[3], at).mul(w.w));
+  mat.colorNode = blend(g.diff).rgb;
+  mat.roughnessNode = blend(g.rough).g;
+  mat.normalNode = normalMap(blend(g.nor).rgb);
+  return mat;
+}
+
+function Scene() {
+  const { gl, scene, camera, get } = useThree();
+  const run = useRef<{ frame: (dt: number) => void } | null>(null);
+
+  useEffect(() => {
+    const renderer = gl as unknown as THREE.WebGPURenderer;
+    const opts = readOptions();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const backend = (renderer as any).backend;
+    const stats: SpikeStats = {
+      path: "webgpu",
+      backend: backend?.isWebGPUBackend ? "WebGPURenderer (WebGPU)" : "WebGPURenderer (WebGL2 fallback)",
+      ready: false,
+      timings: {},
+      checks: {},
+      info: () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const i = renderer.info as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pipes = (renderer as any)._pipelines;
+        return { calls: i.render.drawCalls, passes: i.render.calls, triangles: i.render.triangles, programs: pipes?.caches?.size, shaderPrograms: pipes ? pipes.programs.vertex.size + pipes.programs.fragment.size : undefined, geometries: i.memory.geometries, textures: i.memory.textures };
+      },
+    };
+    window.__SPIKE__ = stats;
+    let disposed = false;
+    const cleanup: (() => void)[] = [];
+
+    (async () => {
+      const assets = await loadAssets(opts);
+      if (disposed) return;
+      stats.timings.loadMs = Math.round(assets.loadMs);
+
+      renderer.toneMapping = THREE.AgXToneMapping;
+      renderer.toneMappingExposure = 1;
+      renderer.shadowMap.enabled = opts.shadows;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.info.autoReset = false;
+      scene.background = new THREE.Color(0x9fc4e8);
+
+      const cam = camera as THREE.PerspectiveCamera;
+      cam.position.set(...CAMERA_POS);
+      cam.lookAt(...CAMERA_TARGET);
+      cam.updateMatrixWorld();
+      const controls = get().controls as unknown as { setLookAt?: (...a: (number | boolean)[]) => void } | null;
+      controls?.setLookAt?.(...CAMERA_POS, ...CAMERA_TARGET, false);
+      stats.checks.cameraControls = !!controls?.setLookAt;
+
+      const root = new THREE.Group();
+      scene.add(root);
+      cleanup.push(() => scene.remove(root));
+      root.add(new THREE.HemisphereLight(0xbfd8ff, 0x5a4a38, 0.9));
+
+      const sun = new THREE.DirectionalLight(0xffffff, 3);
+      sun.position.copy(SUN_DIR).multiplyScalar(-300);
+      sun.target.position.set(0, 0, 0);
+      root.add(sun, sun.target);
+      if (opts.shadows) {
+        sun.castShadow = true;
+        sun.shadow.mapSize.set(opts.shadowMap, opts.shadowMap);
+        sun.shadow.camera.near = 1;
+        sun.shadow.camera.far = 1200;
+        sun.shadow.bias = -0.0002;
+        const csm = new CSMShadowNode(sun, { cascades: 3, maxFar: SHADOW_FAR, mode: "practical", lightMargin: 200 });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (sun.shadow as any).shadowNode = csm;
+        cleanup.push(() => csm.dispose());
+      }
+
+      const terrain = new THREE.Mesh(assets.terrain, groundMaterial(assets.ground));
+      terrain.receiveShadow = true;
+      root.add(terrain);
+
+      for (const p of assets.props) {
+        const im = new THREE.InstancedMesh(p.geometry, p.material, opts.props);
+        (im.instanceMatrix.array as Float32Array).set(p.matrices as Float32Array);
+        im.instanceMatrix.needsUpdate = true;
+        im.castShadow = true;
+        im.receiveShadow = true;
+        im.computeBoundingSphere();
+        root.add(im);
+      }
+
+      const crowd = buildCrowd(assets, opts.chars);
+      root.add(crowd.group);
+      root.add(buildPointLights(opts.lights));
+
+      const pipeline = new THREE.RenderPipeline(renderer);
+      const scenePass = pass(scene, cam);
+      if (opts.ao && !opts.depthOnlyAo) scenePass.setMRT(mrt({ output, normal: normalView }));
+      const colour = scenePass.getTextureNode("output");
+      let out: THREE.Node<"vec4"> = colour;
+      if (opts.ao) {
+        const aoPass = ao(scenePass.getTextureNode("depth"), (opts.depthOnlyAo ? null : scenePass.getTextureNode("normal")) as unknown as THREE.Node, cam);
+        stats.checks.aoDepthOnly = opts.depthOnlyAo;
+        out = colour.mul(vec4(vec3(aoPass.getTextureNode().r), 1));
+      }
+      if (opts.bloom) out = out.add(bloom(out, BLOOM.strength, BLOOM.radius, BLOOM.threshold));
+      pipeline.outputNode = out;
+      cleanup.push(() => pipeline.dispose());
+
+      stats.scene = { ...countScene(scene), charHeight: crowd.sourceHeight, clip: crowd.clip };
+      const buf = renderer.getDrawingBufferSize(new THREE.Vector2());
+      stats.canvas = [buf.x, buf.y];
+
+      const frame = (dt: number) => {
+        for (const m of crowd.mixers) m.update(dt);
+        renderer.info.reset();
+        pipeline.render();
+      };
+
+      const c0 = performance.now();
+      await renderer.compileAsync(scene, cam);
+      stats.timings.compileMs = Math.round(performance.now() - c0);
+      const r0 = performance.now();
+      frame(0);
+      if (backend?.device?.queue?.onSubmittedWorkDone) await backend.device.queue.onSubmittedWorkDone();
+      else backend?.gl?.finish?.();
+      stats.timings.firstRenderMs = Math.round(performance.now() - r0);
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+      stats.timings.navToFirstFrameMs = Math.round(performance.now());
+      if (disposed) return;
+      run.current = { frame };
+      stats.ready = true;
+    })().catch((e) => {
+      stats.error = String(e?.stack || e).slice(0, 600);
+      console.error(e);
+    });
+
+    return () => {
+      disposed = true;
+      run.current = null;
+      cleanup.forEach((f) => f());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useFrame((_, dt) => run.current?.frame(dt), 1);
+  return null;
+}
+
+export default function SpikeWebGPU() {
+  const forceWebGL = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("force") === "webgl";
+  return (
+    <Canvas
+      shadows
+      dpr={[1, 2]}
+      camera={{ fov: 45, near: 0.5, far: 1500, position: CAMERA_POS }}
+      gl={async (props) => {
+        const renderer = new THREE.WebGPURenderer({ canvas: props.canvas as HTMLCanvasElement, antialias: false, powerPreference: "high-performance", stencil: false, forceWebGL });
+        await renderer.init();
+        return renderer;
+      }}
+    >
+      <Scene />
+      <CameraControls makeDefault />
+      <Html position={[6, 14, -4]} center>
+        <div data-spike-label className="rounded bg-black/70 px-2 py-1 font-mono text-[11px] text-white whitespace-nowrap">
+          Html label · webgpu{forceWebGL ? " (forced WebGL2)" : ""}
+        </div>
+      </Html>
+    </Canvas>
+  );
+}
