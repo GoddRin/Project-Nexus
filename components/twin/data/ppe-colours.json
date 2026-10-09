@@ -1,0 +1,13 @@
+{
+ "note": "Colour ids used by LookSpec.hardhat and LookSpec.vest. Hex values are v1's; P07b replaces them with colours sampled from site photographs.",
+ "colours": {
+  "white": "#FFFFFF",
+  "yellow": "#EAB308",
+  "green": "#16A34A",
+  "blue": "#0284C7",
+  "orange": "#EA580C",
+  "teal": "#0F766E",
+  "red": "#DC2626",
+  "navy": "#1E293B"
+ }
+}

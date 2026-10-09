@@ -1,0 +1,92 @@
+{
+ "note": "v1 SITE_UTILITY_POLES (SiteElectricalDistribution.tsx line 53), powerhouse location frame. y is the v1 ground height at the pole.",
+ "poles": [
+  {
+   "id": "pole-00",
+   "label": "P0 - Switchyard Auxiliary Pad Feeder",
+   "p": [
+    28,
+    0.05,
+    6
+   ],
+   "transformer": false,
+   "streetlight": true,
+   "streetlightYaw": 0.7854,
+   "guyWireYaw": -0.7854
+  },
+  {
+   "id": "pole-01",
+   "label": "P1 - Lower Foothill Mountain Verge",
+   "p": [
+    37.5,
+    0.05,
+    0
+   ],
+   "transformer": false,
+   "streetlight": true,
+   "streetlightYaw": -2.02
+  },
+  {
+   "id": "pole-02",
+   "label": "P2 - Lower S-Curve Mountain Embankment",
+   "p": [
+    44.5,
+    0.063,
+    -14.5
+   ],
+   "transformer": false,
+   "streetlight": true,
+   "streetlightYaw": -2.02
+  },
+  {
+   "id": "pole-03",
+   "label": "P3 - Mid-Mountain Scenic Verge",
+   "p": [
+    52,
+    2.956,
+    -29
+   ],
+   "transformer": false,
+   "streetlight": true,
+   "streetlightYaw": -2.08
+  },
+  {
+   "id": "pole-04",
+   "label": "P4 - Upper Mountain Climb Verge",
+   "p": [
+    61,
+    12.386,
+    -43
+   ],
+   "transformer": false,
+   "streetlight": true,
+   "streetlightYaw": -2.2
+  },
+  {
+   "id": "pole-05",
+   "label": "P5 - Plateau Approach Mountain Verge",
+   "p": [
+    70.5,
+    13.997,
+    -56
+   ],
+   "transformer": false,
+   "streetlight": true,
+   "streetlightYaw": -2.21,
+   "guyWireYaw": 0.85
+  },
+  {
+   "id": "pole-06",
+   "label": "P6 - Temfacil Gate Terminal Substation Pole",
+   "p": [
+    81,
+    13.089,
+    -69.5
+   ],
+   "transformer": true,
+   "streetlight": true,
+   "streetlightYaw": -2.22,
+   "guyWireYaw": 1.0472
+  }
+ ]
+}

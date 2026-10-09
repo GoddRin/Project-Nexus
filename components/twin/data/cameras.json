@@ -1,0 +1,472 @@
+{
+ "note": "v1's camera presets (PlantScene.tsx line 1437), powerhouse location frame. The ids are v1's ?preset= keys, so ?preset=<id> maps straight to ?place=<id>. v1's tunnel sits beside the surge tank; in v2 those views move to the tunnel2 location.",
+ "defaultPreset": "temfacil",
+ "cameras": [
+  {
+   "id": "overview",
+   "title": "Site overview",
+   "zone": "powerhouse.powerhouse",
+   "pos": [
+    75,
+    120,
+    160
+   ],
+   "target": [
+    30,
+    8,
+    -25
+   ]
+  },
+  {
+   "id": "turbine-hall",
+   "title": "Turbine hall",
+   "zone": "powerhouse.turbine-hall",
+   "pos": [
+    18,
+    20,
+    26
+   ],
+   "target": [
+    4,
+    6,
+    4
+   ]
+  },
+  {
+   "id": "switchyard",
+   "title": "Switchyard",
+   "zone": "powerhouse.switchyard",
+   "pos": [
+    36,
+    14,
+    12
+   ],
+   "target": [
+    24,
+    2,
+    -2
+   ]
+  },
+  {
+   "id": "tailrace-floodgate",
+   "title": "Tailrace and river outlet",
+   "zone": "powerhouse.tailrace",
+   "pos": [
+    -4,
+    28,
+    58
+   ],
+   "target": [
+    0,
+    4,
+    26
+   ]
+  },
+  {
+   "id": "headrace-tunnel",
+   "title": "Headrace tunnel heading",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -17.2,
+    16.7,
+    -49.5
+   ],
+   "target": [
+    -21.5,
+    16.5,
+    -62
+   ]
+  },
+  {
+   "id": "headrace-tunnel-face",
+   "title": "Tunnel face and muck pile",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -25.6,
+    16.2,
+    -73.2
+   ],
+   "target": [
+    -27.2,
+    16.4,
+    -79.8
+   ]
+  },
+  {
+   "id": "headrace-tunnel-normals",
+   "title": "Tunnel (v1 debug view)",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -17,
+    16.5,
+    -49
+   ],
+   "target": [
+    -21.5,
+    16.3,
+    -61
+   ],
+   "drop": true
+  },
+  {
+   "id": "headrace-tunnel-stations",
+   "title": "Tunnel chainage markers",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -11.5,
+    16.2,
+    -36.5
+   ],
+   "target": [
+    -22,
+    16.2,
+    -64
+   ]
+  },
+  {
+   "id": "headrace-worker-drill-closeup",
+   "title": "Tunnel crew: driller",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -25,
+    15.9,
+    -76.8
+   ],
+   "target": [
+    -26.16,
+    15.9,
+    -77.85
+   ]
+  },
+  {
+   "id": "headrace-worker-surveyor-closeup",
+   "title": "Tunnel crew: surveyor",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -22.2,
+    15.7,
+    -63.4
+   ],
+   "target": [
+    -23.37,
+    15.6,
+    -64.3
+   ]
+  },
+  {
+   "id": "headrace-worker-bolter-closeup",
+   "title": "Tunnel crew: rock bolter",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -24.5,
+    15.8,
+    -69.2
+   ],
+   "target": [
+    -25.69,
+    16.2,
+    -70.35
+   ]
+  },
+  {
+   "id": "headrace-tunnel-materials",
+   "title": "Tunnel lining",
+   "zone": "tunnel2.drive",
+   "pos": [
+    -14.2,
+    16.4,
+    -42
+   ],
+   "target": [
+    -21.5,
+    16.2,
+    -62
+   ]
+  },
+  {
+   "id": "temfacil",
+   "title": "Main camp",
+   "zone": "powerhouse.camp-office",
+   "pos": [
+    135,
+    60,
+    -40
+   ],
+   "target": [
+    125,
+    15,
+    -100
+   ]
+  },
+  {
+   "id": "temfacil-guardhouse",
+   "title": "Camp gate and guardhouse",
+   "zone": "powerhouse.camp-gate",
+   "pos": [
+    95,
+    18,
+    -52
+   ],
+   "target": [
+    94,
+    13.8,
+    -68
+   ]
+  },
+  {
+   "id": "wildlife-storks",
+   "title": "Storks over the river",
+   "zone": "powerhouse.river",
+   "pos": [
+    26,
+    44,
+    62
+   ],
+   "target": [
+    8,
+    76,
+    18
+   ]
+  },
+  {
+   "id": "temfacil-patrol",
+   "title": "Security patrol",
+   "zone": "powerhouse.camp-gate",
+   "pos": [
+    98,
+    17.5,
+    -55
+   ],
+   "target": [
+    88,
+    14.5,
+    -64
+   ]
+  },
+  {
+   "id": "highland-horse",
+   "title": "Trail horse",
+   "zone": "powerhouse.forest",
+   "pos": [
+    -4,
+    29,
+    -10
+   ],
+   "target": [
+    -14,
+    24.5,
+    -22
+   ]
+  },
+  {
+   "id": "temfacil-barracks",
+   "title": "Workers' barracks",
+   "zone": "powerhouse.camp-barracks",
+   "pos": [
+    155,
+    23,
+    -84
+   ],
+   "target": [
+    155,
+    15,
+    -107
+   ]
+  },
+  {
+   "id": "temfacil-canteen",
+   "title": "Canteen",
+   "zone": "powerhouse.camp-canteen",
+   "pos": [
+    150,
+    18,
+    -95
+   ],
+   "target": [
+    150,
+    15.5,
+    -81
+   ]
+  },
+  {
+   "id": "temfacil-office",
+   "title": "Site office",
+   "zone": "powerhouse.camp-office",
+   "pos": [
+    118,
+    18,
+    -78
+   ],
+   "target": [
+    118,
+    15.5,
+    -95
+   ]
+  },
+  {
+   "id": "temfacil-office-interior",
+   "title": "Site office interior",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    114.8,
+    15.6,
+    -98
+   ],
+   "target": [
+    114,
+    15.4,
+    -109
+   ]
+  },
+  {
+   "id": "temfacil-office-zone1",
+   "title": "Office: entrance",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    114.8,
+    15.6,
+    -98
+   ],
+   "target": [
+    114,
+    15.4,
+    -109
+   ]
+  },
+  {
+   "id": "temfacil-office-zone2",
+   "title": "Office: document control",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    113.8,
+    15.6,
+    -102.2
+   ],
+   "target": [
+    110.2,
+    14.9,
+    -99.3
+   ]
+  },
+  {
+   "id": "temfacil-office-zone3",
+   "title": "Office: engineering",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    113.5,
+    15.6,
+    -102.2
+   ],
+   "target": [
+    110,
+    15,
+    -105.5
+   ]
+  },
+  {
+   "id": "temfacil-office-zone4",
+   "title": "Office: mechanical and IT",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    112.5,
+    15.55,
+    -113.15
+   ],
+   "target": [
+    107.5,
+    15.35,
+    -114.1
+   ]
+  },
+  {
+   "id": "temfacil-office-zone4b",
+   "title": "Office: rear west",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    112.5,
+    15.55,
+    -116.2
+   ],
+   "target": [
+    108.5,
+    15.3,
+    -116.6
+   ]
+  },
+  {
+   "id": "temfacil-office-zone5a",
+   "title": "Office: HR and admin",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    116,
+    15.5,
+    -97.5
+   ],
+   "target": [
+    118,
+    15.1,
+    -99.5
+   ]
+  },
+  {
+   "id": "temfacil-office-zone5b",
+   "title": "Office: east wing 2",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    116,
+    15.5,
+    -101.8
+   ],
+   "target": [
+    118.2,
+    15.1,
+    -103.5
+   ]
+  },
+  {
+   "id": "temfacil-office-zone5c",
+   "title": "Office: ESH",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    116,
+    15.5,
+    -105.8
+   ],
+   "target": [
+    118.2,
+    15.1,
+    -107
+   ]
+  },
+  {
+   "id": "temfacil-office-zone5d",
+   "title": "Office: clinic",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    116,
+    15.5,
+    -109.8
+   ],
+   "target": [
+    118.2,
+    15.1,
+    -111
+   ]
+  },
+  {
+   "id": "temfacil-office-zone6",
+   "title": "Office: rear east",
+   "zone": "powerhouse.camp-office-interior",
+   "pos": [
+    115.2,
+    15.6,
+    -113.8
+   ],
+   "target": [
+    117.8,
+    15.2,
+    -115.8
+   ]
+  }
+ ]
+}

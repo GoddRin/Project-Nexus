@@ -1,0 +1,555 @@
+[
+ {
+  "month": "2025-10",
+  "workFront": "overall",
+  "actualPct": 59.58,
+  "source": "MPR-43 schedule performance, Overall"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "weir-intake",
+  "actualPct": 49.19,
+  "source": "MPR-43 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "desander",
+  "actualPct": 37.13,
+  "source": "MPR-43 schedule performance, Desander"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "tunnel1",
+  "actualPct": 44.74,
+  "source": "MPR-43 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 64.65,
+  "source": "MPR-43 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "surge-tank",
+  "actualPct": 53.69,
+  "source": "MPR-43 schedule performance, Surgetank"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "penstock",
+  "actualPct": 34.94,
+  "source": "MPR-43 schedule performance, Penstock"
+ },
+ {
+  "month": "2025-10",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 48.59,
+  "source": "MPR-43 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "overall",
+  "actualPct": 61.01,
+  "source": "MPR-44 schedule performance, Overall"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "weir-intake",
+  "actualPct": 49.54,
+  "source": "MPR-44 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "desander",
+  "actualPct": 37.91,
+  "source": "MPR-44 schedule performance, Desander"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "tunnel1",
+  "actualPct": 47.3,
+  "source": "MPR-44 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 65.31,
+  "source": "MPR-44 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "surge-tank",
+  "actualPct": 56.74,
+  "source": "MPR-44 schedule performance, Surgetank"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "penstock",
+  "actualPct": 40.43,
+  "source": "MPR-44 schedule performance, Penstock"
+ },
+ {
+  "month": "2025-11",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 50.75,
+  "source": "MPR-44 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "overall",
+  "actualPct": 62.54,
+  "source": "MPR-45 schedule performance, Overall"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "weir-intake",
+  "actualPct": 49.54,
+  "source": "MPR-45 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "desander",
+  "actualPct": 37.91,
+  "source": "MPR-45 schedule performance, Desander"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "tunnel1",
+  "actualPct": 49.95,
+  "source": "MPR-45 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 66.37,
+  "source": "MPR-45 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "surge-tank",
+  "actualPct": 60.77,
+  "source": "MPR-45 schedule performance, Surgetank"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "penstock",
+  "actualPct": 48.38,
+  "source": "MPR-45 schedule performance, Penstock"
+ },
+ {
+  "month": "2025-12",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 51.78,
+  "source": "MPR-45 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "overall",
+  "actualPct": 64.63,
+  "source": "MPR-46 schedule performance, Overall"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "weir-intake",
+  "actualPct": 50.45,
+  "source": "MPR-46 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "desander",
+  "actualPct": 38.07,
+  "source": "MPR-46 schedule performance, Desander"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "tunnel1",
+  "actualPct": 52.55,
+  "source": "MPR-46 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 66.86,
+  "source": "MPR-46 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "surge-tank",
+  "actualPct": 67.15,
+  "source": "MPR-46 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "penstock",
+  "actualPct": 50.5,
+  "source": "MPR-46 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-01",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 52.84,
+  "source": "MPR-46 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "overall",
+  "actualPct": 67.78,
+  "source": "MPR-47 schedule performance, Overall"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "weir-intake",
+  "actualPct": 54.6,
+  "source": "MPR-47 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "desander",
+  "actualPct": 42.08,
+  "source": "MPR-47 schedule performance, Desander"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "tunnel1",
+  "actualPct": 57.74,
+  "source": "MPR-47 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 70.39,
+  "source": "MPR-47 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "surge-tank",
+  "actualPct": 73.88,
+  "source": "MPR-47 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "penstock",
+  "actualPct": 62.55,
+  "source": "MPR-47 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-02",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 53.46,
+  "source": "MPR-47 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "overall",
+  "actualPct": 70.75,
+  "source": "MPR-48 schedule performance, Overall"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "weir-intake",
+  "actualPct": 62.54,
+  "source": "MPR-48 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "desander",
+  "actualPct": 46.87,
+  "source": "MPR-48 schedule performance, Desander"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "tunnel1",
+  "actualPct": 63.73,
+  "source": "MPR-48 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 70.89,
+  "source": "MPR-48 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "surge-tank",
+  "actualPct": 80.31,
+  "source": "MPR-48 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "penstock",
+  "actualPct": 67.68,
+  "source": "MPR-48 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-03",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 56.25,
+  "source": "MPR-48 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "overall",
+  "actualPct": 73.59,
+  "source": "MPR-49 schedule performance, Overall"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "weir-intake",
+  "actualPct": 68.23,
+  "source": "MPR-49 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "desander",
+  "actualPct": 54.81,
+  "source": "MPR-49 schedule performance, Desander"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "tunnel1",
+  "actualPct": 69.82,
+  "source": "MPR-49 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 71.68,
+  "source": "MPR-49 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "surge-tank",
+  "actualPct": 80.31,
+  "source": "MPR-49 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "penstock",
+  "actualPct": 73.99,
+  "source": "MPR-49 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-04",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 58.19,
+  "source": "MPR-49 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "overall",
+  "actualPct": 76.81,
+  "source": "MPR-50 schedule performance, Overall"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "weir-intake",
+  "actualPct": 76.17,
+  "source": "MPR-50 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "desander",
+  "actualPct": 66.49,
+  "source": "MPR-50 schedule performance, Desander"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "tunnel1",
+  "actualPct": 76.51,
+  "source": "MPR-50 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 72.6,
+  "source": "MPR-50 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "surge-tank",
+  "actualPct": 80.31,
+  "source": "MPR-50 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "penstock",
+  "actualPct": 79.52,
+  "source": "MPR-50 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 60.36,
+  "source": "MPR-50 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-05",
+  "workFront": "transmission-line",
+  "actualPct": 28.33,
+  "source": "MPR-50 schedule performance, Transmission Line"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "overall",
+  "actualPct": 79.56,
+  "source": "MPR-51 schedule performance, Overall"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "weir-intake",
+  "actualPct": 79.61,
+  "source": "MPR-51 schedule performance, Weir & Intake"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "desander",
+  "actualPct": 72.81,
+  "source": "MPR-51 schedule performance, Desander"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "tunnel1",
+  "actualPct": 83,
+  "source": "MPR-51 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 74.38,
+  "source": "MPR-51 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "surge-tank",
+  "actualPct": 80.31,
+  "source": "MPR-51 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "penstock",
+  "actualPct": 81.85,
+  "source": "MPR-51 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 61.16,
+  "source": "MPR-51 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-06",
+  "workFront": "transmission-line",
+  "actualPct": 30.52,
+  "source": "MPR-51 schedule performance, Transmission Line"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "overall",
+  "actualPct": 81.97,
+  "source": "MPR-52 schedule performance, Overall"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "weir-intake",
+  "actualPct": 81.93,
+  "source": "MPR-52 schedule performance, Weir / Intake / RCC Abutment"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "desander",
+  "actualPct": 79.07,
+  "source": "MPR-52 schedule performance, Desander"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "tunnel1",
+  "actualPct": 84.41,
+  "source": "MPR-52 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 77.72,
+  "source": "MPR-52 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "surge-tank",
+  "actualPct": 81.56,
+  "source": "MPR-52 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "penstock",
+  "actualPct": 82.36,
+  "source": "MPR-52 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 66.18,
+  "source": "MPR-52 schedule performance, Powerhouse & Switchyard"
+ },
+ {
+  "month": "2026-07",
+  "workFront": "transmission-line",
+  "actualPct": 41.13,
+  "source": "MPR-52 schedule performance, Transmission Line"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "overall",
+  "actualPct": 83.35,
+  "plannedPct": 89.4,
+  "source": "MPR-53 schedule performance, Overall"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "weir-intake",
+  "actualPct": 83.52,
+  "source": "MPR-53 schedule performance, Weir / Intake / RCC Abutment"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "desander",
+  "actualPct": 81.63,
+  "source": "MPR-53 schedule performance, Desander"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "tunnel1",
+  "actualPct": 84.41,
+  "source": "MPR-53 schedule performance, Tunnel 1"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "headrace-pipe-tunnel2",
+  "actualPct": 79.16,
+  "source": "MPR-53 schedule performance, Headrace Pipe and Tunnel 2"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "surge-tank",
+  "actualPct": 89.28,
+  "source": "MPR-53 schedule performance, Surgetank"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "penstock",
+  "actualPct": 85.11,
+  "source": "MPR-53 schedule performance, Penstock"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "powerhouse-switchyard",
+  "actualPct": 67.19,
+  "source": "MPR-53 schedule performance, Powerhouse / Switchyard / Floodwall"
+ },
+ {
+  "month": "2026-08",
+  "workFront": "transmission-line",
+  "actualPct": 48.01,
+  "source": "MPR-53 schedule performance, Transmission Line"
+ }
+]

@@ -4,11 +4,12 @@ The hand-off between sessions. Update at the end of every session. Status is one
 
 **Renderer decision (P01a):** not yet made.
 **Budget table:** starting targets (rewritten in P02c).
-**Waiting on the owner:** nothing yet.
+**Waiting on the owner:** Tunnel 1 length (before P05e); desander and camp layout drawings (before P05g, P06a). Nothing blocks P01a.
+**Site position (P00a):** project grid is PRS92 Zone III; origins, levels and errors are in `components/twin/data/locations.json`. v1's terrain file is centred on the real main camp, not the powerhouse: P03a fetches new terrain per location.
 
 | Sub-phase | Title | Status | Date | Numbers / notes | Left to do |
 | --- | --- | --- | --- | --- | --- |
-| P00a | Inventory, data extraction, licence audit | todo | | | |
+| P00a | Inventory, data extraction, licence audit | done | 2026-10-09 | v1 baseline on Iris Xe: desktop 11.2 fps, p95 110 ms, 2,525 draw calls, 1.82 M triangles, 180 programs, 208 s to settle; phone 21.2 fps, 758 calls. 35 people, 31 cameras, 7 routes extracted; terrain port matches v1 to 0 mm at 2,020 points. Grid is PRS92 Zone III; powerhouse at 17.3163 N, 121.9720 E (v1's label is 31 km off). Report: `review/P00a/REPORT.md` | Owner: Tunnel 1 length (3,009 m on the drawing against 2.58 km); drawings listed in the report. Inventory is at component level, not prop level, for files not read line by line |
 | P01a | Renderer decision | todo | | | |
 | P01b | Scene shell, store, camera, clock | todo | | | |
 | P01c | Asset pipeline, loader, streaming, tiers, bench | todo | | | |
@@ -68,9 +69,11 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Permission to download the monthly review decks for local extraction | P00a | given 2026-10-09 for the latest deck only; MPR-53 downloaded and indexed (reference R2) |
 | Scope: add upstream works (weir, intake, desander, pipe bridge, tunnel portals) as extra locations? | before P05 | **yes** (2026-10-09): added as P05g, P05h, P06e |
 | Approval to show progress percentages and dates publicly | P14b | **yes** (2026-10-09): physical progress and completion dates only |
-| Coordinates of the weir and midway locations | P00a | **not an owner input** (2026-10-09): the owner does not know them; P00a derives them from the drawings, the site development plan and open map data |
+| Coordinates of the weir and midway locations | P00a | **derived in P00a** (2026-10-09) from grid coordinates printed on the key plans; weir good to about 15 m, the rest to about 5 m |
 | Which v1-only camp features really exist (basketball court and stage, QA/QC lab) | P06a | **both exist** (2026-10-09): build them from v1's layout |
-| Tunnel 1 length | P05e | **use the latest decks: about 2.58 km** (2026-10-09) |
+| Tunnel 1 length | P05e | **use the latest decks: about 2.58 km** (2026-10-09). **Reopened by P00a:** the printed portal coordinates are 3,008.95 m apart; the owner to confirm which is right |
+| Desander general arrangement; a layout or drone photograph of each camp; mechanical general arrangement of the units | P05b, P05g, P06a | asked in the P00a report |
+| Whether to close the public equipment call and move the `.blend` files out of `public/` before the plan reaches them | any time | asked in the P00a report |
 | Approval of the vertical slice | P02c | pending |
 | Mixamo sign-in and downloads from the list | P08a | pending |
 | Confirmation of which staff details are real and cleared (licence, experience, province) and that photos match names | P09d | pending |

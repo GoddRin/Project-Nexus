@@ -1,0 +1,29 @@
+point                                  lat        lon         GLO-90 SRTM30 drawing
+weir (origin)                          17.337479  121.997960  312    309    EL 296
+  weir.weir-left-end                   17.337221  121.997834  312    318    
+  weir.weir-right-end                  17.337737  121.998088  302    309    
+  weir.tunnel1-inlet                   17.336484  121.998356  317    331    
+  weir.adit-portal                     17.336434  121.998699  317    320    
+  weir.satellite-camp                  17.335231  122.000108  308    330    
+  weir.mixing-facility                 17.335874  121.999042  317    336    
+tunnel1 (origin)                       17.336484  121.998356  317    331    EL 296
+  tunnel1.inlet-portal                 17.336484  121.998356  317    331    
+  tunnel1.transition-end               17.336270  121.998161  349    351    
+  tunnel1.adit-portal                  17.336434  121.998699  317    320    
+  tunnel1.outlet-portal                17.322179  121.974287  314    301    
+midway (origin)                        17.322084  121.974134  337    305    EL 275
+  midway.tunnel1-outlet                17.322179  121.974287  314    301    
+  midway.tunnel2-inlet                 17.321989  121.973980  337    313    
+tunnel2 (origin)                       17.317847  121.971591  282    290    EL 271.465
+  tunnel2.outlet-portal                17.317847  121.971591  282    290    
+  tunnel2.bend                         17.319127  121.971817  317    329    
+  tunnel2.inlet-portal                 17.321989  121.973980  337    313    
+powerhouse (origin)                    17.316349  121.971977  221    210    EL 188.04
+  powerhouse.tb-04                     17.316475  121.971986  221    215    
+  powerhouse.bifurcation               17.316621  121.971932  221    226    
+  powerhouse.tb-02                     17.317420  121.971638  247    276    
+  powerhouse.surge-tank                17.317546  121.971624  282    280    
+  powerhouse.tunnel2-outlet            17.317847  121.971591  282    290    
+  powerhouse.main-camp                 17.318671  121.974941  260    236    
+  powerhouse.mixing-facility           17.317508  121.973977  247    223    
+tunnel1 midpoint (ridge above)         17.329332  121.986321  755    717    

@@ -1,0 +1,90 @@
+[
+ {
+  "label": "P00a-baseline",
+  "profile": "desktop",
+  "readyMs": 208024,
+  "renderer": "Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A1)",
+  "canvas": "1184x844",
+  "programs": 180,
+  "lights": 49,
+  "lit": 36,
+  "managed": null,
+  "base": {
+   "fps": 11.2,
+   "ms": 89.6,
+   "p95": 109.8,
+   "calls": 2525,
+   "tris": 1816840
+  },
+  "errors": [],
+  "batch": {
+   "batches": 130,
+   "batched": 2483,
+   "handedBack": 886,
+   "rebuilds": 590
+  },
+  "batchingOff": {
+   "fps": 9.5,
+   "ms": 105.3,
+   "p95": 126.7,
+   "calls": 5685,
+   "tris": 1787140
+  },
+  "batchingOnAgain": {
+   "fps": 10.7,
+   "ms": 93.8,
+   "p95": 171.8,
+   "calls": 2489,
+   "tris": 1809372
+  },
+  "batchAfter": {
+   "batches": 129,
+   "batched": 2514,
+   "rebuilds": 848
+  }
+ },
+ {
+  "label": "P00a-baseline",
+  "profile": "phone",
+  "readyMs": 130738,
+  "renderer": "Intel, Intel(R) Iris(R) Xe Graphics (0x0000A7A1)",
+  "canvas": "468x945",
+  "programs": 213,
+  "lights": 65,
+  "lit": 38,
+  "managed": null,
+  "base": {
+   "fps": 21.2,
+   "ms": 47.2,
+   "p95": 78.8,
+   "calls": 758,
+   "tris": 1684368
+  },
+  "errors": [],
+  "batch": {
+   "batches": 128,
+   "batched": 2474,
+   "handedBack": 888,
+   "rebuilds": 574
+  },
+  "batchingOff": {
+   "fps": 17.3,
+   "ms": 57.7,
+   "p95": 88.8,
+   "calls": 1470,
+   "tris": 1610500
+  },
+  "batchingOnAgain": {
+   "fps": 22.3,
+   "ms": 44.8,
+   "p95": 69.6,
+   "calls": 760,
+   "tris": 1685164
+  },
+  "batchAfter": {
+   "batches": 129,
+   "batched": 2479,
+   "rebuilds": 810
+  }
+ }
+]

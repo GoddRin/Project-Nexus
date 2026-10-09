@@ -1,0 +1,2120 @@
+{
+ "note": [
+  "Two layouts. `v1` is what v1 draws, in the v1 scene frame (the powerhouse location frame): its camp sits 150 m from the powerhouse on the author's own arrangement.",
+  "`real` is the scheme as built, in the project grid (PRS92 Zone III), with `local` [x, z] in the powerhouse frame for structures of that location.",
+  "Where the two disagree, `real` wins (MASTER-BRIEF section 8). errorM is the estimated position error in metres."
+ ],
+ "v1": {
+  "frame": "powerhouse",
+  "campGroupOrigin": [
+   118,
+   14,
+   -95
+  ],
+  "facilities": [
+   {
+    "id": "powerhouse",
+    "zone": "powerhouse.powerhouse",
+    "title": "Powerhouse building",
+    "p": [
+     0,
+     0,
+     0
+    ],
+    "footprint": [
+     21,
+     15
+    ],
+    "height": null,
+    "source": "components/digital-twin/PowerhouseGeometry.tsx:224; collider uphillRoadConfig.ts:339",
+    "real": "Machine hall is 31.5 m by about 12 m with a 7.3 m annex (R1, penstock plan). v1's shape is not kept."
+   },
+   {
+    "id": "powerhouse-yard",
+    "zone": "powerhouse.powerhouse",
+    "title": "Powerhouse yard",
+    "p": [
+     7,
+     0.05,
+     1
+    ],
+    "footprint": [
+     70,
+     34
+    ],
+    "height": 0,
+    "source": "uphillRoadConfig.ts:429"
+   },
+   {
+    "id": "turbine-unit-1",
+    "zone": "powerhouse.turbine-hall",
+    "title": "Big turbine marker",
+    "p": [
+     -4,
+     6,
+     0
+    ],
+    "footprint": null,
+    "height": null,
+    "source": "components/digital-twin/PlantScene.tsx:1173",
+    "real": "Two horizontal units 11.5 m apart (penstock plan)."
+   },
+   {
+    "id": "turbine-unit-2",
+    "zone": "powerhouse.turbine-hall",
+    "title": "Small turbine marker",
+    "p": [
+     4,
+     6,
+     0
+    ],
+    "footprint": null,
+    "height": null,
+    "source": "components/digital-twin/PlantScene.tsx:1174"
+   },
+   {
+    "id": "switchyard",
+    "zone": "powerhouse.switchyard",
+    "title": "Switchyard platform",
+    "p": [
+     25,
+     0.65,
+     0
+    ],
+    "footprint": [
+     19.6,
+     17.6
+    ],
+    "height": null,
+    "source": "components/digital-twin/PowerhouseGeometry.tsx:665; collider uphillRoadConfig.ts:333"
+   },
+   {
+    "id": "tailrace",
+    "zone": "powerhouse.tailrace",
+    "title": "Tailrace channel",
+    "p": [
+     0,
+     -1.35,
+     26.75
+    ],
+    "footprint": [
+     24,
+     42.5
+    ],
+    "height": null,
+    "source": "terrainData.ts:25"
+   },
+   {
+    "id": "floodwall",
+    "zone": "powerhouse.floodwall",
+    "title": "Tailrace floodwalls and gate",
+    "p": [
+     0,
+     0,
+     26
+    ],
+    "footprint": [
+     110,
+     4
+    ],
+    "height": 7.8,
+    "source": "components/digital-twin/PowerhouseGeometry.tsx:1329, 1786"
+   },
+   {
+    "id": "river",
+    "zone": "powerhouse.river",
+    "title": "River",
+    "p": [
+     0,
+     0,
+     42
+    ],
+    "footprint": [
+     300,
+     24
+    ],
+    "height": null,
+    "source": "components/digital-twin/PowerhouseGeometry.tsx:1170, 1315",
+    "real": "v1 calls it the Pinacanauan; the project is on the Tumauini River. Its real course at the powerhouse is not yet traced."
+   },
+   {
+    "id": "penstock",
+    "zone": "powerhouse.penstock",
+    "title": "Penstock",
+    "p": [
+     -5,
+     11,
+     -16
+    ],
+    "footprint": [
+     4,
+     20
+    ],
+    "height": null,
+    "source": "components/digital-twin/PowerhouseGeometry.tsx:2224",
+    "real": "2.70 m inside diameter (matches v1), about 111 m from TB-02 to TB-04, falling from EL 271.5 to EL 188."
+   },
+   {
+    "id": "surge-tank",
+    "zone": "powerhouse.surge-tank",
+    "title": "Surge tank",
+    "p": [
+     -6,
+     17.5,
+     -26
+    ],
+    "footprint": [
+     9,
+     9
+    ],
+    "height": null,
+    "source": "components/digital-twin/PowerhouseGeometry.tsx:2128",
+    "real": "About 124 m up the penstock from the powerhouse, base about 83 m higher. v1 draws it 26 m away and 17 m up."
+   },
+   {
+    "id": "tunnel-heading",
+    "zone": "tunnel2.drive",
+    "title": "Headrace tunnel heading",
+    "p": [
+     -6,
+     16.8,
+     -24.5
+    ],
+    "footprint": null,
+    "height": null,
+    "source": "components/digital-twin/PlantScene.tsx:1253"
+   },
+   {
+    "id": "access-road",
+    "zone": "powerhouse.access-road",
+    "title": "Road from the powerhouse to the camp",
+    "p": [
+     58,
+     8,
+     -28
+    ],
+    "footprint": null,
+    "height": null,
+    "source": "uphillRoadConfig.ts:11"
+   },
+   {
+    "id": "genset",
+    "zone": "powerhouse.switchyard",
+    "title": "Diesel generator",
+    "p": [
+     26,
+     0,
+     6
+    ],
+    "footprint": [
+     4.4,
+     2.4
+    ],
+    "height": 2.1,
+    "source": "components/digital-twin/SiteElectricalDistribution.tsx:128"
+   },
+   {
+    "id": "camp-pad",
+    "zone": "powerhouse.camp-office",
+    "title": "Camp pad",
+    "p": [
+     127,
+     14,
+     -111
+    ],
+    "footprint": [
+     84,
+     82
+    ],
+    "height": 0,
+    "source": "components/digital-twin/TemfacilFacility.tsx:199"
+   },
+   {
+    "id": "camp-gate",
+    "zone": "powerhouse.camp-gate",
+    "title": "Gate, guardhouse and entrance ramp",
+    "p": [
+     96,
+     13.7,
+     -69
+    ],
+    "footprint": [
+     16,
+     10.2
+    ],
+    "height": null,
+    "source": "components/digital-twin/TemfacilFacility.tsx:237; AnimatedSiteEntities.tsx:3667"
+   },
+   {
+    "id": "camp-office",
+    "zone": "powerhouse.camp-office",
+    "title": "Main site office",
+    "p": [
+     114,
+     14,
+     -107
+    ],
+    "footprint": [
+     14.4,
+     22
+    ],
+    "height": 4.2,
+    "source": "components/digital-twin/TemfacilFacility.tsx:328"
+   },
+   {
+    "id": "camp-staffhouse",
+    "zone": "powerhouse.camp-staffhouse",
+    "title": "Staff house with kitchen extension",
+    "p": [
+     130,
+     14,
+     -107
+    ],
+    "footprint": [
+     12.6,
+     15
+    ],
+    "height": 3.8,
+    "source": "components/digital-twin/TemfacilFacility.tsx:423"
+   },
+   {
+    "id": "camp-foreman-house",
+    "zone": "powerhouse.camp-staffhouse",
+    "title": "Foreman and staff house",
+    "p": [
+     136,
+     14,
+     -135.5
+    ],
+    "footprint": [
+     16,
+     15
+    ],
+    "height": null,
+    "source": "components/digital-twin/TemfacilFacility.tsx:558"
+   },
+   {
+    "id": "camp-barracks",
+    "zone": "powerhouse.camp-barracks",
+    "title": "Workers' barracks (3 dormitories, washroom block)",
+    "p": [
+     155,
+     14,
+     -107
+    ],
+    "footprint": [
+     20,
+     26
+    ],
+    "height": null,
+    "source": "components/digital-twin/TemfacilFacility.tsx:561"
+   },
+   {
+    "id": "camp-warehouse",
+    "zone": "powerhouse.camp-warehouse",
+    "title": "Warehouse and laydown yard",
+    "p": [
+     90,
+     14.8,
+     -109
+    ],
+    "footprint": [
+     13.5,
+     16.5
+    ],
+    "height": 6.4,
+    "source": "components/digital-twin/TemfacilFacility.tsx:565"
+   },
+   {
+    "id": "camp-tool-shed",
+    "zone": "powerhouse.camp-motorpool",
+    "title": "Tool and equipment shed",
+    "p": [
+     108,
+     14,
+     -85
+    ],
+    "footprint": [
+     8.6,
+     4
+    ],
+    "height": 3,
+    "source": "components/digital-twin/TemfacilFacility.tsx:625"
+   },
+   {
+    "id": "camp-court",
+    "zone": "powerhouse.camp-court",
+    "title": "Basketball court and stage",
+    "p": [
+     128,
+     14,
+     -81
+    ],
+    "footprint": null,
+    "height": null,
+    "source": "components/digital-twin/TemfacilFacility.tsx:667",
+    "real": "Exists (owner, 2026-10-09)."
+   },
+   {
+    "id": "camp-qaqc",
+    "zone": "powerhouse.camp-qaqc",
+    "title": "QA/QC office and materials lab",
+    "p": [
+     140.5,
+     14,
+     -74.5
+    ],
+    "footprint": [
+     5.2,
+     8.8
+    ],
+    "height": null,
+    "source": "components/digital-twin/TemfacilFacility.tsx:670",
+    "real": "Exists (owner, 2026-10-09)."
+   },
+   {
+    "id": "camp-canteen",
+    "zone": "powerhouse.camp-canteen",
+    "title": "Canteen",
+    "p": [
+     150,
+     14,
+     -81
+    ],
+    "footprint": [
+     12,
+     14
+    ],
+    "height": null,
+    "source": "components/digital-twin/TemfacilFacility.tsx:673"
+   }
+  ]
+ },
+ "real": {
+  "structures": [
+   {
+    "id": "weir",
+    "location": "weir",
+    "zone": "weir.weir",
+    "title": "Overflow weir with sluiceway",
+    "grid": {
+     "easting": 605938.8,
+     "northing": 1917902.1
+    },
+    "errorM": 15,
+    "source": "Tunnel 1 key plan, MPR-53 slide 36",
+    "lengthM": 63,
+    "axisBearingDeg": 25.02,
+    "elevation": "flood wall Elev. 303 (MPR-32 slide 17)",
+    "note": "Sluiceway with 4 gates, intake with 2 gates and trashracks, fish pass (MPR-53 slides 9 to 16)."
+   },
+   {
+    "id": "intake",
+    "location": "weir",
+    "zone": "weir.intake",
+    "title": "Intake and feeder canal",
+    "grid": {
+     "easting": 605925.5,
+     "northing": 1917873.5
+    },
+    "errorM": 20,
+    "source": "Tunnel 1 key plan, MPR-53 slide 36: the canal leaves the weir end nearest the desander",
+    "note": "Position is the weir end the canal starts from."
+   },
+   {
+    "id": "desander",
+    "location": "weir",
+    "zone": "weir.desander",
+    "title": "Desander (9 segments), flushing channel, control room",
+    "grid": {
+     "easting": 605968.7,
+     "northing": 1917813.6
+    },
+    "errorM": 25,
+    "source": "Tunnel 1 key plan, MPR-53 slide 36 (drawn as a box marked 'to be verified'); aerial photographs slides 22 and 24",
+    "lengthM": 47,
+    "axisBearingDeg": 315.35,
+    "note": "The key plan draws about 46 m; the aerial photographs suggest it is longer. Length, width and bearing need the desander drawings."
+   },
+   {
+    "id": "tunnel1-inlet",
+    "location": "weir",
+    "zone": "weir.tunnel1-inlet",
+    "title": "Tunnel 1 inlet portal",
+    "grid": {
+     "easting": 605981.4,
+     "northing": 1917792.2
+    },
+    "errorM": 5,
+    "source": "Printed: MPR-53 slide 36",
+    "elevation": 296
+   },
+   {
+    "id": "adit",
+    "location": "weir",
+    "zone": "weir.adit",
+    "title": "Tunnel 1 adit portal",
+    "grid": {
+     "easting": 606017.9,
+     "northing": 1917786.8
+    },
+    "errorM": 5,
+    "source": "Printed on the inlet plan: MPR-53 slide 36",
+    "elevation": 300,
+    "note": "The adit falls at 12% to meet the tunnel at EL 293.52."
+   },
+   {
+    "id": "satellite-camp",
+    "location": "weir",
+    "zone": "weir.sat-barracks",
+    "title": "Satellite camp",
+    "grid": {
+     "easting": 606168.4,
+     "northing": 1917654.5
+    },
+    "errorM": 40,
+    "source": "Site development plan, MPR-18: the label's arrow tip",
+    "note": "Barracks 1 and 2, staff house, canteen, clinic, office, warehouse, motor pool (MPR-31 to MPR-42). No layout drawing seen."
+   },
+   {
+    "id": "weir-mixing-facility",
+    "location": "weir",
+    "zone": "weir.concrete-plant",
+    "title": "Mixing facility, volumetric concrete plant and crusher",
+    "grid": {
+     "easting": 606054.7,
+     "northing": 1917725
+    },
+    "errorM": 40,
+    "source": "Site development plan, MPR-18: the label's arrow tip; MPR-39 slide 19"
+   },
+   {
+    "id": "tunnel1-outlet",
+    "location": "midway",
+    "zone": "midway.tunnel1-outlet",
+    "title": "Tunnel 1 outlet portal",
+    "grid": {
+     "easting": 603430.8,
+     "northing": 1916195.8
+    },
+    "errorM": 5,
+    "source": "Printed: MPR-53 slide 36 (STA 3+008.95)"
+   },
+   {
+    "id": "pipe-bridge",
+    "location": "midway",
+    "zone": "midway.pipe-bridge",
+    "title": "Pipe bridge with catwalk",
+    "grid": {
+     "easting": 603414.6,
+     "northing": 1916185.2
+    },
+    "errorM": 5,
+    "source": "Between the two printed portals",
+    "lengthM": 38.8,
+    "axisBearingDeg": 236.89
+   },
+   {
+    "id": "tunnel2-inlet",
+    "location": "midway",
+    "zone": "midway.tunnel2-inlet",
+    "title": "Tunnel 2 inlet portal",
+    "grid": {
+     "easting": 603398.3,
+     "northing": 1916174.6
+    },
+    "errorM": 5,
+    "source": "Printed: MPR-53 slide 48"
+   },
+   {
+    "id": "tunnel2-bend",
+    "location": "tunnel2",
+    "zone": "tunnel2.drive",
+    "title": "Tunnel 2 bend (PI, STA 0+391.426)",
+    "grid": {
+     "easting": 603169.9,
+     "northing": 1915856.7
+    },
+    "errorM": 5,
+    "source": "Computed from the printed portals, the first-leg length and the deflection angle; the site development plan agrees within 3 m",
+    "radiusM": 15.5
+   },
+   {
+    "id": "tunnel2-outlet",
+    "location": "powerhouse",
+    "zone": "powerhouse.surge-tank",
+    "title": "Tunnel 2 outlet portal",
+    "grid": {
+     "easting": 603146.6,
+     "northing": 1915714.9
+    },
+    "errorM": 5,
+    "source": "Printed: MPR-53 slide 48",
+    "local": [
+     16.6,
+     -169.9
+    ]
+   },
+   {
+    "id": "surge-tank",
+    "location": "powerhouse",
+    "zone": "powerhouse.surge-tank",
+    "title": "Surge tank (16 lifts)",
+    "grid": {
+     "easting": 603150.3,
+     "northing": 1915681.6
+    },
+    "errorM": 8,
+    "source": "Penstock plan, MPR-53 slide 65: drawn near STA 0+035",
+    "elevation": 271.465,
+    "note": "Radius R = 6.75 m is printed beside the tank on the plan. Shell levels Elev. 275.265 to 277.765 were being poured in Nov 2025 (MPR-44 slide 42).",
+    "local": [
+     8.8,
+     -137.4
+    ]
+   },
+   {
+    "id": "penstock",
+    "location": "powerhouse",
+    "zone": "powerhouse.penstock",
+    "title": "Penstock on saddles",
+    "grid": {
+     "easting": 603170.5,
+     "northing": 1915615.5
+    },
+    "errorM": 3,
+    "source": "Printed points TB-02, TB-03, TB-04: MPR-53 slide 65",
+    "lengthM": 111,
+    "axisBearingDeg": 160.26,
+    "insideDiameterM": 2.7,
+    "note": "ASTM A516 Grade 60 pipe. Bifurcation at TB-03 (STA 0+142.84), branch at 52 deg 10 min 57 s to the small unit.",
+    "local": [
+     5.5,
+     -68.3
+    ]
+   },
+   {
+    "id": "powerhouse",
+    "location": "powerhouse",
+    "zone": "powerhouse.powerhouse",
+    "title": "Powerhouse",
+    "grid": {
+     "easting": 603188.4,
+     "northing": 1915549.3
+    },
+    "errorM": 5,
+    "source": "Penstock plan, MPR-53 slide 65; drawing R1",
+    "footprint": [
+     12,
+     31.5
+    ],
+    "elevation": 188.04,
+    "note": "Machine hall 31.5 m long across the penstock axis and about 12 m wide, with a 7.3 m annex on the switchyard side. Unit axes 11.5 m apart. Turbine floor EL 188.24, lower pit EL 183.54, ground floor about 4.3 m above the turbine floor, second floor 7.5 m above that.",
+    "local": [
+     0,
+     0
+    ]
+   },
+   {
+    "id": "switchyard",
+    "location": "powerhouse",
+    "zone": "powerhouse.switchyard",
+    "title": "Switchyard",
+    "grid": {
+     "easting": 603218.5,
+     "northing": 1915560.2
+    },
+    "errorM": 10,
+    "source": "Penstock plan, MPR-53 slide 65: beyond the annex, on the side away from the small unit",
+    "note": "Position is the middle of the fenced yard as drawn; no dimension is printed.",
+    "local": [
+     32,
+     -0.1
+    ]
+   },
+   {
+    "id": "main-camp",
+    "location": "powerhouse",
+    "zone": "powerhouse.camp-office",
+    "title": "Main camp (Temfacil)",
+    "grid": {
+     "easting": 603502.3,
+     "northing": 1915807.9
+    },
+    "errorM": 25,
+    "source": "Site development plan, MPR-18: hatched area",
+    "lengthM": 160,
+    "axisBearingDeg": 121.85,
+    "note": "A bench about 160 m long beside the access road. Barracks 1 and 2, common toilet, warehouse, clinic, genset shed, site office, ESH office, staff accommodation, canteen, motor pool (MPR-17 to MPR-37). No layout drawing seen; the Oct 2024 drone photograph is the best reference.",
+    "local": [
+     382.8,
+     -137.3
+    ]
+   },
+   {
+    "id": "powerhouse-mixing-facility",
+    "location": "powerhouse",
+    "zone": "powerhouse.access-road",
+    "title": "Mixing facility below the main camp",
+    "grid": {
+     "easting": 603400.4,
+     "northing": 1915678.7
+    },
+    "errorM": 25,
+    "source": "Site development plan, MPR-18: hatched area",
+    "local": [
+     243.2,
+     -50.1
+    ]
+   }
+  ],
+  "roads": [
+   {
+    "id": "ar01",
+    "title": "AR01: public road to the powerhouse",
+    "tracedLengthM": 2659,
+    "statedLengthM": 3500,
+    "note": "Blue line on the plan, 'approx. 3.5 km, maximum gradient 15%'. Piloted Sep 2022 on, stationing to about 3+500. The trace stops at the edge of the plan.",
+    "points": [
+     [
+      601591.9,
+      1915157.9
+     ],
+     [
+      601588.5,
+      1915174.3
+     ],
+     [
+      601586.5,
+      1915197.8
+     ],
+     [
+      601606,
+      1915221.3
+     ],
+     [
+      601628.8,
+      1915244.7
+     ],
+     [
+      601648.9,
+      1915268.2
+     ],
+     [
+      601671.8,
+      1915291.7
+     ],
+     [
+      601693.2,
+      1915315.2
+     ],
+     [
+      601689.9,
+      1915336.6
+     ],
+     [
+      601667.1,
+      1915343.4
+     ],
+     [
+      601645.6,
+      1915344.7
+     ],
+     [
+      601641.6,
+      1915362.2
+     ],
+     [
+      601657.7,
+      1915385.6
+     ],
+     [
+      601681.2,
+      1915401.1
+     ],
+     [
+      601704.7,
+      1915409.8
+     ],
+     [
+      601728.2,
+      1915413.8
+     ],
+     [
+      601751.6,
+      1915409.8
+     ],
+     [
+      601775.1,
+      1915394.3
+     ],
+     [
+      601798.6,
+      1915375.5
+     ],
+     [
+      601822.1,
+      1915364.1
+     ],
+     [
+      601845.6,
+      1915357.4
+     ],
+     [
+      601869,
+      1915352.7
+     ],
+     [
+      601892.5,
+      1915349.3
+     ],
+     [
+      601916,
+      1915348.7
+     ],
+     [
+      601939.5,
+      1915356.7
+     ],
+     [
+      601963,
+      1915368.1
+     ],
+     [
+      601986.5,
+      1915372.8
+     ],
+     [
+      602010,
+      1915375.5
+     ],
+     [
+      602033.4,
+      1915369.4
+     ],
+     [
+      602056.9,
+      1915380.8
+     ],
+     [
+      602077.7,
+      1915404.3
+     ],
+     [
+      602091.2,
+      1915427.8
+     ],
+     [
+      602101.2,
+      1915451.3
+     ],
+     [
+      602118,
+      1915470.7
+     ],
+     [
+      602141.5,
+      1915468
+     ],
+     [
+      602158.9,
+      1915446.6
+     ],
+     [
+      602179.1,
+      1915430.5
+     ],
+     [
+      602202.6,
+      1915429.1
+     ],
+     [
+      602223.4,
+      1915422.4
+     ],
+     [
+      602244.8,
+      1915406.3
+     ],
+     [
+      602268.3,
+      1915397.6
+     ],
+     [
+      602291.8,
+      1915378.8
+     ],
+     [
+      602315.3,
+      1915365.3
+     ],
+     [
+      602338.1,
+      1915347.9
+     ],
+     [
+      602354.2,
+      1915324.4
+     ],
+     [
+      602368.3,
+      1915300.9
+     ],
+     [
+      602381.7,
+      1915277.4
+     ],
+     [
+      602404.5,
+      1915260.6
+     ],
+     [
+      602428,
+      1915262.6
+     ],
+     [
+      602451.5,
+      1915272
+     ],
+     [
+      602474.9,
+      1915262.6
+     ],
+     [
+      602497.7,
+      1915239.8
+     ],
+     [
+      602507.8,
+      1915216.3
+     ],
+     [
+      602504.4,
+      1915192.8
+     ],
+     [
+      602492.4,
+      1915169.4
+     ],
+     [
+      602489,
+      1915147.9
+     ],
+     [
+      602507.8,
+      1915141.2
+     ],
+     [
+      602531.3,
+      1915141.2
+     ],
+     [
+      602554.8,
+      1915136.5
+     ],
+     [
+      602577.6,
+      1915128.4
+     ],
+     [
+      602591,
+      1915145.8
+     ],
+     [
+      602597,
+      1915169.3
+     ],
+     [
+      602601.7,
+      1915192.8
+     ],
+     [
+      602611.8,
+      1915216.3
+     ],
+     [
+      602634.6,
+      1915233.7
+     ],
+     [
+      602656.1,
+      1915253.9
+     ],
+     [
+      602668.9,
+      1915277.3
+     ],
+     [
+      602658.8,
+      1915300.8
+     ],
+     [
+      602648.7,
+      1915324.3
+     ],
+     [
+      602654.1,
+      1915347.8
+     ],
+     [
+      602658.2,
+      1915371.3
+     ],
+     [
+      602654.1,
+      1915394.8
+     ],
+     [
+      602646.1,
+      1915418.3
+     ],
+     [
+      602658.2,
+      1915436.4
+     ],
+     [
+      602681.7,
+      1915445.1
+     ],
+     [
+      602705.1,
+      1915437.7
+     ],
+     [
+      602728.6,
+      1915419.6
+     ],
+     [
+      602752.1,
+      1915402.8
+     ],
+     [
+      602775.6,
+      1915380.6
+     ],
+     [
+      602792.3,
+      1915357.2
+     ],
+     [
+      602802.4,
+      1915333.7
+     ],
+     [
+      602822.5,
+      1915314.2
+     ],
+     [
+      602846,
+      1915310.2
+     ],
+     [
+      602869.5,
+      1915309.5
+     ],
+     [
+      602882.9,
+      1915296.1
+     ],
+     [
+      602883.6,
+      1915272.6
+     ],
+     [
+      602893.6,
+      1915253.1
+     ],
+     [
+      602916.5,
+      1915251.8
+     ],
+     [
+      602939.9,
+      1915266.5
+     ],
+     [
+      602963.4,
+      1915277.9
+     ],
+     [
+      602986.9,
+      1915282
+     ],
+     [
+      603010.4,
+      1915286.6
+     ],
+     [
+      603033.9,
+      1915302.1
+     ],
+     [
+      603057.4,
+      1915324.2
+     ],
+     [
+      603080.9,
+      1915347.7
+     ],
+     [
+      603104.4,
+      1915368.5
+     ],
+     [
+      603127.9,
+      1915380.6
+     ],
+     [
+      603151.3,
+      1915389.9
+     ],
+     [
+      603174.8,
+      1915408.7
+     ],
+     [
+      603188.3,
+      1915432.2
+     ],
+     [
+      603186.9,
+      1915455.7
+     ],
+     [
+      603193.6,
+      1915479.2
+     ],
+     [
+      603203,
+      1915502.7
+     ],
+     [
+      603201.9,
+      1915519.1
+     ],
+     [
+      603198.3,
+      1915526.1
+     ]
+    ]
+   },
+   {
+    "id": "powerhouse-to-main-camp",
+    "title": "Powerhouse up to the main camp",
+    "tracedLengthM": 505,
+    "statedLengthM": null,
+    "note": "First part of the yellow line. The decks place the main camp 'along AR03' (road to the surge tank).",
+    "points": [
+     [
+      603210.1,
+      1915575.5
+     ],
+     [
+      603226.5,
+      1915591.9
+     ],
+     [
+      603250,
+      1915615.4
+     ],
+     [
+      603265.5,
+      1915638.9
+     ],
+     [
+      603278.9,
+      1915662.3
+     ],
+     [
+      603301.7,
+      1915683.1
+     ],
+     [
+      603326.6,
+      1915691.2
+     ],
+     [
+      603355.4,
+      1915693.2
+     ],
+     [
+      603381.6,
+      1915695.2
+     ],
+     [
+      603405.1,
+      1915691.2
+     ],
+     [
+      603428.5,
+      1915683.1
+     ],
+     [
+      603452,
+      1915681.1
+     ],
+     [
+      603475.5,
+      1915681.1
+     ],
+     [
+      603499,
+      1915681.1
+     ],
+     [
+      603522.5,
+      1915686.4
+     ],
+     [
+      603546,
+      1915695.8
+     ],
+     [
+      603567.4,
+      1915713.9
+     ],
+     [
+      603578.2,
+      1915737.4
+     ],
+     [
+      603586.9,
+      1915762.9
+     ],
+     [
+      603592,
+      1915784.4
+     ],
+     [
+      603588.3,
+      1915793.8
+     ]
+    ]
+   },
+   {
+    "id": "ar02",
+    "title": "AR02: main camp to the weir and Tunnel 1 inlet",
+    "tracedLengthM": 5829,
+    "statedLengthM": 7100,
+    "note": "Yellow line on the plan, 'access road to weir area approx. 7.1 km, maximum gradient 15%' (the stated length is from the powerhouse). A traced raster line cuts the hairpins short, so the traced length is low.",
+    "points": [
+     [
+      603591.8,
+      1915800.8
+     ],
+     [
+      603607.1,
+      1915816.6
+     ],
+     [
+      603630.6,
+      1915836.7
+     ],
+     [
+      603654,
+      1915856.2
+     ],
+     [
+      603677.5,
+      1915868.9
+     ],
+     [
+      603701,
+      1915881.6
+     ],
+     [
+      603724.5,
+      1915883
+     ],
+     [
+      603748,
+      1915864.2
+     ],
+     [
+      603771.5,
+      1915844.7
+     ],
+     [
+      603794.9,
+      1915832.6
+     ],
+     [
+      603818.4,
+      1915834
+     ],
+     [
+      603841.9,
+      1915845.4
+     ],
+     [
+      603865.4,
+      1915862.1
+     ],
+     [
+      603888.9,
+      1915882.9
+     ],
+     [
+      603905,
+      1915906.4
+     ],
+     [
+      603893.6,
+      1915923.2
+     ],
+     [
+      603870.1,
+      1915919.8
+     ],
+     [
+      603848.7,
+      1915915.8
+     ],
+     [
+      603841.9,
+      1915934.6
+     ],
+     [
+      603841.3,
+      1915958.1
+     ],
+     [
+      603831.2,
+      1915981.6
+     ],
+     [
+      603809.1,
+      1915998.4
+     ],
+     [
+      603789.6,
+      1916010.5
+     ],
+     [
+      603799.7,
+      1916031.9
+     ],
+     [
+      603823.2,
+      1916044.7
+     ],
+     [
+      603846.7,
+      1916044.7
+     ],
+     [
+      603870.2,
+      1916038.6
+     ],
+     [
+      603893.6,
+      1916037.9
+     ],
+     [
+      603917.1,
+      1916031.9
+     ],
+     [
+      603940.6,
+      1916021.8
+     ],
+     [
+      603964.1,
+      1916018.5
+     ],
+     [
+      603987.6,
+      1916009.7
+     ],
+     [
+      604011.1,
+      1916005
+     ],
+     [
+      604032.5,
+      1916007
+     ],
+     [
+      604039.2,
+      1915986.2
+     ],
+     [
+      604039.9,
+      1915962.7
+     ],
+     [
+      604053.3,
+      1915943.3
+     ],
+     [
+      604076.8,
+      1915952.7
+     ],
+     [
+      604100.3,
+      1915958.7
+     ],
+     [
+      604120.4,
+      1915939.2
+     ],
+     [
+      604142.6,
+      1915925.1
+     ],
+     [
+      604159.3,
+      1915939.2
+     ],
+     [
+      604175.4,
+      1915962.7
+     ],
+     [
+      604198.9,
+      1915986.2
+     ],
+     [
+      604220.4,
+      1916009.7
+     ],
+     [
+      604241.2,
+      1916028.4
+     ],
+     [
+      604264.7,
+      1916023.1
+     ],
+     [
+      604288.2,
+      1916019
+     ],
+     [
+      604311.7,
+      1916018.4
+     ],
+     [
+      604335.1,
+      1916004.9
+     ],
+     [
+      604358.6,
+      1915981.4
+     ],
+     [
+      604382.1,
+      1915959.3
+     ],
+     [
+      604405.6,
+      1915946.5
+     ],
+     [
+      604429.1,
+      1915943.2
+     ],
+     [
+      604452.6,
+      1915939.8
+     ],
+     [
+      604476,
+      1915938.5
+     ],
+     [
+      604499.5,
+      1915935.1
+     ],
+     [
+      604523,
+      1915934.4
+     ],
+     [
+      604546.5,
+      1915934.4
+     ],
+     [
+      604568.6,
+      1915938.4
+     ],
+     [
+      604585.4,
+      1915957.9
+     ],
+     [
+      604592.8,
+      1915981.4
+     ],
+     [
+      604603.6,
+      1916004.2
+     ],
+     [
+      604626.4,
+      1916021
+     ],
+     [
+      604645.8,
+      1916042.4
+     ],
+     [
+      604652.5,
+      1916065.9
+     ],
+     [
+      604668.7,
+      1916086.7
+     ],
+     [
+      604692.1,
+      1916094.1
+     ],
+     [
+      604715.6,
+      1916094.1
+     ],
+     [
+      604739.1,
+      1916104.1
+     ],
+     [
+      604758.6,
+      1916126.9
+     ],
+     [
+      604757.2,
+      1916150.4
+     ],
+     [
+      604750.5,
+      1916173.9
+     ],
+     [
+      604747.2,
+      1916197.4
+     ],
+     [
+      604741.8,
+      1916220.9
+     ],
+     [
+      604725.1,
+      1916237
+     ],
+     [
+      604703.6,
+      1916233.7
+     ],
+     [
+      604696.9,
+      1916249.1
+     ],
+     [
+      604696.9,
+      1916272.6
+     ],
+     [
+      604707,
+      1916296.1
+     ],
+     [
+      604729.8,
+      1916315.5
+     ],
+     [
+      604753.3,
+      1916332.9
+     ],
+     [
+      604776.8,
+      1916345
+     ],
+     [
+      604800.2,
+      1916347.7
+     ],
+     [
+      604823.7,
+      1916345.7
+     ],
+     [
+      604847.2,
+      1916328.9
+     ],
+     [
+      604868,
+      1916305.4
+     ],
+     [
+      604889.5,
+      1916290
+     ],
+     [
+      604908.9,
+      1916300.7
+     ],
+     [
+      604912.3,
+      1916324.2
+     ],
+     [
+      604905.6,
+      1916347.7
+     ],
+     [
+      604897.5,
+      1916371.2
+     ],
+     [
+      604891.5,
+      1916394.6
+     ],
+     [
+      604899.6,
+      1916418.1
+     ],
+     [
+      604915.7,
+      1916441.6
+     ],
+     [
+      604923.7,
+      1916465.1
+     ],
+     [
+      604928.4,
+      1916488.6
+     ],
+     [
+      604931.8,
+      1916512.1
+     ],
+     [
+      604931.8,
+      1916535.5
+     ],
+     [
+      604931.8,
+      1916559
+     ],
+     [
+      604931.8,
+      1916582.5
+     ],
+     [
+      604931.8,
+      1916606
+     ],
+     [
+      604931.8,
+      1916629.5
+     ],
+     [
+      604933.2,
+      1916653
+     ],
+     [
+      604939.9,
+      1916676.5
+     ],
+     [
+      604948,
+      1916699.9
+     ],
+     [
+      604961.4,
+      1916723.4
+     ],
+     [
+      604983.5,
+      1916746.9
+     ],
+     [
+      604997,
+      1916770.4
+     ],
+     [
+      605004.3,
+      1916792.5
+     ],
+     [
+      605025.8,
+      1916805.3
+     ],
+     [
+      605049.3,
+      1916822
+     ],
+     [
+      605072.8,
+      1916841.5
+     ],
+     [
+      605088.9,
+      1916831.4
+     ],
+     [
+      605095.6,
+      1916807.9
+     ],
+     [
+      605104.3,
+      1916784.4
+     ],
+     [
+      605114.4,
+      1916761
+     ],
+     [
+      605119.1,
+      1916737.5
+     ],
+     [
+      605119.7,
+      1916714
+     ],
+     [
+      605119.7,
+      1916690.5
+     ],
+     [
+      605121.1,
+      1916667
+     ],
+     [
+      605128.4,
+      1916643.5
+     ],
+     [
+      605147.9,
+      1916620.7
+     ],
+     [
+      605171.4,
+      1916600.6
+     ],
+     [
+      605194.9,
+      1916585.1
+     ],
+     [
+      605218.3,
+      1916582.4
+     ],
+     [
+      605241.8,
+      1916572.4
+     ],
+     [
+      605265.3,
+      1916554.9
+     ],
+     [
+      605288.8,
+      1916539.5
+     ],
+     [
+      605312.3,
+      1916528.7
+     ],
+     [
+      605335.7,
+      1916526
+     ],
+     [
+      605352.5,
+      1916516
+     ],
+     [
+      605354.5,
+      1916493.2
+     ],
+     [
+      605344.5,
+      1916469.7
+     ],
+     [
+      605326.3,
+      1916446.2
+     ],
+     [
+      605328.3,
+      1916422.7
+     ],
+     [
+      605347.1,
+      1916399.2
+     ],
+     [
+      605364.6,
+      1916377.7
+     ],
+     [
+      605387.4,
+      1916371
+     ],
+     [
+      605410.2,
+      1916377.7
+     ],
+     [
+      605430.3,
+      1916399.2
+     ],
+     [
+      605453.1,
+      1916420.7
+     ],
+     [
+      605476.6,
+      1916434.1
+     ],
+     [
+      605500.1,
+      1916440.8
+     ],
+     [
+      605523.6,
+      1916442.1
+     ],
+     [
+      605547.1,
+      1916448.2
+     ],
+     [
+      605570.6,
+      1916444.1
+     ],
+     [
+      605594.1,
+      1916422.6
+     ],
+     [
+      605617.5,
+      1916409.9
+     ],
+     [
+      605641,
+      1916420.6
+     ],
+     [
+      605664.5,
+      1916427.3
+     ],
+     [
+      605688,
+      1916428.7
+     ],
+     [
+      605711.5,
+      1916441.4
+     ],
+     [
+      605735,
+      1916450.8
+     ],
+     [
+      605756.4,
+      1916457.5
+     ],
+     [
+      605761.8,
+      1916479
+     ],
+     [
+      605759.1,
+      1916502.4
+     ],
+     [
+      605769.9,
+      1916525.9
+     ],
+     [
+      605787.3,
+      1916548.7
+     ],
+     [
+      605810.2,
+      1916560.8
+     ],
+     [
+      605833.6,
+      1916566.2
+     ],
+     [
+      605857.1,
+      1916568.2
+     ],
+     [
+      605880.6,
+      1916578.2
+     ],
+     [
+      605900.1,
+      1916601
+     ],
+     [
+      605910.8,
+      1916624.5
+     ],
+     [
+      605913.5,
+      1916648
+     ],
+     [
+      605920.2,
+      1916669.5
+     ],
+     [
+      605941.7,
+      1916676.9
+     ],
+     [
+      605965.2,
+      1916686.9
+     ],
+     [
+      605987.3,
+      1916709.1
+     ],
+     [
+      606000.8,
+      1916732.5
+     ],
+     [
+      606010.2,
+      1916756
+     ],
+     [
+      606018.9,
+      1916779.5
+     ],
+     [
+      606030.3,
+      1916803
+     ],
+     [
+      606043.7,
+      1916826.5
+     ],
+     [
+      606063.9,
+      1916849.3
+     ],
+     [
+      606087.4,
+      1916859.3
+     ],
+     [
+      606106.8,
+      1916866
+     ],
+     [
+      606112.9,
+      1916887.5
+     ],
+     [
+      606129.6,
+      1916911
+     ],
+     [
+      606149.8,
+      1916934.5
+     ],
+     [
+      606171.9,
+      1916951.2
+     ],
+     [
+      606195.4,
+      1916953.2
+     ],
+     [
+      606218.9,
+      1916963.3
+     ],
+     [
+      606237.7,
+      1916986.1
+     ],
+     [
+      606228.3,
+      1917002.2
+     ],
+     [
+      606208.9,
+      1917015
+     ],
+     [
+      606210.9,
+      1917037.8
+     ],
+     [
+      606216.2,
+      1917061.3
+     ],
+     [
+      606208.9,
+      1917078
+     ],
+     [
+      606188.1,
+      1917086.8
+     ],
+     [
+      606182,
+      1917108.2
+     ],
+     [
+      606190.1,
+      1917131.7
+     ],
+     [
+      606200.8,
+      1917155.2
+     ],
+     [
+      606202.9,
+      1917178.7
+     ],
+     [
+      606186.8,
+      1917202.2
+     ],
+     [
+      606168,
+      1917225.7
+     ],
+     [
+      606158.6,
+      1917249.2
+     ],
+     [
+      606161.9,
+      1917272.6
+     ],
+     [
+      606181.4,
+      1917288.7
+     ],
+     [
+      606204.9,
+      1917295.5
+     ],
+     [
+      606228.4,
+      1917300.8
+     ],
+     [
+      606251.9,
+      1917305.5
+     ],
+     [
+      606275.4,
+      1917310.2
+     ],
+     [
+      606298.8,
+      1917317.6
+     ],
+     [
+      606322.3,
+      1917326.3
+     ],
+     [
+      606345.8,
+      1917343.1
+     ],
+     [
+      606362.6,
+      1917366.5
+     ],
+     [
+      606362.6,
+      1917390
+     ],
+     [
+      606350.5,
+      1917413.5
+     ],
+     [
+      606331.8,
+      1917437
+     ],
+     [
+      606308.3,
+      1917460.5
+     ],
+     [
+      606286.1,
+      1917484
+     ],
+     [
+      606272.7,
+      1917507.5
+     ],
+     [
+      606270.7,
+      1917531
+     ],
+     [
+      606270.1,
+      1917554.4
+     ],
+     [
+      606260,
+      1917577.9
+     ],
+     [
+      606237.9,
+      1917601.4
+     ],
+     [
+      606214.4,
+      1917624.9
+     ],
+     [
+      606190.9,
+      1917648.4
+     ],
+     [
+      606167.4,
+      1917671.9
+     ],
+     [
+      606143.9,
+      1917695.4
+     ],
+     [
+      606120.5,
+      1917714.2
+     ],
+     [
+      606097,
+      1917728.3
+     ],
+     [
+      606073.5,
+      1917742.4
+     ],
+     [
+      606050,
+      1917756.5
+     ],
+     [
+      606028.9,
+      1917769.8
+     ],
+     [
+      606017.1,
+      1917780
+     ]
+    ]
+   }
+  ],
+  "roadsNotLocated": [
+   "AR03 (to the surge tank) and AR04 (to the Tunnel 1 outlet) are drawn on the plan only as a dark track from the main camp junction towards the tunnel portals; AR05 (from Oct 2023) is not on it."
+  ]
+ }
+}

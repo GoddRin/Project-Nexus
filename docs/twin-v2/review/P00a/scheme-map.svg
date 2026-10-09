@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 995" width="1600" height="995" font-family="Arial, Helvetica, sans-serif">
+<rect width="1600" height="995" fill="#f6f7f4"/>
+<line x1="52.4" y1="0" x2="52.4" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="52.4" y="14" font-size="11" fill="#8a9082" text-anchor="middle">601500 E</text>
+<line x1="203.5" y1="0" x2="203.5" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="203.5" y="14" font-size="11" fill="#8a9082" text-anchor="middle">602000 E</text>
+<line x1="354.5" y1="0" x2="354.5" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="354.5" y="14" font-size="11" fill="#8a9082" text-anchor="middle">602500 E</text>
+<line x1="505.6" y1="0" x2="505.6" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="505.6" y="14" font-size="11" fill="#8a9082" text-anchor="middle">603000 E</text>
+<line x1="656.6" y1="0" x2="656.6" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="656.6" y="14" font-size="11" fill="#8a9082" text-anchor="middle">603500 E</text>
+<line x1="807.7" y1="0" x2="807.7" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="807.7" y="14" font-size="11" fill="#8a9082" text-anchor="middle">604000 E</text>
+<line x1="958.7" y1="0" x2="958.7" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="958.7" y="14" font-size="11" fill="#8a9082" text-anchor="middle">604500 E</text>
+<line x1="1109.8" y1="0" x2="1109.8" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="1109.8" y="14" font-size="11" fill="#8a9082" text-anchor="middle">605000 E</text>
+<line x1="1260.9" y1="0" x2="1260.9" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="1260.9" y="14" font-size="11" fill="#8a9082" text-anchor="middle">605500 E</text>
+<line x1="1411.9" y1="0" x2="1411.9" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="1411.9" y="14" font-size="11" fill="#8a9082" text-anchor="middle">606000 E</text>
+<line x1="1563.0" y1="0" x2="1563.0" y2="995" stroke="#d9ddd3" stroke-width="1"/><text x="1563.0" y="14" font-size="11" fill="#8a9082" text-anchor="middle">606500 E</text>
+<line x1="0" y1="955.3" x2="1600" y2="955.3" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="952.3" font-size="11" fill="#8a9082">1915000 N</text>
+<line x1="0" y1="804.2" x2="1600" y2="804.2" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="801.2" font-size="11" fill="#8a9082">1915500 N</text>
+<line x1="0" y1="653.2" x2="1600" y2="653.2" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="650.2" font-size="11" fill="#8a9082">1916000 N</text>
+<line x1="0" y1="502.1" x2="1600" y2="502.1" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="499.1" font-size="11" fill="#8a9082">1916500 N</text>
+<line x1="0" y1="351.1" x2="1600" y2="351.1" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="348.1" font-size="11" fill="#8a9082">1917000 N</text>
+<line x1="0" y1="200.0" x2="1600" y2="200.0" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="197" font-size="11" fill="#8a9082">1917500 N</text>
+<line x1="0" y1="49.0" x2="1600" y2="49.0" stroke="#d9ddd3" stroke-width="1"/><text x="4" y="46" font-size="11" fill="#8a9082">1918000 N</text>
+<polyline fill="none" stroke="#b08a3c" stroke-width="2.5" points="80.2,907.6 79.2,902.6 78.5,895.5 84.4,888.4 91.3,881.4 97.4,874.3 104.3,867.2 110.8,860.1 109.8,853.6 102.9,851.6 96.4,851.2 95.2,845.9 100.1,838.8 107.2,834.1 114.3,831.5 121.4,830.3 128.4,831.5 135.5,836.2 142.6,841.9 149.7,845.3 156.8,847.3 163.9,848.7 171.0,849.8 178.1,850.0 185.2,847.5 192.3,844.1 199.4,842.7 206.5,841.9 213.6,843.7 220.7,840.3 226.9,833.2 231.0,826.1 234.0,819.0 239.1,813.1 246.2,813.9 251.5,820.4 257.6,825.2 264.7,825.7 271.0,827.7 277.4,832.6 284.5,835.2 291.6,840.9 298.7,844.9 305.6,850.2 310.5,857.3 314.7,864.4 318.8,871.5 325.7,876.6 332.8,876.0 339.9,873.1 346.9,876.0 353.8,882.9 356.9,890.0 355.9,897.1 352.2,904.1 351.2,910.6 356.9,912.6 364.0,912.6 371.1,914.1 378.0,916.5 382.0,911.3 383.8,904.2 385.2,897.1 388.3,890.0 395.2,884.7 401.7,878.6 405.6,871.5 402.5,864.4 399.4,857.3 401.1,850.2 402.3,843.1 401.1,836.0 398.7,828.9 402.3,823.5 409.4,820.8 416.5,823.1 423.6,828.5 430.7,833.6 437.8,840.3 442.8,847.4 445.9,854.5 452.0,860.4 459.1,861.6 466.2,861.8 470.2,865.8 470.4,872.9 473.4,878.8 480.4,879.2 487.4,874.8 494.5,871.3 501.6,870.1 508.7,868.7 515.8,864.0 522.9,857.4 530.0,850.3 537.1,844.0 544.2,840.3 551.3,837.5 558.4,831.8 562.5,824.7 562.0,817.6 564.1,810.5 566.9,803.4 566.6,798.5 565.5,796.4"/>
+<text x="356.9" y="906" font-size="12" fill="#7a5f22">AR01: public road to the powerhouse</text>
+<polyline fill="none" stroke="#b08a3c" stroke-width="2.5" points="569.1,781.4 574.0,776.5 581.1,769.4 585.8,762.3 589.8,755.2 596.7,748.9 604.2,746.5 612.9,745.9 620.9,745.3 628.0,746.5 635.0,748.9 642.1,749.5 649.2,749.5 656.3,749.5 663.4,747.9 670.5,745.1 677.0,739.6 680.3,732.5 682.9,724.8 684.4,718.3 683.3,715.5"/>
+<text x="635.0" y="764.9" font-size="12" fill="#7a5f22">Powerhouse up to the main camp</text>
+<polyline fill="none" stroke="#b08a3c" stroke-width="2.5" points="684.4,713.4 689.0,708.6 696.1,702.5 703.2,696.6 710.3,692.8 717.4,689.0 724.5,688.5 731.6,694.2 738.7,700.1 745.7,703.8 752.8,703.3 759.9,699.9 767.0,694.9 774.1,688.6 779.0,681.5 775.5,676.4 768.4,677.4 762.0,678.6 759.9,672.9 759.7,665.8 756.7,658.7 750.0,653.7 744.1,650.0 747.2,643.6 754.3,639.7 761.4,639.7 768.5,641.5 775.5,641.7 782.6,643.6 789.7,646.6 796.8,647.6 803.9,650.3 811.0,651.7 817.5,651.1 819.5,657.4 819.7,664.5 823.8,670.3 830.9,667.5 838.0,665.7 844.1,671.6 850.8,675.8 855.8,671.6 860.7,664.5 867.8,657.4 874.3,650.3 880.6,644.6 887.7,646.2 894.8,647.5 901.9,647.6 908.9,651.7 916.0,658.8 923.1,665.5 930.2,669.4 937.3,670.3 944.4,671.4 951.5,671.8 958.6,672.8 965.7,673.0 972.8,673.0 979.5,671.8 984.5,665.9 986.8,658.8 990.0,651.9 996.9,646.8 1002.8,640.4 1004.8,633.3 1009.7,627.0 1016.8,624.8 1023.9,624.8 1031.0,621.7 1036.9,614.9 1036.4,607.8 1034.4,600.7 1033.4,593.6 1031.8,586.5 1026.7,581.6 1020.3,582.6 1018.2,577.9 1018.2,570.8 1021.3,563.7 1028.2,557.9 1035.3,552.6 1042.4,549.0 1049.4,548.1 1056.5,548.8 1063.6,553.8 1069.9,560.9 1076.4,565.6 1082.3,562.3 1083.3,555.2 1081.3,548.1 1078.8,541.0 1077.0,534.0 1079.5,526.9 1084.3,519.8 1086.7,512.7 1088.2,505.6 1089.2,498.5 1089.2,491.4 1089.2,484.3 1089.2,477.2 1089.2,470.1 1089.2,463.0 1089.6,455.9 1091.6,448.8 1094.1,441.7 1098.1,434.6 1104.8,427.5 1108.9,420.4 1111.1,413.8 1117.6,409.9 1124.7,404.9 1131.8,399.0 1136.7,402.0 1138.7,409.1 1141.3,416.2 1144.4,423.3 1145.8,430.4 1146.0,437.5 1146.0,444.6 1146.4,451.7 1148.6,458.8 1154.5,465.7 1161.6,471.7 1168.7,476.4 1175.7,477.2 1182.8,480.3 1189.9,485.5 1197.0,490.2 1204.1,493.5 1211.2,494.3 1216.3,497.3 1216.9,504.2 1213.9,511.3 1208.4,518.4 1209.0,525.5 1214.7,532.6 1219.9,539.1 1226.8,541.1 1233.7,539.1 1239.8,532.6 1246.7,526.1 1253.8,522.0 1260.9,520.0 1268.0,519.6 1275.1,517.8 1282.2,519.0 1289.3,525.5 1296.4,529.4 1303.4,526.1 1310.5,524.1 1317.6,523.7 1324.7,519.8 1331.8,517.0 1338.3,515.0 1339.9,508.5 1339.1,501.4 1342.4,494.3 1347.6,487.4 1354.6,483.8 1361.6,482.1 1368.7,481.5 1375.8,478.5 1381.7,471.6 1385.0,464.5 1385.8,457.4 1387.8,450.9 1394.3,448.7 1401.4,445.7 1408.1,439.0 1412.1,431.9 1415.0,424.8 1417.6,417.7 1421.1,410.6 1425.1,403.5 1431.2,396.6 1438.3,393.6 1444.2,391.6 1446.0,385.1 1451.1,378.0 1457.2,370.9 1463.8,365.8 1470.9,365.2 1478.0,362.2 1483.7,355.3 1480.9,350.4 1475.0,346.5 1475.6,339.7 1477.2,332.6 1475.0,327.5 1468.7,324.9 1466.9,318.4 1469.3,311.3 1472.6,304.2 1473.2,297.1 1468.3,290.0 1462.7,282.9 1459.8,275.8 1460.8,268.7 1466.7,263.9 1473.8,261.8 1480.9,260.2 1488.0,258.8 1495.1,257.4 1502.2,255.1 1509.3,252.5 1516.4,247.4 1521.5,240.4 1521.5,233.3 1517.8,226.2 1512.1,219.1 1505.0,212.0 1498.3,204.9 1494.3,197.8 1493.7,190.7 1493.5,183.6 1490.5,176.5 1483.8,169.4 1476.7,162.3 1469.6,155.2 1462.5,148.1 1455.4,141.0 1448.3,135.3 1441.2,131.1 1434.1,126.8 1427.0,122.5 1420.6,118.5 1417.1,115.4"/>
+<text x="1138.7" y="425.1" font-size="12" fill="#7a5f22">AR02: main camp to the weir and Tunnel 1 inlet</text>
+<line x1="1406.3" y1="111.8" x2="635.7" y2="594.0" stroke="#1f6fb6" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="635.7" y1="594.0" x2="625.9" y2="600.4" stroke="#1f6fb6" stroke-width="5" />
+<line x1="625.9" y1="600.4" x2="556.9" y2="696.5" stroke="#1f6fb6" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="556.9" y1="696.5" x2="549.9" y2="739.3" stroke="#1f6fb6" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="551.4" y1="753.6" x2="562.8" y2="785.1" stroke="#1f6fb6" stroke-width="5" />
+<circle cx="1393.4" cy="78.5" r="4.5" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1393.4" cy="78.5" r="2.5" fill="#007B3E"/>
+<circle cx="1389.4" cy="87.2" r="6.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1389.4" cy="87.2" r="2.5" fill="#007B3E"/>
+<circle cx="1402.5" cy="105.3" r="7.6" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1402.5" cy="105.3" r="2.5" fill="#007B3E"/>
+<circle cx="1406.3" cy="111.8" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1406.3" cy="111.8" r="2.5" fill="#007B3E"/>
+<circle cx="1417.3" cy="113.4" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1417.3" cy="113.4" r="2.5" fill="#007B3E"/>
+<circle cx="1462.8" cy="153.4" r="12.1" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1462.8" cy="153.4" r="2.5" fill="#007B3E"/>
+<circle cx="1428.4" cy="132.1" r="12.1" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="1428.4" cy="132.1" r="2.5" fill="#007B3E"/>
+<circle cx="635.7" cy="594.0" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="635.7" cy="594.0" r="2.5" fill="#007B3E"/>
+<circle cx="630.8" cy="597.2" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="630.8" cy="597.2" r="2.5" fill="#007B3E"/>
+<circle cx="625.9" cy="600.4" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="625.9" cy="600.4" r="2.5" fill="#007B3E"/>
+<circle cx="556.9" cy="696.5" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="556.9" cy="696.5" r="2.5" fill="#007B3E"/>
+<circle cx="549.9" cy="739.3" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="549.9" cy="739.3" r="2.5" fill="#007B3E"/>
+<circle cx="551.0" cy="749.4" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="551.0" cy="749.4" r="2.5" fill="#007B3E"/>
+<circle cx="557.1" cy="769.4" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="557.1" cy="769.4" r="2.5" fill="#007B3E"/>
+<circle cx="562.5" cy="789.4" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="562.5" cy="789.4" r="2.5" fill="#007B3E"/>
+<circle cx="571.6" cy="786.1" r="3.0" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="571.6" cy="786.1" r="2.5" fill="#007B3E"/>
+<circle cx="657.3" cy="711.2" r="7.6" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="657.3" cy="711.2" r="2.5" fill="#007B3E"/>
+<circle cx="626.5" cy="750.3" r="7.6" fill="#007B3E" fill-opacity="0.18" stroke="#007B3E" stroke-width="1"/>
+<circle cx="626.5" cy="750.3" r="2.5" fill="#007B3E"/>
+<path d="M1385.4,78.5 L1401.4,78.5 M1393.4,70.5 L1393.4,86.5" stroke="#c0392b" stroke-width="2"/>
+<text x="1379.4" y="44.5" font-size="15" font-weight="700" fill="#1c241b" text-anchor="end">weir: Weir and intake</text>
+<text x="1379.4" y="60.5" font-size="12" fill="#465044" text-anchor="end">17.33748 N, 121.99796 E, EL 296 m, origin good to 15 m</text>
+<path d="M1398.3,111.8 L1414.3,111.8 M1406.3,103.8 L1406.3,119.8" stroke="#c0392b" stroke-width="2"/>
+<text x="1392.3" y="145.8" font-size="15" font-weight="700" fill="#1c241b" text-anchor="end">tunnel1: Headrace Tunnel 1</text>
+<text x="1392.3" y="161.8" font-size="12" fill="#465044" text-anchor="end">17.33648 N, 121.99836 E, EL 296 m, origin good to 5 m</text>
+<path d="M622.8,597.2 L638.8,597.2 M630.8,589.2 L630.8,605.2" stroke="#c0392b" stroke-width="2"/>
+<text x="644.8" y="563.2" font-size="15" font-weight="700" fill="#1c241b" text-anchor="start">midway: Pipe bridge and tunnel portals</text>
+<text x="644.8" y="579.2" font-size="12" fill="#465044" text-anchor="start">17.32208 N, 121.97413 E, EL 275 m, origin good to 5 m</text>
+<path d="M541.9,739.3 L557.9,739.3 M549.9,731.3 L549.9,747.3" stroke="#c0392b" stroke-width="2"/>
+<text x="535.9" y="731.3" font-size="15" font-weight="700" fill="#1c241b" text-anchor="end">tunnel2: Headrace Tunnel 2</text>
+<text x="535.9" y="747.3" font-size="12" fill="#465044" text-anchor="end">17.31785 N, 121.97159 E, EL 271.465 m, origin good to 5 m</text>
+<path d="M554.5,789.3 L570.5,789.3 M562.5,781.3 L562.5,797.3" stroke="#c0392b" stroke-width="2"/>
+<text x="576.5" y="811.3" font-size="15" font-weight="700" fill="#1c241b" text-anchor="start">powerhouse: Powerhouse, surge tank and main camp</text>
+<text x="576.5" y="827.3" font-size="12" fill="#465044" text-anchor="start">17.31635 N, 121.97198 E, EL 188.04 m, origin good to 5 m</text>
+<line x1="40" y1="955" x2="191.05454957421566" y2="955" stroke="#1c241b" stroke-width="3"/><text x="40" y="947" font-size="13" fill="#1c241b">500 m</text>
+<path d="M1550,965 L1550,905 M1542,919 L1550,903 L1558,919" stroke="#1c241b" stroke-width="2.5" fill="none"/><text x="1550" y="897" font-size="14" font-weight="700" text-anchor="middle" fill="#1c241b">N</text>
+<text x="800" y="981" font-size="12" fill="#465044" text-anchor="middle">Upper Tumauini HEPP scheme as derived in P00a. Grid: PRS92 Zone III. Red cross: location origin. Green dot: structure, with its position error as a circle. Blue: water path (dashed in tunnel). Brown: access roads traced from the 2023 site development plan.</text>
+</svg>

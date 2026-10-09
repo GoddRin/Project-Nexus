@@ -72,3 +72,13 @@ scripts/tmp-*.mjs
 
 # Owner-supplied company reference documents for Twin v2 (never committed)
 /assets-src/twin/reference/
+
+# Twin v2 asset sources: Blender files and raw downloads stay local; small text sources are tracked
+/assets-src/twin/**/*.blend
+/assets-src/twin/**/*.blend[0-9]
+/assets-src/twin/downloads/
+/assets-src/twin/**/raw/
+/assets-src/twin/**/*.fbx
+/assets-src/twin/**/*.zip
+/assets-src/twin/**/*.exr
+/assets-src/twin/**/*.hdr
