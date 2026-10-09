@@ -29,6 +29,7 @@ import {
 } from "@react-three/drei";
 import { EffectComposer, Bloom, BrightnessContrast, SMAA } from "@react-three/postprocessing";
 import { StaticBatcher, STATIC_BATCH_LAYER } from "./StaticBatcher";
+import { LightCountStabilizer } from "./LightCountStabilizer";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import {
@@ -2824,6 +2825,7 @@ export default function PlantScene({ flowIntensity = 0.85 }: PlantSceneProps) {
           <RenderInfoLogger />
           {/* small meshes that never move are drawn together, one draw call per material (see the component) */}
           <StaticBatcher />
+          <LightCountStabilizer />
           <PlantSceneInner
             activePreset={activePreset}
             equipments={equipments}
