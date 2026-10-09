@@ -69,3 +69,6 @@ scripts/tmp-*.mjs
 
 # Raw Mixamo downloads: licence forbids redistributing the source files (only the baked animations in the GLB ship)
 /assets-src/mixamo/
+
+# Owner-supplied company reference documents for Twin v2 (never committed)
+/assets-src/twin/reference/
