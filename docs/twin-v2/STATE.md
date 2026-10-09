@@ -2,7 +2,7 @@
 
 The hand-off between sessions. Update at the end of every session. Status is one of: `todo`, `doing`, `done`, `blocked`, `owner` (waiting on the owner).
 
-**Renderer decision (P01a):** three.js `WebGLRenderer` (WebGL2). WebGPU not adopted: 12 to 14% faster on the specified scene, under the 20% bar. The owner may overrule before P01b (see `review/P01a/REPORT.md`).
+**Renderer decision (P01a):** three.js `WebGPURenderer` (`three/webgpu`), TSL materials, automatic WebGL2 fallback. Decided by the owner on 2026-10-10, overruling the session's WebGL2 result. Notes for building on it: `review/P01a/REPORT.md`, "Building on WebGPU".
 **Budget table:** starting targets (rewritten in P02c).
 **Waiting on the owner:** Tunnel 1 length (before P05e); desander and camp layout drawings (before P05g, P06a). Nothing blocks P01b.
 **Site position (P00a):** project grid is PRS92 Zone III; origins, levels and errors are in `components/twin/data/locations.json`. v1's terrain file is centred on the real main camp, not the powerhouse: P03a fetches new terrain per location.
@@ -10,7 +10,7 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Sub-phase | Title | Status | Date | Numbers / notes | Left to do |
 | --- | --- | --- | --- | --- | --- |
 | P00a | Inventory, data extraction, licence audit | done | 2026-10-09 | v1 baseline on Iris Xe: desktop 11.2 fps, p95 110 ms, 2,525 draw calls, 1.82 M triangles, 180 programs, 208 s to settle; phone 21.2 fps, 758 calls. 35 people, 31 cameras, 7 routes extracted; terrain port matches v1 to 0 mm at 2,020 points. Grid is PRS92 Zone III; powerhouse at 17.3163 N, 121.9720 E (v1's label is 31 km off). Report: `review/P00a/REPORT.md` | Owner: Tunnel 1 length (3,009 m on the drawing against 2.58 km); drawings listed in the report. Inventory is at component level, not prop level, for files not read line by line |
-| P01a | Renderer decision | done | 2026-10-09 | **WebGL2.** Iris Xe, Chrome 154, production build, median of 3 runs. Specified scene (60 navigators, 3,000 props, 3 cascades, GTAO, bloom, 8 lights): WebGL 11.5 fps desktop / 12.0 phone profile; WebGPU 12.9 / 13.7; WebGPU forced to WebGL2 12.4 / 13.0. Open to first frame 9.2 s / 10.8 s / 22.5 s. Budget-sized scene: WebGL 30.0, WebGPU 35.2, forced 37.3. All three paths correct in Chrome and Edge. Report: `review/P01a/REPORT.md` | KTX2 not tested (no encoder until P01c). No real phone measured. Spike page and assets deleted; source kept as text in `review/P01a/spike-src/` |
+| P01a | Renderer decision | done | 2026-10-10 | **WebGPU** (owner's decision 2026-10-10; the session measured and recommended WebGL2 on 2026-10-09). Iris Xe, Chrome 154, production build, median of 3 runs. Specified scene (60 navigators, 3,000 props, 3 cascades, GTAO, bloom, 8 lights): WebGL 11.5 fps desktop / 12.0 phone profile; WebGPU 12.9 / 13.7; WebGPU on its WebGL2 fallback 12.4 / 13.0. Open to first frame 9.2 s / 10.8 s / 22.5 s. Budget-sized scene: WebGL 30.0, WebGPU 35.2, fallback 37.3. All three paths correct in Chrome and Edge. Report: `review/P01a/REPORT.md` | For P01b: size the canvas before the first frame, check Firefox and Safari, cover the fallback's slow start in the loading screen. For P01c: prove KTX2 on WebGPU and shorten the fallback's start. No real phone measured. Spike deleted; source kept as text in `review/P01a/spike-src/` |
 | P01b | Scene shell, store, camera, clock | todo | | | |
 | P01c | Asset pipeline, loader, streaming, tiers, bench | todo | | | |
 | P02a | Slice: ground, guardhouse, plants | todo | | | |

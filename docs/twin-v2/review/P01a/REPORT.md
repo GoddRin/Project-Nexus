@@ -4,11 +4,15 @@
 
 ## Decision
 
-**Twin v2 uses three.js `WebGLRenderer` (WebGL2).** `WebGPURenderer` is not adopted.
+**Twin v2 uses three.js `WebGPURenderer` (`three/webgpu`) with TSL materials and its automatic WebGL2 fallback.** Decided by the owner on 2026-10-10, overruling this session's result.
 
-The rule in the prompt was: adopt WebGPU only if its median frame rate is at least 20% higher, there are no visual regressions, the fallback works and the drei pieces work. On the specified scene WebGPU was 12% faster on the desktop profile and 14% faster on the phone profile; against a WebGL path with one obvious fix (ambient occlusion from depth, no second scene pass) the lead was 3% and 8%. That is under 20%, so the rule gives WebGL2.
+What that means for later sessions is in "Building on WebGPU" below. The measurements and the reasoning that follow are unchanged from 2026-10-09 and are kept as the record.
 
-One thing the owner should know before accepting it: on a lighter scene, sized like the real budget, WebGPU's lead grew to 17 to 26%. That is at the bar, not clearly over it, and it came with a much slower start for visitors whose browser has no WebGPU (see "The case for WebGPU"). I kept to the rule. Say so if you would rather take the other side.
+### What the session recommended (2026-10-09, overruled)
+
+The session chose WebGL2. The rule in the prompt was: adopt WebGPU only if its median frame rate is at least 20% higher, there are no visual regressions, the fallback works and the drei pieces work. On the specified scene WebGPU was 12% faster on the desktop profile and 14% faster on the phone profile; against a WebGL path with one obvious fix (ambient occlusion from depth, no second scene pass) the lead was 3% and 8%. That is under 20%, so the rule gives WebGL2.
+
+One thing the owner should know before accepting it: on a lighter scene, sized like the real budget, WebGPU's lead grew to 17 to 26%. That is at the bar, not clearly over it, and it came with a much slower start for visitors whose browser has no WebGPU (see "The case for WebGPU"). I kept to the rule and offered the owner the other side; the owner took it.
 
 ## What was measured
 
@@ -104,12 +108,25 @@ Against it:
 - Part of the lead can be had on WebGL: drawing shadow maps once a frame and taking occlusion from depth removed a fifth of the triangles; a merged post chain (the `postprocessing` library already in the project, not tested here) should close more.
 - KTX2 under WebGPU is unproven on this machine.
 
+## Building on WebGPU
+
+What the spike already proved, and what it leaves for P01b and P01c to deal with.
+
+1. **Set-up that worked:** `import * as THREE from "three/webgpu"`; the R3F `Canvas` takes `gl={async (props) => { const r = new THREE.WebGPURenderer({ canvas: props.canvas, antialias: false }); await r.init(); return r; }}`; shadows through `CSMShadowNode` set on `light.shadow.shadowNode`; post effects through `RenderPipeline` with `pass()`, the GTAO node and the bloom node; `renderer.toneMapping = AgXToneMapping`. The working code is in `spike-src/SpikeWebGPU.tsx.txt`.
+2. **Plain glTF materials need no rewriting.** `MeshStandardMaterial` from `GLTFLoader` rendered as it was. Only custom shading has to be TSL: `onBeforeCompile` and `ShaderMaterial` do not work on this renderer.
+3. **The `postprocessing` and `@react-three/postprocessing` packages do not work with this renderer.** Post effects are TSL nodes (`three/examples/jsm/tsl/display/`). v1 keeps using the old packages; v2 must not import them.
+4. **Visitors without WebGPU start slowly.** The WebGL2 fallback took 17 to 22 s from page open to first frame against 8 to 11 s on WebGPU, almost all of it shader compilation. P01b's loading screen must cover it, and P01c should try the obvious remedies (fewer material variants, compiling zone by zone with `compileAsync`, a lighter post chain on the fallback) and measure again. The fallback's frame rate is not the problem: it ran as fast as WebGPU.
+5. **The canvas must have its real size before the first frame.** The one failure seen (dev server, a black page, a validation error about a 300 x 150 depth buffer) fits a first frame drawn at the canvas's default size. P01b should size the renderer before rendering and handle the renderer's error event by rebuilding.
+6. **KTX2 under WebGPU is still to be proved.** P01c must load a real Basis file on WebGPU and on the fallback before the asset pipeline depends on it; WebP is the stand-by.
+7. **Firefox and Safari were not checked.** P01b should check both, since they decide who gets the fallback.
+8. **Debug figures differ:** draw calls are `renderer.info.render.drawCalls` (`calls` counts passes), and there is no `info.programs`; the spike read the pipeline cache. `CONTRACTS.md` section 7's `stats()` should report pipelines for `programs`.
+
 ## What later phases should take from this
 
 1. **Sixty full-detail people cannot be afforded on either path.** 60 navigators at 66 thousand triangles gave 11 to 13 fps. P07 and P02c need the planned LODs (20k, 6k, 1.5k) and a crowd count per tier. The risk "80 skinned people too slow" stays open with this as its first evidence.
 2. **Ambient occlusion at full resolution is too dear for Medium on Iris Xe**: it halves the frame rate. P12a should use half resolution or fewer samples and keep it off on Low.
-3. **With a multi-pass composer on WebGL, set `shadowMap.autoUpdate = false` and request one update a frame.** Otherwise every pass that draws the scene redraws all the shadow maps (the first run drew 43.7 million triangles a frame for this reason).
-4. **Take occlusion from the depth buffer**, not from a separate normal pass.
+3. (WebGL only, no longer needed: with a multi-pass composer, set `shadowMap.autoUpdate = false` and request one update a frame, or every scene pass redraws all the shadow maps.)
+4. **Occlusion from the depth buffer or from a normal buffer cost the same on WebGPU** (13.1 against 12.9 fps); either will do.
 5. **Pass `shadows` to the R3F `Canvas`.** Without it R3F switches shadows off again when it reconfigures, which silently voided one early run.
 6. With the frame cap off, WebGL frames arrive in bursts with stalls of 0.3 to 0.45 s between them; with the cap on, pacing is even (33 ms). Frames per second is the figure to trust from an uncapped bench, not p95. P01c's bench should say so or run capped.
 
@@ -125,7 +142,7 @@ Against it:
 
 ## For the owner
 
-1. **The decision is WebGL2.** If you would rather have WebGPU for the lead at realistic loads, say so before P01b starts: it changes how every material is written.
+1. **Decided 2026-10-10: WebGPU.** Nothing further is needed from you on this.
 2. **The app wrote 36 new speech clips** into `public/voice/` and `voice-bank/atlas-tts/` (and touched `public/voice/manifest.json`) while the bench was loading pages. They are not part of this commit and are left as they are.
 3. Blender's open scene was the unsaved default; I emptied it to bring the props in and left it empty.
 
