@@ -68,8 +68,9 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Permission to download the monthly review decks for local extraction | P00a | given 2026-10-09 for the latest deck only; MPR-53 downloaded and indexed (reference R2) |
 | Scope: add upstream works (weir, intake, desander, pipe bridge, tunnel portals) as extra locations? | before P05 | **yes** (2026-10-09): added as P05g, P05h, P06e |
 | Approval to show progress percentages and dates publicly | P14b | **yes** (2026-10-09): physical progress and completion dates only |
-| Coordinates of the weir and midway locations (or a site development plan drawing) if P00a cannot read them from the decks | P05g | pending P00a |
-| Which v1-only camp features really exist (basketball court and stage, QA/QC lab) | P06a | pending |
+| Coordinates of the weir and midway locations | P00a | **not an owner input** (2026-10-09): the owner does not know them; P00a derives them from the drawings, the site development plan and open map data |
+| Which v1-only camp features really exist (basketball court and stage, QA/QC lab) | P06a | **both exist** (2026-10-09): build them from v1's layout |
+| Tunnel 1 length | P05e | **use the latest decks: about 2.58 km** (2026-10-09) |
 | Approval of the vertical slice | P02c | pending |
 | Mixamo sign-in and downloads from the list | P08a | pending |
 | Confirmation of which staff details are real and cleared (licence, experience, province) and that photos match names | P09d | pending |

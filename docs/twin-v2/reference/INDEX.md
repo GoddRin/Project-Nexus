@@ -52,7 +52,7 @@ Differences from v1 that v2 must correct:
 A plan over satellite imagery, north up. Read from it:
 
 - The **weir, desander and Tunnel 1 inlet portal** are at the north-east end on the river, with a **mixing facility** and the **satellite Temfacil** beside them.
-- **Tunnel 1** runs straight south-west, labelled L = 3010 m (the 2026 decks use chainages up to Sta. 2+579, so the built length is shorter than this early figure; confirm with the owner).
+- **Tunnel 1** runs straight south-west, labelled L = 3010 m. That is an early design figure: the 2026 decks use chainages from Sta. 0+021 to 2+579. **The owner has decided the latest figure is the one to use: Tunnel 1 is about 2.58 km.**
 - At its lower end, close together: **Tunnel 1 outlet portal, pipe bridge with catwalk access, Tunnel 2 inlet portal**.
 - **Tunnel 2**, L = 535 m, continues south to its **outlet portal** at the **surge tank**; the **penstock**, L = 150.00 m, drops to the **powerhouse**.
 - The **main Temfacil** is not beside the powerhouse: it sits on the access road uphill, between the Tunnel 2 area and the powerhouse, with a second **mixing facility** below it.

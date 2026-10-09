@@ -2,7 +2,7 @@
 
 Five sessions. There are two camps. The **main Temfacil** is at the powerhouse complex and was built from July 2023 to late 2024: main site office, ESH office, staff accommodation, workers' barracks 1 and 2 with a common toilet block, main warehouse, site clinic, canteen, motor pool and fabrication area, genset and air-compressor shed, with its own access road. The **satellite camp** is at the weir (P06e). The explosives magazine is a separate fenced compound.
 
-v1 added things the monthly reviews do not show (a basketball court with a stage, a QA/QC lab building, specific room layouts). Keep them only where the owner confirms they exist; mark each in the inventory as "v1 only: confirm". Model each real building from its photographs in `assets-src/twin/reference/photos/powerhouse/camp-*/`.
+The owner has confirmed (2026-10-09) that the **basketball court with its stage** and the **QA/QC office and lab** exist on site even though no monthly review shows them: build both, using v1's layout and contents as the reference since there are no photographs. Other v1-only details (specific room layouts, furniture) give way to the floor plans and photographs where those exist. Model each real building from its photographs in `assets-src/twin/reference/photos/powerhouse/camp-*/`.
 
 v1 also holds a great deal of authored detail here (rooms, meals, routines); the inventory is the checklist, and nothing in it marked **keep** or **upgrade** may be lost.
 
