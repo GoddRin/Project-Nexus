@@ -77,6 +77,33 @@ What the pictures show:
 
 Consequences for the plan: the hard-hat colour rule and the clothing list go into P07b; hats-off moments and other in-the-moment actions are P08e; the vegetable patch, outdoor kitchen and solar lights go into P06; the roadside stream and riprap into P03a and P10c; the steel rib shape into P05e; the jumbo into P10a.
 
+## R5. Personnel photographs and the real site office (supplied 2026-10-10)
+
+- **Files (git-ignored):** `assets-src/twin/reference/owner-personnel-office-2026-10-10/`: five personnel photographs named "Name - Role.jpg", and `Site office images/` with eleven photographs; contact sheets `sheet-*.jpg`.
+- **The owner's instruction:** build the real staff office, outside and inside, into the site; give the staff their real faces (2D or 3D, whichever suits) on bodies made for them.
+
+**Personnel photographs received (5 of the roster; more to come):**
+
+| File name gives | Notes for the modeller |
+| --- | --- |
+| Amor Floresca Jr., Geo Mapper | Front-facing selfie, indoor light |
+| Elbert Figuracion, AutoCAD Operator | Front-facing, wide grin, glasses: ask for a neutral-expression photo too |
+| Jayson Aggabao, Document Controller | Front-facing, glasses, slightly low angle |
+| Noel Lavapie, Project Control Head | Front-facing, glasses, smiling |
+| Randy Gamboa, Admin Assistant | Not yet viewed: check it before use |
+
+The roles in these file names are the real ones and replace v1's invented titles for the same people in `people.json`. Each is a single front photograph taken close with a phone (some lens distortion). For a good 3D likeness ask the owner for, per person: one front photo with a neutral face, one of each side, from about 1.5 m with the phone at eye level, in even shade, glasses off for one of them. P07c works with what exists and improves when better photos arrive.
+
+**The real site office (model this, not v1's invented interior):**
+
+- **Outside:** a long single-storey building of white insulated wall panels on a low concrete base, with a shallow-pitch metal gable roof on green steel columns and rafters, overhanging eaves, green window frames with sliding windows and patterned curtains. Over the entrance: the Sta. Clara logo and a sign reading "Tumauini HEPP OFFICE". Beside the door: the **Project ESH Statistic Board** (a large printed board with handwritten figures on white cards), a notice board, a red tarpaulin awning, segregated waste bins with coloured lids, a signboard on a stand. A white double-cab pickup parked on the bare earth and gravel yard in front. Forested ridge behind.
+- **Inside, the plan:** the entrance opens into a **straight central corridor** running the length of the building to a second door at the far end (daylight visible through it). Rooms open off both sides behind white panel partitions with flush doors (some padlocked). Bare smooth concrete floor. No ceiling: the green steel trusses, purlins and the silver insulation under the roof sheets are exposed, with LED bulbs hanging on flex and **orange-red electrical conduit** running along walls and overhead. In the corridor: two black leatherette sofas, fire extinguishers on stands, potted snake plants, a small table with a logbook, safety vests hanging by a door.
+- **Engineering and Project Control Department (with IT):** a large open bay marked by a hanging sign on a green column. Folding tables pushed together as shared desks, white and green monobloc plastic chairs, laptops and monitors, a few desktop towers, a whiteboard with writing, stand fans and wall fans, a water dispenser with a purple jug on a mat, hard hats and hi-vis vests hung on wall hooks, backpacks on chair backs, mugs, a kettle, extension cords, paper stacks, a long brown-topped table, framed certificates on the corridor wall outside.
+- **PED Department and subcontractor area:** a cluster of low white-panel cubicles toward the far end near the exit, with small desks.
+- **The far end:** an exit door opening onto grass, an emergency exit sign with twin emergency lamps above it, comfort rooms for men and women to one side behind a tiled or dark-painted lower wall, a fire extinguisher.
+- **Notices on the walls:** "No smoking / Bawal manigarilyo"; "Bawal dumura" (no spitting); health alerts (hydration colour chart and others); a heat-stress awareness poster; a blood-donation notice; the emergency response team chart; a site map; warning notices. Reproduce these as the kind of notices they are; keep health and safety wording generic and correct.
+- **The ESH Statistic Board** carries real incident figures. The layout is modelled; the figures shown in the twin are blank cards or simulated values marked as such, under the confidentiality rule, unless the owner approves showing the real ones.
+
 ## R2. Monthly Project Review presentations (SharePoint)
 
 - **Link:** shared folder "04 Monthly Project Review Presentation" under `LUZ-21-009 / 03 Project Planning & Cost Control` on the Tumauini project OneDrive. The link itself opens the folder without sign-in, so it is treated as a secret: it is stored only in the git-ignored file `assets-src/twin/reference/share-link.txt` and must never be written into a tracked file, a commit message or the app. Run the scripts from the project root; they read the link from that file.

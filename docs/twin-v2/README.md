@@ -20,7 +20,7 @@ Every session then does this, in order:
 
 ## Closing a session
 
-1. Update `STATE.md`: status, date, measured numbers, what is left.
+1. Update `STATE.md`: status, date, measured numbers, what is left. Then refresh the owner's pinned progress page: run `node scripts/twin/build-progress-page.mjs` and publish `.cache/twin-progress/twin-v2-progress.html` with the Artifact tool to the existing artifact, passing `url: "https://claude.ai/artifact/LoxoMYuggi72qBKgvYkfA6"` (read it first with `action: "read"` as the tool requires; never publish without the `url`, which would create a second page). If the Artifact tool is not available in the session, skip this and say so in the report.
 2. Append to `DECISIONS.md` (one line per decision: what, why) and `RISKS.md` if a risk appeared or was retired.
 3. Save review images to `review/<sub-phase>/` and write `review/<sub-phase>/REPORT.md`: what was built, numbers against budget, known gaps, what the owner must look at or do.
 4. Commit on branch `twin-v2` with message `twin-v2(<sub-phase>): <summary>`. Do not push.
@@ -34,6 +34,7 @@ Every session then does this, in order:
 | `CONTRACTS.md` | Folder layout, naming, and the data formats every session must use unchanged |
 | `QUALITY-BAR.md` | Pass/fail checklists and budgets per asset type; lighting targets per time of day |
 | `STATE.md` | Progress tracker (the hand-off between sessions) |
+| `IDEAS-BACKLOG.md` | Unscheduled pool of further ideas for walk mode, free roam and story mode; the owner stars priorities and story packs draw from it |
 | `TOOLBOX.md` | Free tools and sources for models, motion and scans; read by the sessions that build people, animals, vehicles and props |
 | `DECISIONS.md`, `RISKS.md` | Created in P00; appended to by every session |
 | `P00` to `P15` | The phases |
@@ -58,8 +59,9 @@ Every session then does this, in order:
 | P12 Effects and sound | a b | Work effects, atmosphere, positional audio |
 | P12 Living environment | c d e f g | Live site weather driving sky, clouds, rain and wind; heat, rain and wind changing how people, animals and machines behave; small nature details and camp night life; the environment through the day, month and year; ground, vehicles and people that get muddy, dusty and clean again (file `P12-living-environment.md`) |
 | P13 Interface | a b c | Shell and dock, search and labels, tools |
-| P13 Walk mode | d e f | Explore on foot in first or third person: controller and cameras, interaction and site rules, rides and guided visits (file `P13-walk-mode.md`) |
+| P13 Walk mode | d e f g h i j k | Explore on foot in first or third person: controller and cameras, interaction and site rules, rides and guided visits, spoken Tagalog and English lines, doors and objects you operate, your own character and things to do, free roam with consequences, living on site (needs, phone, jobs, pay, friends), running the plant and special events (file `P13-walk-mode.md`) |
 | P14 Data | a b | Real records, progress timeline, deep links, second-project readiness |
 | P15 Ship | a b | Optimisation, QA, cut-over |
+| P16 Story mode | a to h, then packs | "Unang Liwanag": a long campaign through the real building of the project, with a cozy morning, a career drama by day and folklore horror at night; careers for every site and office role; built after P15 and extended in packs (file `P16-story-mode.md`) |
 
 P02 is a gate: nothing in P03 onward starts until the owner has approved the slice.

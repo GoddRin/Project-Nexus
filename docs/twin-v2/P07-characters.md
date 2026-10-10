@@ -87,12 +87,26 @@ Existing pipeline to reuse and extend, not replace: `scripts/blender/add_mixamo_
 **Steps.**
 1. `scripts/blender/twin/bake_person.py`: takes a `LookSpec`, assembles body, garments, hair and gear, removes hidden faces, merges to one skinned mesh plus hair, packs one atlas, generates LODs, exports `char.person.<id>.glb`. One draw call for the person (two with hair) at every LOD.
 2. `scripts/twin/build-people.mjs`: for each entry in `people.json` and each generated crew member, write the `LookSpec`, run the bake headless, register in `assets.json`.
-3. **Named staff:** give each person a fixed, distinct look consistent with v1's record (gender, skin tone, hair, facial hair, glasses, hard-hat and vest colour). Where a photo exists in `public/images/personnel/` and its file matches the person, use it as likeness reference for build, hair and age only. Do not project photographs onto faces.
+3. **Named staff:** each person gets their real face by the procedure in "Real faces for the named staff" below, where a photograph and consent exist; everyone else gets a fixed, distinct generated look. Roles and titles come from reference R5 where it names them.
 4. **Crew generation:** seeded sampling over body, face shapes, skin, hair, height (within plus or minus 4%), outfit variant, colour choices, wear baselines and default props, with rules (no two adjacent crew ids share body and outfit variant; age distribution skews younger for labourers and older for foremen).
 5. Shared-texture option for the far crowd: LOD2 and impostors use a palette-tinted shared atlas so 80 people do not mean 80 texture sets in memory. Measure memory and decide the cut-over distance.
 6. Line-up scene: all named staff and a 40-person crew sample, rendered in Blender and captured in the browser.
 
 **Pass when.** Line-up approved by the owner; texture memory for 80 people within the measured budget; any two people standing together are distinguishable at 10 m.
+
+### Real faces for the named staff (owner's instruction, 2026-10-10; replaces the earlier "likeness reference only" rule)
+
+The owner wants each staff member to have **their own face** on a body made to suit them, from the photographs in reference R5 (and more as they arrive). Build it as follows, with free tools only.
+
+1. **Consent first.** `people.json` gains, per person: `likeness: { source: photo files, consent: boolean, allowHarm: boolean, allowStory: boolean }`. The owner confirms each flag after asking the person. No photograph-based face ships for a person whose `consent` is not true; that person gets a generated face instead. `allowHarm` and `allowDeath` (both default true: the owner has stated that staff and workers approved; set either false to opt a person out) govern whether injury and death are shown on them in free roam and story mode (P16 section 4); set false to opt a person out) governs whether injuries are drawn on them in free roam and story mode (P16 section 4); `allowStory` (default true once consent is given) whether they appear in story scenes.
+2. **Shape (3D):** detect face landmarks on the front photo (MediaPipe Face Landmarker, free and open source: check licence), and use them to fit the MPFB head's face-shape controls: face width and length, jaw, chin, cheekbones, nose length and width, eye spacing and size, brow height, lip fullness, ear size. Refine by eye in Blender with the photo as a background image, front and (when supplied) side. Correct for phone-lens distortion before fitting (close selfies widen the nose and narrow the ears).
+3. **Skin and features (texture):** project the photograph onto the fitted head in Blender, keep the projected detail for the central face (brows, eyes region, nose, mouth, moles, lines), and blend it into the body's own skin texture toward the ears, neck and scalp so tone and lighting match. Remove baked highlights and shadows from the photo first; even the tone. Paint out glasses and rebuild the skin beneath, then add **glasses as a separate 3D prop** where the person wears them.
+4. **Hair, brows, facial hair:** matched from the photo with the hair-card library (style, hairline, greying).
+5. **Body to suit:** height, build and age from the P07a body set, chosen with any full-length photo the owner supplies, otherwise a plausible default the owner can correct; their real role's outfit and hard-hat colour (staff: white).
+6. **Expression:** photographs with a grin or a tilted head are neutralised during fitting; the person's characteristic smile can be kept as a blendshape.
+7. **A 2D option** for anyone whose photo will not fit well, or at long distance: the photograph, cleaned and cropped, is used as the portrait on the inspector card and ID badge only, and the 3D head is a close generic match. Use this rather than ship a poor 3D likeness.
+8. **Review:** a side-by-side sheet of photo and model for each person goes to the owner; nothing ships until the owner (and, ideally, the person) says it is them.
+9. Photographs and likeness textures are personal data: sources stay in the git-ignored reference folder; the shipped textures are served only as part of the character model.
 
 ## P07d. Character runtime
 

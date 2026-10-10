@@ -72,10 +72,25 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | P13d | Walk mode: character controller, cameras, input | todo | | | |
 | P13e | Walk mode: interaction, site rules, guidance | todo | | | |
 | P13f | Walk mode: rides, guided visits, extras | todo | | | |
+| P13g | Voices: greetings, answers and bump reactions in Tagalog and English | todo | | | |
+| P13h | Interactive world: doors by key or tap, objects, your own character, things to do | todo | | | |
+| P13i | Free roam: do anything, with people, animals and the site reacting | todo | | | |
+| P13j | Living there: body, needs, phone, jobs, pay, friends, your dog | todo | | | |
+| P13k | Running the plant, events and memorable moments | todo | | | |
 | P14a | Real records and labels | todo | | | |
 | P14b | Progress timeline, second-project readiness | todo | | | |
 | P15a | Optimisation and full QA | todo | | | |
 | P15b | Cut-over and documentation | todo | | | |
+| P16-0 | Story detailing pass: full story bible, mission lists, estimates (no code) | todo | | | |
+| P16a | Story framework: missions, journal, saves, time bands, standings | todo | | | |
+| P16b | Body, injury and consequence (needs always on, blood rules, consent flags) | todo | | | |
+| P16c | Careers I: trades, tunnel, plant | todo | | | |
+| P16d | Careers II: staff office (IT, PM, document control, AutoCAD, timekeeper, admin, HR and more), safety, camp | todo | | | |
+| P16e | Night framework and three folklore cases | todo | | | |
+| P16f | Prologue and Act I: Ang Daan | todo | | | |
+| P16g | Morning stories and personal arcs | todo | | | |
+| P16h | The endless layer: generated jobs, calendar missions, collections | todo | | | |
+| P16-pack-1 to 28 | Story and feature packs in the order fixed in `IDEAS-BACKLOG.md` ("Build order"); every idea in the backlog is built, one pack per session | todo | | Next pack: 1 | |
 
 ## Owner inputs
 
@@ -97,4 +112,9 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Which Kia truck model the site uses, and local vehicles | P10a | **answered** (2026-10-10): Kia K2500-type white cab-over drop-side truck (photo shown by the owner); include the hired passenger motorcycle, the tricycle at the lower gate and the carabao sled |
 | Optional phone captures (scans of real PPE, tools and vehicles; short videos of real tasks; ground photos; sounds): see `TOOLBOX.md` | any time before P06d, P07b, P08a, P10a | optional |
 | Wildlife list | P11c | **approved** (2026-10-10): build all recommended species |
+| Voice recordings of the line list by willing colleagues (phone, quiet room), or a free speech account for generated voices | P13g | optional; pending |
+| Who may use free roam (default: signed-in owner and admin accounts only, not the public) | P13i | default set; owner may change |
+| The plant's real start-up sequence, if the control-room simulation should follow it | P13k | optional |
+| Photographs of the remaining staff (front neutral, both sides, one full length) and, for each person, consent to use their face | P07c | 5 photos received 2026-10-10 (reference R5); consent flags pending  Owner stated 2026-10-10 that staff and workers have approved, including being hurt or killed in free roam and story mode |
+| Which v1 office rooms exist beyond what the R5 photographs show | P06a | pending |
 | Go-ahead to make v2 the default | P15b | pending |

@@ -10,6 +10,8 @@ Common to every sub-phase: the "common" list at the top of `P05-hydro-works.md` 
 
 **From the owner's photographs (R4 `site-08`, `site-03`, `site-04`):** camp houses are single-storey white prefab panel buildings with rust-streaked metal roofs, green window frames and wall air-conditioners, red flexible electrical conduit run along the eaves, solar street lights on poles and small solar panels on roofs; beside them a **bamboo-trellis vegetable patch** (gourds, taro, banana), uncut grass, an **outdoor kitchen** with a concrete counter under a lean-to, parked motorcycles (one under a cover); the yard store has rows of blue and red drums, stacked timber and large used tyres. Build these.
 
+**The main site office is modelled from the owner's photographs, reference R5** (outside, corridor, the Engineering and Project Control bay with IT, the PED and subcontractor cubicles, the exit and comfort rooms, the notice walls and the ESH board). R5 replaces v1's invented office layout, zones and furniture wherever they differ; keep from v1 only rooms the owner confirms exist. Furniture is what the photographs show: folding tables, monobloc chairs, stand fans, a water dispenser, black sofas in the corridor, hard hats and vests on wall hooks.
+
 ## P06a. Building kit, site, main office (exterior and interior)
 
 **v1 source.** `TemfacilFacility.tsx` 132 to 720 (pad, kerbs, drains, pavers, parking, office shell, doors, yard pole), `TemfacilOfficeInterior.tsx` (all of it: zones 1 to 6, desks, screens, plotter, meeting table, PM office), `screenTextures.ts`, `SharedMaterials.tsx`.

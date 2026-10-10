@@ -117,6 +117,7 @@ type Person = {
   look: LookSpec;                // 4.4
   home: string;                  // station id of bunk or desk
   verified: { licence?: string; yearsOfExp?: number; province?: string }; // shown only when present
+  likeness?: { photos: string[]; consent: boolean; allowHarm: boolean; allowDeath: boolean; allowStory: boolean }; // real-face modelling, P07c; flags set by the owner
 };
 type RoleGroup =
   | "management" | "engineer" | "surveyor" | "geologist" | "qaqc" | "supervisor" | "foreman"
