@@ -1,0 +1,139 @@
+{
+ "label": "prod-webkit",
+ "base": "http://localhost:3100",
+ "browser": "webkit",
+ "forcedWebGL": false,
+ "when": "2026-10-10T03:34:57.963Z",
+ "start": {
+  "fps": 31.52246814218645,
+  "ms": 31.72340425531915,
+  "p95": 48,
+  "calls": 2,
+  "tris": 8193,
+  "programs": 2,
+  "textures": 3,
+  "geometries": 2,
+  "heapMB": 0,
+  "zonesLoaded": 0,
+  "agents": 0,
+  "gpuMB": 11.600980758666992,
+  "lights": 1,
+  "pixelRatio": 1,
+  "resolution": 1,
+  "streaming": {
+   "zonesLoaded": 0,
+   "zonesLoading": 0,
+   "instances": 0,
+   "lod": [
+    0,
+    0,
+    0
+   ],
+   "hidden": 0,
+   "draws": 0,
+   "tasksQueued": 0,
+   "longestTaskMs": 0,
+   "longestTaskKind": ""
+  },
+  "assets": {
+   "cached": 0,
+   "bytes": 0
+  },
+  "canvas": [
+   1184,
+   844
+  ],
+  "overviewCalls": 2,
+  "overviewTris": 8193
+ },
+ "streamIn": {
+  "median": 25,
+  "worst": 85,
+  "p95": 39,
+  "frames": 285,
+  "task": 13,
+  "kind": "pipeline"
+ },
+ "probe": {
+  "tier": "low",
+  "score": 0.036571428571428574,
+  "remembered": false
+ },
+ "results": [
+  {
+   "name": "empty world: starting values",
+   "pass": true,
+   "detail": "overview 2 draw calls, 8193 triangles; from the far pose: GPU 11.6 MB, 3 textures, 2 geometries, 2 pipelines"
+  },
+  {
+   "name": "test zone streams in",
+   "pass": true,
+   "detail": "backend webgl2; page usable in 1884 ms, zone in 6246 ms later; 2500 placements of 5 assets (760 KB)"
+  },
+  {
+   "name": "2,500 props in 15 draw calls or fewer",
+   "pass": true,
+   "detail": "5 draw calls for the zone (7 in all, 2 without it); 2462 props in view as LOD0/1/2 = 0/0/2462, 38 outside the view; 411543 triangles"
+  },
+  {
+   "name": "near the props: all three LODs in use",
+   "pass": true,
+   "detail": "LOD0/1/2 = 9/340/1637, 514 outside the view or beyond the draw distance; 8 draw calls for the zone, 429833 triangles, 34.4 fps"
+  },
+  {
+   "name": "still camera: no prop changes level",
+   "pass": true,
+   "detail": "0 changes of the LOD tally in 90 frames"
+  },
+  {
+   "name": "flying away unloads the zone; GPU memory within 5% of the start",
+   "pass": true,
+   "detail": "GPU 32.4 MB with the zone, 11.6 MB after, 11.6 MB at the start (0.0% apart); textures 3 against 3, geometries 2 against 2; 0 assets still cached"
+  },
+  {
+   "name": "streaming in: no task holds a frame for more than 8 ms",
+   "pass": false,
+   "detail": "longest task 13.0 ms (pipeline); zone back in 7645 ms over 285 frames; worst frame 85.0 ms, p95 39.0 ms, against 25.0 ms with nothing loading"
+  },
+  {
+   "name": "five loads and unloads: no growth",
+   "pass": true,
+   "detail": "GPU after each unload: 11.6, 11.6, 11.6, 11.6, 11.6 MB; textures 3, 3, 3, 3, 3; geometries 2, 2, 2, 2, 2; JS heap 0, 0, 0, 0, 0 MB"
+  },
+  {
+   "name": "shell stand-in: shown while the zone is out, hidden while it is in",
+   "pass": true,
+   "detail": "out {\"visible\":true,\"meshes\":1}, in {\"visible\":false,\"meshes\":1}, out again {\"visible\":true,\"meshes\":1}, removed true; 0 assets cached at the end (a prop stood in as the shell: no real shell asset exists yet)"
+  },
+  {
+   "name": "tiers set the pixel ratio",
+   "pass": true,
+   "detail": "on a 2x screen: low 1, medium 1.25, high 1.5, ultra 2; canvas 1184, 1480, 1776, 2368 px wide for 1184 CSS px"
+  },
+  {
+   "name": "dynamic resolution: down to 60% under slow frames, back to 100% when they are quick",
+   "pass": true,
+   "detail": "slow frames: scale 0.9 > 0.8 > 0.7 > 0.6, pixel ratio 0.75, canvas 888 px for 1184 CSS px; quick frames: scale 0.7 > 0.8 > 0.9 > 1, pixel ratio 1.25, canvas 1480 px"
+  },
+  {
+   "name": "dynamic resolution survives a window resize",
+   "pass": true,
+   "detail": "scale 0.9: pixel ratio 1.13 before, 1.13 after resizing from 1184 to 1044 CSS px"
+  },
+  {
+   "name": "start-up probe chooses a tier and remembers it",
+   "pass": true,
+   "detail": "first visit: score 0.04, tier low, usable in 4226 ms; second visit: tier low from memory, usable in 1835 ms; ?q= left out of the address (null)"
+  },
+  {
+   "name": "KTX2 textures on this renderer",
+   "pass": null,
+   "detail": "not measured: KTX-Software is not installed on this machine, so the build wrote WebP; the loader has KTX2 wired (engine/assets.ts) but no .ktx2 file has been through it"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": "none in any page of this run"
+  }
+ ]
+}

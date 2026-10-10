@@ -17,6 +17,10 @@ Formats are fixed by `docs/twin-v2/CONTRACTS.md` section 4. Files here are writt
 | `crew.json` | same | yes (P09) | Whole-site head-count by role group |
 | `sources/site-plan-georef.json` | `scripts/twin/reference/georef_site_plan.py` | no | Positions and road traces read off the site development plan |
 | `types.ts`, `site.ts` | hand-written (P01b) | yes | Types and typed access for `locations.json` and `cameras.json` |
-| `assets.json`, `zones/`, `clips.json`, `stations.json`, `activities.json`, `programme.json`, `vehicles.json`, `species.json` | later phases | | not yet created |
+| `assets.json` | `scripts/twin/build-assets.mjs` | yes | Five pipeline test props (P01c) |
+| `zones/<zone id>.json` | `scripts/blender/twin/export_zone.py` | yes, one at a time, when the camera is near | `powerhouse.pipeline-test`: 2,500 test placements, loaded only with `?testzone=1` |
+| `zones/index.json` | `scripts/twin/build-assets.mjs` | yes | One row per zone: what streaming needs before loading it |
+| `stations.json` | `scripts/blender/twin/export_zone.py` | yes (P09) | not yet created: no zone has stations |
+| `clips.json`, `activities.json`, `programme.json`, `vehicles.json`, `species.json` | later phases | | not yet created |
 
 Never put cost, margin, billing, KPI ratings, survey scores or incident counts in this folder.

@@ -1,0 +1,152 @@
+[
+ {
+  "id": "prop.cement-bag",
+  "url": "/models/twin/props/cement-bag.glb?v=978e7fe652",
+  "bytes": 77184,
+  "tris": [
+   844,
+   400,
+   150
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.229,
+    0.001,
+    -0.348
+   ],
+   "max": [
+    0.234,
+    0.181,
+    0.351
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.cement_bag"
+  ]
+ },
+ {
+  "id": "prop.drum-blue",
+  "url": "/models/twin/props/drum-blue.glb?v=07f0492327",
+  "bytes": 129544,
+  "tris": [
+   1473,
+   400,
+   150
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.317,
+    0,
+    -0.319
+   ],
+   "max": [
+    0.317,
+    0.93,
+    0.319
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.barrel_03"
+  ]
+ },
+ {
+  "id": "prop.drum-red",
+  "url": "/models/twin/props/drum-red.glb?v=696516ee3b",
+  "bytes": 163036,
+  "tris": [
+   1498,
+   399,
+   150
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.282,
+    -0.007,
+    -0.282
+   ],
+   "max": [
+    0.282,
+    0.873,
+    0.282
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.Barrel_01"
+  ]
+ },
+ {
+  "id": "prop.jerrycan",
+  "url": "/models/twin/props/jerrycan.glb?v=94a6e19bab",
+  "bytes": 197196,
+  "tris": [
+   1499,
+   399,
+   195
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.17,
+    0,
+    -0.089
+   ],
+   "max": [
+    0.18,
+    0.455,
+    0.083
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.metal_jerrycan"
+  ]
+ },
+ {
+  "id": "prop.propane-tank",
+  "url": "/models/twin/props/propane-tank.glb?v=7af101e8c3",
+  "bytes": 211624,
+  "tris": [
+   1475,
+   375,
+   175
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.169,
+    0,
+    -0.169
+   ],
+   "max": [
+    0.169,
+    0.554,
+    0.169
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.propane_tank"
+  ]
+ }
+]

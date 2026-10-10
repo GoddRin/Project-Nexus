@@ -1,0 +1,31 @@
+[
+ {
+  "id": "powerhouse.pipeline-test",
+  "location": "powerhouse",
+  "title": "Pipeline test yard (P01c)",
+  "bounds": {
+   "min": [
+    81.473,
+    12.993,
+    -140.535
+   ],
+   "max": [
+    165.18,
+    13.968,
+    -85.557
+   ]
+  },
+  "streamIn": 420,
+  "streamOut": 520,
+  "shell": null,
+  "test": true,
+  "assets": [
+   "prop.cement-bag",
+   "prop.drum-blue",
+   "prop.drum-red",
+   "prop.jerrycan",
+   "prop.propane-tank"
+  ],
+  "placements": 2500
+ }
+]

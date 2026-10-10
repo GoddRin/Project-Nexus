@@ -7,9 +7,9 @@
 import { createStore } from "zustand/vanilla";
 import { subscribeWithSelector } from "zustand/middleware";
 import { useStore } from "zustand";
-import type { LocationId } from "../data/types";
+import type { LocationId, StageId } from "../data/types";
 
-export type StageId = "cleared" | "excavation" | "rebar" | "formwork" | "poured" | "finished" | "commissioned";
+export type { StageId };
 export type Tier = "low" | "medium" | "high" | "ultra";
 export type WeatherState = "clear" | "overcast" | "rain" | "typhoon";
 export type SelectionKind = "person" | "equipment" | "vehicle" | "facility" | "animal";

@@ -10,7 +10,7 @@ import { CAMERA_PLACES } from "../data/site";
 import { cameraApi, hasPlaces } from "../engine/camera";
 import type { RendererBackend } from "../engine/renderer";
 import { clock, formatClock } from "../sim/clock";
-import { useTwin } from "../state/store";
+import { TIERS, twinActions, useTwin, type Tier } from "../state/store";
 
 const card = "pointer-events-auto rounded-xl border border-border-hairline bg-card/90 shadow-xl backdrop-blur-md dark:bg-[#0B1013]/80";
 const field = "h-8 rounded-lg border border-border-hairline bg-transparent px-2 text-xs text-text-primary outline-none focus-visible:border-scic-green";
@@ -20,6 +20,8 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
   const location = useTwin((s) => s.location);
   const live = useTwin((s) => s.clock.mode === "live");
   const time = useTwin((s) => formatClock(s.clock.minutes));
+  const tier = useTwin((s) => s.quality.tier);
+  const auto = useTwin((s) => s.quality.auto);
 
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-2.5 sm:p-4">
@@ -81,6 +83,26 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
         >
           Live
         </button>
+
+        <select
+          aria-label="Picture quality"
+          title="Picture quality. Auto picks a level for this device."
+          className={field}
+          value={auto ? "auto" : tier}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "auto") twinActions.setQuality(tier, true);
+            else twinActions.setQuality(value as Tier, false);
+            e.target.blur();
+          }}
+        >
+          <option value="auto">Quality: auto ({tier})</option>
+          {TIERS.map((t) => (
+            <option key={t} value={t}>
+              Quality: {t}
+            </option>
+          ))}
+        </select>
 
         <Link href="/digital-twin" className="px-1 text-xs text-text-muted underline-offset-2 hover:text-text-primary hover:underline">
           Current twin

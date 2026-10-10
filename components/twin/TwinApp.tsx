@@ -6,15 +6,17 @@
  *
  * P01b: the scene shell. A full-bleed canvas on the chosen renderer, the frame loop, the store
  * with URL state, the camera rig and the site clock, over v1's terrain in plain grey.
+ * P01c: quality tiers with a start-up probe and dynamic resolution, and zones of placed assets
+ * streamed in around the camera.
  */
 import { Profiler, memo, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
 import { CameraRig, forgetCameraPose } from "./engine/camera";
-import { Engine, countReactCommit } from "./engine/Engine";
-import { createRenderer, graphicsSupport, pixelRatioFor, type RendererBackend } from "./engine/renderer";
-import type { Tier } from "./state/store";
-import { twinActions, twinStore, useTwin } from "./state/store";
+import { Engine, ZoneStreamer, countReactCommit } from "./engine/Engine";
+import { createRenderer, graphicsSupport, type RendererBackend } from "./engine/renderer";
+import { pixelRatioNow } from "./engine/tiers";
+import { twinActions, twinStore } from "./state/store";
 import { readUrlIntoStore, startUrlSync } from "./state/url";
 import { ShellHud } from "./ui/ShellHud";
 import { TwinErrorBoundary, TwinLoading, TwinMessage } from "./ui/TwinMessage";
@@ -24,7 +26,6 @@ import { TempWorld } from "./world/TempWorld";
 const MAX_REBUILDS = 3;
 
 type TwinCanvasProps = {
-  tier: Tier;
   onLost: (message: string) => void;
   onError: (message: string) => void;
   onFirstFrame: (backend: RendererBackend) => void;
@@ -38,9 +39,12 @@ type TwinCanvasProps = {
  * stale snapshot, so it makes its own renderer, camera and scene and swaps them in: the view then
  * shows sky and no ground (seen in 3 of 40 loads). So this component is memoised with stable
  * props, and the renderer (engine/renderer.ts), the camera and the scene are objects made here,
- * which every pass is handed alike.
+ * which every pass is handed alike. For the same reason the pixel ratio is handed over once: a
+ * change of tier or of dynamic resolution is applied by the engine (engine/Engine.tsx), not by
+ * re-rendering this component.
  */
-const TwinCanvas = memo(function TwinCanvas({ tier, onLost, onError, onFirstFrame }: TwinCanvasProps) {
+const TwinCanvas = memo(function TwinCanvas({ onLost, onError, onFirstFrame }: TwinCanvasProps) {
+  const [dpr] = useState(() => pixelRatioNow());
   const [camera] = useState(() => new THREE.PerspectiveCamera(45, 1, 0.3, 6000));
   const [scene] = useState(() => new THREE.Scene());
   const gl = useCallback(
@@ -54,10 +58,11 @@ const TwinCanvas = memo(function TwinCanvas({ tier, onLost, onError, onFirstFram
     [onLost, onError],
   );
   return (
-    <Canvas dpr={pixelRatioFor(tier)} camera={camera} scene={scene} gl={gl}>
+    <Canvas dpr={dpr} camera={camera} scene={scene} gl={gl}>
       <Engine onFirstFrame={onFirstFrame} />
       <CameraRig />
       <TempWorld />
+      <ZoneStreamer />
     </Canvas>
   );
 });
@@ -68,7 +73,6 @@ export default function TwinApp() {
     readUrlIntoStore();
     return graphicsSupport();
   });
-  const tier = useTwin((s) => s.quality.tier);
   const [build, setBuild] = useState(0);
   const [backend, setBackend] = useState<RendererBackend | null>(null);
   const [ready, setReady] = useState(false);
@@ -142,7 +146,7 @@ export default function TwinApp() {
     <TwinErrorBoundary onRetry={retry}>
       <Profiler id="twin" onRender={countReactCommit}>
         <div className="absolute inset-0 bg-[var(--bg-base,#0B1013)]">
-          <TwinCanvas key={build} tier={tier} onLost={rebuild} onError={onError} onFirstFrame={onFirstFrame} />
+          <TwinCanvas key={build} onLost={rebuild} onError={onError} onFirstFrame={onFirstFrame} />
           {ready ? <ShellHud backend={backend} /> : <TwinLoading slowStart={support === "webgl2"} />}
         </div>
       </Profiler>

@@ -19,9 +19,11 @@ components/twin/
   state/                                  zustand stores
   data/                                   typed site data (JSON + TS types)
 lib/twin/                                 pure helpers shared with server code
-scripts/twin/                             Node build and bench scripts
+scripts/twin/                             Node build and bench scripts; asset-budgets.json (budgets per asset class)
 scripts/blender/twin/                     Blender Python (export, checks, review renders)
 assets-src/twin/                          .blend sources, raw downloads (large files git-ignored)
+assets-src/twin/site_master.blend         the master scene (git-ignored)
+assets-src/twin/export/                   GLBs exported from Blender, the input of the asset build (git-ignored)
 public/models/twin/                       shipped GLBs, by category
 public/textures/twin/                     shipped KTX2 textures not embedded in GLBs
 public/vendor/twin/                       Basis and Meshopt decoders
@@ -32,13 +34,15 @@ docs/twin-v2/                             these prompts, state, reviews
 
 - Files: `kebab-case`. Asset ids: `category.name.variant`, for example `flora.narra.a`, `prop.hardhat-rack`, `veh.dump-truck`, `char.body.m03`.
 - GLB path: `public/models/twin/<category>/<name>.glb`. LODs are meshes inside one GLB named `<name>_LOD0`, `_LOD1`, `_LOD2`.
-- Blender collections: `ZONE_<zone-id>`, `LIB_<category>`. Placement empties: `PLACE_<asset-id>_<n>`. Station empties: `STN_<station-id>`. Walk-mode helpers: collision meshes `COL_<name>`, spawn points `SPAWN_<id>`, ladders `LADDER_<id>`, van stops `STOP_<id>`.
+- An asset in Blender (P01c): a collection named by the asset id (`prop.drum-red`) inside `LIB_<id prefix>` (`LIB_prop`), holding one mesh object per level named `<name>_LOD0`, `_LOD1`, `_LOD2`, where `<name>` is the id without its prefix. Custom properties on that collection: `twin_class` (a class in `scripts/twin/asset-budgets.json`, which also maps each id prefix to its folder under `public/models/twin/`), `twin_lod_distances` (optional), `twin_credits` (comma-separated ids of rows in `CREDITS.md`).
+- Blender collections: `ZONE_<zone-id>`, `LIB_<category>`. Zone lights: `LIGHT_<lamp|window|flood>_<n>`. Zone cameras: `CAM_<camera-id>`. Placement empties: `PLACE_<asset-id>_<n>`. Station empties: `STN_<station-id>`. Walk-mode helpers: collision meshes `COL_<name>`, spawn points `SPAWN_<id>`, ladders `LADDER_<id>`, van stops `STOP_<id>`.
 - Location ids: `weir`, `tunnel1`, `midway`, `tunnel2`, `powerhouse` (see `MASTER-BRIEF.md` section 7). Every zone id is prefixed by its location: `<location>.<zone>`.
 - Zone ids:
   - `powerhouse.`: `powerhouse`, `turbine-hall`, `control-room`, `switchyard`, `penstock`, `surge-tank`, `tailrace`, `floodwall`, `guardhouse`, `access-road`, `magazine`, `camp-office`, `camp-office-interior`, `camp-qaqc`, `camp-staffhouse`, `camp-canteen`, `camp-barracks`, `camp-warehouse`, `camp-motorpool`, `camp-clinic`, `camp-court`, `camp-gate`, `forest`, `river`.
   - `weir.`: `weir`, `sluiceway`, `intake`, `fish-pass`, `feeder-canal`, `abutment`, `desander`, `tunnel1-inlet`, `adit`, `cofferdam`, `sat-barracks`, `sat-staffhouse`, `sat-canteen`, `sat-office`, `sat-motorpool`, `concrete-plant`, `access-road`, `forest`, `river`.
   - `midway.`: `tunnel1-outlet`, `pipe-bridge`, `tunnel2-inlet`, `temfacil`, `access-road`, `forest`.
   - `tunnel1.`: `inlet-drive`, `outlet-drive`. `tunnel2.`: `drive`.
+  - `powerhouse.pipeline-test` (P01c): 2,500 test props on v1's camp pad. Marked `test`, so it loads only with `?testzone=1`. Delete it once real zones exist.
 
 ## 3. Coordinates and units
 
@@ -66,15 +70,17 @@ Only one location is loaded at a time (plus its neighbours' far stand-ins where 
 ```ts
 type AssetEntry = {
   id: string;                    // "prop.hardhat-rack"
-  url: string;                   // "/models/twin/props/hardhat-rack.glb?v=<hash>"
+  url: string;                   // "/models/twin/props/hardhat-rack.glb?v=<hash>" (the file name is fixed; the hash of the file is in the query)
   bytes: number;
-  tris: [number, number, number];   // per LOD
+  tris: [number, number, number];   // per LOD; 0 where the asset has no such level
   lodDistances: [number, number];   // metres where LOD1 and LOD2 begin
   bounds: { min: [number,number,number]; max: [number,number,number] };
   materials: number;
   credits: string[];             // ids into CREDITS.md
 };
 ```
+
+The build reads `assets-src/twin/export/<asset id>.glb` and, beside it, `<asset id>.asset.json` (`{ id, class, lodDistances, credits, bounds, skinned, sourceTris }`), both written by `scripts/blender/twin/export_asset.py`. `lodDistances` are metres at the reference view (45 degree lens, viewport 900 px tall); `engine/lod.ts` scales them for the actual view and the tier.
 
 ### 4.2 `zones/<zone-id>.json` (exported from the Blender master scene)
 
@@ -86,12 +92,15 @@ type Zone = {
   streamIn: number;              // camera distance in metres at which the zone loads
   streamOut: number;             // distance at which it unloads (larger than streamIn)
   shell: string | null;          // asset id of the low-detail stand-in shown before load
-  placements: { asset: string; p: [number,number,number]; r: [number,number,number]; s: number; stage?: StageId[]; pick?: string }[];
+  test?: boolean;                // optional (P01c): loads only with ?testzone=1
+  placements: { asset: string; p: [number,number,number]; r: [number,number,number]; s: number; stage?: StageId[]; pick?: string }[];   // r: XYZ Euler angles, radians
   lights: { kind: "lamp" | "window" | "flood"; p: [number,number,number]; colorK: number; lumens: number; hours: [number, number] }[];
   cameras: { id: string; title: string; pos: [number,number,number]; target: [number,number,number] }[];
 };
 type StageId = "cleared" | "excavation" | "rebar" | "formwork" | "poured" | "finished" | "commissioned";
 ```
+
+`zones/index.json` (written by `scripts/twin/build-assets.mjs`, never by hand) is what streaming reads before it loads a zone: one row per zone file with `{ id, location, title, bounds, streamIn, streamOut, shell, test?, assets: string[], placements: number }`.
 
 ### 4.3 `people.json` (the public registry; migrated from v1 `personnelData.ts` in P00)
 
@@ -242,6 +251,8 @@ Per-frame values (agent positions, animation times) never go in the store; they 
 
 `?v=1|2`, `?loc=<location id>`, `?date=<YYYY-MM>|today`, `?place=<camera id>`, `?t=<HHMM>|live`, `?wx=<state>`, `?sel=<kind>:<id>`, `?layers=<comma list>`, `?q=<tier>`, `?debug=1`, `?project=<id>`. The existing `?preset=<v1 key>` is mapped to `?place=`.
 
+Test switches, read once at start and never written back by the store: `?force=webgl` (run the WebGL2 fallback), `?testzone=1` (stream zones marked `test`), `?dynres=0` (hold the resolution still, for the bench), `?probe=1` (run the start-up tier probe even if a result is remembered).
+
 ## 7. Debug hooks
 
-`window.__TWIN__ = { renderer, scene, camera, store, sim, stats() }` exists only when `?debug=1` or in the bench. `stats()` returns `{ fps, ms, p95, calls, tris, programs, textures, geometries, heapMB, zonesLoaded, agents }`.
+`window.__TWIN__ = { renderer, scene, camera, store, sim, stats() }` exists only when `?debug=1` or in the bench. `stats()` returns `{ fps, ms, p95, calls, tris, programs, textures, geometries, heapMB, zonesLoaded, agents }`. Since P01c it also returns `gpuMB`, `lights`, `pixelRatio`, `resolution` and `streaming` (placements, LOD tally, draws, queued tasks), and the hook also carries `streaming`, `assets`, `resolution` and `probe()` for the checks.

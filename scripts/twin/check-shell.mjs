@@ -2,9 +2,9 @@
  * Checks the Twin v2 scene shell (docs/twin-v2/P01-foundation.md, P01b "Pass when") in a real browser.
  *
  *   node scripts/twin/check-shell.mjs [--base=http://localhost:3000] [--browser=chrome|msedge|firefox|webkit]
- *        [--headed] [--force-webgl] [--reloads=20] [--label=dev-chrome]
+ *        [--headed] [--force-webgl] [--reloads=20] [--label=dev-chrome] [--out=docs/twin-v2/review/P01b]
  *
- * Prints one line per check and writes docs/twin-v2/review/P01b/check-<label>.json. Exit code 1 if any
+ * Prints one line per check and writes check-<label>.json and its captures to the --out folder. Exit code 1 if any
  * check fails. The React re-render check only means something against the dev server (React does not
  * report commits to a Profiler in a production build); it is reported as "not measured" otherwise.
  */
@@ -23,7 +23,7 @@ const HEADED = process.argv.includes("--headed");
 const FORCE = process.argv.includes("--force-webgl");
 const RELOADS = Number(arg("reloads", "20"));
 const LABEL = arg("label", `${BROWSER}${FORCE ? "-forced-webgl" : ""}`);
-const OUT = path.join("docs", "twin-v2", "review", "P01b");
+const OUT = arg("out", path.join("docs", "twin-v2", "review", "P01b"));
 fs.mkdirSync(OUT, { recursive: true });
 
 const CHROMIUM_ARGS = [
@@ -75,6 +75,8 @@ async function open(context, query = "") {
   const t0 = Date.now();
   await page.goto(url(query), { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 120000 });
+  // (since P01c the loading screen stays up while the start-up probe picks a tier, on a first visit)
+  await page.waitForSelector("select[aria-label='Go to a place']", { timeout: 120000 });
   return { page, errors, startMs: Date.now() - t0 };
 }
 const pose = (page) => page.evaluate(() => JSON.parse(JSON.stringify(window.__TWIN__.rig.pose())));

@@ -13,7 +13,9 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate && node scripts/sync-maplibre-worker.mjs"
+    "postinstall": "prisma generate && node scripts/sync-maplibre-worker.mjs && node scripts/twin/sync-vendor.mjs",
+    "twin:assets": "node scripts/twin/build-assets.mjs",
+    "twin:bench": "node scripts/twin/bench.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -71,6 +73,10 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@gltf-transform/cli": "^4.5.1",
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
     "@tailwindcss/postcss": "^4",
     "@types/d3-path": "^3.1.1",
     "@types/d3-scale": "^4.0.9",
@@ -86,9 +92,11 @@
     "@types/unist": "^3.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "meshoptimizer": "^1.1.1",
     "pg": "^8.22.0",
     "playwright": "^1.62.0",
     "prisma": "^7.8.0",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "~6.0.3"

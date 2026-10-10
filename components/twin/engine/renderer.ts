@@ -1,20 +1,14 @@
 /**
  * Renderer set-up: three.js WebGPURenderer with its automatic WebGL2 fallback (decided in P01a).
  *
- * sRGB output, AgX tone mapping, pixel ratio from the quality tier. The renderer is sized before
+ * sRGB output, AgX tone mapping, pixel ratio from the quality tier (engine/tiers.ts). The renderer is sized before
  * its first frame (a frame drawn at the canvas's default 300 x 150 left a black page once in the
  * P01a spike). A lost device or context is reported through `onLost`; the caller rebuilds by
  * mounting a fresh canvas.
  */
 import * as THREE from "three/webgpu";
 import type { Tier } from "../state/store";
-
-/** Upper limit on device pixel ratio per tier. P01c moves this into engine/tiers.ts with the rest. */
-export const PIXEL_RATIO_CAP: Record<Tier, number> = { low: 1, medium: 1.25, high: 1.5, ultra: 2 };
-
-export function pixelRatioFor(tier: Tier): number {
-  return Math.min(window.devicePixelRatio || 1, PIXEL_RATIO_CAP[tier]);
-}
+import { pixelRatioNow } from "./tiers";
 
 export type GraphicsSupport = "webgpu" | "webgl2" | "none";
 
@@ -77,7 +71,7 @@ async function startRenderer(canvas: HTMLCanvasElement, opts: RendererOptions): 
   });
 
   const box = (canvas.parentElement ?? canvas).getBoundingClientRect();
-  renderer.setPixelRatio(pixelRatioFor(opts.tier));
+  renderer.setPixelRatio(pixelRatioNow(opts.tier));
   renderer.setSize(Math.max(1, Math.round(box.width)), Math.max(1, Math.round(box.height)), false);
 
   renderer.onDeviceLost = (info) => {

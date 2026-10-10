@@ -82,3 +82,7 @@ scripts/tmp-*.mjs
 /assets-src/twin/**/*.zip
 /assets-src/twin/**/*.exr
 /assets-src/twin/**/*.hdr
+
+# Twin v2: GLBs exported from Blender for the asset build (rebuilt from the .blend), and Python caches
+/assets-src/twin/export/
+__pycache__/

@@ -1,0 +1,39 @@
+{
+  "note": [
+    "Budgets per asset class, copied from docs/twin-v2/QUALITY-BAR.md section 1. Read by scripts/blender/twin/check_asset.py and scripts/twin/build-assets.mjs.",
+    "tris: most triangles allowed at LOD0, LOD1, LOD2. null means that level does not exist for the class (the asset is culled or replaced by an impostor there).",
+    "lod2Optional: the class has no LOD2 by the table, but one may be supplied up to this many triangles (used by the pipeline test props so all three levels are exercised).",
+    "texture: longest side in pixels that textures are resized to by the build. lodDistances: metres where LOD1 and LOD2 (or the cull) begin, at the reference view (45 degree lens, 900 px tall).",
+    "folder: directory under public/models/twin/ for each id prefix."
+  ],
+  "folders": {
+    "prop": "props",
+    "kit": "kit",
+    "struct": "structures",
+    "flora": "flora",
+    "char": "characters",
+    "outfit": "characters",
+    "anim": "animations",
+    "veh": "vehicles",
+    "equip": "equipment",
+    "fauna": "fauna",
+    "shell": "shells",
+    "room": "interiors",
+    "fx": "fx"
+  },
+  "classes": {
+    "named-person": { "tris": [20000, 6000, 1500], "texture": 2048, "materials": 2, "lodDistances": [12, 40], "maxBones": 65 },
+    "crew-person": { "tris": [12000, 4000, 1200], "texture": 1024, "materials": 1, "lodDistances": [10, 35], "maxBones": 65 },
+    "large-animal": { "tris": [10000, 3000, 800], "texture": 1024, "materials": 1, "lodDistances": [15, 50] },
+    "small-animal": { "tris": [3000, 800, 200], "texture": 512, "materials": 1, "lodDistances": [8, 25] },
+    "hero-tree": { "tris": [25000, 6000, null], "texture": 2048, "materials": 2, "lodDistances": [30, 90] },
+    "shrub": { "tris": [1500, 300, null], "texture": 1024, "materials": 1, "lodDistances": [15, 45] },
+    "heavy-equipment": { "tris": [40000, 12000, 3000], "texture": 2048, "materials": 2, "lodDistances": [25, 80] },
+    "light-vehicle": { "tris": [25000, 8000, 2000], "texture": 2048, "materials": 2, "lodDistances": [20, 70] },
+    "hero-structure": { "tris": [120000, 35000, 8000], "texture": 2048, "materials": 6, "lodDistances": [60, 180] },
+    "kit-piece": { "tris": [2000, 500, 100], "texture": 2048, "materials": 1, "lodDistances": [30, 100] },
+    "small-prop": { "tris": [1500, 400, null], "lod2Optional": 200, "texture": 512, "materials": 1, "lodDistances": [10, 30] },
+    "interior-room": { "tris": [150000, null, null], "texture": 2048, "materials": 8, "lodDistances": [30, 30] },
+    "shell": { "tris": [8000, null, null], "texture": 1024, "materials": 2, "lodDistances": [100000, 100000] }
+  }
+}
