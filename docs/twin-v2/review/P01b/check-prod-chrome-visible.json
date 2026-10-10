@@ -1,0 +1,140 @@
+{
+ "label": "prod-chrome-visible",
+ "base": "http://localhost:3100",
+ "browser": "chrome",
+ "forcedWebGL": false,
+ "when": "2026-10-10T00:30:10.436Z",
+ "info": {
+  "backend": "webgpu",
+  "canvas": [
+   1184,
+   844
+  ],
+  "stats": {
+   "fps": 43.2624436900678,
+   "ms": 23.11473681801244,
+   "p95": 46.400001525878906,
+   "calls": 2,
+   "tris": 8193,
+   "programs": 2,
+   "textures": 3,
+   "geometries": 2,
+   "heapMB": 21.439964294433594,
+   "zonesLoaded": 0,
+   "agents": 0
+  },
+  "hud": true
+ },
+ "results": [
+  {
+   "name": "starts and draws",
+   "pass": true,
+   "detail": "backend webgpu, canvas 1184x844, ready in 9492 ms, mean brightness 118, console errors 0"
+  },
+  {
+   "name": "stats() reports",
+   "pass": true,
+   "detail": "fps 43.3, ms 23.1, p95 46.4, calls 2, tris 8193, pipelines 2, textures 3, geometries 2, heap 21 MB"
+  },
+  {
+   "name": "fly-to cancelled by drag",
+   "pass": true,
+   "detail": "flying before true, after false; moved 2.95 m in the next 0.6 s; 218 m short of the place; place=null"
+  },
+  {
+   "name": "fly-to cancelled by wheel",
+   "pass": true,
+   "detail": "flying before true, after false; moved 32.94 m in the next 0.6 s; 183 m short of the place; place=null"
+  },
+  {
+   "name": "fly-to cancelled by key",
+   "pass": true,
+   "detail": "flying before true, after false; moved 1.72 m in the next 0.6 s; 213 m short of the place; place=null"
+  },
+  {
+   "name": "Escape to overview: at a place",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: in the middle of a fly-to",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: with a selection and a follow target",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: after free movement",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: with focus in the places list",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "wheel zooms towards the cursor point",
+   "pass": true,
+   "detail": "distance to the point 219.2 m to 120.8 m; the point under the cursor moved 0.00 m"
+  },
+  {
+   "name": "double-click focuses the clicked point",
+   "pass": true,
+   "detail": "orbit centre 0.00 m from the clicked point"
+  },
+  {
+   "name": "WASD / arrows move, Q and E lower and raise, Shift is faster",
+   "pass": true,
+   "detail": "ahead [-6.8,0,-28.1], right [27.6,0,-6.7], E [0,21.9,0], Q [0,-21.4,0]; with Shift 60.2 m against 28.9 m"
+  },
+  {
+   "name": "camera cannot go below the terrain",
+   "pass": true,
+   "detail": "asked for Y = -40 over the camp pad (ground 13.0 m): camera at Y = 14.20; after holding Q, Y = 14.20"
+  },
+  {
+   "name": "no React re-render per frame (5 s of orbiting)",
+   "pass": null,
+   "detail": "not measured in this build: 279 frames drawn"
+  },
+  {
+   "name": "store changes reach the URL",
+   "pass": true,
+   "detail": "after fly-to: ?debug=1&t=1200&v=2&place=switchyard; after wheel and Live: ?debug=1&v=2; after select and 06:05: ?debug=1&v=2&sel=facility%3Apowerhouse&t=0605"
+  },
+  {
+   "name": "lost device: renderer rebuilt, view kept",
+   "pass": true,
+   "detail": "new renderer drawing, mean brightness 62, camera where it was"
+  },
+  {
+   "name": "?place= and ?t= restore the view and the time",
+   "pass": true,
+   "detail": "camera at the switchyard view on load true and after reload true; clock manual at 1110 minutes; URL ?v=2&debug=1&place=switchyard&t=1830"
+  },
+  {
+   "name": "?preset= maps to ?place=; night is darker than noon and not black",
+   "pass": true,
+   "detail": "URL ?v=2&debug=1&t=0200&place=temfacil; mean brightness 12:00 118, 18:30 46, 02:00 59"
+  },
+  {
+   "name": "fly-to cancelled by touch",
+   "pass": true,
+   "detail": "flying before true, after false; moved 0.00 m in the next 0.6 s"
+  },
+  {
+   "name": "upright screen: overview stands further back",
+   "pass": true,
+   "detail": "camera 342 m from the site centre against 221 m on a wide screen"
+  },
+  {
+   "name": "reduced motion: fly-to and Escape are cuts",
+   "pass": true,
+   "detail": "at the place one frame later true; back at the overview one frame after Escape true"
+  }
+ ]
+}

@@ -17,6 +17,8 @@ export type V1TerrainMesh = { positions: number[]; gridSize?: number };
 export type TerrainSampler = {
   gridSize: number;
   half: number;
+  /** Height of each mesh vertex after v1's edits, in the mesh's own vertex order (row by row). */
+  heights: Float32Array;
   /** Ground height in metres (scene Y) at scene position (x, z). Clamped at the terrain edge. */
   sampleY: (x: number, z: number) => number;
 };
@@ -85,5 +87,5 @@ export function createV1TerrainSampler(mesh: V1TerrainMesh): TerrainSampler {
     return y0 * (1 - fz) + y1 * fz;
   };
 
-  return { gridSize, half, sampleY };
+  return { gridSize, half, heights: ys, sampleY };
 }

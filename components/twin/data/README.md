@@ -16,6 +16,7 @@ Formats are fixed by `docs/twin-v2/CONTRACTS.md` section 4. Files here are writt
 | `history.json` | same | yes (P14) | 53 dated events, each with deck and slide |
 | `crew.json` | same | yes (P09) | Whole-site head-count by role group |
 | `sources/site-plan-georef.json` | `scripts/twin/reference/georef_site_plan.py` | no | Positions and road traces read off the site development plan |
+| `types.ts`, `site.ts` | hand-written (P01b) | yes | Types and typed access for `locations.json` and `cameras.json` |
 | `assets.json`, `zones/`, `clips.json`, `stations.json`, `activities.json`, `programme.json`, `vehicles.json`, `species.json` | later phases | | not yet created |
 
 Never put cost, margin, billing, KPI ratings, survey scores or incident counts in this folder.
