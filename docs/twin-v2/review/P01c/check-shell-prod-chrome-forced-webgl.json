@@ -3,7 +3,7 @@
  "base": "http://localhost:3100",
  "browser": "chrome",
  "forcedWebGL": true,
- "when": "2026-10-10T03:39:43.837Z",
+ "when": "2026-10-10T06:29:28.181Z",
  "info": {
   "backend": "webgl2",
   "canvas": [
@@ -11,15 +11,15 @@
    844
   ],
   "stats": {
-   "fps": 51.43137041204698,
-   "ms": 19.443386244395423,
-   "p95": 32.599998474121094,
+   "fps": 51.3352480803952,
+   "ms": 19.479792879035436,
+   "p95": 37.20000076293945,
    "calls": 2,
    "tris": 8193,
    "programs": 2,
    "textures": 3,
    "geometries": 1,
-   "heapMB": 24.984910011291504,
+   "heapMB": 26.322355270385742,
    "zonesLoaded": 0,
    "agents": 0,
    "gpuMB": 11.600980758666992,
@@ -48,27 +48,27 @@
   {
    "name": "starts and draws",
    "pass": true,
-   "detail": "backend webgl2, canvas 1184x844, ready in 5820 ms, mean brightness 118, console errors 0"
+   "detail": "backend webgl2, canvas 1184x844, ready in 5944 ms, mean brightness 118, console errors 0"
   },
   {
    "name": "stats() reports",
    "pass": true,
-   "detail": "fps 51.4, ms 19.4, p95 32.6, calls 2, tris 8193, pipelines 2, textures 3, geometries 1, heap 25 MB"
+   "detail": "fps 51.3, ms 19.5, p95 37.2, calls 2, tris 8193, pipelines 2, textures 3, geometries 1, heap 26 MB"
   },
   {
    "name": "fly-to cancelled by drag",
    "pass": true,
-   "detail": "flying before true, after false; moved 3.77 m in the next 0.6 s; 218 m short of the place; place=null"
+   "detail": "flying before true, after false; moved 3.75 m in the next 0.6 s; 218 m short of the place; place=null"
   },
   {
    "name": "fly-to cancelled by wheel",
    "pass": true,
-   "detail": "flying before true, after false; moved 33.72 m in the next 0.6 s; 183 m short of the place; place=null"
+   "detail": "flying before true, after false; moved 33.76 m in the next 0.6 s; 184 m short of the place; place=null"
   },
   {
    "name": "fly-to cancelled by key",
    "pass": true,
-   "detail": "flying before true, after false; moved 1.92 m in the next 0.6 s; 213 m short of the place; place=null"
+   "detail": "flying before true, after false; moved 1.38 m in the next 0.6 s; 214 m short of the place; place=null"
   },
   {
    "name": "Escape to overview: at a place",
@@ -118,7 +118,7 @@
   {
    "name": "no React re-render per frame (5 s of orbiting)",
    "pass": null,
-   "detail": "not measured in this build: 302 frames drawn"
+   "detail": "not measured in this build: 304 frames drawn"
   },
   {
    "name": "store changes reach the URL",
@@ -158,7 +158,7 @@
   {
    "name": "20 loads, none black or empty",
    "pass": true,
-   "detail": "0 dark or without terrain, 0 with a second renderer or camera rig started, 0 console errors; ready in 797 to 4150 ms, median 825 ms"
+   "detail": "0 dark or without terrain, 0 with a second renderer or camera rig started, 0 console errors; ready in 799 to 4019 ms, median 838 ms"
   }
  ]
 }

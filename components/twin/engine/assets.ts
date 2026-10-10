@@ -7,6 +7,7 @@
  * Each holds up to three meshes named <name>_LOD0.._LOD2 (CONTRACTS section 2).
  */
 import * as THREE from "three/webgpu";
+import { Fn, attribute, mat4, normalLocal, positionLocal, transformNormal } from "three/tsl";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -14,8 +15,14 @@ import { ASSETS } from "../data/site";
 import type { AssetEntry } from "../data/types";
 import { tierSettings } from "./tiers";
 
-/** One drawable piece of a LOD: a geometry with one material, and where it sits in the asset. */
-export type AssetPart = { geometry: THREE.BufferGeometry; material: THREE.Material; matrix: THREE.Matrix4 };
+/**
+ * One drawable piece of a LOD: a geometry with one material, and where it sits in the asset.
+ * `instanced` is the same material for drawing many copies (engine/instances.ts).
+ */
+export type AssetPart = { geometry: THREE.BufferGeometry; material: THREE.Material; instanced: THREE.Material; matrix: THREE.Matrix4 };
+
+/** Names of the four per-copy attributes that hold the columns of a copy's matrix. */
+export const INSTANCE_COLUMNS = ["twinInstance0", "twinInstance1", "twinInstance2", "twinInstance3"] as const;
 
 export type LoadedAsset = {
   entry: AssetEntry;
@@ -64,6 +71,33 @@ async function capTexture(texture: THREE.Texture, cap: number) {
 /** A file that has not arrived and decoded in this long is treated as failed, milliseconds. */
 const LOAD_TIMEOUT_MS = 45_000;
 
+/**
+ * A copy of a glTF material that places each vertex by a per-copy matrix read from the geometry's
+ * `twinInstance0..3` attributes.
+ *
+ * three's own InstancedMesh is not used: it ties every instanced mesh to a shader of its own (its
+ * id is part of the shader cache key and its matrices are a uniform buffer of that mesh), so 15
+ * draws meant 15 shader builds and 15 programs. On a browser that compiles shaders on the main
+ * thread (Firefox) each of those held the page for about 90 ms. Reading the matrix from a named
+ * attribute makes the shader depend only on the material and the vertex layout, so every draw of
+ * a material, at every LOD and in every zone, shares one build and one program.
+ */
+function instancedMaterial(material: THREE.Material): THREE.Material {
+  const source = material as unknown as Record<string, unknown> & { isMeshPhysicalMaterial?: boolean; isMeshBasicMaterial?: boolean };
+  const node: THREE.NodeMaterial = source.isMeshPhysicalMaterial ? new THREE.MeshPhysicalNodeMaterial() : source.isMeshBasicMaterial ? new THREE.MeshBasicNodeMaterial() : new THREE.MeshStandardNodeMaterial();
+  // (the same copy three's renderer makes when it meets a classic material)
+  const target = node as unknown as Record<string, unknown>;
+  for (const key in source) {
+    if (key !== "uuid" && key !== "type") target[key] = source[key];
+  }
+  const matrix = mat4(attribute(INSTANCE_COLUMNS[0], "vec4"), attribute(INSTANCE_COLUMNS[1], "vec4"), attribute(INSTANCE_COLUMNS[2], "vec4"), attribute(INSTANCE_COLUMNS[3], "vec4"));
+  node.positionNode = Fn(() => {
+    normalLocal.assign(transformNormal(normalLocal, matrix));
+    return matrix.mul(positionLocal).xyz;
+  })();
+  return node;
+}
+
 async function load(entry: AssetEntry): Promise<LoadedAsset> {
   // (a texture decoder that fails to start leaves the loader waiting for ever: seen when the
   // Basis transcoder's .wasm was answered with the sign-in page)
@@ -76,6 +110,7 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
 
   const lods: LoadedAsset["lods"] = [null, null, null];
   const textures = new Set<THREE.Texture>();
+  const instancedFor = new Map<THREE.Material, THREE.Material>();
   gltf.scene.traverse((node) => {
     // (the exporter writes the level as an extra; the name is the fallback)
     const named = /_LOD([012])$/.exec(String(node.userData?.name ?? node.name));
@@ -86,7 +121,9 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
       const mesh = child as unknown as THREE.Mesh;
       if (!mesh.isMesh) return;
       const material = mesh.material as THREE.Material;
-      parts.push({ geometry: mesh.geometry, material, matrix: mesh.matrixWorld.clone() });
+      let instanced = instancedFor.get(material);
+      if (!instanced) instancedFor.set(material, (instanced = instancedMaterial(material)));
+      parts.push({ geometry: mesh.geometry, material, instanced, matrix: mesh.matrixWorld.clone() });
       for (const slot of TEXTURE_SLOTS) {
         const texture = (material as unknown as Record<string, THREE.Texture | null>)[slot];
         if (texture?.isTexture) textures.add(texture);
@@ -118,7 +155,8 @@ function dispose(asset: LoadedAsset) {
     for (const part of parts ?? []) {
       if (!seen.has(part.geometry)) part.geometry.dispose();
       if (!seen.has(part.material)) part.material.dispose();
-      seen.add(part.geometry).add(part.material);
+      if (!seen.has(part.instanced)) part.instanced.dispose();
+      seen.add(part.geometry).add(part.material).add(part.instanced);
     }
   }
   for (const texture of asset.textures) {

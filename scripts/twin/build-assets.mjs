@@ -5,7 +5,8 @@
  *
  * For each assets-src/twin/export/<asset id>.glb (written by scripts/blender/twin/export_asset.py,
  * with its <asset id>.asset.json beside it):
- *   dedupe, weld, prune, resample animations, resize and compress textures, quantize and Meshopt-
+ *   dedupe, weld, prune, resample animations, drop the material extensions that make a plain material
+ *   "physical" (unless the sidecar asks for them), resize and compress textures, quantize and Meshopt-
  *   compress geometry, then write public/models/twin/<folder>/<name>.glb and the asset's row in
  *   components/twin/data/assets.json (docs/twin-v2/CONTRACTS.md section 4.1). The row's url carries
  *   ?v=<hash of the file>, so a changed file is a new address and an unchanged one stays cached.
@@ -32,7 +33,7 @@ import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 import sharp from "sharp";
 
 /** Raise when a change to this script should rebuild every asset. */
-const PIPELINE = 1;
+const PIPELINE = 2;
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SRC = path.join(ROOT, "assets-src", "twin", "export");
@@ -104,6 +105,15 @@ async function buildAsset(id, glb, side) {
     lods[Number(m[1])] = node;
   }
   if (!lods[0]) throw new Error(`${id}: no node named ${name}_LOD0`);
+
+  // Blender writes index-of-refraction and specular extensions on every material. They turn a
+  // standard material into three's "physical" one, whose shader is larger to build and to run, for a
+  // difference nobody can see on a drum. Kept only for an asset whose sidecar says "physical": true.
+  if (!side.physical) {
+    for (const extension of root.listExtensionsUsed()) {
+      if (extension.extensionName === "KHR_materials_ior" || extension.extensionName === "KHR_materials_specular") extension.dispose();
+    }
+  }
 
   const size = budget.texture;
   await doc.transform(dedup(), weld(), prune({ keepExtras: true }), ...(root.listAnimations().length ? [resample()] : []));

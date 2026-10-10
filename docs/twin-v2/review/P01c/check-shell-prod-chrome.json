@@ -3,7 +3,7 @@
  "base": "http://localhost:3100",
  "browser": "chrome",
  "forcedWebGL": false,
- "when": "2026-10-10T03:38:04.890Z",
+ "when": "2026-10-10T06:27:49.687Z",
  "info": {
   "backend": "webgpu",
   "canvas": [
@@ -11,15 +11,15 @@
    844
   ],
   "stats": {
-   "fps": 47.57680838045032,
-   "ms": 21.018644041934255,
-   "p95": 41.400001525878906,
+   "fps": 50.38727389301136,
+   "ms": 19.846281069369354,
+   "p95": 18.299999237060547,
    "calls": 2,
    "tris": 8193,
    "programs": 2,
    "textures": 3,
    "geometries": 1,
-   "heapMB": 27.855138778686523,
+   "heapMB": 22.395526885986328,
    "zonesLoaded": 0,
    "agents": 0,
    "gpuMB": 11.649263381958008,
@@ -48,12 +48,12 @@
   {
    "name": "starts and draws",
    "pass": true,
-   "detail": "backend webgpu, canvas 1184x844, ready in 6190 ms, mean brightness 118, console errors 0"
+   "detail": "backend webgpu, canvas 1184x844, ready in 6021 ms, mean brightness 118, console errors 0"
   },
   {
    "name": "stats() reports",
    "pass": true,
-   "detail": "fps 47.6, ms 21.0, p95 41.4, calls 2, tris 8193, pipelines 2, textures 3, geometries 1, heap 28 MB"
+   "detail": "fps 50.4, ms 19.8, p95 18.3, calls 2, tris 8193, pipelines 2, textures 3, geometries 1, heap 22 MB"
   },
   {
    "name": "fly-to cancelled by drag",
@@ -63,12 +63,12 @@
   {
    "name": "fly-to cancelled by wheel",
    "pass": true,
-   "detail": "flying before true, after false; moved 33.66 m in the next 0.6 s; 184 m short of the place; place=null"
+   "detail": "flying before true, after false; moved 33.79 m in the next 0.6 s; 184 m short of the place; place=null"
   },
   {
    "name": "fly-to cancelled by key",
    "pass": true,
-   "detail": "flying before true, after false; moved 1.81 m in the next 0.6 s; 214 m short of the place; place=null"
+   "detail": "flying before true, after false; moved 1.92 m in the next 0.6 s; 213 m short of the place; place=null"
   },
   {
    "name": "Escape to overview: at a place",
@@ -108,7 +108,7 @@
   {
    "name": "WASD / arrows move, Q and E lower and raise, Shift is faster",
    "pass": true,
-   "detail": "ahead [-6.5,0,-26.7], right [26.7,0,-6.5], E [0,20.6,0], Q [0,-20.6,0]; with Shift 60.5 m against 27.5 m"
+   "detail": "ahead [-6.7,0,-27.6], right [27.6,0,-6.7], E [0,21.3,0], Q [0,-20.6,0]; with Shift 60.4 m against 28.4 m"
   },
   {
    "name": "camera cannot go below the terrain",
@@ -118,7 +118,7 @@
   {
    "name": "no React re-render per frame (5 s of orbiting)",
    "pass": null,
-   "detail": "not measured in this build: 302 frames drawn"
+   "detail": "not measured in this build: 303 frames drawn"
   },
   {
    "name": "store changes reach the URL",
@@ -158,7 +158,7 @@
   {
    "name": "20 loads, none black or empty",
    "pass": true,
-   "detail": "0 dark or without terrain, 0 with a second renderer or camera rig started, 0 console errors; ready in 855 to 4514 ms, median 930 ms"
+   "detail": "0 dark or without terrain, 0 with a second renderer or camera rig started, 0 console errors; ready in 894 to 4028 ms, median 932 ms"
   }
  ]
 }

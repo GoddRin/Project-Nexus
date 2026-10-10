@@ -152,11 +152,31 @@ let start;
   const sameCanvas = after.canvas.join() === start.canvas.join();
   record("flying away unloads the zone; GPU memory within 5% of the start", after.zonesLoaded === 0 && after.assets.cached === 0 && drift <= 0.05 && after.textures === start.textures && after.geometries === start.geometries, `GPU ${mb(s.gpuMB)} with the zone, ${mb(after.gpuMB)} after, ${mb(start.gpuMB)} at the start (${(drift * 100).toFixed(1)}% apart); textures ${after.textures} against ${start.textures}, geometries ${after.geometries} against ${start.geometries}; ${after.assets.cached} assets still cached${sameCanvas ? "" : `; the canvas was ${start.canvas.join(" x ")} at the start and ${after.canvas.join(" x ")} after, so the frame buffers differ`}`);
 
-  // 5. Streaming in does not hold a frame up
+  // 5. Streaming in does not hold the page up
+  //    Three things can: one of streaming's own tasks, the first step of a shader build inside three.js
+  //    (which a task starts), and the browser's shader compile (which three.js waits for). All three are
+  //    timed here. Whole-frame times are reported too, but in a browser that draws the zone slowly (the
+  //    headless Firefox and WebKit builds) they say how long a frame takes, not what streaming cost.
   {
     await page.evaluate(() => {
       const t = window.__TWIN__;
+      const r = t.renderer;
       t.streaming.resetLongestTask();
+      window.__steps = { build: [], program: [] };
+      if (!r.__timed) {
+        r.__timed = true;
+        const time = (obj, name, into) => {
+          const f = obj[name];
+          obj[name] = function (...args) {
+            const t0 = performance.now();
+            const out = f.apply(this, args);
+            window.__steps?.[into].push(performance.now() - t0);
+            return out;
+          };
+        };
+        time(r._nodes, "getForRenderAsync", "build");
+        time(r._pipelines, "getForRender", "program");
+      }
       window.__gaps = [];
       let last = performance.now();
       const tick = (now) => {
@@ -175,12 +195,28 @@ let start;
     const g = await page.evaluate((from) => {
       const gaps = window.__gaps;
       window.__gaps = null;
+      const steps = window.__steps;
+      window.__steps = null;
       const still = gaps.slice(5, from).sort((a, b) => a - b);
       const during = gaps.slice(from).sort((a, b) => a - b);
       const s = window.__TWIN__.streaming.stats();
-      return { median: still[Math.floor(still.length / 2)] ?? 0, worst: during[during.length - 1] ?? 0, p95: during[Math.floor(during.length * 0.95)] ?? 0, frames: during.length, task: s.longestTaskMs, kind: s.longestTaskKind };
+      const p = window.__TWIN__.renderer._pipelines;
+      return {
+        median: still[Math.floor(still.length / 2)] ?? 0,
+        worst: during[during.length - 1] ?? 0,
+        p95: during[Math.floor(during.length * 0.95)] ?? 0,
+        frames: during.length,
+        task: s.longestTaskMs,
+        kind: s.longestTaskKind,
+        build: Math.max(0, ...steps.build),
+        builds: steps.build.filter((x) => x > 1).length,
+        program: Math.max(0, ...steps.program),
+        pipelines: p?.caches?.size ?? 0,
+        programs: p?.programs?.vertex?.size ?? 0,
+      };
     }, before);
-    record("streaming in: no task holds a frame for more than 8 ms", g.task <= 8, `longest task ${g.task.toFixed(1)} ms (${g.kind}); zone back in ${ms} ms over ${g.frames} frames; worst frame ${g.worst.toFixed(1)} ms, p95 ${g.p95.toFixed(1)} ms, against ${g.median.toFixed(1)} ms with nothing loading`);
+    const longest = Math.max(g.task, g.build, g.program);
+    record("streaming in: nothing holds the page for more than 8 ms", longest <= 8, `longest streaming task ${g.task.toFixed(1)} ms (${g.kind}); longest shader-build step in three.js ${g.build.toFixed(1)} ms (${g.builds} builds); longest wait on the browser's shader compile ${g.program.toFixed(1)} ms; ${g.pipelines} pipelines and ${g.programs} vertex programs in all. Zone back in ${ms} ms over ${g.frames} frames; worst frame ${g.worst.toFixed(1)} ms, p95 ${g.p95.toFixed(1)} ms, against ${g.median.toFixed(1)} ms with nothing loading`);
     results.streamIn = g;
   }
 

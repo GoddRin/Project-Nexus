@@ -45,6 +45,45 @@ export type RendererOptions = {
   onError: (message: string) => void;
 };
 
+/** How long a freshly linked program is left alone before its result is asked for, milliseconds. */
+const LINK_WAIT_MS = 300;
+
+/**
+ * WebGL2 fallback on a browser without KHR_parallel_shader_compile (Firefox): stop a shader compile
+ * from freezing the page.
+ *
+ * There, `compileShader` and `linkProgram` return at once and the work happens in the browser's
+ * graphics process; what blocks is asking for the result, which waits for it (measured: about 95 ms
+ * per program on the Iris Xe laptop). three.js asks straight away unless the browser has the
+ * parallel-compile extension, in which case it polls a "finished yet?" flag once a frame.
+ *
+ * This gives three.js a stand-in for that extension whose flag turns true once the program has
+ * had LINK_WAIT_MS to compile in the background, so the real question is asked when the answer is
+ * (almost always) ready. It applies only to pipelines compiled ahead of their first draw
+ * (`renderer.compileAsync`, as engine/streaming.ts does); a draw that was never precompiled still
+ * compiles on the spot. If a compile takes longer than the wait, the page blocks for the rest, as before.
+ */
+function deferLinkStatus(renderer: THREE.WebGPURenderer) {
+  const backend = renderer.backend as unknown as { isWebGLBackend?: boolean; gl?: WebGL2RenderingContext; parallel?: { COMPLETION_STATUS_KHR: number } | null };
+  const gl = backend.gl;
+  if (!backend.isWebGLBackend || !gl || backend.parallel) return;
+
+  /** A parameter name no real one uses: answered here, never passed to the browser. */
+  const READY = 0x7fff_0001;
+  const linkedAt = new WeakMap<WebGLProgram, number>();
+  const linkProgram = gl.linkProgram.bind(gl);
+  const getProgramParameter = gl.getProgramParameter.bind(gl);
+  gl.linkProgram = (program) => {
+    linkedAt.set(program, performance.now());
+    linkProgram(program);
+  };
+  gl.getProgramParameter = (program, name) => {
+    if (name !== READY) return getProgramParameter(program, name);
+    return performance.now() - (linkedAt.get(program) ?? 0) >= LINK_WAIT_MS;
+  };
+  backend.parallel = { COMPLETION_STATUS_KHR: READY };
+}
+
 const started = new WeakMap<HTMLCanvasElement, Promise<THREE.WebGPURenderer>>();
 
 /**
@@ -92,6 +131,7 @@ async function startRenderer(canvas: HTMLCanvasElement, opts: RendererOptions): 
   };
 
   await renderer.init();
+  deferLinkStatus(renderer);
   applyOutput(renderer);
   renderer.toneMappingExposure = 1;
   return renderer;

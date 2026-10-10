@@ -190,9 +190,52 @@ So KTX2 trades a larger download for far less graphics memory. Most of the size 
 
 Bench with KTX2 (`twin2-p01c-ktx2.json`): every budget line passes on both profiles; desktop 326.1 fps at the overview, 401.5 over the fly-through, first usable view 1.48 s; phone profile 882.4 fps.
 
-Still open after this follow-up:
+Still open after this follow-up (both taken up in "Follow-up 2" below):
 
 - The 8 ms line on the WebGL2 fallback in the Firefox and WebKit test browsers (unchanged).
 - KTX2 sizes are not tuned: the settings are the first ones tried. P02c should weigh download against memory on real assets.
 - This session's terminal did not see `ktx` on its PATH (it was started before the install), so the build was run with `C:\Program Files\KTX-Software\bin` added by hand. A new terminal has it.
 - Files from the first pass (`check-prod-*.json`, `twin2-p01c-zone*.json`, `-empty`, `-soak20`) are WebP runs; `check-ktx2-*.json` and `twin2-p01c-ktx2.json` are the KTX2 runs. The 20-minute heap soak was not repeated with KTX2.
+
+## Follow-up 2: the 8 ms line in Firefox and WebKit, and the KTX2 soak (2026-10-10)
+
+The owner asked for the two items left open above.
+
+### The 20-minute heap soak with KTX2: done, passes
+
+`twin2-p01c-ktx2-soak20.json`: 17 laps of the fly-through over 22.4 minutes, desktop profile, Medium, nothing else running. The heap sat at 27 to 28 MB from the fifth sample to the last (-0.16 MB a minute; the first sample, 41 MB, was taken before the first clean-up). Every other budget line passes in the same run: 306 fps at the overview, 365.8 over the fly-through, first usable view 1.43 s.
+
+### The 8 ms line: much improved, still 1 to 4 ms over in the two test browsers
+
+**What was actually wrong was worse than the first report said.** The old check timed only streaming's own tasks. Timing what three.js does after a task hands over showed:
+
+- **Firefox froze for about 95 ms, fifteen times, every time the zone streamed in** (1.3 s in all). The old check reported "13 ms".
+- three.js was building a separate shader for every instanced draw: 15 builds and 15 programs for 5 materials.
+
+Three changes:
+
+1. **Draws now share shaders.** three's `InstancedMesh` ties each instanced mesh to a shader of its own. The twin now draws a plain mesh over an instanced geometry whose per-copy matrices are named attributes, so the shader depends only on the material and the vertex layout. Result: 5 shader builds instead of 15, and 5 pipelines in all instead of 17, shared across LODs and zones.
+2. **Firefox no longer freezes on a shader compile.** Firefox compiles in the background and only blocks when asked for the result; three.js asked at once. A small stand-in (`engine/renderer.ts`, `deferLinkStatus`) makes it ask 300 ms later, when the answer is ready. Measured: the longest wait went from 95 ms to 1 ms.
+3. **The shader-build step gets a frame to itself**, instead of being stacked on texture uploads in the same frame.
+
+`check-pipeline.mjs` now times all three things that can hold the page: streaming's tasks, the first step of three.js's shader build, and the wait on the browser's compile. Results (`check-shared-*.json`), production build:
+
+| Run | Backend | Result | Longest task | Longest shader-build step | Longest wait on the browser's compile |
+| --- | --- | --- | --- | --- | --- |
+| Chrome 154 | WebGPU | 15 of 15 | 5.3 ms | 4.9 ms | 1.6 ms |
+| Chrome 154, `--force-webgl` | WebGL2 fallback | 15 of 15 | 4.6 ms | 4.3 ms | 0.5 ms |
+| Edge 155 | WebGPU | 15 of 15 | 4.4 ms | 3.9 ms | 0.4 ms |
+| Firefox 153 (Playwright build) | WebGL2 fallback | 14 of 15 | **11.0 ms** | 9.0 ms | 1.0 ms (was about 95 ms) |
+| WebKit 26.5 (Playwright build) | WebGL2 fallback | 14 of 15 | **12.0 ms** | 12.0 ms | 1.0 ms |
+
+**Why the last two still fail.** What remains is one step: the first part of three.js building a material's shader, which happens once per material when a zone streams in. It takes 4 to 5 ms in Chrome and Edge and 9 to 12 ms in the Firefox and WebKit test browsers, whose JavaScript runs this code about twice as slowly. three.js already splits the rest of the build across frames; this first part is a single call that cannot be cut from outside the library. So the 8 ms line is met in Chrome and Edge on both backends and missed by 1 to 4 ms in those two browsers.
+
+What that miss means in practice: a 60 Hz frame has 16.7 ms and the twin's own work in a frame is about 2 ms, so a 12 ms step should still fit without a dropped frame. That could not be shown in those two browsers, because their headless builds draw the zone at about 12 frames a second whatever streaming is doing (83 ms frames with the zone simply in view, measured), which is why the "worst frame" figures for them say nothing about streaming. In Chrome's fallback, where frames can be judged, the worst frame while streaming in was 17.8 ms.
+
+Also changed on the way:
+
+- **A fault in my own first version of change 1, caught by the checks:** draws shared vertex buffer objects, and unloading one destroyed buffers another was still using ("buffer used in submit while destroyed" on WebGPU). Each draw now has its own buffer objects over the same data.
+- **The build drops Blender's index-of-refraction and specular extensions** unless an asset's sidecar says `"physical": true`. They turn a plain material into three's larger "physical" one. It did not change the timings measured here; one prop's file changed.
+- GPU memory the zone adds is now 2.2 MB by the renderer's count (0.9 MB before): each draw holds its own copy of the vertex buffers.
+
+Not checked: a real Firefox or Safari. Current desktop Firefox has WebGPU, so it would take the WebGPU path rather than this fallback; that was not tried on this machine.

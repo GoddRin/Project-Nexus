@@ -15,7 +15,7 @@ import { ZONE_INDEX } from "../data/site";
 import type { Placement, Zone, ZoneIndexEntry } from "../data/types";
 import { twinStore } from "../state/store";
 import { assets, type LoadedAsset } from "./assets";
-import { createInstanceSet, type InstanceSet } from "./instances";
+import { createInstanceSet, setDrawCount, type InstanceSet } from "./instances";
 import { lodScale } from "./lod";
 import { loop } from "./loop";
 import { isProbing, tierSettings } from "./tiers";
@@ -60,6 +60,8 @@ const queue: Task[] = [];
 let waiting = false;
 let longestTaskMs = 0;
 let longestTaskKind = "";
+/** The last tasks run, newest last: what each was and how long it held the frame (for the checks). */
+const taskLog: { kind: string; ms: number }[] = [];
 let runs: ZoneRun[] = [];
 let loading = 0;
 
@@ -67,10 +69,16 @@ let loading = 0;
 function pump() {
   if (waiting) return;
   const start = performance.now();
+  let ran = 0;
   while (queue.length > 0) {
     const t0 = performance.now();
     if (t0 - start >= SLICE_MS) break;
+    // A pipeline task starts a shader build inside three.js whose first step cannot be cut smaller
+    // (4 to 5 ms in Chrome, 10 to 12 ms in the Firefox and WebKit test browsers): it gets a frame to
+    // itself instead of being stacked on top of texture uploads.
+    if (queue[0].kind === "pipeline" && ran > 0) break;
     const task = queue.shift()!;
+    ran++;
     let result: void | Promise<unknown>;
     try {
       result = task.run();
@@ -79,6 +87,8 @@ function pump() {
       continue;
     }
     const took = performance.now() - t0;
+    taskLog.push({ kind: task.kind, ms: Math.round(took * 10) / 10 });
+    if (taskLog.length > 200) taskLog.shift();
     if (took > longestTaskMs) {
       longestTaskMs = took;
       longestTaskKind = task.kind;
@@ -102,19 +112,18 @@ function groupByAsset(placements: Placement[]): Map<string, Placement[]> {
 }
 
 /** Compile an instanced draw's pipeline before it is shown, so its first frame does not stall. */
-async function precompile(ctx: StreamingContext, mesh: THREE.InstancedMesh) {
-  const { count, visible, frustumCulled } = mesh;
-  mesh.count = 1;
-  mesh.visible = true;
-  mesh.frustumCulled = false;
+async function precompile(ctx: StreamingContext, mesh: THREE.Mesh) {
+  const geometry = mesh.geometry as THREE.InstancedBufferGeometry;
+  const count = geometry.instanceCount;
+  // (an invisible draw, or one with no copies, would be skipped by the compile)
+  setDrawCount(mesh, 1);
   try {
     await ctx.renderer.compileAsync(mesh, ctx.camera, ctx.scene);
   } catch (error) {
     console.warn("[twin] pipeline was not precompiled", error);
   } finally {
-    mesh.count = count;
-    mesh.visible = visible;
-    mesh.frustumCulled = frustumCulled;
+    // (copies may have been assigned while it compiled: only undo the stand-in count)
+    if (geometry.instanceCount === 1) setDrawCount(mesh, count);
   }
 }
 
@@ -320,7 +329,9 @@ export const streaming = {
   resetLongestTask() {
     longestTaskMs = 0;
     longestTaskKind = "";
+    taskLog.length = 0;
   },
+  taskLog: () => taskLog.slice(),
   /** For the checks: give a zone a stand-in asset, or take it away (null). */
   setShell(zoneId: string, assetId: string | null) {
     const run = runs.find((r) => r.entry.id === zoneId);

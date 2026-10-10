@@ -3,18 +3,22 @@
  * are placed. Each frame every copy picks its level by distance (engine/lod.ts) and copies outside
  * the view are left out, so a yard of 500 drums costs at most three draw calls and only the
  * triangles of the levels actually in sight.
+ *
+ * A draw is a plain mesh over an instanced geometry: the asset's vertex data plus four
+ * per-copy attributes holding each copy's matrix (see `instancedMaterial` in engine/assets.ts for
+ * why three's InstancedMesh is not used).
  */
 import * as THREE from "three/webgpu";
 import type { Placement } from "../data/types";
-import type { LoadedAsset } from "./assets";
+import { INSTANCE_COLUMNS, type LoadedAsset } from "./assets";
 import { CULLED, selectLod } from "./lod";
 
-export type InstanceDraw = { mesh: THREE.InstancedMesh; level: number };
+export type InstanceDraw = { mesh: THREE.Mesh; level: number };
 
 export type InstanceSet = {
   assetId: string;
   count: number;
-  /** One instanced mesh per LOD part. The owner adds them to the scene (streaming does it in slices). */
+  /** One instanced draw per LOD part. The owner adds them to the scene (streaming does it in slices). */
   draws: InstanceDraw[];
   /**
    * Choose levels for this view and fill the instance buffers.
@@ -33,6 +37,27 @@ const e = new THREE.Euler();
 const p = new THREE.Vector3();
 const s = new THREE.Vector3();
 const sphere = new THREE.Sphere();
+
+/**
+ * An attribute of this draw's own over the asset's vertex data. The numbers are shared in memory,
+ * not copied, but the attribute object is new: three.js frees the GPU buffer of every attribute of
+ * a geometry when that geometry is disposed, so two draws holding the same attribute object would
+ * destroy each other's buffers (seen as "buffer used in submit while destroyed" when a zone
+ * unloaded while its shell, or another zone, still drew the same asset).
+ */
+function ownAttribute<T extends THREE.BufferAttribute | THREE.InterleavedBufferAttribute>(attribute: T): T {
+  const plain = attribute as THREE.BufferAttribute;
+  if ((attribute as THREE.InterleavedBufferAttribute).isInterleavedBufferAttribute) return attribute.clone() as T;
+  const own = new THREE.BufferAttribute(plain.array, plain.itemSize, plain.normalized);
+  own.gpuType = plain.gpuType;
+  return own as T;
+}
+
+/** Show `count` copies of a draw (none: the draw is skipped altogether). */
+export function setDrawCount(mesh: THREE.Mesh, count: number) {
+  (mesh.geometry as THREE.InstancedBufferGeometry).instanceCount = count;
+  mesh.visible = count > 0;
+}
 
 export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): InstanceSet {
   const n = placements.length;
@@ -54,13 +79,9 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
     scales[i] = place.s;
   }
 
-  type Bucket = InstanceDraw & { baked: Float32Array };
+  type Bucket = InstanceDraw & { baked: Float32Array; buffer: THREE.InstancedInterleavedBuffer };
   const buckets: Bucket[] = [];
   const byLevel: Bucket[][] = [[], [], []];
-  const all = new THREE.Box3();
-  for (let i = 0; i < n; i++) all.expandByPoint(p.fromArray(centres, i * 3));
-  const bounds = all.getBoundingSphere(new THREE.Sphere());
-  bounds.radius += asset.radius * 1.1;
 
   asset.lods.forEach((parts, level) => {
     for (const part of parts ?? []) {
@@ -68,15 +89,21 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
       for (let i = 0; i < n; i++) {
         m.fromArray(world, i * 16).multiply(part.matrix).toArray(baked, i * 16);
       }
-      const mesh = new THREE.InstancedMesh(part.geometry, part.material, n);
+      const geometry = new THREE.InstancedBufferGeometry();
+      geometry.index = part.geometry.index ? ownAttribute(part.geometry.index) : null;
+      for (const name of Object.keys(part.geometry.attributes)) geometry.setAttribute(name, ownAttribute(part.geometry.attributes[name]));
+      const buffer = new THREE.InstancedInterleavedBuffer(new Float32Array(n * 16), 16, 1);
+      buffer.setUsage(THREE.DynamicDrawUsage);
+      INSTANCE_COLUMNS.forEach((name, column) => geometry.setAttribute(name, new THREE.InterleavedBufferAttribute(buffer, 4, column * 4)));
+      geometry.instanceCount = 0;
+
+      const mesh = new THREE.Mesh(geometry, part.instanced);
       mesh.name = `${asset.entry.id}:LOD${level}`;
-      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      mesh.count = 0;
       mesh.visible = false;
-      // copies are culled one by one below; the mesh as a whole is tested against all of them
-      mesh.boundingSphere = bounds;
+      // copies are culled one by one below, and a draw with none in view is switched off
+      mesh.frustumCulled = false;
       mesh.matrixAutoUpdate = false;
-      const bucket = { mesh, level, baked };
+      const bucket = { mesh, level, baked, buffer };
       buckets.push(bucket);
       byLevel[level].push(bucket);
     }
@@ -128,7 +155,7 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
         const list = byLevel[level];
         for (let b = 0; b < list.length; b++) {
           const from = list[b].baked;
-          const to = list[b].mesh.instanceMatrix.array as Float32Array;
+          const to = list[b].buffer.array as Float32Array;
           const src = i * 16;
           const dst = slot * 16;
           for (let c = 0; c < 16; c++) to[dst + c] = from[src + c];
@@ -137,9 +164,8 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
       hidden = n - counts[0] - counts[1] - counts[2];
       for (const bucket of buckets) {
         const count = counts[bucket.level];
-        bucket.mesh.count = count;
-        bucket.mesh.visible = count > 0;
-        if (count > 0) bucket.mesh.instanceMatrix.needsUpdate = true;
+        setDrawCount(bucket.mesh, count);
+        if (count > 0) bucket.buffer.needsUpdate = true;
       }
     },
 
@@ -148,8 +174,8 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
     dispose() {
       for (const bucket of buckets) {
         bucket.mesh.removeFromParent();
-        // (the geometry and material belong to the asset; this frees the instance buffer only)
-        bucket.mesh.dispose();
+        // (frees this draw's GPU buffers; the vertex data itself and the material belong to the asset)
+        bucket.mesh.geometry.dispose();
       }
     },
   };
