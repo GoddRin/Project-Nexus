@@ -51,3 +51,25 @@ None of these is required; each one raises realism a lot for little effort. A ph
 | Ground and wall close-ups (the road dry and muddy, concrete, shotcrete, rock face, GI roofing) | Straight-on photos in shade | P03a, P05, P12g |
 | Sound recordings (river, forest at dawn, the generator, the tunnel) | Phone voice recorder, 60 seconds each | P12b |
 | People, only with their consent | Front and side face photos and one full-length photo | P07c, as likeness reference only |
+
+## Getting the tools ready (for the owner)
+
+The owner approved using these free tools (2026-10-10). Nothing needs installing until the sub-phase that uses it. When a session reaches one, it stops and gives the exact steps for that day's version; this is the outline so there are no surprises. Each install is a download and a few clicks, and Claude can do the Blender-side set-up through the Blender connection once the add-on file is on the computer.
+
+| Tool | First needed | What the owner does | Then Claude does |
+| --- | --- | --- | --- |
+| **MPFB2** (human generator for Blender) | P02b | Download the add-on zip from the MPFB website (free). In Blender: Edit, Preferences, Add-ons, Install from Disk, pick the zip, tick it. Download the free asset packs it offers (skins, hair, clothes) the same way. About 10 minutes | Builds the people |
+| **KTX-Software** (texture compression) | P01c | Run the free Windows installer from the Khronos KTX-Software GitHub releases page | Uses it in the asset build |
+| **Mixamo** | P08a | Sign in at mixamo.com with a free Adobe account; download the clips on the list the session gives, into `assets-src/mixamo/`. The browser will ask to allow multiple downloads: allow it | Retargets and cleans the clips |
+| **Mesh2Motion** | P08a | Nothing: no account needed | Downloads clips |
+| **FreeMoCap** (motion capture from video) | P08d, P08e | Install from freemocap.org (free; it installs through Python, the site has a one-line command). Needs two or three phones or webcams on stands seeing the whole body, good light, plain clothes that contrast with the background. Record each action for 10 to 30 seconds after a short calibration with a printed board. One afternoon covers dozens of actions | Imports the result into Blender, cleans it, retargets it |
+| **Phone video only** (simplest alternative) | P08d, P08e | Film a person doing the action, whole body in frame, phone steady on a stand, two angles if possible | Uses the video as reference for hand-keying, or runs a free video-to-motion service if one is available that day |
+| **Meshroom** (3D scans from photos) | P06d, P07b, P10a | Download and unzip from alicevision.org (free; needs a reasonably strong graphics card; if this laptop is too slow it will say so, and the photos can be processed on another machine). Take the photos: 40 to 80 for a small object, 100 or more for a vehicle, overlapping, all round, in even shade, object not moved | Runs the reconstruction, cleans the mesh, rebuilds clean geometry over it, bakes textures |
+| **Blender Rigify, cloth, hair** | P07, P11 | Nothing: built into Blender. Rigify is switched on in Add-ons | Uses them |
+| **Free libraries** (Poly Haven, Sketchfab, ambientCG) | from P01c | Nothing: Poly Haven and Sketchfab are already connected in the Blender add-on | Searches, checks licences, imports |
+
+Practical notes:
+- Keep Blender open with the MCP add-on running during any model or animation sub-phase.
+- Scans and captures are raw material: Claude always cleans and rebuilds them, so imperfect ones are still useful.
+- People appear in videos and photos only with their consent; captures stay in the git-ignored reference folder.
+- If any install fails or a tool no longer offers a free version, say so in the chat: each has a fallback (hand-keyed animation instead of capture, modelling from photos instead of scanning).

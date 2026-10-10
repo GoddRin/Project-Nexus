@@ -2,7 +2,7 @@
 
 **Tools and sources:** read `TOOLBOX.md` first (free tools for models, motion capture from video, scans of real objects, and what the owner may have supplied).
 
-Four sessions. Job-true movement from motion capture where it exists and hand-authored clips where it does not, played through one runtime with grounding and tool handling.
+Five sessions (P08a to P08e). Job-true movement from motion capture where it exists and hand-authored clips where it does not, played through one runtime with grounding and tool handling.
 
 ## P08a. Clip plan and acquisition
 
@@ -75,3 +75,58 @@ Four sessions. Job-true movement from motion capture where it exists and hand-au
 4. Review and export as in P08b.
 
 **Pass when.** No activity in `activities.json` lacks a clip; paired actions hold contact (hands on the same object) within 2 cm throughout.
+
+## P08e. Real-time actions: putting on, taking off, picking up, handing over
+
+**Needs.** P08c, P08d, P07d (sockets), P09a.
+
+The owner asked (2026-10-10) for people to visibly **take their hard hats off and put them on** as real animations, and for more actions of that kind. The rule this serves: nothing about a person changes by popping. If a hat, tool, raincoat or phone appears on or leaves a person, you see the hand do it.
+
+### Hard-hat rules (the owner's, from `reference/INDEX.md` R4)
+
+- Staff wear white; workers wear green. Red, orange and full-brim hats appear on some people as in the photographs.
+- **On** whenever working or anywhere in a work zone (zones carry `ppe: required`).
+- **May be off** when resting, eating at the canteen, in the office, in the barracks, at the evening gatherings, and during the anthem or prayer at assembly.
+- Sim rule: each person has `hat: on | hand | underArm | belt | hung | table | off`. Entering a `ppe: required` zone or starting a work activity triggers the put-on action first; starting a rest, meal or assembly-prayer activity allows a take-off action, chosen by the person's habit and the place.
+
+### The hard-hat set (author every one; all are short, 1 to 3 seconds, and blend from walking or standing)
+
+- Take off with one hand by the brim and **tuck under the arm**; hold at the hip; hold in both hands in front; hold over the chest for the anthem.
+- **Hang on the rack** by the office or canteen door; take the right one back (name or sticker on it).
+- Put down **on the table or bench beside the tray**; pick it up again when leaving.
+- Hook it on a belt clip or carry it by the chin strap; hang it on a nail, a rebar end or the motorcycle mirror.
+- Put on: seat it, a pat on top, fasten or tuck the chin strap, adjust the ratchet at the back.
+- Small ones while wearing it: tilt it back to wipe the brow, lift and resettle, fan the face with it, shade the eyes with a hand under the brim, knock dust off it, shake rain off it.
+- Sit on it as a stool at break (seen on real sites), use it to carry a few bolts.
+- Swap hard hat for motorcycle helmet at the bike, and back.
+
+### More real-time actions to build (each as a small clip set with a prop that moves between sockets)
+
+| Group | Actions |
+| --- | --- |
+| Other PPE | Vest on and off over the head or by the arms, zip or fasten; gloves pulled on and peeled off and tucked in the belt; safety glasses up onto the hat or into a pocket; face cloth or mask pulled up and down; ear muffs flipped down; respirator on for shotcreting; harness stepped into, buckled, lanyard clipped and unclipped at an anchor; cap lamp switched on at the tunnel portal; rubber boots pulled on and shaken out; boots swapped for slippers at the barracks door |
+| Rain gear | Raincoat or poncho shaken out and pulled on; hood up; umbrella opened, tilted into the wind, closed and shaken; a plastic bag over a phone or clipboard; raincoat hung to drip |
+| Tools and loads | Pick up and set down a shovel, bar, hammer, drill, hose; lean a tool against a wall; sling a tool over the shoulder; draw a tape, pliers or radio from the belt and return it; pass a tool hand to hand; toss a tie-wire coil or a bag to a mate; two-man lift, carry and lower of timbers or pipe on a count (as in R4 `site-05`); load and unload a truck bed; start a generator with a pull cord; coil a hose or cable |
+| Climbing and reaching | Climb a ladder with a tool in one hand; shin up a pole or scaffold tube (R4 `site-04`); step over a rebar mat; duck under a prop; steady yourself on a rail; crouch to look under something |
+| Instruments | Open the case, lift out the total station, spread and tread in the tripod legs, mount and level it, sight, note the reading; hold and plumb the prism pole; unroll and weight a drawing; tap and swipe a tablet; take a photo with a phone |
+| Everyday | Take a phone from a pocket, answer, pocket it; radio from the belt to the mouth and back; drink from a bottle and cap it; pour water over the head; wipe face with a towel from the shoulder; light and put out a cigarette at the smoking shed; check a watch; scratch, stretch, yawn; tie a bootlace; roll sleeves up and down; tuck in a shirt |
+| Meals and camp | Take a tray, be served, carry it, sit, eat, stack the tray; wash a plate; fill a water jug; hang and take down laundry; wring a shirt; fold a blanket; sweep; water the vegetable patch and pick a gourd (R4 `site-08`); cover and uncover a parked motorcycle; unlock a door; switch on a light or a fan |
+| Vehicles | Open a door, climb in, belt up, start; climb down; drop a tailgate; climb into a truck bed with a hand from a mate; kick-start and mount a motorcycle; fuel from a jerry can; wipe a windscreen; check a tyre |
+| Between people | Handshake, fist bump, a hand on the shoulder; hand over a document, a tool, a drink; sign a clipboard held by another; show a phone screen; help someone up; salute and gate-pass check; a group lowering their heads for a prayer |
+| Doors and things | Push and pull doors, slide a gate, raise the boom barrier, open a tool box, lift a manhole cover with a bar, turn a valve, plug in a cable, flip a breaker |
+
+### How it works
+
+1. Each action is a **transition clip** with markers for the frames where the hand takes hold, lets go, and where the prop changes socket (`head` to `handR` to `underArmL`, and so on). The runtime moves the prop between sockets on those markers and uses hand IK so the fingers meet it. Props put down stay where they were left, as real objects the person returns to.
+2. Actions play on the upper body while walking where that is natural (taking a hat off while approaching the canteen) and as full-body where it is not (pulling on boots).
+3. The sim never sets a state directly: it requests an outcome ("hat off, on the table") and the animation layer performs the action, then reports done. Far away (LOD2 and beyond) the state changes without the clip, so the cost stays near zero.
+4. Variation: left- and right-handed people, quick and unhurried versions, habit per person (one always tucks it under the arm, another always hangs it up).
+5. In walk mode the visitor's avatar uses the same set: hat on at the PPE point, off in the office and canteen.
+6. Sources: record these with FreeMoCap or from phone video (see `TOOLBOX.md`); most are short and simple, which suits video capture. Hand-key the prop contact frames.
+
+**Pass when.**
+- [ ] At the canteen door at noon, a stream of workers each visibly removes a hard hat in one of several ways and no hat pops off or on.
+- [ ] At assembly, hats come off for the prayer or anthem and go back on after, as in R4 `site-02`.
+- [ ] No one is working in a `ppe: required` zone without a hat; no one eats with it on unless that is their habit.
+- [ ] Every row of the table has at least one action built and reviewed; hands meet props within 2 cm at the contact frames.
+- [ ] Put-down props are picked up again by their owner (asserted over a simulated day: no orphaned hats).

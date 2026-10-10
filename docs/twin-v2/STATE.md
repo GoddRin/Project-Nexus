@@ -46,6 +46,7 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | P08b | Retarget, clean, review | todo | | | |
 | P08c | Animation runtime | todo | | | |
 | P08d | Authored clips and paired actions | todo | | | |
+| P08e | Real-time actions: hard hats and PPE on and off, pick up, hand over | todo | | | |
 | P09a | Simulation core | todo | | | |
 | P09b | Daily programme and role behaviour | todo | | | |
 | P09c | Tunnel cycle and set pieces | todo | | | |
@@ -80,7 +81,7 @@ The hand-off between sessions. Update at the end of every session. Status is one
 
 | Item | Needed by | Status |
 | --- | --- | --- |
-| Site photographs, DED drawings, PPE colour standard | P02a onward (optional; improves accuracy) | partly supplied 2026-10-09: powerhouse CCTV layout drawing (R1) read; monthly review decks (R2) linked but only the cover seen. Still wanted: powerhouse sections and elevations, a mechanical general arrangement, switchyard and camp layouts, PPE colour standard |
+| Site photographs, DED drawings, PPE colour standard | P02a onward (optional; improves accuracy) | partly supplied 2026-10-09: powerhouse CCTV layout drawing (R1) read; monthly review decks (R2) linked but only the cover seen. Still wanted: powerhouse sections and elevations, a mechanical general arrangement, switchyard and camp layouts, PPE colour standard Added 2026-10-10: storm drain plan (R3); eight site photographs and two videos with the owner's PPE rule, white hats for staff and green for workers (R4) |
 | Permission to download the monthly review decks for local extraction | P00a | given 2026-10-09 for the latest deck only; MPR-53 downloaded and indexed (reference R2) |
 | Scope: add upstream works (weir, intake, desander, pipe bridge, tunnel portals) as extra locations? | before P05 | **yes** (2026-10-09): added as P05g, P05h, P06e |
 | Approval to show progress percentages and dates publicly | P14b | **yes** (2026-10-09): physical progress and completion dates only |

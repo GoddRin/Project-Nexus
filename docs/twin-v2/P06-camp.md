@@ -8,6 +8,8 @@ v1 also holds a great deal of authored detail here (rooms, meals, routines); the
 
 Common to every sub-phase: the "common" list at the top of `P05-hydro-works.md` applies. Interiors are separate zones that stream in inside about 30 m and are represented from outside by lit window cards and a dim parallax interior.
 
+**From the owner's photographs (R4 `site-08`, `site-03`, `site-04`):** camp houses are single-storey white prefab panel buildings with rust-streaked metal roofs, green window frames and wall air-conditioners, red flexible electrical conduit run along the eaves, solar street lights on poles and small solar panels on roofs; beside them a **bamboo-trellis vegetable patch** (gourds, taro, banana), uncut grass, an **outdoor kitchen** with a concrete counter under a lean-to, parked motorcycles (one under a cover); the yard store has rows of blue and red drums, stacked timber and large used tyres. Build these.
+
 ## P06a. Building kit, site, main office (exterior and interior)
 
 **v1 source.** `TemfacilFacility.tsx` 132 to 720 (pad, kerbs, drains, pavers, parking, office shell, doors, yard pole), `TemfacilOfficeInterior.tsx` (all of it: zones 1 to 6, desks, screens, plotter, meeting table, PM office), `screenTextures.ts`, `SharedMaterials.tsx`.

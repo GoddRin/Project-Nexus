@@ -50,7 +50,7 @@ Every session then does this, in order:
 | P05 Hydro works | a b c d e f g h | Powerhouse, turbine hall, switchyard, waterways, Tunnels 1 and 2, construction stages, the weir location (weir, intake, desander), the midway location (pipe bridge and portals) |
 | P06 Camps | a b c d e | Main Temfacil buildings, interiors, props; the weir satellite camp and aggregate plant |
 | P07 Characters | a b c d | Bodies, outfits by role, variation, the 36 named staff |
-| P08 Motion | a b c d | Clip library, retargeting, animation runtime, custom clips |
+| P08 Motion | a b c d e | Clip library, retargeting, animation runtime, custom clips, real-time actions (hard hats on and off, PPE, tools, hand-overs) |
 | P09 Simulation | a b c d | Stations, daily programme, role behaviour, tunnel cycle, selection |
 | P09 Routines | e f | The site calendar (weekly, monthly, seasonal events, deliveries, visitors, milestones) and personal routines with a full day for every group (file `P09-routines.md`) |
 | P10 Vehicles | a b c | Fleet models and rigs (4x4 pickups, crew vans, light 4x4 trucks, heavy and tunnel equipment), driving and work cycles, mountain logistics |

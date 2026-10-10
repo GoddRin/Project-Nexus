@@ -53,6 +53,30 @@ What it shows:
 
 Combined with R1 (hall 31.5 m long), the plan can be scaled to measure the switchyard, tailraces, floodwall and yard.
 
+## R4. Owner's site photographs and videos (supplied 2026-10-10)
+
+- **Files (git-ignored):** `assets-src/twin/reference/owner-photos-2026-10-10/`: `site-01` to `site-08`, `kia-k2500.png`, `sample-vid.mp4` (65 s) and `water-river.mp4` (12 s), with contact sheets `*-sheet.jpg`. Pull more frames with ffmpeg when a session needs them.
+- These are the owner's own pictures of everyday life on the site and are the **first authority for what people wear and how the site looks at ground level**.
+
+**The owner's PPE rule (stated 2026-10-10):** staff wear **white** hard hats; workers wear **green**. Hard hats are worn while working. They may come off when resting, eating at the canteen and during other non-work moments.
+
+What the pictures show:
+
+| Picture | What to take from it |
+| --- | --- |
+| `site-01` Yard gathering | Green hats on workers, a white hat on a staff member in a grey jacket and jeans; yellow vests; a worker in a printed long-sleeve motocross-style jersey; a face mask; bare earth yard with tyre tracks and a brown puddle; prefab building and forest behind |
+| `site-02` Morning assembly | Rows of people standing with **hard hats off, held at the hip or under the arm** (as for a prayer or the anthem); a black jacket lettered "SCIC" in green with the department name beneath; grey and beige **reflectorized site jackets** with silver tape across the back and arms; green and blue long-sleeves with yellow reflective bands; a red polo with a yellow band; yellow mesh vests; jeans and work trousers; **grey-and-silver or black rubber boots on nearly everyone**; churned wet mud with tyre-tread prints and standing water |
+| `site-03` Worker on a ladder fixing a small solar panel | Green hard hat; blue long-sleeve; a **yellow reflective belt-and-braces harness**; a black belt pouch; a **yellow cap lamp clipped at the belt**; dark trousers tucked into rubber boots; the roof edge of a camp building with green trim and red electrical conduit |
+| `site-04` Worker shinning up a pole to a solar street light | **Orange** hard hat, orange vest with grey tape over a dark long-sleeve, jeans, grey safety boots; white prefab wall panels with green window frames, window air-conditioner on a bracket, red flexible conduit run along the eave, a bare bulb |
+| `site-05` Yard store | Three workers in **red** hard hats, long sleeves with reflective bands and rubber boots carrying long timbers between them; dozens of blue plastic drums and some red steel drums; huge used earthmover tyres; an open shed with a rusty roof; bamboo forest right behind; crushed-rock yard |
+| `site-06` Survey in the tunnel | Polygonal **steel arch ribs** (straight segments bolted into an arch) with mesh and lagging behind; a total station on a tripod with a yellow instrument case; red, green and white hats together; navy long-sleeves with reflective bands; rubber boots; services clipped to the right wall; green-lit water on the invert toward the face |
+| `site-07` Invert concreting in the tunnel | Red hard hats; one wide **full-brim** hard hat; rock-bolt plates on the crown; a string of lamps along the left wall; a pipe on the right wall; workers screeding wet concrete with a long straightedge and shovels; printed arm sleeves; a red vest from a previous employer (do not reproduce other companies' names on clothing) |
+| `site-08` Camp house on an overcast day | Single-storey white prefab house with a **rust-streaked metal roof**, green window frames and wall air-conditioners; a **bamboo trellis vegetable patch** with gourds wrapped in plastic bottles, taro and banana plants; uncut grass; two motorcycles, one under a black cover; an **outdoor kitchen** with a concrete counter under a lean-to; **low cloud sitting on the forested ridge** behind |
+| `sample-vid` | A yellow **jumbo drill** working the tunnel face under steel ribs: the boom and drifter, bundled hydraulic hoses, water mist and dust drifting back, broken rock and green water on the invert |
+| `water-river` | The **access road beside a stream**: red-brown laterite road with ruts and puddles, a bank of large pink, tan and grey boulders dumped as riprap, clear water over cobbles, bamboo and forest crowding the road, a survey pole with a green flag, a small white dump truck parked ahead, a staff member in a white hard hat, black T-shirt and jeans walking with another in a beige reflectorized jacket, cap and rubber boots |
+
+Consequences for the plan: the hard-hat colour rule and the clothing list go into P07b; hats-off moments and other in-the-moment actions are P08e; the vegetable patch, outdoor kitchen and solar lights go into P06; the roadside stream and riprap into P03a and P10c; the steel rib shape into P05e; the jumbo into P10a.
+
 ## R2. Monthly Project Review presentations (SharePoint)
 
 - **Link:** shared folder "04 Monthly Project Review Presentation" under `LUZ-21-009 / 03 Project Planning & Cost Control` on the Tumauini project OneDrive. The link itself opens the folder without sign-in, so it is treated as a secret: it is stored only in the git-ignored file `assets-src/twin/reference/share-link.txt` and must never be written into a tracked file, a commit message or the app. Run the scripts from the project root; they read the link from that file.
