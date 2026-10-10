@@ -31,6 +31,28 @@ Differences from v1 that v2 must correct:
 - v1 has no second floor. The drawing has a 2F control room, office, pantry and toilet.
 - The project name on the title block is "11.3MW Upper Tumauini HEPP".
 
+## R3. Powerhouse storm drain plan (drawing, supplied 2026-10-10)
+
+- **Files (git-ignored):** `assets-src/twin/reference/drawings/powerhouse-storm-drain-plan.pdf`, rendered at `drawings/storm-drain/page-01.png` (re-render larger with `node scripts/twin/reference/render-pdf.mjs <pdf> <outDir> <width>` to read small text).
+- **Title block:** 11.3MW Upper Tumauini Hydroelectric Power Project · Powerhouse Storm Drain Plan · "Concrete Storm Drain Plan", scale 1:150 · Dwg. No. UTU-SCI-TDC-SPD-PH-CIV-0001-R0 (a Sta. Clara shop drawing; references UTU-EDCO-TDC-DWG-PH-CIV-0001-RB and -PN-CIV-0030-RA) · Location: Pinacanauan de Tumauini River, Antagan Uno, Tumauini, Isabela.
+- **Why it matters:** it is the only to-scale **site plan of the whole powerhouse area with ground contours**. Use it as the layout authority for P05a, P05c and P05d, and to shape the terrain around the powerhouse in P03a.
+
+What it shows:
+
+| Item | Reading |
+| --- | --- |
+| Powerhouse | Long rectangle on a column grid with both units drawn inside (small unit toward the west end, big unit toward the middle), an open bay at the west end, a stair, and an annex at the east end linking to the switchyard |
+| Penstock arrival | The penstock comes down from the north and **splits**: the main line continues straight to the big unit, a branch angles off west to the small unit and enters the building through a "pipe encasement" |
+| Tailraces | Two separate channels leave the south side, labelled **SMALL TAILRACE** and **BIG TAILRACE**; they run south, join, and discharge to the river through a flared outlet with riprap |
+| Switchyard | Fenced rectangular yard immediately east of the powerhouse, finished ground level **FGL = 188.04 m**, gravel surfacing, rows of equipment foundations, a transformer bay nearest the powerhouse, a double gate on the south side, incoming lines from the north |
+| Floodwall | Runs along the river side south and south-west of the powerhouse and tailrace, with buttresses on its landward face |
+| East side | A long row of buttressed or stepped structures curving around the east and south-east of the switchyard (retaining wall or floodwall continuation; confirm from photos) |
+| Drainage | Concrete storm drain wrapping the north (hill) side of the powerhouse and switchyard; concrete trench drains with steel grating around the switchyard; two valve boxes, 500 mm HDPE pipes and two sumps on the river side |
+| Services | Pressure reducing station and septic tank on the north side between the hill and the building; an external stair up the slope beside the penstock |
+| Ground | Contours from about 190 at the yard to 225 on the hill to the north-west; the building sits on a bench near 188 to 190 with the slope rising steeply behind it |
+
+Combined with R1 (hall 31.5 m long), the plan can be scaled to measure the switchyard, tailraces, floodwall and yard.
+
 ## R2. Monthly Project Review presentations (SharePoint)
 
 - **Link:** shared folder "04 Monthly Project Review Presentation" under `LUZ-21-009 / 03 Project Planning & Cost Control` on the Tumauini project OneDrive. The link itself opens the folder without sign-in, so it is treated as a secret: it is stored only in the git-ignored file `assets-src/twin/reference/share-link.txt` and must never be written into a tracked file, a commit message or the app. Run the scripts from the project root; they read the link from that file.
