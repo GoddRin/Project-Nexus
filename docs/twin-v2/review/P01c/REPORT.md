@@ -16,7 +16,7 @@ Four of the five "Pass when" checks pass outright. The fifth passes on the numbe
 
 One of the steps is only partly met: **"never blocks a frame for more than 8 ms"** holds on WebGPU (3.3 to 4.9 ms) but not reliably on the WebGL2 fallback (4.1 and 8.0 ms in Chrome, 13 ms in the Firefox and WebKit test browsers). Details under "Known gaps".
 
-**KTX2 was not exercised.** KTX-Software is not on this machine, so textures were built as WebP, as the prompt allows. See "For the owner".
+**KTX2: done in a follow-up the same day**, after the owner installed KTX-Software. See "Follow-up: KTX2" at the end; the sections in between describe the first pass, made with WebP textures.
 
 ## The pipeline, measured
 
@@ -154,3 +154,45 @@ Installed (dev dependencies): `@gltf-transform/cli`, `core`, `extensions`, `func
 - `twin2-p01c-zone.json` (the budget table above), `-zone-visible`, `-zone-webgl2`, `-empty`, `-soak20`: bench results.
 - `zone-<run>-overview.jpg`, `-near.jpg`: the test zone per browser.
 - `props-close-<time>.jpg`: the props at 05:40, 12:00, 17:10 and 21:00 under the temporary light; `props-close-<prop>-noon.jpg`; `zone-visible-yard-noon.jpg`.
+
+## Follow-up: KTX2 (2026-10-10, after KTX-Software was installed)
+
+The owner installed KTX-Software (`ktx` v5.0.0-rc2). The five props were rebuilt with `node scripts/twin/build-assets.mjs --force` and everything was run again on the production build.
+
+**Result: KTX2 works on WebGPU and on the WebGL2 fallback.** All 15 textures of the zone reach the graphics card still compressed (as BC7, 512 px, 10 mip levels), and the picture matches the WebP one (`props-close-noon-1200-ktx2.jpg` beside `props-close-noon-1200.jpg`).
+
+A fault was found and fixed on the way: **the sign-in proxy was sending the texture decoder's `.wasm` file to the sign-in page.** For a signed-out visitor no KTX2 texture could have loaded, and the zone stayed "loading" for ever with no message. Fixed in three places:
+
+- `proxy.ts`: `/vendor/twin/` and `/textures/twin/` are public, like `/models/`. This is the one file changed outside the twin's own folders; it only adds two static paths.
+- `engine/assets.ts`: a file that has not loaded and decoded in 45 seconds counts as failed.
+- `engine/streaming.ts`: a zone that fails to load is released and tried again after 30 seconds, instead of holding a loading slot.
+
+| Measure | WebP (first pass) | KTX2 |
+| --- | --- | --- |
+| Five props, shipped | 0.76 MB | 2.10 MB |
+| Download to first view, with the test zone | 2.14 MB | 3.69 MB (0.58 MB of it the decoder, fetched once) |
+| GPU memory the zone adds, by the renderer's own count | 20.9 MB | 0.9 MB |
+| Build time per asset | 0.2 to 0.3 s | about 1 s |
+| Overview, Medium, frame cap off | 320.5 fps | 326.1 fps |
+| Zone in, after the page is usable (WebGPU / fallback) | 0.5 to 0.9 s / 1.0 to 1.7 s | 1.0 to 1.3 s / 2.0 s |
+
+So KTX2 trades a larger download for far less graphics memory. Most of the size is the normal maps, kept in the higher-quality mode (265 KB each against 61 KB for a colour map). The 0.9 MB is three.js's own count and looks low for 15 compressed textures (about 5 MB would be expected), so read it as "much less", not as an exact figure.
+
+`check-pipeline.mjs` now has a real KTX2 check in place of "not measured":
+
+| Run | Backend | Result | Longest task while streaming in |
+| --- | --- | --- | --- |
+| Chrome 154 | WebGPU | 15 of 15 | 6.9 ms |
+| Chrome 154, `--force-webgl` | WebGL2 fallback | 15 of 15 | 3.0 ms |
+| Edge 155 | WebGPU | 15 of 15 | |
+| Firefox 153 (Playwright build) | WebGL2 fallback | 14 of 15 | 11.0 ms (over the 8 ms line, as before) |
+| WebKit 26.5 (Playwright build) | WebGL2 fallback | 14 of 15 | 14.0 ms (as before) |
+
+Bench with KTX2 (`twin2-p01c-ktx2.json`): every budget line passes on both profiles; desktop 326.1 fps at the overview, 401.5 over the fly-through, first usable view 1.48 s; phone profile 882.4 fps.
+
+Still open after this follow-up:
+
+- The 8 ms line on the WebGL2 fallback in the Firefox and WebKit test browsers (unchanged).
+- KTX2 sizes are not tuned: the settings are the first ones tried. P02c should weigh download against memory on real assets.
+- This session's terminal did not see `ktx` on its PATH (it was started before the install), so the build was run with `C:\Program Files\KTX-Software\bin` added by hand. A new terminal has it.
+- Files from the first pass (`check-prod-*.json`, `twin2-p01c-zone*.json`, `-empty`, `-soak20`) are WebP runs; `check-ktx2-*.json` and `twin2-p01c-ktx2.json` are the KTX2 runs. The 20-minute heap soak was not repeated with KTX2.

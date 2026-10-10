@@ -61,8 +61,17 @@ async function capTexture(texture: THREE.Texture, cap: number) {
   image.close();
 }
 
+/** A file that has not arrived and decoded in this long is treated as failed, milliseconds. */
+const LOAD_TIMEOUT_MS = 45_000;
+
 async function load(entry: AssetEntry): Promise<LoadedAsset> {
-  const gltf = await getLoader().loadAsync(entry.url);
+  // (a texture decoder that fails to start leaves the loader waiting for ever: seen when the
+  // Basis transcoder's .wasm was answered with the sign-in page)
+  let timer = 0;
+  const late = new Promise<never>((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error(`asset ${entry.id}: not loaded after ${LOAD_TIMEOUT_MS / 1000} s`)), LOAD_TIMEOUT_MS);
+  });
+  const gltf = await Promise.race([getLoader().loadAsync(entry.url), late]).finally(() => window.clearTimeout(timer));
   gltf.scene.updateMatrixWorld(true);
 
   const lods: LoadedAsset["lods"] = [null, null, null];

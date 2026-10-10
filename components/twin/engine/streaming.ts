@@ -26,6 +26,8 @@ const MAX_LOADING = 2;
 const SLICE_MS = 4;
 /** How often zone distances are looked at, seconds. */
 const CHECK_EVERY = 0.25;
+/** A zone that failed to load is not tried again for this long, milliseconds. */
+const RETRY_AFTER_MS = 30_000;
 
 /** A small piece of on-frame work. `kind` names it in the stats so a slow one can be found. */
 type Task = { kind: string; run: () => void | Promise<unknown> };
@@ -40,6 +42,8 @@ type ZoneRun = {
   sets: InstanceSet[];
   held: string[];
   shell: { id: string; group: THREE.Group } | null;
+  /** After a failed load: the time (performance.now) before which it is not tried again. */
+  retryAt: number;
 };
 
 export type StreamingContext = {
@@ -177,7 +181,10 @@ async function loadZone(ctx: StreamingContext, run: ZoneRun) {
     });
   } catch (error) {
     console.error(`[twin] zone ${run.entry.id} did not load`, error);
-    if (live()) unload(run);
+    if (live()) {
+      unload(run);
+      run.retryAt = performance.now() + RETRY_AFTER_MS;
+    }
   }
 }
 
@@ -220,6 +227,7 @@ export function startStreaming(ctx: StreamingContext): () => void {
     sets: [],
     held: [],
     shell: null,
+    retryAt: 0,
   }));
   runs = mine;
 
@@ -236,7 +244,7 @@ export function startStreaming(ctx: StreamingContext): () => void {
       }
       if (run.entry.shell && !run.shell) void loadShell(ctx, run, run.entry.shell);
       const distance = run.box.distanceToPoint(eye);
-      if (run.state === "out" && distance < run.entry.streamIn && loading < MAX_LOADING) void loadZone(ctx, run);
+      if (run.state === "out" && distance < run.entry.streamIn && loading < MAX_LOADING && performance.now() >= run.retryAt) void loadZone(ctx, run);
       else if (run.state !== "out" && distance > run.entry.streamOut) unload(run);
     }
   };

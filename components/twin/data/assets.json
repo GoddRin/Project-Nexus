@@ -1,8 +1,8 @@
 [
  {
   "id": "prop.cement-bag",
-  "url": "/models/twin/props/cement-bag.glb?v=978e7fe652",
-  "bytes": 77184,
+  "url": "/models/twin/props/cement-bag.glb?v=ac8d89c6b3",
+  "bytes": 356052,
   "tris": [
    844,
    400,
@@ -31,8 +31,8 @@
  },
  {
   "id": "prop.drum-blue",
-  "url": "/models/twin/props/drum-blue.glb?v=07f0492327",
-  "bytes": 129544,
+  "url": "/models/twin/props/drum-blue.glb?v=a8bcdb7f18",
+  "bytes": 407512,
   "tris": [
    1473,
    400,
@@ -61,8 +61,8 @@
  },
  {
   "id": "prop.drum-red",
-  "url": "/models/twin/props/drum-red.glb?v=696516ee3b",
-  "bytes": 163036,
+  "url": "/models/twin/props/drum-red.glb?v=3265318efd",
+  "bytes": 416472,
   "tris": [
    1498,
    399,
@@ -91,8 +91,8 @@
  },
  {
   "id": "prop.jerrycan",
-  "url": "/models/twin/props/jerrycan.glb?v=94a6e19bab",
-  "bytes": 197196,
+  "url": "/models/twin/props/jerrycan.glb?v=65340cd5e2",
+  "bytes": 456652,
   "tris": [
    1499,
    399,
@@ -121,8 +121,8 @@
  },
  {
   "id": "prop.propane-tank",
-  "url": "/models/twin/props/propane-tank.glb?v=7af101e8c3",
-  "bytes": 211624,
+  "url": "/models/twin/props/propane-tank.glb?v=bca0547b59",
+  "bytes": 512864,
   "tris": [
    1475,
    375,

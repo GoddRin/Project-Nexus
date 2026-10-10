@@ -106,6 +106,18 @@ let start;
   record("2,500 props in 15 draw calls or fewer", s.streaming.instances === 2500 && zoneCalls <= 15 && s.streaming.draws <= 15 && drawn + s.streaming.hidden === 2500 && drawn > 0, `${zoneCalls} draw calls for the zone (${s.calls} in all, ${start.overviewCalls} without it); ${drawn} props in view as LOD0/1/2 = ${s.streaming.lod.join("/")}, ${s.streaming.hidden} outside the view; ${s.tris} triangles`);
   await shot(page, `zone-${LABEL}-overview.jpg`);
 
+  // 2b. KTX2: the zone's textures reach the GPU still compressed (when the build wrote KTX2)
+  results.ktx2 = await page.evaluate((id) => {
+    const seen = new Map();
+    window.__TWIN__.scene.getObjectByName(`zone:${id}`)?.traverse((o) => {
+      for (const slot of ["map", "normalMap", "roughnessMap", "metalnessMap"]) {
+        const t = o.material?.[slot];
+        if (t && !seen.has(t.uuid)) seen.set(t.uuid, { slot, compressed: !!t.isCompressedTexture, format: t.format, width: t.image?.width, mips: t.mipmaps?.length ?? 0 });
+      }
+    });
+    return [...seen.values()];
+  }, ZONE);
+
   // 3. Levels of detail by distance
   await goTo(page, NEAR, 1500);
   const near = await stats(page);
@@ -293,7 +305,15 @@ await context.close();
   await fresh.close();
 }
 
-record("KTX2 textures on this renderer", null, "not measured: KTX-Software is not installed on this machine, so the build wrote WebP; the loader has KTX2 wired (engine/assets.ts) but no .ktx2 file has been through it");
+{
+  const t = results.ktx2 ?? [];
+  const compressed = t.filter((x) => x.compressed);
+  // three's numbers for the GPU formats Basis is transcoded to
+  const FORMATS = { 33776: "BC1", 33777: "BC1", 33779: "BC3", 36492: "BC7", 37808: "ASTC 4x4", 37492: "ETC2", 37496: "ETC2", 36196: "ETC1", 1023: "RGBA8 (not compressed)" };
+  const names = [...new Set(t.map((x) => FORMATS[x.format] ?? String(x.format)))].join(", ");
+  if (compressed.length === 0) record("KTX2 textures on this renderer", null, `not measured: the assets were built with WebP textures (${t.length} textures, none compressed). Build with KTX-Software on the PATH to test this`);
+  else record("KTX2 textures on this renderer", compressed.length === t.length && t.every((x) => x.mips > 1), `${compressed.length} of ${t.length} textures of the zone are compressed on the GPU, as ${names}, ${t[0].width} px with ${t[0].mips} mip levels`);
+}
 record("no console errors", allErrors.length === 0, allErrors.length ? allErrors.slice(0, 3).join(" | ") : "none in any page of this run");
 
 await browser.close();
