@@ -55,12 +55,14 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | P10c | Mountain logistics: roads, convoys, deliveries, machine care | todo | | | |
 | P11a | Fauna models and clips | todo | | | |
 | P11b | Fauna behaviour | todo | | | |
+| P11c | Sierra Madre wildlife and animal routines | todo | | | |
 | P12a | Visual effects and post | todo | | | |
 | P12b | Sound | todo | | | |
 | P12c | Live site weather and a sky that follows it | todo | | | |
 | P12d | People, animals and machines respond to conditions (heat, rain, wind) | todo | | | |
 | P12e | Small nature details and the camp at night | todo | | | |
 | P12f | The environment through the day, the month and the year | todo | | | |
+| P12g | Surfaces that change: ground, vehicles and people (mud, dust, wear) | todo | | | |
 | P13a | Shell, dock, inspector, loading | todo | | | |
 | P13b | Search, labels, phone | todo | | | |
 | P13c | Tools | todo | | | |
@@ -90,4 +92,6 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Confirmation of which staff details are real and cleared (licence, experience, province) and that photos match names | P09d | pending |
 | Stage-mapping rules reviewed | P14b | pending |
 | Which Kia truck model the site uses, and local vehicles | P10a | **answered** (2026-10-10): Kia K2500-type white cab-over drop-side truck (photo shown by the owner); include the hired passenger motorcycle, the tricycle at the lower gate and the carabao sled |
+| Optional phone captures (scans of real PPE, tools and vehicles; short videos of real tasks; ground photos; sounds): see `TOOLBOX.md` | any time before P06d, P07b, P08a, P10a | optional |
+| Wildlife list | P11c | **approved** (2026-10-10): build all recommended species |
 | Go-ahead to make v2 the default | P15b | pending |

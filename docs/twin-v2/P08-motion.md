@@ -1,5 +1,7 @@
 # P08. Motion
 
+**Tools and sources:** read `TOOLBOX.md` first (free tools for models, motion capture from video, scans of real objects, and what the owner may have supplied).
+
 Four sessions. Job-true movement from motion capture where it exists and hand-authored clips where it does not, played through one runtime with grounding and tool handling.
 
 ## P08a. Clip plan and acquisition

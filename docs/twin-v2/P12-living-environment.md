@@ -1,6 +1,6 @@
 # P12 (continued). The living environment
 
-Four sessions: **P12c, P12d, P12e, P12f.** They run after P12b and before P13a.
+Five sessions: **P12c, P12d, P12e, P12f, P12g.** They run after P12b and before P13a.
 
 The owner asked (2026-10-10) for an environment that is alive down to small details: nature and its sounds, clouds that come and go with the **live weather at the site**, rain, wind and sun that change how people behave (sweating and tiring in the heat, umbrellas and raincoats in the rain), and workers relaxing at night. Earlier phases already build the pieces (weather states in P03d, vegetation wind in P04b, the daily programme in P09b, animals in P11, effects and sound in P12a and P12b). These three sub-phases connect them to real conditions and to each other, and add what was missing.
 
@@ -162,3 +162,74 @@ The surroundings keep their own timetable, independent of people. This sub-phase
 - [ ] Full-moon and new-moon nights differ visibly.
 - [ ] The river responds to a week of simulated rain and falls back after.
 - [ ] Budget holds on Medium at dawn with mist, dew and the full chorus.
+
+## P12g. Surfaces that change: ground, vehicles and people
+
+**Needs.** P12d, P10c, P07b (wear layers), P03a (ground material).
+
+The owner asked (2026-10-10) for dirt that looks right for the weather (mud when it rains, dust when it is dry), for the ground itself to change with rain, sun and use, and for the same realism on people. Earlier phases give each of these a simple wetness or dirt value. This sub-phase replaces those with one shared model of **what is on a surface and what state it is in**, so the same rain that turns the road to mud also muddies the truck that drives it and the boots that walk it.
+
+### The model
+
+1. **Ground has a material and a state.** Materials per patch (from the P03a mask): laterite soil (red-brown), forest humus (dark), river sand and gravel, crushed aggregate, compacted road base, concrete, steel plate, grass, tunnel invert (grey rock slurry). State per patch, stored in low-resolution maps per location (`world/groundState.ts`) that change slowly:
+
+| State value | What drives it |
+| --- | --- |
+| Moisture (0 dry to 1 saturated) | Rain adds; sun, wind, heat and time remove; shade and low spots dry slowest; slopes drain to hollows |
+| Standing water depth | Fills where water collects (computed from the terrain's low points and drains), overflows downhill, sinks in and evaporates |
+| Looseness (dust or mud available) | Traffic and footfall churn the surface; rain packs dust; drying crusts mud |
+| Disturbance (ruts, prints) | Wheels and feet press tracks when the ground is soft; they hold while it dries and wear away under later traffic and rain |
+| Contamination | Cement and concrete spill near pours, oil at the motor pool and fuel point, slurry outside the tunnel portal, sawdust at the carpentry bench |
+
+2. **What you see on soil and road, by moisture:**
+   - **Bone dry:** pale, powdery, cracked in a polygon pattern where mud dried; dust lifts from every wheel and footstep, hangs in still air and drifts with the wind; a fine film settles on everything nearby.
+   - **Dry:** firm, lighter colour, a little dust at speed.
+   - **Damp (first minutes of rain, or morning dew):** darker spots joining up, no dust, the smell-of-rain moment, firm underfoot.
+   - **Wet:** dark, glossy, small puddles in every rut and footprint, tyres leave clean-edged tracks, the surface starts to smear.
+   - **Mud:** soft and sticky; deep ruts with water in them; boots sink and pull out with a suck; wheels spin and throw clods; a brown film of slurry flows on slopes; the road edge slumps.
+   - **Slurry and flood:** liquid mud and flowing sheets of brown water; rivulets cutting channels across the road; gravel washed out of place; drains running full and spilling.
+   - **Drying:** the high crowns and wheel tracks dry first and turn pale while ruts stay dark; a skin forms and cracks; puddles shrink leaving a ring of fine silt; within a day or two of sun the cycle returns to dust.
+3. **Other grounds change too:** concrete darkens when wet, shows a mirror sheen and slow-drying patches, keeps tyre and boot prints of mud that later dry to pale dust; fresh concrete goes from glossy wet to matt as it sets; gravel darkens and shines; steel plates and gratings go slick; grass beads with water, flattens where walked, and springs back; leaf litter mats down when wet and scatters when dry; river sand shows a wet line that follows the water level.
+4. **Erosion and deposit over days:** gullies form in bare cut slopes after heavy rain and deepen over a wet week until the road gang fills them; silt fans collect at the bottom of slopes and in drains and get shovelled out; a washed-out pothole grows until it is filled; road gravel thins on the steep sections.
+5. **Tracks that last:** a persistent track map along roads and yards records wheel ruts and footpaths; the daily routes of trucks and people become visible worn lines; a single vehicle crossing fresh mud leaves its own readable trail; tracked machines leave their cleat pattern.
+
+### Vehicles and machines
+
+6. **Dirt comes from where the vehicle has been** (`vehicles/soiling.ts`). Each vehicle accumulates four separate layers, driven by the ground state under its wheels, its speed and time:
+
+| Layer | When it builds | How it looks |
+| --- | --- | --- |
+| Dust film | Driving on dry ground, or parked near dry traffic | A pale even haze heaviest at the rear and on horizontal surfaces; finger marks and a wiped arc on the windscreen; a clean patch where a hand opened a door |
+| Wet mud splatter | Driving through wet ground and puddles | Dark, glossy, thrown up in arcs behind each wheel, along the sills and doors and up the tailgate; drips running down; thicker the faster it went |
+| Caked mud | Wet splatter that has dried, and repeated layers | Pale, matt, thick, cracked; packed in wheel arches, on mud flaps, steps, chassis and the underside; chunks that fall off and lie where it parked |
+| Stains | The work itself | Cement dust and concrete splash on mixers and pumps; grey slurry on tunnel machines; oil and grease at pins and hoses; rust runs from scratches; diesel streaks below fuel caps; red soil stain that never fully washes out of white paint |
+
+7. **Colour matches the place:** red-brown from the laterite roads, grey from the tunnel, pale from cement, dark from forest soil. A truck that works the tunnel and then the road shows both.
+8. **Rain washes selectively:** it rinses dust off roofs and bonnets in streaks and beads on clean paint, but leaves caked mud in the arches and below the door line; a parked vehicle shows a dry shadow on the ground beneath it when rain starts and a clean rectangle of dry dust after it leaves.
+9. **Use decides how dirty.** The vehicles used hardest every day (dump trucks, the crew vans, the K2500, the supervisors' pickups, tunnel plant) carry the heaviest permanent layers and are never fully clean; the project manager's vehicle and visitors' cars are cleaner; a vehicle fresh from the wash bay is wet and clean and visibly dirties again through the day.
+10. **Details that sell it:** mud-packed tyre treads that fling clods at speed and print the road; number plates and lamps partly obscured then wiped by the driver; wiper arcs through a dusty or muddy screen; muddy boot prints on steps and cab floors; a rag on the mirror; tracks clogged with clay; an excavator bucket polished bright on its edge and caked behind; a dump body with a tide line of dried load.
+11. Machines standing idle gather their own signs: dust, fallen leaves on the bonnet, a spider's web at the mirror, bird droppings, a puddle and a rust stain beneath.
+
+### People
+
+12. **The same four kinds of dirt on people** (extending the P07b wear masks and P12d wetness), driven by where each person walks and what they do:
+    - **Boots and legs:** dust to the ankle on dry days; wet mud to the height they waded, with splash spots higher up the trouser from walking; clay building up on soles so the walk changes slightly; dried mud flaking off; rubber boots shining wet, then dull.
+    - **Work shows on the worker:** cement powder to the elbows and on the knees of masons; grey shotcrete freckles on the tunnel crew's faces, hard hats and shoulders; rust-orange on steelmen's gloves, forearms and thighs; soot and spatter burns on welders' sleeves; sawdust on carpenters; grease to the wrists on mechanics; slurry up to the knees on the mucking crew; a clean stripe on the forehead where the hard hat sat.
+    - **Sweat and dust together:** dust sticks to wet skin and runs in lines down the neck and temples; a dark V of sweat on the chest with a pale salt edge once it dries; a clean wipe across the brow.
+    - **Rain:** shoulders and thighs darken first; fabric clings and shows folds; hair plasters down; water drips from the hard-hat brim; raincoats bead and run; hands and faces shine; everything dries from the edges inward, cotton slower than raincoat.
+    - **Hands and face:** dirty nails and palms on LOD0, a streak where a face was wiped with a dirty glove, reddened skin after a day in the sun, a healthy tan line at the collar and sleeve.
+13. **Clean again:** the end-of-shift wash visibly removes it (boots hosed at the tap leaving a brown stream to the drain, arms and faces washed, a clean shirt), so the evening camp looks different from the working day; office staff stay clean unless they walk the site; Monday's fresh uniforms look newer than Friday's.
+14. **PPE ages:** hard hats scuff and collect stickers and marker initials; vests fade and fray and their tape dulls with dirt; gloves wear through at the fingers; boots crease and lose colour at the toe.
+
+### Making it run
+
+15. Ground-state maps are small textures updated a few times a second on the GPU; vehicles and people sample them at their position. Soiling layers are a handful of numbers per vehicle or person feeding mask-driven shaders (no extra textures per individual). Persistent tracks use a tiled low-resolution map per road and yard. Everything scales by tier: Low keeps colour and gloss changes and drops deformation and track persistence.
+16. Sound and effects follow the state: squelch, splash, crunch on dry gravel, the hiss of tyres on wet road, clods thumping in wheel arches, dust puffs, drips.
+17. A debug view paints the moisture, water depth and looseness maps over the ground so the behaviour can be checked.
+
+**Pass when.**
+- [ ] One camera position on the access road, captured at each ground state in the table (bone dry through flood to drying), matches reference photographs of the site's roads in those conditions placed beside it.
+- [ ] A vehicle driven the same route on a dry day and a wet day ends with visibly different dirt of the right kind and colour; rain rinses the upper panels and leaves the arches caked; the wash bay resets it.
+- [ ] A labourer, a tunnel shotcrete operator, a welder and an engineer photographed at 16:00 on a dry day and on a wet day are each dirty in their own way, and clean at 19:00.
+- [ ] A wet week followed by a dry week shows ruts forming, a gully cutting, silt collecting, then cracking and dust.
+- [ ] The whole system costs less than 1.5 ms on Medium and nothing on surfaces out of view.

@@ -1,5 +1,7 @@
 # P07. Characters
 
+**Tools and sources:** read `TOOLBOX.md` first (free tools for models, motion capture from video, scans of real objects, and what the owner may have supplied).
+
 Four sessions. A varied Filipino workforce built on the people proven in the P02 slice. The measure of success is `QUALITY-BAR.md` section 3 and the side-by-side with the Atlas Navigator.
 
 Existing pipeline to reuse and extend, not replace: `scripts/blender/add_mixamo_clips.py`, `refine_arm_weights.py`, `masculinize_atlas_navigator.py`, `pose_render.py`, `render_clip_review.py`, and the working files in `scripts/blender/source/`.

@@ -1,5 +1,7 @@
 # P10. Vehicles and heavy equipment
 
+**Tools and sources:** read `TOOLBOX.md` first (free tools for models, motion capture from video, scans of real objects, and what the owner may have supplied).
+
 Three sessions: P10a, P10b, P10c. Working machines with operators, on real mountain roads. Read the section "The fleet for this site" below before P10a: it lists the vehicles this project really uses.
 
 ## P10a. Fleet models and rigs
@@ -56,14 +58,14 @@ The project is in the Sierra Madre on steep, narrow, often muddy access roads (a
 
 **This list replaces the generic fleet table in P10a where they differ.** Before modelling, P10a looks through `assets-src/twin/reference/` photographs for each vehicle type actually on site (the drone views of the camp and work fronts show parked vehicles) and notes which are confirmed by a photo and which are assumed.
 
-**Naming and badges.** The owner's names (L300, Kia) identify the type. Model each so a site person recognises it at once (proportions, cab shape, body type, typical colour), but with no maker's name, logo or model badge on it, and refer to it in the interface by type ("crew van", "4x4 light truck"). Fleet numbers and the SCIC wordmark go on the doors.
+**Naming and badges.** Model each vehicle so a site person recognises it at once (proportions, cab shape, body type, typical colour). **The owner has asked (2026-10-10) for the Kia K2500 to carry its Kia badge and K2500 plate as on the real truck: include them.** Apply the same to any other vehicle the owner names a badge for; leave badges off the rest unless asked. Fleet numbers and the SCIC wordmark go on the doors. Dirt and wear on every vehicle follow P12g.
 
 | Group | Vehicle or machine | Site-specific detail to model |
 | --- | --- | --- |
 | Light 4x4 | Double-cab 4x4 pickup (the supervisors' and engineers' service vehicle) | Raised suspension, all-terrain tyres caked in mud, snorkel on some, roll bar or steel rack in the bed, tow hooks and a front winch on one or two, mud flaps, a whip flag and amber beacon for the tunnel and haul roads, tools and a spare in the bed, seat covers, a radio |
 | Light 4x4 | 4x4 SUV or wagon (project manager, visitors) | Cleaner than the rest; same flag and beacon when on site |
 | Crew transport | L300-type cab-over van and its flat-bed "FB" version with a rear cabin and bench seats | The standard crew shuttle: sliding windows, roof rack with a tarp-covered load, a rear step, workers climbing in at shift change; a closed-van version for admin runs and the market run |
-| Light truck | Kia K2500-type light truck (confirmed by the owner with a photograph, 2026-10-10): a small white cab-over, single cab, low drop-side cargo bed with hinged side and tail boards and rope hooks along the edge, a headboard frame behind the cab, single rear wheels, short bonnet-less nose with a wide windscreen and large door mirrors | White, usually dusty and mud-splashed to the sills. Carries cement bags, rebar, formwork, water jugs, gas cylinders and tools under a tarp; also seen with a few workers and their gear in the bed on short runs inside the site at walking pace. No maker badge or model plate on the model |
+| Light truck | Kia K2500-type light truck (confirmed by the owner with a photograph, 2026-10-10): a small white cab-over, single cab, low drop-side cargo bed with hinged side and tail boards and rope hooks along the edge, a headboard frame behind the cab, single rear wheels, short bonnet-less nose with a wide windscreen and large door mirrors | White, usually dusty and mud-splashed to the sills. Carries cement bags, rebar, formwork, water jugs, gas cylinders and tools under a tarp; also seen with a few workers and their gear in the bed on short runs inside the site at walking pace. Carries the Kia badge on the nose and the K2500 plate on the front and cab side, as the owner asked |
 | Light truck | Small dump truck, 4 to 6 wheels | For aggregates on narrow sections where the big trucks do not fit |
 | Two-wheel | Underbone and trail motorcycles | The quickest way along the roads for runners, surveyors and foremen; mud guards, a crate or bag on the back; helmets worn; a covered motorcycle bay at the camp |
 | Haulage | 6x4 and 6x6 dump trucks | Tailgate chains, mud to the axles, tarp over the load, wheel chocks carried, engine brake sound on descents |

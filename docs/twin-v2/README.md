@@ -34,6 +34,7 @@ Every session then does this, in order:
 | `CONTRACTS.md` | Folder layout, naming, and the data formats every session must use unchanged |
 | `QUALITY-BAR.md` | Pass/fail checklists and budgets per asset type; lighting targets per time of day |
 | `STATE.md` | Progress tracker (the hand-off between sessions) |
+| `TOOLBOX.md` | Free tools and sources for models, motion and scans; read by the sessions that build people, animals, vehicles and props |
 | `DECISIONS.md`, `RISKS.md` | Created in P00; appended to by every session |
 | `P00` to `P15` | The phases |
 
@@ -53,9 +54,9 @@ Every session then does this, in order:
 | P09 Simulation | a b c d | Stations, daily programme, role behaviour, tunnel cycle, selection |
 | P09 Routines | e f | The site calendar (weekly, monthly, seasonal events, deliveries, visitors, milestones) and personal routines with a full day for every group (file `P09-routines.md`) |
 | P10 Vehicles | a b c | Fleet models and rigs (4x4 pickups, crew vans, light 4x4 trucks, heavy and tunnel equipment), driving and work cycles, mountain logistics |
-| P11 Animals | a b | Rigged fauna, behaviour |
+| P11 Animals | a b c | Rigged fauna, behaviour, Sierra Madre wildlife with home ranges, seasons and life beside the works |
 | P12 Effects and sound | a b | Work effects, atmosphere, positional audio |
-| P12 Living environment | c d e f | Live site weather driving sky, clouds, rain and wind; heat, rain and wind changing how people, animals and machines behave; small nature details and camp night life; the environment through the day, month and year (file `P12-living-environment.md`) |
+| P12 Living environment | c d e f g | Live site weather driving sky, clouds, rain and wind; heat, rain and wind changing how people, animals and machines behave; small nature details and camp night life; the environment through the day, month and year; ground, vehicles and people that get muddy, dusty and clean again (file `P12-living-environment.md`) |
 | P13 Interface | a b c | Shell and dock, search and labels, tools |
 | P13 Walk mode | d e f | Explore on foot in first or third person: controller and cameras, interaction and site rules, rides and guided visits (file `P13-walk-mode.md`) |
 | P14 Data | a b | Real records, progress timeline, deep links, second-project readiness |
