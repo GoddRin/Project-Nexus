@@ -32,7 +32,7 @@ docs/twin-v2/                             these prompts, state, reviews
 
 - Files: `kebab-case`. Asset ids: `category.name.variant`, for example `flora.narra.a`, `prop.hardhat-rack`, `veh.dump-truck`, `char.body.m03`.
 - GLB path: `public/models/twin/<category>/<name>.glb`. LODs are meshes inside one GLB named `<name>_LOD0`, `_LOD1`, `_LOD2`.
-- Blender collections: `ZONE_<zone-id>`, `LIB_<category>`. Placement empties: `PLACE_<asset-id>_<n>`. Station empties: `STN_<station-id>`.
+- Blender collections: `ZONE_<zone-id>`, `LIB_<category>`. Placement empties: `PLACE_<asset-id>_<n>`. Station empties: `STN_<station-id>`. Walk-mode helpers: collision meshes `COL_<name>`, spawn points `SPAWN_<id>`, ladders `LADDER_<id>`, van stops `STOP_<id>`.
 - Location ids: `weir`, `tunnel1`, `midway`, `tunnel2`, `powerhouse` (see `MASTER-BRIEF.md` section 7). Every zone id is prefixed by its location: `<location>.<zone>`.
 - Zone ids:
   - `powerhouse.`: `powerhouse`, `turbine-hall`, `control-room`, `switchyard`, `penstock`, `surge-tank`, `tailrace`, `floodwall`, `guardhouse`, `access-road`, `magazine`, `camp-office`, `camp-office-interior`, `camp-qaqc`, `camp-staffhouse`, `camp-canteen`, `camp-barracks`, `camp-warehouse`, `camp-motorpool`, `camp-clinic`, `camp-court`, `camp-gate`, `forest`, `river`.
@@ -226,6 +226,8 @@ type TwinStore = {
   quality: { tier: "low" | "medium" | "high" | "ultra"; auto: boolean };
   location: "weir" | "tunnel1" | "midway" | "tunnel2" | "powerhouse";
   projectDate: string | "today";  // the construction-progress timeline position (YYYY-MM)
+  mode: "orbit" | "walk" | "ride" | "drive";   // walk mode is P13d to P13f
+  player: { avatar: string; view: "first" | "third"; spawn: string | null };
   camera: { place: string | null; following: string | null };
   selection: { kind: "person" | "equipment" | "vehicle" | "facility" | "animal" | null; id: string | null };
   layers: Record<"labels" | "people" | "vehicles" | "animals" | "flora" | "energy" | "section", boolean>;

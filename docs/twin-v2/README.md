@@ -51,10 +51,13 @@ Every session then does this, in order:
 | P07 Characters | a b c d | Bodies, outfits by role, variation, the 36 named staff |
 | P08 Motion | a b c d | Clip library, retargeting, animation runtime, custom clips |
 | P09 Simulation | a b c d | Stations, daily programme, role behaviour, tunnel cycle, selection |
+| P09 Routines | e f | The site calendar (weekly, monthly, seasonal events, deliveries, visitors, milestones) and personal routines with a full day for every group (file `P09-routines.md`) |
 | P10 Vehicles | a b | Fleet models and rigs, driving and work cycles |
 | P11 Animals | a b | Rigged fauna, behaviour |
 | P12 Effects and sound | a b | Work effects, atmosphere, positional audio |
+| P12 Living environment | c d e f | Live site weather driving sky, clouds, rain and wind; heat, rain and wind changing how people, animals and machines behave; small nature details and camp night life; the environment through the day, month and year (file `P12-living-environment.md`) |
 | P13 Interface | a b c | Shell and dock, search and labels, tools |
+| P13 Walk mode | d e f | Explore on foot in first or third person: controller and cameras, interaction and site rules, rides and guided visits (file `P13-walk-mode.md`) |
 | P14 Data | a b | Real records, progress timeline, deep links, second-project readiness |
 | P15 Ship | a b | Optimisation, QA, cut-over |
 

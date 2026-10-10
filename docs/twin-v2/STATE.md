@@ -48,15 +48,24 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | P09b | Daily programme and role behaviour | todo | | | |
 | P09c | Tunnel cycle and set pieces | todo | | | |
 | P09d | Selecting, following, person card | todo | | | |
+| P09e | Site calendar: weekly, monthly, seasonal routines | todo | | | |
+| P09f | Personal routines and a full day for every group | todo | | | |
 | P10a | Fleet models and rigs | todo | | | |
 | P10b | Driving, traffic, work cycles | todo | | | |
 | P11a | Fauna models and clips | todo | | | |
 | P11b | Fauna behaviour | todo | | | |
 | P12a | Visual effects and post | todo | | | |
 | P12b | Sound | todo | | | |
+| P12c | Live site weather and a sky that follows it | todo | | | |
+| P12d | People, animals and machines respond to conditions (heat, rain, wind) | todo | | | |
+| P12e | Small nature details and the camp at night | todo | | | |
+| P12f | The environment through the day, the month and the year | todo | | | |
 | P13a | Shell, dock, inspector, loading | todo | | | |
 | P13b | Search, labels, phone | todo | | | |
 | P13c | Tools | todo | | | |
+| P13d | Walk mode: character controller, cameras, input | todo | | | |
+| P13e | Walk mode: interaction, site rules, guidance | todo | | | |
+| P13f | Walk mode: rides, guided visits, extras | todo | | | |
 | P14a | Real records and labels | todo | | | |
 | P14b | Progress timeline, second-project readiness | todo | | | |
 | P15a | Optimisation and full QA | todo | | | |

@@ -13,6 +13,7 @@ Common to every sub-phase here:
 - Model in `site_master.blend` under the zone collection; trim sheets and shared atlases from `LIB_materials`; three LODs; `check_asset.py`; export; build; place; capture at four moments.
 - Tag pickable equipment with `pick` ids equal to the equipment tags Nexus stores (`PlantEquipment.equipmentTag`), so P14 can attach real records.
 - Add `STN_` empties wherever a person would work (P09 uses them) and `lights` records for every lamp.
+- Author for walk mode (P13d): a simplified `COL_` collision mesh for every floor, wall, stair, railing and ramp a visitor could reach; `SPAWN_` points at entrances; `LADDER_` lines on ladders. Stairs, walkways, doors and headroom are modelled at true size so a 1.7 m person fits everywhere a real person can go.
 
 Shared material library to build in P05a and reuse after: board-marked concrete, smooth formed concrete, shotcrete, CHB plastered, corrugated GI (new, weathered, rusted), painted structural steel (SCIC green, safety yellow, grey primer), galvanised steel and grating, checker plate, stainless, glass, rubber, HDPE pipe, cable insulation, ceramic insulator, gravel surfacing, asphalt, timber formwork ply, scaffold tube.
 

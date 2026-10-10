@@ -72,6 +72,8 @@ Four sessions. The land and the light are finished for the whole site before str
 
 ## P03d. Weather
 
+This sub-phase builds the weather machinery with a few named states. P12c later feeds it with the live conditions at the site (temperature, humidity, wind, cloud layers, rain rate), so write `world/weather.ts` to take continuous numbers, with the named states as presets of those numbers.
+
 **Needs.** P03c.
 
 **Read first.** `lib/weather/pagasa.ts`, `lib/weather/gdacs.ts`, `/api/weather/pagasa-signals`; v1 `PlantScene.tsx` lines 2738 to 2775 (storm logic), `RainParticles` (501), `MountainAtmosphereEffects.tsx`.

@@ -30,7 +30,7 @@ The owner has given full authority over design, added features, effects, interfa
 9. **This repo's Next.js differs from your training data.** Read the relevant guide in `node_modules/next/dist/docs/` before touching routes or config.
 10. **Git.** Branch `twin-v2`, one commit per sub-phase, never push unless asked.
 11. **Honest reports.** Measured numbers, what failed, what was skipped, what was not checked.
-12. **Lab features.** Supercar, GTA mode and Locomotion Lab are not part of v2's interface. They remain available in v1 (`?v=1`) and are not ported unless the owner asks.
+12. **Walk mode.** v2 has its own explore-on-foot mode (P13d to P13f) in place of v1 GTA mode. **Lab features.** Supercar, GTA mode and Locomotion Lab are not part of v2's interface. They remain available in v1 (`?v=1`) and are not ported unless the owner asks.
 
 ## 4. Tech stack
 
