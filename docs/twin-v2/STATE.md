@@ -52,6 +52,7 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | P09f | Personal routines and a full day for every group | todo | | | |
 | P10a | Fleet models and rigs | todo | | | |
 | P10b | Driving, traffic, work cycles | todo | | | |
+| P10c | Mountain logistics: roads, convoys, deliveries, machine care | todo | | | |
 | P11a | Fauna models and clips | todo | | | |
 | P11b | Fauna behaviour | todo | | | |
 | P12a | Visual effects and post | todo | | | |
@@ -88,4 +89,5 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Mixamo sign-in and downloads from the list | P08a | pending |
 | Confirmation of which staff details are real and cleared (licence, experience, province) and that photos match names | P09d | pending |
 | Stage-mapping rules reviewed | P14b | pending |
+| Which Kia truck model the site uses, and local vehicles | P10a | **answered** (2026-10-10): Kia K2500-type white cab-over drop-side truck (photo shown by the owner); include the hired passenger motorcycle, the tricycle at the lower gate and the carabao sled |
 | Go-ahead to make v2 the default | P15b | pending |
