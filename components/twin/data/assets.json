@@ -1,5 +1,111 @@
 [
  {
+  "id": "char.engineer.a",
+  "url": "/models/twin/characters/engineer.a.glb?v=fbad9b52fa",
+  "bytes": 6878328,
+  "tris": [
+   19495,
+   5879,
+   1407
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.556,
+    -0.024,
+    -0.135
+   ],
+   "max": [
+    0.584,
+    1.754,
+    0.39
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.elvaerwyn-shirt",
+   "mpfb.punkduck-jeans",
+   "mpfb.mindfront-boots",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "char.guard.a",
+  "url": "/models/twin/characters/guard.a.glb?v=ed30eefbdf",
+  "bytes": 6818896,
+  "tris": [
+   19499,
+   5899,
+   1446
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.545,
+    -0.003,
+    -0.116
+   ],
+   "max": [
+    0.545,
+    1.704,
+    0.352
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.elvaerwyn-shirt",
+   "mpfb.elvaerwyn-trouser",
+   "mpfb.mrt-cap",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "char.labourer.a",
+  "url": "/models/twin/characters/labourer.a.glb?v=7ec928bfbf",
+  "bytes": 6550940,
+  "tris": [
+   19086,
+   5900,
+   1447
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.858,
+    -0.032,
+    -0.583
+   ],
+   "max": [
+    0.514,
+    1.634,
+    0.573
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.mindfront-sweater",
+   "mpfb.mindfront-trousers",
+   "mpfb.punkduck-boots",
+   "mpfb.mrt-gloves",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
   "id": "fauna.aspin.a",
   "url": "/models/twin/fauna/aspin.a.glb?v=552856365c",
   "bytes": 1817108,

@@ -1,7 +1,9 @@
 /**
- * The camp gate's staged loop (P02b): a pickup drives up and stops at the barrier, the camp dog
- * gets up from the shade, barks and trots over to look, the barrier rises, the pickup drives in,
- * the barrier comes down and the dog goes back to lie down. About a minute, then again.
+ * The camp gate's staged loop (P02b): a pickup drives up and stops at the barrier; the guard walks
+ * out to the driver, checks, goes to the barrier and bears down on its counterweight; the barrier
+ * rises, he waves the pickup through, lowers the barrier and goes back to his post. The camp dog
+ * gets up from the shade, barks and trots over to look, then goes back to lie down. On the verge an
+ * engineer with a tablet talks a labourer through a drain he is digging. About a minute, then again.
  *
  * It is a script for the slice, not the simulation (that is P09): everything is worked out from
  * one number, the time into the loop, so any moment can be shown again for a capture
@@ -35,15 +37,22 @@ const ZONE = "powerhouse.camp-gate";
 const PICKUP = "veh.pickup.a";
 const DOG = "fauna.aspin.a";
 const BOOM = "kit.boom-arm";
+const GUARD = "char.guard.a";
+const ENGINEER = "char.engineer.a";
+const LABOURER = "char.labourer.a";
 
 /** The pickup: metres a second on the approach, and how hard it speeds up and brakes. */
 const CRUISE = 4.2;
 const ACCEL = 1.3;
 /** Its bumper stops this far short of the barrier. */
 const STOP_SHORT = 2.6;
-/** Seconds at the barrier before it lifts (the guard's check, once there is a guard). */
-const CHECK_SECONDS = 6;
-const BOOM_SECONDS = 3;
+/** Seconds the guard spends at the driver's window. */
+const CHECK_SECONDS = 4.4;
+const BOOM_SECONDS = 2.2;
+/** The people's walk: the speed the clip was recorded at, and the speed they walk at here (metres a second). */
+const WALK = { clip: "walk", made: 1.38, speed: 1.3 };
+/** The guard's `barrier` clip: seconds in all, and seconds into it at which he bears down. */
+const BARRIER_CLIP = { seconds: 4.5, push: 1.1 };
 const BOOM_UP = THREE.MathUtils.degToRad(82);
 /** Speeds the dog's clips were made for, metres a second (scripts/blender/twin/build_gate_dog.py). */
 const DOG_WALK = { clip: "walk", made: 0.36, speed: 0.55 };
@@ -77,6 +86,16 @@ function travel(distance: number, t: number): { s: number; v: number; seconds: n
 const turnTowards = (from: number, to: number, most: number) => {
   const d = Math.atan2(Math.sin(to - from), Math.cos(to - from));
   return from + Math.sign(d) * Math.min(Math.abs(d), most);
+};
+
+/** One stretch of a person's part in the loop: stand somewhere doing something, or walk from the last place to `to`. */
+type Beat = {
+  until: number;
+  to?: THREE.Vector3;
+  /** A point to face while standing (the pickup, the other man). */
+  face?: THREE.Vector3;
+  clip: string;
+  once?: boolean;
 };
 
 type Status = { seconds: number; length: number; phase: string; actors: number; held: boolean };
@@ -124,7 +143,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
   const boothPoint = (a: number, b: number) => new THREE.Vector3(layout.booth.p[0], 0, layout.booth.p[2]).addScaledVector(across, a).addScaledVector(inward, b);
 
   const start = async () => {
-    const wanted = [PICKUP, DOG].filter((id) => ASSETS.has(id));
+    const wanted = [PICKUP, DOG, GUARD, ENGINEER, LABOURER].filter((id) => ASSETS.has(id));
     const models = await Promise.all(wanted.map((id) => acquireActorModel(id)));
     if (stopped) {
       for (const id of wanted) releaseActorModel(id);
@@ -151,6 +170,9 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     };
     const pickup = await make(PICKUP);
     const dog = await make(DOG);
+    const guard = await make(GUARD);
+    const engineer = await make(ENGINEER);
+    const labourer = await make(LABOURER);
     if (stopped) return;
 
     // ---- the pickup's measurements ---------------------------------------------------------------
@@ -182,10 +204,30 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const leaveTo = length - 2 - wheelbase;
     const tGo = 1.5;
     const tStop = tGo + travel(stopAt - from, 0).seconds;
-    const tBoomUp = tStop + CHECK_SECONDS;
-    const tLeave = tBoomUp + BOOM_SECONDS + 0.6;
+
+    // the guard's places: his post by the booth window, the driver's door, the barrier's counterweight
+    const stopRear = onRoad(stopAt, new THREE.Vector3());
+    const stopFront = onRoad(stopAt + wheelbase, new THREE.Vector3());
+    const stopHeading = Math.atan2(stopFront.x - stopRear.x, stopFront.z - stopRear.z);
+    const stopLeft = new THREE.Vector3(Math.cos(stopHeading), 0, -Math.sin(stopHeading));
+    const cab = stopRear.clone().lerp(stopFront, 0.52);
+    const door = cab.clone().addScaledVector(stopLeft, track * 0.5 + 0.95);
+    const post = boothPoint(1.55, -1.3);
+    const boomPlace = streaming.instancesOf(ZONE, BOOM)?.placements[0];
+    const pivot = boomPlace ? new THREE.Vector3(boomPlace.p[0], 0, boomPlace.p[2]) : boothPoint(2.6, 0);
+    const tail = pivot.clone().addScaledVector(across, -0.75);
+    const atBarrier = tail.clone().addScaledVector(inward, -0.62);
+    const walkSeconds = (a: THREE.Vector3, b: THREE.Vector3) => a.distanceTo(b) / WALK.speed;
+    const tOut = tStop - 0.9; // he starts across as the pickup brakes
+    const tDoor = tOut + walkSeconds(post, door);
+    const tChecked = Math.max(tDoor, tStop + 0.6) + CHECK_SECONDS;
+    const tAtBarrier = tChecked + walkSeconds(door, atBarrier);
+    const tBoomUp = tAtBarrier + BARRIER_CLIP.push;
+    const tLeave = tBoomUp + BOOM_SECONDS + 0.9;
     const tGone = tLeave + travel(leaveTo - stopAt, 0).seconds;
     const tBoomDown = tLeave + 6.5;
+    const tLowered = tBoomDown - BARRIER_CLIP.push + BARRIER_CLIP.seconds;
+    const tPost = tLowered + walkSeconds(atBarrier, post);
     const rearAxleAt = (t: number) => {
       if (t < tLeave) {
         const move = travel(stopAt - from, t - tGo);
@@ -210,7 +252,79 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const tBack = tHome + dogRun / DOG_WALK.speed;
     const tDown = tBack + 1.2; // turned round, starts to lie down
     const tLying = tDown + 1.6;
-    const loopSeconds = Math.max(tGone + 5, tLying + 6);
+    const loopSeconds = Math.max(tGone + 5, tLying + 6, tPost + 4);
+
+    // ---- the people's parts ---------------------------------------------------------------------------
+    const gateSide = gate.clone().addScaledVector(inward, -1.5);
+    const guardBeats: Beat[] = [
+      { until: tOut, clip: "idle", face: gateSide },
+      { until: tDoor, clip: WALK.clip, to: door },
+      { until: tChecked, clip: "talk", face: cab },
+      { until: tAtBarrier, clip: WALK.clip, to: atBarrier },
+      { until: tAtBarrier + BARRIER_CLIP.seconds, clip: "barrier", once: true, face: tail },
+      { until: tAtBarrier + BARRIER_CLIP.seconds + 3.4, clip: "waveThrough", once: true, face: gateSide },
+      { until: tBoomDown - BARRIER_CLIP.push, clip: "idleShift", face: gate.clone().addScaledVector(inward, 6) },
+      { until: tLowered, clip: "barrier", once: true, face: tail },
+      { until: tPost, clip: WALK.clip, to: post },
+      { until: Infinity, clip: "idle", face: gateSide },
+    ];
+    // on the verge outside the gate, on the booth's side of the road
+    const engineerAt = gate.clone().addScaledVector(inward, -7.5).addScaledVector(across, -4.0);
+    const labourerAt = gate.clone().addScaledVector(inward, -8.7).addScaledVector(across, -5.0);
+    const digAt = labourerAt.clone().addScaledVector(inward, -0.9).addScaledVector(across, -0.5);
+    const engineerBeats: Beat[] = [
+      { until: 7.5, clip: "talk", face: labourerAt },
+      { until: 15.5, clip: "tablet", once: true, face: labourerAt },
+      { until: 19.4, clip: "listen", face: labourerAt },
+      { until: 24.1, clip: "point", once: true, face: digAt },
+      { until: 32, clip: "talk2", face: labourerAt },
+      { until: 40, clip: "tablet", once: true, face: labourerAt },
+      { until: Infinity, clip: "idleShift", face: labourerAt },
+    ];
+    const labourerBeats: Beat[] = [
+      { until: 8, clip: "restShovel", face: digAt },
+      { until: 17.6, clip: "shovel", face: digAt },
+      { until: 33, clip: "restShovel", face: digAt },
+      { until: 42.6, clip: "shovel", face: digAt },
+      { until: Infinity, clip: "restShovel", face: digAt },
+    ];
+    const people = [
+      { actor: guard, beats: guardBeats, at: post.clone(), heading: 0, home: post, phase: 0 },
+      { actor: engineer, beats: engineerBeats, at: engineerAt.clone(), heading: 0, home: engineerAt, phase: 0.37 },
+      { actor: labourer, beats: labourerBeats, at: labourerAt.clone(), heading: 0, home: labourerAt, phase: 0.71 },
+    ];
+    for (const person of people) {
+      const first = person.beats[0].face;
+      if (first) person.heading = Math.atan2(first.x - person.at.x, first.z - person.at.z);
+    }
+    const from3 = new THREE.Vector3();
+    /** Where a person is, what he faces and what he plays, `t` seconds into the loop. */
+    const act = (person: (typeof people)[number], t: number, dt: number, k: number, cull: number) => {
+      const { actor, beats } = person;
+      if (!actor) return;
+      let index = 0;
+      while (beats[index].until <= t) index++;
+      const beat = beats[index];
+      const began = index ? beats[index - 1].until : 0;
+      // the place he stands at the start of this beat: the last place walked to
+      from3.copy(person.home);
+      for (let i = 0; i < index; i++) if (beats[i].to) from3.copy(beats[i].to!);
+      let want = person.heading;
+      if (beat.to) {
+        const u = (t - began) / Math.max(0.001, beat.until - began);
+        person.at.copy(from3).lerp(beat.to, Math.min(1, Math.max(0, u)));
+        want = Math.atan2(beat.to.x - from3.x, beat.to.z - from3.z);
+        actor.play(beat.clip, { fade: 0.25, speed: WALK.speed / WALK.made, phase: person.phase });
+      } else {
+        person.at.copy(from3);
+        if (beat.face) want = Math.atan2(beat.face.x - person.at.x, beat.face.z - person.at.z);
+        actor.play(beat.clip, { fade: 0.35, loop: !beat.once, phase: beat.once ? 0 : person.phase });
+      }
+      person.heading = turnTowards(person.heading, want, (beat.to ? 5 : 2.6) * Math.max(dt, 1 / 240));
+      actor.object.position.set(person.at.x, groundY(person.at.x, person.at.z), person.at.z);
+      actor.object.rotation.y = person.heading;
+      actor.update(dt, ctx.camera.position, k, cull);
+    };
 
     // ---- the barrier arm: one placed copy of the zone, moved ---------------------------------------
     const boom = { set: null as ReturnType<typeof streaming.instancesOf>, angle: -1 };
@@ -241,7 +355,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     let pitch = 0;
     let roll = 0;
     let t = 0;
-    status = { seconds: 0, length: loopSeconds, phase: "start", actors: (pickup ? 1 : 0) + (dog ? 1 : 0), held };
+    status = { seconds: 0, length: loopSeconds, phase: "start", actors: [pickup, dog, guard, engineer, labourer].filter(Boolean).length, held };
     dog?.play("lie", { fade: 0 });
 
     const stopLoop = loop.add("animation", (dt) => {
@@ -356,6 +470,10 @@ export function startGateScene(ctx: GateSceneContext): () => void {
         dog.object.position.set(dogAt.x, groundY(dogAt.x, dogAt.z), dogAt.z);
         dog.object.rotation.y = dogHeading;
         dog.update(dt, ctx.camera.position, k, tier.drawDistance);
+      }
+      for (const person of people) {
+        if (person.actor) person.actor.object.visible = layers.people;
+        act(person, t, dt, k, tier.drawDistance);
       }
       status.seconds = t;
       status.phase = phase;

@@ -1,0 +1,724 @@
+"""
+Motion for the three men at the camp gate (P02b): Mixamo motion capture retargeted onto each
+man's own skeleton, and the clips no library has, authored here on arm solvers.
+
+Run inside the master scene after build_gate_people.py has made the people:
+
+  exec(compile(open(path).read(), path, "exec"), {"__name__": "clips", "STAGES": ["retarget", "author", "tracks"], "WHO": ["guard"]})
+
+Stages:
+  retarget  every Mixamo file in MIXAMO (assets-src/mixamo/, exported on Y Bot without skin, 30 fps,
+            in place) baked onto the man's rig as an action called <who>:<clip>
+  author    the clips made here: `tablet` (engineer), `barrier` and `waveThrough` (guard),
+            `restShovel` and `shovel` (labourer); and each man's hand grips laid over every clip
+  tracks    one muted NLA track per clip, named as the clip, which is what the exporter writes
+  review    stills of every clip on every outfit, front and side: the poke-through sheets
+
+Mixamo's rigs rest in a T-pose and MPFB2's in an A-pose. A bone's motion is carried over as its
+world rotation away from rest; for the arms and fingers the rest it is measured from is first
+turned to lie along the source's rest bone, so a T-pose arm and an A-pose arm agree (and the legs,
+which MPFB2 rests a little apart). Feet, spine and head are carried rest to rest.
+"""
+import math
+import os
+
+import bpy
+from mathutils import Matrix, Quaternion, Vector
+
+REPO = r"C:\Users\Harrold\Desktop\Projects2\Project Nexus"
+MIXAMO_DIR = os.path.join(REPO, "assets-src", "mixamo")
+REVIEW_DIR = os.path.join(REPO, ".cache", "twin-people-review")
+FPS = 30
+
+# mixamo file (without .fbx) -> clip
+MIXAMO = {
+    "atlas_breathing_idle": "idle",
+    "atlas_neutral_idle": "idleShift",
+    "atlas_walk": "walk",
+    "atlas_explain_one": "talk",
+    "atlas_explain_two": "talk2",
+    "atlas_point_forward": "point",
+    "atlas_present_side": "waveThrough",
+    "atlas_nod_listen": "listen",
+    "atlas_acknowledge": "acknowledge",
+    "atlas_look_around": "lookAround",
+    "atlas_wave": "wave",
+}
+PEOPLE = ("guard", "engineer", "labourer")
+ALIGNED = ("Shoulder", "Arm", "ForeArm", "Hand")  # bones whose rest differs between a T-pose and an A-pose
+
+scene = bpy.context.scene
+vl = bpy.context.view_layer
+
+
+def short(name):
+    for p in ("mixamorig:", "mixamorig_", "mixamorig"):
+        if name.startswith(p):
+            return name[len(p):]
+    return name
+
+
+def rig_of(who):
+    return bpy.data.objects[f"{who}.rig"]
+
+
+def bind(obj, action):
+    if obj.animation_data is None:
+        obj.animation_data_create()
+    obj.animation_data.action = action
+    if action is not None and getattr(action, "slots", None) is not None:
+        if len(action.slots) == 0:
+            action.slots.new(id_type="OBJECT", name=obj.name)
+        obj.animation_data.action_slot = action.slots[0]
+
+
+def reset_pose(rig):
+    for pb in rig.pose.bones:
+        pb.rotation_mode = "QUATERNION"
+        pb.rotation_quaternion = Quaternion()
+        pb.location = Vector((0, 0, 0))
+        pb.scale = Vector((1, 1, 1))
+
+
+def clip_action(who, clip):
+    return bpy.data.actions.get(f"{who}:{clip}")
+
+
+def new_action(who, clip):
+    old = clip_action(who, clip)
+    if old:
+        bpy.data.actions.remove(old)
+    act = bpy.data.actions.new(f"{who}:{clip}")
+    act.use_fake_user = True
+    return act
+
+
+def key_pose(rig, frame, bones=None):
+    for pb in rig.pose.bones:
+        if bones is not None and pb.name not in bones:
+            continue
+        pb.keyframe_insert("rotation_quaternion", frame=frame)
+    rig.pose.bones["mixamorig:Hips"].keyframe_insert("location", frame=frame)
+
+
+# ---- retarget ----------------------------------------------------------------------------------------
+def retarget(who, src, action, clip):
+    tgt = rig_of(who)
+    by_short = {short(b.name): b.name for b in tgt.data.bones}
+    rest = {b.name: b.matrix_local.copy() for b in tgt.data.bones}
+    world3 = tgt.matrix_world.to_3x3().normalized()
+    order = [b.name for b in tgt.data.bones]
+    pairs = {b.name: by_short[short(b.name)] for b in src.data.bones if short(b.name) in by_short}
+    s_hips = next(n for n in pairs if short(n) == "Hips")
+    s_rest = {b.name: (src.matrix_world @ b.matrix_local).to_3x3().normalized() for b in src.data.bones}
+    # the rest each target bone's motion is measured from. A bone's direction is taken from its
+    # joint to its child's joint: an imported FBX bone's own axes say nothing about where it points.
+    def along(arm, name):
+        b = arm.data.bones[name]
+        kids = [c for c in b.children if short(c.name) in by_short]
+        mid = next((c for c in kids if "Middle" in c.name), None)
+        child = mid or (kids[0] if len(kids) == 1 else None)
+        if child is not None:
+            d = arm.matrix_world.to_3x3() @ (child.head_local - b.head_local)
+        elif b.parent is not None:
+            d = arm.matrix_world.to_3x3() @ (b.head_local - b.parent.head_local)
+        else:
+            return None
+        return d.normalized() if d.length > 1e-6 else None
+
+    ref = {}
+    for sname, tname in pairs.items():
+        r = (world3 @ rest[tname].to_3x3()).normalized()
+        key = short(sname)
+        # (not the collar bones: turned to match, they shrugged his shoulders and held the arms away from the body)
+        if any(k in key for k in ("Arm", "Hand", "UpLeg", "Leg")) and "Foot" not in key and "Shoulder" not in key:
+            have, want = along(tgt, tname), along(src, sname)
+            if have is not None and want is not None:
+                r = have.rotation_difference(want).to_matrix() @ r
+        ref[tname] = r
+    src_hip_rest = src.matrix_world @ src.data.bones[s_hips].head_local
+    hips = by_short["Hips"]
+    scale = (tgt.matrix_world @ tgt.data.bones[hips].head_local).z / max(1e-6, src_hip_rest.z)
+
+    bind(src, action)
+    f0, f1 = int(round(action.frame_range[0])), int(round(action.frame_range[1]))
+    out = new_action(who, clip)
+    reset_pose(tgt)
+    bind(tgt, out)
+    for f in range(f0, f1 + 1):
+        scene.frame_set(f)
+        vl.update()
+        want = {}
+        for sname, tname in pairs.items():
+            now = (src.matrix_world @ src.pose.bones[sname].matrix).to_3x3().normalized()
+            want[tname] = (now @ s_rest[sname].inverted()) @ ref[tname]
+        pose_rot = {}
+        for name in order:
+            b = tgt.data.bones[name]
+            r = rest[name].to_3x3()
+            inherited = pose_rot[b.parent.name] @ rest[b.parent.name].to_3x3().inverted() @ r if b.parent else r
+            pb = tgt.pose.bones[name]
+            if name in want:
+                desired = world3.inverted() @ want[name]
+                q = (inherited.inverted() @ desired).to_quaternion()
+                if f > f0 and pb.rotation_quaternion.dot(q) < 0:
+                    q.negate()
+                pb.rotation_quaternion = q
+                pb.keyframe_insert("rotation_quaternion", frame=f - f0)
+                pose_rot[name] = desired
+            else:
+                pose_rot[name] = inherited
+        offset = ((src.matrix_world @ src.pose.bones[s_hips].matrix.to_translation()) - src_hip_rest) * scale
+        hp = tgt.pose.bones[hips]
+        hp.location = rest[hips].to_3x3().inverted() @ (world3.inverted() @ offset)
+        hp.keyframe_insert("location", frame=f - f0)
+    return f1 - f0 + 1
+
+
+def stage_retarget(people):
+    for key, clip in MIXAMO.items():
+        path = os.path.join(MIXAMO_DIR, key + ".fbx")
+        if not os.path.exists(path):
+            print("[clips] missing", path)
+            continue
+        before, acts_before = set(bpy.data.objects), set(bpy.data.actions)
+        bpy.ops.import_scene.fbx(filepath=path, automatic_bone_orientation=False, use_anim=True)
+        new = [o for o in bpy.data.objects if o not in before]
+        src = next(o for o in new if o.type == "ARMATURE")
+        acts = [a for a in bpy.data.actions if a not in acts_before]
+        action = (src.animation_data and src.animation_data.action) or acts[0]
+        for who in people:
+            n = retarget(who, src, action, clip)
+            print(f"[clips] {who}:{clip} {n} frames")
+        for o in new:
+            bpy.data.objects.remove(o, do_unlink=True)
+        for a in acts:
+            bpy.data.actions.remove(a)
+        for arm in [a for a in bpy.data.armatures if a.users == 0]:
+            bpy.data.armatures.remove(arm)
+    for who in people:
+        bind(rig_of(who), None)
+        reset_pose(rig_of(who))
+
+
+# ---- posing helpers for the authored clips ---------------------------------------------------------
+class Poser:
+    """Poses one rig in its own space (the rig stands at the origin, facing -Y, Z up)."""
+
+    def __init__(self, who):
+        self.who = who
+        self.rig = rig_of(who)
+        self.M = self.rig.matrix_world.copy()
+        self.Mi = self.M.inverted()
+
+    def pb(self, name):
+        return self.rig.pose.bones["mixamorig:" + name]
+
+    def head(self, name):
+        return self.M @ self.pb(name).head
+
+    def tail(self, name):
+        return self.M @ self.pb(name).tail
+
+    def turn(self, name, R):
+        """Turn a bone by a world rotation about its own head."""
+        pb = self.pb(name)
+        vl.update()
+        mw = self.M @ pb.matrix
+        new = (R.to_3x3() @ mw.to_3x3()).to_4x4()
+        new.translation = mw.translation
+        pb.matrix = self.Mi @ new
+        vl.update()
+
+    def turn_axis(self, name, axis, degrees):
+        self.turn(name, Matrix.Rotation(math.radians(degrees), 3, Vector(axis).normalized()))
+
+    def aim(self, name, direction):
+        """Swing a bone so it points along a world direction (least rotation)."""
+        pb = self.pb(name)
+        vl.update()
+        have = ((self.M @ pb.matrix).to_3x3() @ Vector((0, 1, 0))).normalized()
+        self.turn(name, have.rotation_difference(Vector(direction).normalized()).to_matrix())
+
+    def reach(self, side, target, pole, hand=None):
+        """
+        Two-bone solve: put the wrist of the `side` arm on `target`, the elbow towards `pole`
+        (a direction). `hand` = (fingers direction, palm direction) orients the hand.
+        """
+        upper, fore, hand_b = f"{side}Arm", f"{side}ForeArm", f"{side}Hand"
+        vl.update()
+        S = self.head(upper)
+        l1 = (self.head(fore) - S).length
+        l2 = (self.head(hand_b) - self.head(fore)).length
+        T = Vector(target)
+        d = max(1e-4, min((T - S).length, (l1 + l2) * 0.999))
+        n = (T - S).normalized()
+        a = (l1 * l1 - l2 * l2 + d * d) / (2 * d)
+        h = math.sqrt(max(0.0, l1 * l1 - a * a))
+        u = Vector(pole) - n * Vector(pole).dot(n)
+        u = u.normalized() if u.length > 1e-5 else n.orthogonal().normalized()
+        E = S + n * a + u * h
+        self.aim(upper, E - S)
+        self.aim(fore, (S + n * d) - self.head(fore))
+        if hand:
+            self.hand(side, *hand)
+
+    def solve(self, upper, fore, end, target, pole):
+        """Two-bone solve for any limb: the joint `end` goes to `target`, the middle joint towards `pole`."""
+        vl.update()
+        S = self.head(upper)
+        l1 = (self.head(fore) - S).length
+        l2 = (self.head(end) - self.head(fore)).length
+        T = Vector(target)
+        d = max(1e-4, min((T - S).length, (l1 + l2) * 0.999))
+        n = (T - S).normalized()
+        a = (l1 * l1 - l2 * l2 + d * d) / (2 * d)
+        h = math.sqrt(max(0.0, l1 * l1 - a * a))
+        u = Vector(pole) - n * Vector(pole).dot(n)
+        u = u.normalized() if u.length > 1e-5 else n.orthogonal().normalized()
+        self.aim(upper, (S + n * a + u * h) - S)
+        self.aim(fore, (S + n * d) - self.head(fore))
+
+    def crouch(self, drop, back=0.0):
+        """Lower the hips by `drop` metres (and shift them back) with both feet staying planted."""
+        vl.update()
+        feet = {side: ((self.M @ self.pb(f"{side}Foot").matrix).copy()) for side in ("Left", "Right")}
+        hips = self.pb("Hips")
+        mw = self.M @ hips.matrix
+        mw.translation = mw.translation + Vector((0, back, -drop))
+        hips.matrix = self.Mi @ mw
+        vl.update()
+        for side, was in feet.items():
+            self.solve(f"{side}UpLeg", f"{side}Leg", f"{side}Foot", was.translation, (0.25 if side == "Left" else -0.25, -1, 0.1))
+            vl.update()
+            foot = self.pb(f"{side}Foot")
+            now = self.M @ foot.matrix
+            keep = was.to_3x3().to_4x4()
+            keep.translation = now.translation
+            foot.matrix = self.Mi @ keep
+            vl.update()
+
+    def hand(self, side, fingers, palm, amount=1.0):
+        """Point the fingers along one direction with the palm facing another (`amount` blends from the pose it had)."""
+        name = f"{side}Hand"
+        if amount < 1.0:
+            before = self.pb(name).rotation_quaternion.copy()
+            self.hand(side, fingers, palm)
+            vl.update()
+            after = self.pb(name).rotation_quaternion.copy()
+            if before.dot(after) < 0:
+                after.negate()
+            self.pb(name).rotation_quaternion = before.slerp(after, max(0.0, amount))
+            vl.update()
+            return
+        self.aim(name, fingers)
+        vl.update()
+        pb = self.pb(name)
+        m = (self.M @ pb.matrix).to_3x3()
+        f = (m @ Vector((0, 1, 0))).normalized()
+        now = self.palm(side)
+        want = Vector(palm) - f * Vector(palm).dot(f)
+        if want.length < 1e-5:
+            return
+        now = now - f * now.dot(f)
+        angle = now.angle(want.normalized())
+        if now.cross(want).dot(f) < 0:
+            angle = -angle
+        self.turn(name, Matrix.Rotation(angle, 3, f))
+
+    def palm(self, side):
+        vl.update()
+        wrist = self.head(f"{side}Hand")
+        fingers = (self.head(f"{side}HandMiddle1") - wrist).normalized()
+        across = (self.head(f"{side}HandIndex1") - self.head(f"{side}HandPinky1")).normalized()
+        return (across.cross(fingers) if side == "Right" else fingers.cross(across)).normalized()
+
+    def curl(self, side, degrees, thumb=None, spread=0.0):
+        """Bend the fingers towards the palm: degrees per joint, a number or (first, second, third)."""
+        per = degrees if isinstance(degrees, (tuple, list)) else (degrees, degrees, degrees)
+        for finger in ("Index", "Middle", "Ring", "Pinky"):
+            for j in (1, 2, 3):
+                name = f"{side}Hand{finger}{j}"
+                vl.update()
+                pb = self.pb(name)
+                d = ((self.M @ pb.matrix).to_3x3() @ Vector((0, 1, 0))).normalized()
+                axis = d.cross(self.palm(side)) if j == 1 else self._axis
+                if j == 1:
+                    self._axis = axis.normalized()
+                self.turn(name, Matrix.Rotation(math.radians(per[j - 1]), 3, self._axis))
+        if thumb is not None:
+            for j, deg in zip((1, 2, 3), thumb):
+                name = f"{side}HandThumb{j}"
+                vl.update()
+                pb = self.pb(name)
+                d = ((self.M @ pb.matrix).to_3x3() @ Vector((0, 1, 0))).normalized()
+                axis = d.cross(self.palm(side)).normalized()
+                self.turn(name, Matrix.Rotation(math.radians(deg), 3, axis))
+
+
+def sample_base(who, clip, frame):
+    """Put the rig in the pose of a retargeted clip at a frame (looping)."""
+    rig = rig_of(who)
+    act = clip_action(who, clip)
+    n = int(act.frame_range[1] - act.frame_range[0])
+    bind(rig, act)
+    scene.frame_set(int(act.frame_range[0]) + frame % max(1, n))
+    vl.update()
+    pose = {pb.name: (pb.rotation_quaternion.copy(), pb.location.copy()) for pb in rig.pose.bones}
+    return pose
+
+
+def author(who, clip, frames, base, pose_fn, loop=True):
+    """
+    Bake a clip: each frame starts from `base` (a retargeted clip, looping) and `pose_fn(poser, t, frame)`
+    poses over it; t runs 0 to 1 over the clip.
+    """
+    rig = rig_of(who)
+    poses = [sample_base(who, base, f) for f in range(frames + 1)]
+    out = new_action(who, clip)
+    bind(rig, None)
+    poser = Poser(who)
+    stored = []
+    for f in range(frames + 1):
+        for pb in rig.pose.bones:
+            q, loc = poses[f][pb.name]
+            pb.rotation_quaternion = q
+            pb.location = loc
+        vl.update()
+        pose_fn(poser, f / frames, f)
+        vl.update()
+        stored.append({pb.name: (pb.rotation_quaternion.copy(), pb.location.copy()) for pb in rig.pose.bones})
+    if loop:  # the last frame is the first again
+        stored[-1] = stored[0]
+    bind(rig, out)
+    prev = {}
+    for f, pose in enumerate(stored):
+        for pb in rig.pose.bones:
+            q, loc = pose[pb.name]
+            if pb.name in prev and prev[pb.name].dot(q) < 0:
+                q = -q
+            prev[pb.name] = q
+            pb.rotation_quaternion = q
+            pb.location = loc
+        key_pose(rig, f)
+    bind(rig, None)
+    reset_pose(rig)
+    print(f"[clips] {who}:{clip} authored, {frames + 1} frames")
+
+
+def smooth(t):
+    t = max(0.0, min(1.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def window(t, a, b, c, d):
+    """0 before a, rising to 1 at b, holding to c, back to 0 at d."""
+    return smooth((t - a) / max(1e-6, b - a)) * (1 - smooth((t - c) / max(1e-6, d - c)))
+
+
+def overlay_hands(who, grips):
+    """Lay fixed finger poses over every clip of a man: {side: fn(poser)} (a hand that holds something)."""
+    rig = rig_of(who)
+    poser = Poser(who)
+    wanted = {}
+    reset_pose(rig)
+    bind(rig, None)
+    vl.update()
+    for side, fn in grips.items():
+        fn(poser)
+        vl.update()
+        for pb in rig.pose.bones:
+            if pb.name.startswith(f"mixamorig:{side}Hand") and pb.name != f"mixamorig:{side}Hand":
+                wanted[pb.name] = pb.rotation_quaternion.copy()
+    reset_pose(rig)
+    for act in [a for a in bpy.data.actions if a.name.startswith(who + ":")]:
+        bind(rig, act)
+        f0, f1 = int(act.frame_range[0]), int(act.frame_range[1])
+        for name, q in wanted.items():
+            pb = rig.pose.bones[name]
+            for f in range(f0, f1 + 1):
+                pb.rotation_quaternion = q
+                pb.keyframe_insert("rotation_quaternion", frame=f)
+    bind(rig, None)
+    reset_pose(rig)
+
+
+def overlay_window(who, clip, fn, amount):
+    """Pose fingers over one clip: fn(poser, k) with k = amount(t) at each frame, keyed on the fingers only."""
+    rig = rig_of(who)
+    act = clip_action(who, clip)
+    poser = Poser(who)
+    f0, f1 = int(act.frame_range[0]), int(act.frame_range[1])
+    fingers = [pb for pb in rig.pose.bones if "Hand" in pb.name and not pb.name.endswith("Hand")]
+    bind(rig, act)
+    rest = {pb.name: Quaternion() for pb in fingers}
+    for f in range(f0, f1 + 1):
+        scene.frame_set(f)
+        for pb in fingers:
+            pb.rotation_quaternion = rest[pb.name]
+        vl.update()
+        fn(poser, amount((f - f0) / max(1, f1 - f0)))
+        vl.update()
+        for pb in fingers:
+            pb.keyframe_insert("rotation_quaternion", frame=f)
+    bind(rig, None)
+    reset_pose(rig)
+
+
+# ---- the authored clips ----------------------------------------------------------------------------
+def grip_shaft(p):
+    p.curl("Right", (62, 78, 55), thumb=(18, 22, 30))
+
+
+def grip_tablet(p):
+    p.curl("Left", (4, 6, 4), thumb=(0, 8, 10))
+
+
+def author_engineer(who):
+    def tablet(p, t, f):
+        k = window(t, 0.0, 0.14, 0.86, 1.0)
+        chest = p.head("Spine2")
+        # the left forearm comes up across the body, the tablet's screen tilted to the face
+        rest_wrist = p.head("LeftHand").copy()
+        up = Vector((0.10, -0.31, chest.z + 0.03))
+        p.turn_axis("Spine", (-1, 0, 0), -6 * k)  # (the recorded idle stands leaning back: he comes forward over the tablet)
+        p.turn_axis("Spine1", (-1, 0, 0), -5 * k)
+        p.turn_axis("Neck", (-1, 0, 0), -12 * k)
+        p.turn_axis("Head", (-1, 0, 0), -15 * k + 2.0 * math.sin(t * math.pi * 6) * k)
+        p.turn_axis("Head", (0, 0, 1), 6 * k)
+        p.reach("Left", rest_wrist.lerp(up, k), (0.6, 0.25, -1.0))
+        # (fingers towards his right, the palm up and a little towards him: the tablet lies on the hand)
+        p.hand("Left", (-0.92, -0.3, 0.12), (0.0, 0.45, 0.9), amount=k)
+        # the right hand comes over, taps and swipes
+        tap = window(t, 0.2, 0.32, 0.72, 0.84)
+        if tap > 0.005:
+            rest_r = p.head("RightHand").copy()
+            over = Vector((-0.06 + 0.035 * math.sin(t * math.pi * 9), -0.36, chest.z + 0.075 + 0.012 * abs(math.sin(t * math.pi * 14))))
+            p.reach("Right", rest_r.lerp(over, tap), (-0.7, 0.3, -1.0))
+            p.hand("Right", (0.55, -0.45, -0.6), (0.1, -0.3, -0.95), amount=tap)
+
+    author(who, "tablet", 8 * FPS, "idle", tablet, loop=False)
+
+
+def author_guard(who):
+    def barrier(p, t, f):
+        # leans in, takes the counterweight end of the arm in both hands at waist height and bears down on it
+        k = window(t, 0.0, 0.2, 0.8, 1.0)
+        push = window(t, 0.25, 0.48, 0.7, 0.82)
+        p.turn_axis("Spine", (-1, 0, 0), -(9 * k + 12 * push))
+        p.turn_axis("Spine1", (-1, 0, 0), -(7 * k + 9 * push))
+        p.turn_axis("Spine2", (-1, 0, 0), -(3 * k + 5 * push))
+        p.turn_axis("Neck", (-1, 0, 0), 6 * push)
+        p.turn_axis("Head", (-1, 0, 0), 9 * k)
+        for side, s in (("Left", 1), ("Right", -1)):
+            rest = p.head(f"{side}Hand").copy()
+            hold = Vector((s * 0.11, -0.44, 1.0 - 0.24 * push))
+            p.reach(side, rest.lerp(hold, k), (s * 0.9, 0.45, -0.3))
+            p.hand(side, (-s * 0.35, -0.9, -0.2), (0, -0.15, -1), amount=k)
+
+    author(who, "barrier", int(4.5 * FPS), "idle", barrier, loop=False)
+    overlay_window("guard", "barrier", lambda p, k: (p.curl("Left", (38 * k, 50 * k, 30 * k)), p.curl("Right", (38 * k, 50 * k, 30 * k))), lambda t: window(t, 0.05, 0.22, 0.78, 0.95))
+
+
+def author_labourer(who):
+    rig = rig_of(who)
+    shovel = next(o for o in bpy.data.objects if o.name.startswith(f"{who}.shovel"))
+    grip_tip = float(shovel["twin_grip_from_tip"]) * float(rig.get("twin_scaled", 1.0))
+    reset_pose(rig)
+    vl.update()
+    p0 = Poser(who)
+    palm0, fingers0 = p0.palm("Right"), (p0.head("RightHandMiddle1") - p0.head("RightHand")).normalized()
+    axis0 = Vector(shovel["twin_axis"]).normalized()  # from the grip towards the blade, rest pose
+    # the shaft's direction in the hand's own frame, so any hand pose gives the shaft
+    hand_rest = (p0.M @ p0.pb("RightHand").matrix).to_3x3()
+    axis_local = hand_rest.inverted() @ axis0
+    grip_local = (p0.M @ p0.pb("RightHand").matrix).inverted() @ (Vector(shovel["twin_grip"]) * float(rig.get("twin_scaled", 1.0)))
+
+    def shaft_to(p, down):
+        """Turn the right hand so the shaft points along `down` (towards the blade)."""
+        vl.update()
+        m = (p.M @ p.pb("RightHand").matrix).to_3x3()
+        have = (m @ axis_local).normalized()
+        p.turn("RightHand", have.rotation_difference(Vector(down).normalized()).to_matrix())
+
+    def grip_at(p):
+        vl.update()
+        return p.M @ p.pb("RightHand").matrix @ grip_local
+
+    def hold(p, point, down, pole):
+        """Put the gripping hand so the shaft passes through `point` along `down`: solve twice, the hand's turn moves the grip."""
+        for _ in range(3):
+            shaft_to(p, down)
+            vl.update()
+            wrist = p.head("RightHand")
+            offset = grip_at(p) - wrist
+            p.reach("Right", Vector(point) - offset, pole)
+        shaft_to(p, down)
+
+    def rest_shovel(p, t, f):
+        # the blade stands on the ground beside his right foot; the hand rests on the shaft
+        foot = Vector((-0.34, -0.2, 0.0))
+        down = Vector((0.05, 0.1, -1.0)).normalized()
+        point = foot - down * grip_tip
+        hold(p, point, down, (-0.7, 0.4, -0.5))
+
+    author(who, "restShovel", 4 * FPS, "idle", rest_shovel, loop=True)
+
+    # one cycle of digging, as key poses round the loop: (time, blade tip, shaft direction towards the
+    # blade, forward bend in degrees, twist to his left in degrees, how far the hips drop)
+    KEYS = [
+        (0.00, (0.05, -0.60, 0.10), (0.10, -0.45, -0.89), 24, 0, 0.05),
+        (0.18, (0.05, -0.72, -0.05), (0.10, -0.50, -0.86), 40, -4, 0.13),
+        (0.34, (0.05, -0.70, 0.02), (0.10, -0.74, -0.67), 33, -2, 0.13),
+        (0.52, (0.12, -0.62, 0.40), (0.20, -0.90, -0.38), 20, 6, 0.06),
+        (0.68, (0.42, -0.84, 0.64), (0.65, -0.72, -0.25), 13, 24, 0.03),
+        (0.84, (0.12, -0.58, 0.22), (0.16, -0.50, -0.85), 20, 4, 0.04),
+        (1.00, (0.05, -0.60, 0.10), (0.10, -0.45, -0.89), 24, 0, 0.05),
+    ]
+    SPACING = 0.36 * float(rig.get("twin_scaled", 1.0))  # between his hands on the shaft
+
+    def keyed(t):
+        for a, b in zip(KEYS, KEYS[1:]):
+            if t <= b[0]:
+                k = smooth((t - a[0]) / (b[0] - a[0]))
+                tip = Vector(a[1]).lerp(Vector(b[1]), k)
+                down = Vector(a[2]).normalized().lerp(Vector(b[2]).normalized(), k).normalized()
+                return tip, down, a[3] + (b[3] - a[3]) * k, a[4] + (b[4] - a[4]) * k, a[5] + (b[5] - a[5]) * k
+        return Vector(KEYS[0][1]), Vector(KEYS[0][2]).normalized(), KEYS[0][3], KEYS[0][4], KEYS[0][5]
+
+    def dig(p, t, f):
+        tip, down, bend, twist, drop = keyed(t)
+        p.crouch(drop, back=drop * 0.5)
+        p.turn_axis("Spine", (-1, 0, 0), -bend * 0.45)
+        p.turn_axis("Spine1", (-1, 0, 0), -bend * 0.35)
+        p.turn_axis("Spine2", (-1, 0, 0), -bend * 0.2)
+        p.turn_axis("Spine1", (0, 0, 1), twist * 0.5)
+        p.turn_axis("Spine2", (0, 0, 1), twist * 0.5)
+        p.turn_axis("Neck", (-1, 0, 0), bend * 0.3)
+        p.turn_axis("Head", (-1, 0, 0), bend * 0.25)
+        hold(p, tip - down * grip_tip, down, (-0.8, 0.5, 0.1))
+        # the left hand lower on the shaft, wrapped round it from his left
+        vl.update()
+        on_shaft = grip_at(p) + down * SPACING
+        fingers = down.cross(Vector((0, 0, 1)))
+        fingers = (fingers if fingers.x < 0 else -fingers).normalized()
+        palm = fingers.cross(down)
+        palm = (palm if palm.z < 0 else -palm).normalized()
+        wrist = on_shaft - fingers * 0.075 - palm * 0.028
+        p.reach("Left", wrist, (0.9, 0.3, -0.2))
+        p.hand("Left", fingers, palm)
+
+    author(who, "shovel", int(3.2 * FPS), "idle", dig, loop=True)
+
+
+def stage_author(people):
+    if "engineer" in people:
+        author_engineer("engineer")
+        overlay_hands("engineer", {"Left": grip_tablet})
+    if "guard" in people:
+        author_guard("guard")
+    if "labourer" in people:
+        author_labourer("labourer")
+        overlay_hands("labourer", {"Right": grip_shaft})
+        overlay_window("labourer", "shovel", lambda p, k: (grip_shaft(p), p.curl("Left", (58, 72, 50), thumb=(14, 20, 26))), lambda t: 1.0)
+
+
+# ---- NLA tracks --------------------------------------------------------------------------------------
+def stage_tracks(people):
+    for who in people:
+        rig = rig_of(who)
+        if rig.animation_data is None:
+            rig.animation_data_create()
+        rig.animation_data.action = None
+        for track in list(rig.animation_data.nla_tracks):
+            rig.animation_data.nla_tracks.remove(track)
+        names = []
+        for act in sorted((a for a in bpy.data.actions if a.name.startswith(who + ":")), key=lambda a: a.name):
+            clip = act.name.split(":", 1)[1]
+            track = rig.animation_data.nla_tracks.new()
+            track.name = clip
+            strip = track.strips.new(clip, int(act.frame_range[0]), act)
+            strip.name = clip
+            track.mute = True
+            names.append(f"{clip} {(act.frame_range[1] - act.frame_range[0]) / FPS:.2f}s")
+        reset_pose(rig)
+        print(f"[clips] {who}: tracks {names}")
+    scene.frame_set(0)
+
+
+# ---- review stills -------------------------------------------------------------------------------------
+def stage_review(people, only=None, shots=4):
+    os.makedirs(REVIEW_DIR, exist_ok=True)
+    review = bpy.data.scenes.get("people_review") or bpy.data.scenes.new("people_review")
+    for o in list(review.collection.objects):
+        review.collection.objects.unlink(o)
+    for c in list(review.collection.children):
+        review.collection.children.unlink(c)
+    cams = {}
+    for name, pos in (("front", (0.6, -3.9, 1.25)), ("side", (-3.9, -0.4, 1.25))):
+        cd = bpy.data.cameras.get("review." + name) or bpy.data.cameras.new("review." + name)
+        cd.lens = 55
+        co = bpy.data.objects.get("review." + name) or bpy.data.objects.new("review." + name, cd)
+        co.location = pos
+        co.rotation_euler = (Vector((0, 0, 0.92)) - Vector(pos)).to_track_quat("-Z", "Y").to_euler()
+        review.collection.objects.link(co)
+        cams[name] = co
+    for name, loc, energy in (("key", (2.5, -4, 4), 4.0), ("fill", (-3, -2, 2), 1.6), ("rim", (0, 4, 3), 2.0)):
+        ld = bpy.data.lights.get("review." + name) or bpy.data.lights.new("review." + name, "SUN")
+        ld.energy = energy
+        lo = bpy.data.objects.get("review." + name) or bpy.data.objects.new("review." + name, ld)
+        lo.location = loc
+        lo.rotation_euler = (Vector((0, 0, 1)) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
+        review.collection.objects.link(lo)
+    world = bpy.data.worlds.get("review.world") or bpy.data.worlds.new("review.world")
+    world.use_nodes = True
+    bg = next(n for n in world.node_tree.nodes if n.type == "BACKGROUND")
+    bg.inputs[0].default_value = (0.42, 0.44, 0.46, 1)
+    bg.inputs[1].default_value = 0.9
+    review.world = world
+    for engine in ("BLENDER_EEVEE", "BLENDER_EEVEE_NEXT"):
+        try:
+            review.render.engine = engine
+            break
+        except TypeError:
+            continue
+    review.render.resolution_x, review.render.resolution_y = 300, 440
+    review.render.image_settings.file_format = "JPEG"
+    review.render.image_settings.quality = 88
+    review.render.fps = FPS
+    done = []
+    for who in people:
+        rig = rig_of(who)
+        coll = next(c for c in rig.users_collection)
+        if coll.name not in review.collection.children:
+            review.collection.children.link(coll)
+        for act in sorted((a for a in bpy.data.actions if a.name.startswith(who + ":")), key=lambda a: a.name):
+            clip = act.name.split(":", 1)[1]
+            if only and clip not in only:
+                continue
+            bind(rig, act)
+            f0, f1 = act.frame_range
+            for i in range(shots):
+                f = f0 + (f1 - f0) * (i + 0.5) / shots
+                scene.frame_set(int(f))  # (both scenes: the rig is shared, and a render of the review scene alone showed stale poses)
+                review.frame_set(int(f))
+                for view, cam in cams.items():
+                    review.camera = cam
+                    review.render.filepath = os.path.join(REVIEW_DIR, f"{who}-{clip}-{view}-{i}.jpg")
+                    bpy.ops.render.render(write_still=True, scene=review.name)
+            done.append(f"{who}:{clip}")
+        bind(rig, None)
+        reset_pose(rig)
+        review.collection.children.unlink(coll)
+    print("[clips] review stills:", len(done), "clips in", REVIEW_DIR)
+
+
+WHO = [w for w in (globals().get("WHO") or PEOPLE)]
+if "retarget" in STAGES:  # noqa: F821
+    stage_retarget(WHO)
+if "author" in STAGES:  # noqa: F821
+    stage_author(WHO)
+if "tracks" in STAGES:  # noqa: F821
+    stage_tracks(WHO)
+if "review" in STAGES:  # noqa: F821
+    stage_review(WHO, globals().get("ONLY"))

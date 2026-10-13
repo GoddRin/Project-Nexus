@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "face-labourer-noon-face-labourer-g03.jpg",
+  "backend": "webgpu",
+  "fps": 27.8,
+  "p95": 52.8,
+  "calls": 134,
+  "tris": 999106,
+  "programs": 113,
+  "lights": 4,
+  "gpuMB": 87.5,
+  "heapMB": 198,
+  "lod": [
+   24,
+   122,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

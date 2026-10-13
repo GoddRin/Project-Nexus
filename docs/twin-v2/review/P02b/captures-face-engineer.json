@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "face-engineer-noon-face-engineer-g03.jpg",
+  "backend": "webgpu",
+  "fps": 22.2,
+  "p95": 53.2,
+  "calls": 138,
+  "tris": 997274,
+  "programs": 114,
+  "lights": 4,
+  "gpuMB": 87.5,
+  "heapMB": 212,
+  "lod": [
+   25,
+   108,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

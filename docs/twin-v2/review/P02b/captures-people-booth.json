@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-booth",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-booth-noon-people-booth-g24.jpg",
+  "backend": "webgpu",
+  "fps": 19.4,
+  "p95": 56.1,
+  "calls": 162,
+  "tris": 1287225,
+  "programs": 114,
+  "lights": 4,
+  "gpuMB": 87.4,
+  "heapMB": 188,
+  "lod": [
+   38,
+   152,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

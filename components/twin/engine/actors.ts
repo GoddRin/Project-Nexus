@@ -17,11 +17,13 @@
  * once a frame.
  */
 import * as THREE from "three/webgpu";
+import { materialColor, materialRoughness, mix, normalWorld, vec3, vec4 } from "three/tsl";
 import { clone as cloneWithSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { ASSETS } from "../data/site";
 import type { AssetEntry } from "../data/types";
 import { assets } from "./assets";
 import { CULLED, selectLod } from "./lod";
+import { air } from "../world/air";
 
 export type ActorModel = {
   entry: AssetEntry;
@@ -84,18 +86,47 @@ function levelOf(node: THREE.Object3D): number {
   return named ? Number(named[1]) : -1;
 }
 
+/**
+ * An actor's material as a node material that gets wet in rain, as placed things do
+ * (engine/assets.ts): darker, with a sheen, the more the more a surface faces the sky.
+ */
+function weathered(material: THREE.Material): THREE.Material {
+  const source = material as unknown as Record<string, unknown> & { isNodeMaterial?: boolean; isMeshPhysicalMaterial?: boolean; isMeshStandardMaterial?: boolean };
+  if (source.isNodeMaterial || !source.isMeshStandardMaterial) return material;
+  const node = source.isMeshPhysicalMaterial ? new THREE.MeshPhysicalNodeMaterial() : new THREE.MeshStandardNodeMaterial();
+  const target = node as unknown as Record<string, unknown>;
+  for (const key in source) {
+    if (key !== "uuid" && key !== "type") target[key] = source[key];
+  }
+  const wet = air.wetness.mul(normalWorld.y.max(0).mul(0.6).add(0.4));
+  node.colorNode = materialColor.mul(vec4(vec3(mix(1, 0.72, wet)), 1));
+  node.roughnessNode = materialRoughness.mul(mix(1, 0.55, wet));
+  return node;
+}
+
 async function load(entry: AssetEntry): Promise<ActorModel> {
   const gltf = await assets.gltf(entry);
   const template = gltf.scene as unknown as THREE.Object3D;
   template.updateMatrixWorld(true);
   let levels = 0;
   let skinned = false;
+  const wetFor = new Map<THREE.Material, THREE.Material>();
   template.traverse((node) => {
     const level = levelOf(node);
     if (level >= 0 && level <= 2) levels |= 1 << level;
     const mesh = node as THREE.Mesh;
     if (!mesh.isMesh) return;
     if ((mesh as unknown as THREE.SkinnedMesh).isSkinnedMesh) skinned = true;
+    const swap = (material: THREE.Material) => {
+      let made = wetFor.get(material);
+      if (!made) {
+        made = weathered(material);
+        wetFor.set(material, made);
+        if (made !== material) material.dispose();
+      }
+      return made;
+    };
+    mesh.material = Array.isArray(mesh.material) ? mesh.material.map(swap) : swap(mesh.material);
     for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
       for (const key of ["map", "normalMap", "roughnessMap", "metalnessMap", "emissiveMap"] as const) {
         const texture = (material as unknown as Record<string, THREE.Texture | null>)[key];
