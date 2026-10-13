@@ -107,6 +107,10 @@ def export_asset(asset_id, force=False):
             obj["lod"] = level
 
         bpy.ops.object.select_all(action="DESELECT")
+        # (select_all leaves objects in hidden collections alone, and the exporter would take them too)
+        for other in bpy.context.view_layer.objects:
+            if other.select_get():
+                other.select_set(False)
         for obj in list(objs.values()) + list(rigs):
             obj.hide_viewport = False
             obj.hide_set(False)
@@ -119,6 +123,7 @@ def export_asset(asset_id, force=False):
             export_yup=True,
             export_apply=False,
             export_extras=True,
+            export_attributes=True,  # custom attributes whose names start with "_" (the plants' _WIND)
             export_materials="EXPORT",
             export_image_format="AUTO",
             export_animations=bool(rigs),

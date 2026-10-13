@@ -267,6 +267,8 @@ if (fs.existsSync(ZONES_DIR)) {
       ...(zone.test ? { test: true } : {}),
       assets: used,
       placements: zone.placements.length,
+      // named views of the zone, known before the zone itself is fetched (?place=)
+      cameras: zone.cameras ?? [],
     });
   }
 }

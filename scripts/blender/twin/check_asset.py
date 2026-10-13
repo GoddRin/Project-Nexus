@@ -91,10 +91,13 @@ def check_asset(asset_id):
                 lo, hi = twin_lib.bounds_of(obj)
                 size = hi - lo
                 # origin at base centre: the lowest point on Z = 0, the footprint centred on X and Y
-                if abs(lo.z) > max(0.01, size.z * 0.02):
+                # twin_origin on the collection: "free" lets the footprint sit off-centre (a set piece
+                # placed by one of its parts); "pivot" also lets the base be anywhere (a part that turns)
+                origin = str(coll.get("twin_origin", "base"))
+                if origin != "pivot" and abs(lo.z) > max(0.01, size.z * 0.02):
                     fails.append(f"LOD{level}: base is at Z = {lo.z:.3f} m, not 0 (origin must be at the base centre)")
                 off = max(abs((lo.x + hi.x) / 2), abs((lo.y + hi.y) / 2))
-                if off > max(0.02, max(size.x, size.y) * 0.1):
+                if origin == "base" and off > max(0.02, max(size.x, size.y) * 0.1):
                     fails.append(f"LOD{level}: footprint centre is {off:.3f} m from the origin")
                 if level == 0:
                     facts["bounds"] = twin_lib.bounds_y_up(lo, hi)

@@ -12,7 +12,8 @@ What it reads inside ZONE_<zone id> (child collections included):
   STN_<station id>       an empty. Custom properties: roles, activity, capacity, hours ("360-720,780-1020"),
                          rain, typhoon, stage.
   LIGHT_<kind>_<n>       an empty or a light; kind is lamp, window or flood. Custom properties:
-                         colorK, lumens, hours ("1080-360").
+                         colorK, lumens, hours ("1080-360"), and aim (1: the lamp shines along the
+                         empty's +Z axis, written as a point 5 m along it; without it the lamp shines all round).
   CAM_<camera id>        a camera. Custom properties: title, distance (metres to the point it looks at).
 Custom properties on the zone collection: title, streamIn, streamOut, shell (an asset id), test (1 for a
 zone that loads only when asked for by ?testzone=).
@@ -120,7 +121,10 @@ def export_zone(zone_id):
             if kind not in ("lamp", "window", "flood"):
                 raise ValueError(f"{name}: light kind must be lamp, window or flood")
             span = hours(obj.get("hours"), [[1080, 360]])[0]
-            lights.append({"kind": kind, "p": twin_lib.y_up(obj.matrix_world.translation), "colorK": int(obj.get("colorK", 4000)), "lumens": float(obj.get("lumens", 8000)), "hours": span})
+            light = {"kind": kind, "p": twin_lib.y_up(obj.matrix_world.translation), "colorK": int(obj.get("colorK", 4000)), "lumens": float(obj.get("lumens", 8000)), "hours": span}
+            if obj.get("aim"):
+                light["aim"] = twin_lib.y_up(obj.matrix_world.translation + (obj.matrix_world.to_quaternion() @ Vector((0, 0, 1))) * 5.0)
+            lights.append(light)
             grow(obj.matrix_world.translation)
         elif name.startswith("CAM_") and obj.type == "CAMERA":
             eye = obj.matrix_world.translation

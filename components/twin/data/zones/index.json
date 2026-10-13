@@ -1,5 +1,125 @@
 [
  {
+  "id": "powerhouse.camp-gate",
+  "location": "powerhouse",
+  "title": "Camp gate",
+  "bounds": {
+   "min": [
+    62,
+    10.881,
+    -108.259
+   ],
+   "max": [
+    129.454,
+    28.629,
+    -37.5
+   ]
+  },
+  "streamIn": 420,
+  "streamOut": 520,
+  "shell": null,
+  "assets": [
+   "flora.acacia.a",
+   "flora.acacia.b",
+   "flora.banana.a",
+   "flora.broadleaf.a",
+   "flora.fern.a",
+   "flora.grass.a",
+   "flora.shrub.a",
+   "ground.camp-gate",
+   "kit.boom-arm",
+   "prop.traffic-cone",
+   "struct.guardhouse"
+  ],
+  "placements": 634,
+  "cameras": [
+   {
+    "id": "gate-approach",
+    "title": "Camp gate: arriving",
+    "pos": [
+     86.346,
+     14.759,
+     -51.599
+    ],
+    "target": [
+     90.695,
+     14.613,
+     -68.362
+    ]
+   },
+   {
+    "id": "gate-booth",
+    "title": "Camp gate: the guardhouse",
+    "pos": [
+     92.605,
+     14.952,
+     -61.687
+    ],
+    "target": [
+     87.713,
+     14.776,
+     -70.008
+    ]
+   },
+   {
+    "id": "gate-inside",
+    "title": "Camp gate: from the camp",
+    "pos": [
+     99.943,
+     15.094,
+     -78.907
+    ],
+    "target": [
+     89.612,
+     14.741,
+     -68.879
+    ]
+   },
+   {
+    "id": "gate-over",
+    "title": "Camp gate: from above",
+    "pos": [
+     98.79,
+     24.294,
+     -41.223
+    ],
+    "target": [
+     90.695,
+     14.363,
+     -68.362
+    ]
+   },
+   {
+    "id": "gate-verge",
+    "title": "Camp gate: the verge",
+    "pos": [
+     93.203,
+     13.88,
+     -58.298
+    ],
+    "target": [
+     94.783,
+     13.425,
+     -52.556
+    ]
+   },
+   {
+    "id": "gate-window",
+    "title": "Camp gate: at the window",
+    "pos": [
+     90.728,
+     14.918,
+     -66.573
+    ],
+    "target": [
+     88.208,
+     14.68,
+     -69.883
+    ]
+   }
+  ]
+ },
+ {
   "id": "powerhouse.pipeline-test",
   "location": "powerhouse",
   "title": "Pipeline test yard (P01c)",
@@ -26,6 +146,22 @@
    "prop.jerrycan",
    "prop.propane-tank"
   ],
-  "placements": 2500
+  "placements": 2500,
+  "cameras": [
+   {
+    "id": "pipeline-test",
+    "title": "Pipeline test yard",
+    "pos": [
+     70,
+     22,
+     -150
+    ],
+    "target": [
+     99.944,
+     13.017,
+     -125.047
+    ]
+   }
+  ]
  }
 ]
