@@ -24,8 +24,8 @@ All in a visible Chrome window, production build, Medium tier, WebGPU, 1184 x 84
 | Morning | 08:10 | `gate-approach-morning.jpg` | Crisp dappled tree shade across the road. No dew sheen |
 | Noon | 12:15 | `gate-approach-noon.jpg` | Short shadows, bright haze. Contrast under the roof is modest; no heat shimmer (P12a) |
 | Golden hour | 17:05 | `gate-approach-golden.jpg` | Long shadows across the road, warm light. No rim light on people yet (P02b) |
-| Dusk | 17:45 | `gate-approach-dusk.jpg` | Lamps on, sky glow low in the west. **Too dark and too red for "deep blue"**: see known gaps |
-| Night | 21:00 | `gate-approach-night.jpg` | A pool of cool flood light on the road, warm window, dark forest. No stars or moon disc (P03b) |
+| Dusk | 18:10 | `gate-approach-dusk.jpg` | Sun gone, a blue-mauve twilight sky, lamps and window on, the scene still legible. Retaken after the twilight fix (follow-up below), on the dev build |
+| Night | 21:00 | `gate-approach-night.jpg` | A pool of cool flood light on the road, warm window, dark forest under a navy sky. No stars or moon disc (P03b). Retaken with dusk |
 | Rain | 14:00 | `gate-approach-rain.jpg` | Flat grey sky, sun nearly gone, wet dark road, standing water reflecting the sky. **No falling rain, no low cloud on the ridge** (P03d) |
 
 Other views: `gate-over-*`, `gate-booth-*`, `gate-inside-*`, `gate-verge-*` (`-views`, at noon and golden hour). Blender review: `blender-guardhouse.jpg` (four sides), `blender-acacia.jpg`, `blender-zone-layout.jpg`.
@@ -128,7 +128,7 @@ Run on the production build, Chrome, WebGPU, after the fixes above (`checks/`).
 
 - **Frame rate**, above.
 - **Download:** the slice is about 17 MB of models plus 4.3 MB of ground textures (about 21 MB), against 12 MB to a first view. The guardhouse is 6.2 MB (a 2K trim sheet in the high-quality mode); the two trees carry the same leaf sheet twice.
-- **Dusk is too dark and too red**, and the sky is black once the sun is 13 degrees down: the sky model has no twilight of its own and what was added is crude. No stars, no moon disc. P03b.
+- **No stars, no moon disc.** P03b. (Dusk itself was fixed in the follow-up below.)
 - **Rain is a wet day without rain.** P03d.
 - **The far terrain is v1's**, flat green and untextured, and v1's flat pad shows beyond the patch edge. P03a.
 - **The forest edge is thin:** sixteen trees and undergrowth, not the wall of bamboo and forest in the owner's photographs. The frond cards read as oversized leaves close up. P04.
@@ -149,3 +149,12 @@ Run on the production build, Chrome, WebGPU, after the fixes above (`checks/`).
 ## Files
 
 `scripts/twin/`: `build-atlases.mjs` (trim and sign sheets), `build-flora-textures.mjs`, `build-ground-textures.mjs`, `fetch-polyhaven.mjs`, `fetch-polyhaven-model.mjs`, `capture-gate.mjs`, `atlases/gate.json`, `reference/commons-fetch.mjs`. `scripts/blender/twin/`: `model_kit.py`, `build_gate_structures.py`, `build_gate_flora.py`, `gate_ground.py`, `build_gate_zone.py`. `components/twin/world/`: `SkyLight.tsx`, `air.ts`, `ground.ts`, `lamps.ts`; `engine/post.ts`. To rebuild everything: the three texture scripts, the three Blender build scripts and the zone script in that order, `export_asset.py` and `export_zone.py`, then `build-assets.mjs`.
+
+## Follow-up: dusk (2026-10-13, at the owner's request)
+
+The owner asked for the look gaps to be dealt with, then ruled: anything a later phase already owns waits for that phase; only what is not in the plan is done now. Of the five gaps, four are owned (stars: P03b; falling rain: P03d; the forest edge: P04; the terrain beyond the patch: P03a) and were left. **Dusk was this sub-phase's own fault and is fixed.**
+
+The sky model goes black 2 degrees after sunset. A twilight dome is now drawn over it once the sun is down: deep blue overhead, paler at the horizon, with a glow low towards where the sun went, darkening to a navy night as the sun passes 16 degrees down. The same dome feeds the environment light, so the scene is lit blue at dusk rather than not at all. `gate-approach-dusk.jpg` and `gate-approach-night.jpg` are retaken (dev build, visible Chrome, Medium). Dawn and golden hour were looked at again and are unchanged in character.
+
+Not re-run after this change: the production build, the frame-rate measurement and the two regression checks. The change adds one draw call of a plain dome and no texture.
+

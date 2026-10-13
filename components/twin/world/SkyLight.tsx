@@ -95,6 +95,37 @@ export function SkyLight() {
       if (material.colorNode) material.colorNode = (material.colorNode as THREE.Node<"vec4">).mul(skyDim);
     }
     const skySun = new THREE.Vector3();
+    // --- twilight: a dome of its own, drawn over the sky model once the sun is down. The model has
+    // no twilight (it is black 2 degrees after sunset), where a real sky is deep blue overhead for
+    // half an hour with a glow low towards where the sun went. It darkens to a navy night that is
+    // never quite black. (Stars and the moon's disc are P03b's.)
+    const duskLow = uniform(new THREE.Color(0, 0, 0));
+    const duskHigh = uniform(new THREE.Color(0, 0, 0));
+    const duskGlow = uniform(new THREE.Color(0, 0, 0));
+    const glowDir = uniform(new THREE.Vector3(1, 0, 0));
+    const duskAmount = uniform(0);
+    const duskMaterial = new THREE.MeshBasicNodeMaterial({ side: THREE.BackSide, transparent: true, depthWrite: false });
+    duskMaterial.fog = false;
+    {
+      const dir = positionLocal.normalize();
+      const up = dir.y.max(0);
+      const towards = dir.dot(glowDir).mul(0.5).add(0.5);
+      const glow = duskGlow.mul(towards.pow(3)).mul(up.oneMinus().pow(5));
+      duskMaterial.colorNode = mix(duskLow, duskHigh, smoothstep(0, 0.55, up)).add(glow);
+      duskMaterial.opacityNode = duskAmount;
+    }
+    const domeGeometry = new THREE.SphereGeometry(1, 48, 24);
+    const dusk = new THREE.Mesh(domeGeometry, duskMaterial);
+    dusk.name = "twilight";
+    dusk.scale.setScalar(SKY_SIZE * 0.47);
+    dusk.frustumCulled = false;
+    dusk.renderOrder = -2; // (before the cloud deck, which lies under it)
+    root.add(dusk);
+    const envDusk = new THREE.Mesh(domeGeometry, duskMaterial);
+    envDusk.scale.setScalar(420);
+    envDusk.renderOrder = -2;
+    envScene.add(envDusk);
+
     // --- overcast: a grey lid drawn inside the sky dome, as thick as the cloud cover. The sky model
     // has broken cloud but no closed cloud deck, and a wet day on site is a flat bright grey.
     const lidLow = uniform(new THREE.Color(0.9, 0.92, 0.95));
@@ -163,8 +194,8 @@ export function SkyLight() {
     const colour = new THREE.Color();
     const horizon = new THREE.Color();
     const DAY_HAZE = new THREE.Color(0xa9bccb);
-    const DUSK_HAZE = new THREE.Color(0xc79a7a);
-    const NIGHT_HAZE = new THREE.Color(0x05080d);
+    const DUSK_HAZE = new THREE.Color(0x6f6b86);
+    const NIGHT_HAZE = new THREE.Color(0x070b14);
     const RAIN_HAZE = new THREE.Color(0x8d969b);
     const MOONLIGHT = new THREE.Color(0x8fa9dc);
     const now: WeatherLook = { ...WEATHER_LOOK[twinStore.getState().weather.state] };
@@ -211,6 +242,7 @@ export function SkyLight() {
       // the sky dome and the shadow volume follow the camera
       sky.position.copy(camera.position);
       lid.position.copy(camera.position);
+      dusk.position.copy(camera.position);
       if (csm && Math.abs(camera.aspect - lastAspect) > 1e-4 && (csm as unknown as { camera: unknown }).camera) {
         lastAspect = camera.aspect;
         csm.updateFrustums();
@@ -237,7 +269,15 @@ export function SkyLight() {
       sky.sunPosition.value.copy(skySun);
       // (the model's dome is dim with the sun on the horizon, dimmer than a real twilight sky looks to
       // an eye that has adjusted to it: it is lifted there, then fades out through nautical twilight)
-      skyDim.value = Math.pow(smooth(degrees, -13, -1.2), 1.8) * (1 + 2.6 * (1 - smooth(degrees, -1.2, 9)));
+      skyDim.value = 1;
+      // the twilight dome takes over from the model as the sun goes under, and darkens to night as
+      // the sun passes 16 degrees down
+      const twilight = smooth(degrees, -16, -2);
+      duskAmount.value = 1 - smooth(degrees, -3.5, 0.5);
+      duskHigh.value.setRGB(lerp(0.006, 0.05, twilight), lerp(0.011, 0.1, twilight), lerp(0.03, 0.27, twilight));
+      duskLow.value.setRGB(lerp(0.016, 0.3, twilight), lerp(0.024, 0.3, twilight), lerp(0.05, 0.44, twilight));
+      duskGlow.value.setRGB(1.5, 0.62, 0.2).multiplyScalar(twilight * twilight);
+      glowDir.value.set(toSun.x, 0, toSun.z).normalize();
       sky.turbidity.value = now.turbidity + (1 - high) * 2.2;
       sky.rayleigh.value = lerp(2.4, 1.1, high) * lerp(1, 0.55, now.cloud * now.cloud);
       sky.mieCoefficient.value = 0.004 + now.cloud * 0.012;
@@ -287,9 +327,9 @@ export function SkyLight() {
 
       // environment light: re-made when the sun or the cloud has moved enough to show
       const moved = Math.hypot(toSun.x - envAt.x, toSun.y - envAt.y, toSun.z - envAt.z);
-      if (elapsed >= envDue && (moved > 0.035 || Math.abs(skyDim.value - envAt.dim) > 0.03 || Math.abs(now.cloud - envAt.cloud) > 0.02 || Math.abs(now.sun - envAt.sun) > 0.03)) {
+      if (elapsed >= envDue && (moved > 0.035 || Math.abs(duskAmount.value + duskHigh.value.b * 4 - envAt.dim) > 0.04 || Math.abs(now.cloud - envAt.cloud) > 0.02 || Math.abs(now.sun - envAt.sun) > 0.03)) {
         envDue = elapsed + 0.5;
-        envAt = { x: toSun.x, y: toSun.y, z: toSun.z, cloud: now.cloud, sun: now.sun, dim: skyDim.value };
+        envAt = { x: toSun.x, y: toSun.y, z: toSun.z, cloud: now.cloud, sun: now.sun, dim: duskAmount.value + duskHigh.value.b * 4 };
         for (const name of ["turbidity", "rayleigh", "mieCoefficient", "mieDirectionalG", "cloudCoverage", "cloudDensity", "cloudElevation"] as const) envSky[name].value = sky[name].value;
         envSky.sunPosition.value.copy(skySun);
         const old = envTarget;
@@ -312,6 +352,8 @@ export function SkyLight() {
       (sun.shadow as unknown as { shadowNode: unknown }).shadowNode = null;
       sun.dispose();
       fill.dispose();
+      domeGeometry.dispose();
+      duskMaterial.dispose();
       lidGeometry.dispose();
       lidMaterial.dispose();
       sky.geometry.dispose();
