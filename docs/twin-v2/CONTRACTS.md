@@ -35,6 +35,7 @@ docs/twin-v2/                             these prompts, state, reviews
 - Files: `kebab-case`. Asset ids: `category.name.variant`, for example `flora.narra.a`, `prop.hardhat-rack`, `veh.dump-truck`, `char.body.m03`.
 - GLB path: `public/models/twin/<category>/<name>.glb`. LODs are meshes inside one GLB named `<name>_LOD0`, `_LOD1`, `_LOD2`.
 - An asset in Blender (P01c): a collection named by the asset id (`prop.drum-red`) inside `LIB_<id prefix>` (`LIB_prop`), holding one mesh object per level named `<name>_LOD0`, `_LOD1`, `_LOD2`, where `<name>` is the id without its prefix. Custom properties on that collection: `twin_class` (a class in `scripts/twin/asset-budgets.json`, which also maps each id prefix to its folder under `public/models/twin/`), `twin_lod_distances` (optional), `twin_credits` (comma-separated ids of rows in `CREDITS.md`).
+- Optional custom property `twin_origin` on an asset collection (P02a): `free` lets the footprint sit off-centre (a set piece placed by one of its parts, a lopsided plant); `pivot` also lets the base be anywhere (a part that turns about its origin). Plants carry a per-vertex attribute `_WIND` (x: how far the vertex leans with the plant, y: how much it flutters, z: a phase). Id prefix `ground` (P02a) is a patch of finished ground, drawn with the twin's blended ground material.
 - Blender collections: `ZONE_<zone-id>`, `LIB_<category>`. Zone lights: `LIGHT_<lamp|window|flood>_<n>`. Zone cameras: `CAM_<camera-id>`. Placement empties: `PLACE_<asset-id>_<n>`. Station empties: `STN_<station-id>`. Walk-mode helpers: collision meshes `COL_<name>`, spawn points `SPAWN_<id>`, ladders `LADDER_<id>`, van stops `STOP_<id>`.
 - Location ids: `weir`, `tunnel1`, `midway`, `tunnel2`, `powerhouse` (see `MASTER-BRIEF.md` section 7). Every zone id is prefixed by its location: `<location>.<zone>`.
 - Zone ids:
@@ -94,13 +95,15 @@ type Zone = {
   shell: string | null;          // asset id of the low-detail stand-in shown before load
   test?: boolean;                // optional (P01c): loads only with ?testzone=1
   placements: { asset: string; p: [number,number,number]; r: [number,number,number]; s: number; stage?: StageId[]; pick?: string }[];   // r: XYZ Euler angles, radians
-  lights: { kind: "lamp" | "window" | "flood"; p: [number,number,number]; colorK: number; lumens: number; hours: [number, number] }[];
+  lights: { kind: "lamp" | "window" | "flood"; p: [number,number,number]; colorK: number; lumens: number; hours: [number, number]; aim?: [number,number,number] }[];   // aim (optional, P02a): a point the lamp shines at; without it, all round
   cameras: { id: string; title: string; pos: [number,number,number]; target: [number,number,number] }[];
 };
 type StageId = "cleared" | "excavation" | "rebar" | "formwork" | "poured" | "finished" | "commissioned";
 ```
 
-`zones/index.json` (written by `scripts/twin/build-assets.mjs`, never by hand) is what streaming reads before it loads a zone: one row per zone file with `{ id, location, title, bounds, streamIn, streamOut, shell, test?, assets: string[], placements: number }`.
+`zones/index.json` (written by `scripts/twin/build-assets.mjs`, never by hand) is what streaming reads before it loads a zone: one row per zone file with `{ id, location, title, bounds, streamIn, streamOut, shell, test?, assets: string[], placements: number, cameras }` (`cameras`, since P02a, are the zone's own, so `?place=` works before the zone has streamed in).
+
+`ground.json` (written by `scripts/twin/build-ground-textures.mjs`, never by hand): the ground material's layers (`{ id, sizeM, cr, nh, credit }`: colour with roughness in alpha, and normal with occlusion and height) and, per ground patch, its mask and the square of ground the mask covers. `sources/camp-gate-layout.json` (written by `scripts/blender/twin/gate_ground.py`): the gate slice's patch, gate, booth pose and road line.
 
 ### 4.3 `people.json` (the public registry; migrated from v1 `personnelData.ts` in P00)
 
@@ -252,7 +255,7 @@ Per-frame values (agent positions, animation times) never go in the store; they 
 
 `?v=1|2`, `?loc=<location id>`, `?date=<YYYY-MM>|today`, `?place=<camera id>`, `?t=<HHMM>|live`, `?wx=<state>`, `?sel=<kind>:<id>`, `?layers=<comma list>`, `?q=<tier>`, `?debug=1`, `?project=<id>`. The existing `?preset=<v1 key>` is mapped to `?place=`.
 
-Test switches, read once at start and never written back by the store: `?force=webgl` (run the WebGL2 fallback), `?testzone=1` (stream zones marked `test`), `?dynres=0` (hold the resolution still, for the bench), `?probe=1` (run the start-up tier probe even if a result is remembered).
+Test switches, read once at start and never written back by the store: `?force=webgl` (run the WebGL2 fallback), `?testzone=1` (stream zones marked `test`), `?dynres=0` (hold the resolution still, for the bench), `?probe=1` (run the start-up tier probe even if a result is remembered), `?shadows=0` (no sun shadows; P02a).
 
 ## 7. Debug hooks
 

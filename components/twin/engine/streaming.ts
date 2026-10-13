@@ -14,6 +14,9 @@ import * as THREE from "three/webgpu";
 import { ZONE_INDEX } from "../data/site";
 import type { Placement, Zone, ZoneIndexEntry } from "../data/types";
 import { twinStore } from "../state/store";
+import { registerGroundPatch } from "../world/ground";
+import { lamps } from "../world/lamps";
+import { SHADOW_FAR } from "../world/SkyLight";
 import { assets, type LoadedAsset } from "./assets";
 import { createInstanceSet, setDrawCount, type InstanceSet } from "./instances";
 import { lodScale } from "./lod";
@@ -41,6 +44,8 @@ type ZoneRun = {
   group: THREE.Group | null;
   sets: InstanceSet[];
   held: string[];
+  /** Things to undo on unload beside the draws: the ground patch's part in picking, the zone's lamps. */
+  cleanup: (() => void)[];
   shell: { id: string; group: THREE.Group } | null;
   /** After a failed load: the time (performance.now) before which it is not tried again. */
   retryAt: number;
@@ -133,6 +138,8 @@ function unload(run: ZoneRun) {
   run.state = "out";
   for (const set of run.sets) set.dispose();
   run.sets = [];
+  for (const undo of run.cleanup) undo();
+  run.cleanup = [];
   run.group?.removeFromParent();
   run.group = null;
   for (const id of run.held) assets.release(id);
@@ -158,6 +165,11 @@ async function loadZone(ctx: StreamingContext, run: ZoneRun) {
     group.name = `zone:${run.entry.id}`;
     ctx.scene.add(group);
     run.group = group;
+    // the zone's lamps go in before its draws are compiled, so the shaders are built for them
+    if (zone.lights.length) {
+      lamps.set(run.entry.id, zone.lights);
+      run.cleanup.push(() => lamps.clear(run.entry.id));
+    }
 
     loaded.forEach((asset: LoadedAsset, i) => {
       for (const texture of asset.textures) {
@@ -169,6 +181,10 @@ async function loadZone(ctx: StreamingContext, run: ZoneRun) {
           if (!live()) return;
           const set = createInstanceSet(asset, byAsset.get(ids[i])!);
           run.sets.push(set);
+          if (asset.kind === "ground") {
+            const part = asset.lods[0]![0];
+            for (const place of byAsset.get(ids[i])!) run.cleanup.push(registerGroundPatch(part.geometry, part.matrix, place));
+          }
           // one draw per task, compiled first, so no frame takes more than one upload
           for (const draw of set.draws.slice().reverse()) {
             queue.unshift({
@@ -235,6 +251,7 @@ export function startStreaming(ctx: StreamingContext): () => void {
     group: null,
     sets: [],
     held: [],
+    cleanup: [],
     shell: null,
     retryAt: 0,
   }));
@@ -278,8 +295,10 @@ export function startStreaming(ctx: StreamingContext): () => void {
     frustum.setFromProjectionMatrix(view, camera.coordinateSystem, (camera as unknown as { reversedDepth?: boolean }).reversedDepth ?? false);
     const tier = tierSettings();
     const k = lodScale(camera.fov, ctx.viewHeight(), tier.lodBias);
+    // (a caster this close may shade something in view even when it is not in view itself)
+    const shadowReach = Math.min(SHADOW_FAR * 0.5, 70);
     for (const run of mine) {
-      for (const set of run.sets) set.update(camera, frustum, k, tier.drawDistance);
+      for (const set of run.sets) set.update(camera, frustum, k, tier.drawDistance, shadowReach);
     }
   });
 

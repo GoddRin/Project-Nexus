@@ -8,10 +8,14 @@ import zoneIndexFile from "./zones/index.json";
 import type { AssetEntry, CameraPlace, Location, LocationId, ZoneIndexEntry } from "./types";
 
 export const LOCATIONS = locationsFile.locations as unknown as Location[];
-export const CAMERA_PLACES = camerasFile.cameras as unknown as CameraPlace[];
 /** Built assets by id (scripts/twin/build-assets.mjs). */
 export const ASSETS = new Map((assetsFile as unknown as AssetEntry[]).map((a) => [a.id, a]));
 export const ZONE_INDEX = zoneIndexFile as unknown as ZoneIndexEntry[];
+/** Named views: the zones' own (exported from the master scene) first, then v1's presets. */
+export const CAMERA_PLACES: CameraPlace[] = [
+  ...ZONE_INDEX.filter((z) => !z.test && z.location === "powerhouse").flatMap((z) => (z.cameras ?? []).map((c) => ({ ...c, zone: z.id }))),
+  ...(camerasFile.cameras as unknown as CameraPlace[]),
+];
 
 /** v1's presets are in the powerhouse frame, so they are offered only at this location. */
 export const CAMERA_PLACES_LOCATION: LocationId = "powerhouse";

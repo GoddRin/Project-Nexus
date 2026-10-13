@@ -24,8 +24,10 @@ export type InstanceSet = {
    * Choose levels for this view and fill the instance buffers.
    * @param k     engine/lod.ts `lodScale` for the view
    * @param cull  metres beyond which nothing is drawn (the tier's draw distance)
+   * @param shadowReach  metres within which a shadow caster is kept even when it is out of view,
+   *                     so a tree behind the camera still shades the road in front of it
    */
-  update: (camera: THREE.Camera, frustum: THREE.Frustum, k: number, cull: number) => void;
+  update: (camera: THREE.Camera, frustum: THREE.Frustum, k: number, cull: number, shadowReach: number) => void;
   /** Copies drawn at each level after the last update, and how many were left out. */
   tally: () => { lod: [number, number, number]; hidden: number };
   dispose: () => void;
@@ -103,6 +105,8 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
       // copies are culled one by one below, and a draw with none in view is switched off
       mesh.frustumCulled = false;
       mesh.matrixAutoUpdate = false;
+      mesh.receiveShadow = true;
+      mesh.castShadow = asset.castsShadow && !part.instanced.transparent;
       const bucket = { mesh, level, baked, buffer };
       buckets.push(bucket);
       byLevel[level].push(bucket);
@@ -119,7 +123,8 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
     count: n,
     draws: buckets,
 
-    update(camera, frustum, k, cull) {
+    update(camera, frustum, k, cull, shadowReach) {
+      const keepNear = asset.castsShadow ? shadowReach : 0;
       const cx = camera.position.x;
       const cy = camera.position.y;
       const cz = camera.position.z;
@@ -138,7 +143,7 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
         if (level !== CULLED) {
           sphere.center.set(x, y, z);
           sphere.radius = radii[i];
-          if (!frustum.intersectsSphere(sphere)) level = CULLED;
+          if (!frustum.intersectsSphere(sphere) && distance * scales[i] - radii[i] > keepNear) level = CULLED;
         }
         if (level !== drawn[i]) {
           drawn[i] = level;

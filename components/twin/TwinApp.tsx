@@ -8,6 +8,7 @@
  * with URL state, the camera rig and the site clock, over v1's terrain in plain grey.
  * P01c: quality tiers with a start-up probe and dynamic resolution, and zones of placed assets
  * streamed in around the camera.
+ * P02a: the camp gate slice: real sun, sky and shadows by the clock, weather, lamps at night.
  */
 import { Profiler, memo, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -20,6 +21,7 @@ import { twinActions, twinStore } from "./state/store";
 import { readUrlIntoStore, startUrlSync } from "./state/url";
 import { ShellHud } from "./ui/ShellHud";
 import { TwinErrorBoundary, TwinLoading, TwinMessage } from "./ui/TwinMessage";
+import { SkyLight } from "./world/SkyLight";
 import { TempWorld } from "./world/TempWorld";
 
 /** How many times a lost device or context is rebuilt before the twin gives up and says so. */
@@ -39,7 +41,9 @@ type TwinCanvasProps = {
  * stale snapshot, so it makes its own renderer, camera and scene and swaps them in: the view then
  * shows sky and no ground (seen in 3 of 40 loads). So this component is memoised with stable
  * props, and the renderer (engine/renderer.ts), the camera and the scene are objects made here,
- * which every pass is handed alike. For the same reason the pixel ratio is handed over once: a
+ * which every pass is handed alike. Shadows are asked for here, as a prop, because each pass sets
+ * the renderer's shadow switch from it (left off, a late pass turned the sun's shadows off about
+ * one load in two). For the same reason the pixel ratio is handed over once: a
  * change of tier or of dynamic resolution is applied by the engine (engine/Engine.tsx), not by
  * re-rendering this component.
  */
@@ -58,10 +62,11 @@ const TwinCanvas = memo(function TwinCanvas({ onLost, onError, onFirstFrame }: T
     [onLost, onError],
   );
   return (
-    <Canvas dpr={dpr} camera={camera} scene={scene} gl={gl}>
+    <Canvas dpr={dpr} camera={camera} scene={scene} gl={gl} shadows>
       <Engine onFirstFrame={onFirstFrame} />
       <CameraRig />
       <TempWorld />
+      <SkyLight />
       <ZoneStreamer />
     </Canvas>
   );

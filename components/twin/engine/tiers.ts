@@ -35,7 +35,7 @@ export type TierSettings = {
 
 export const TIER_SETTINGS: Record<Tier, TierSettings> = {
   low: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 1, ambientOcclusion: "off", drawDistance: 450, lodBias: 0.7, crowd: 16, vegetationDensity: 0.35, textureSize: 512, lights: 4, frameBudgetMs: 50 },
-  medium: { pixelRatio: 1.25, shadowMapSize: 2048, shadowCascades: 2, ambientOcclusion: "half", drawDistance: 900, lodBias: 1, crowd: 40, vegetationDensity: 0.6, textureSize: 1024, lights: 8, frameBudgetMs: 33 },
+  medium: { pixelRatio: 1.25, shadowMapSize: 1024, shadowCascades: 3, ambientOcclusion: "half", drawDistance: 900, lodBias: 1, crowd: 40, vegetationDensity: 0.6, textureSize: 1024, lights: 8, frameBudgetMs: 33 },
   high: { pixelRatio: 1.5, shadowMapSize: 2048, shadowCascades: 3, ambientOcclusion: "half", drawDistance: 1600, lodBias: 1.4, crowd: 80, vegetationDensity: 0.85, textureSize: 2048, lights: 8, frameBudgetMs: 33 },
   ultra: { pixelRatio: 2, shadowMapSize: 4096, shadowCascades: 3, ambientOcclusion: "full", drawDistance: 3000, lodBias: 2, crowd: 120, vegetationDensity: 1, textureSize: 4096, lights: 8, frameBudgetMs: 25 },
 };

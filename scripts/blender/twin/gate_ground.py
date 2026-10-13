@@ -129,7 +129,7 @@ class Ground:
                 continue  # the gate pad is kept in better repair
             side = rng.choice([-0.95, 0.95]) + rng.normal(0, 0.25)
             self.holes.append((s, side, rng.uniform(0.35, 0.85), rng.uniform(0.03, 0.07)))
-        self.holes += [(-10.5, 1.0, 1.3, 0.07), (6.5, -0.9, 0.9, 0.05), (-3.2, -1.9, 0.7, 0.035)]
+        self.holes += [(-10.5, 1.0, 0.8, 0.06), (6.5, -0.9, 0.7, 0.05), (-3.2, -1.9, 0.6, 0.035)]
 
     # -- road coordinates
 
@@ -312,7 +312,7 @@ class Ground:
         puddle = np.clip(hole / 0.05, 0, 1)
         shoulder = _smooth(2.4, 3.6, np.abs(d)) * (1 - _smooth(4.4, 6.2, np.abs(d)))
         ditch = _smooth(0.2, 1.0, left) * (1 - _smooth(1.3, 2.6, left)) * (1 - near_gate)
-        mud = track * (0.35 + 0.5 * n1) * (1 - 0.5 * near_gate) + shoulder * (0.25 + 0.6 * _smooth(0.45, 0.7, n1)) + ditch * 0.9 + np.clip(hole / 0.04, 0, 1) * 0.75 * (0.5 + n2)
+        mud = track * (0.22 + 0.4 * n1) * (1 - 0.5 * near_gate) + shoulder * (0.25 + 0.6 * _smooth(0.45, 0.7, n1)) + ditch * 0.9 + np.clip(hole / 0.05, 0, 1) * 0.45 * (0.5 + n2)
         mud = np.clip(mud, 0, 1)
 
         # leaf litter under the forest edge on both sides

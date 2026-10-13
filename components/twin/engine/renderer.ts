@@ -30,9 +30,13 @@ export function backendOf(renderer: THREE.WebGPURenderer): RendererBackend {
 }
 
 /** R3F resets these whenever it reconfigures the canvas, so the render stage re-applies them. */
-export function applyOutput(renderer: THREE.WebGPURenderer) {
+export function applyOutput(renderer: THREE.WebGPURenderer, softShadows = false) {
   if (renderer.outputColorSpace !== THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace;
   if (renderer.toneMapping !== THREE.AgXToneMapping) renderer.toneMapping = THREE.AgXToneMapping;
+  if (!renderer.shadowMap.enabled) renderer.shadowMap.enabled = true;
+  // (soft edges take several times the samples of plain ones: kept for the tiers that have the headroom)
+  const type = softShadows ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
+  if (renderer.shadowMap.type !== type) renderer.shadowMap.type = type;
 }
 
 export type RendererOptions = {

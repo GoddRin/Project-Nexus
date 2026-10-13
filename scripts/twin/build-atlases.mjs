@@ -112,7 +112,6 @@ async function painters(sheet, W) {
   const t = [0, 0, 0];
   const n = [0, 0, 0];
   const a = [0, 0, 0];
-  const t2 = [0, 0, 0];
 
   /** Colour, normal and roughness straight from a Poly Haven set. */
   const from = async (id, realM, turn = false) => {

@@ -10,6 +10,7 @@
  *   <layer>-nh.ktx2   normal x, y in red and green, occlusion in blue, height in alpha
  * and each patch's mask (painted by scripts/blender/twin/gate_ground.py) as <patch>-mask.ktx2:
  * road, mud and leaf litter in red, green and blue (grass is the rest), puddle depth in alpha.
+ * The mask's first row is the patch's lowest z and its first column the lowest x.
  *
  * Needs KTX-Software's `ktx` on the PATH. A file whose inputs have not changed is left alone.
  */
@@ -36,7 +37,8 @@ const LAYERS = [
   { id: "grass", set: "leafy_grass", sizeM: 2.0 },
   { id: "litter", set: "forest_leaves_03", sizeM: 2.3 },
 ];
-const PATCHES = [{ id: "camp-gate", mask: "ground-camp-gate_mask.png" }];
+/** A patch's mask, and the layout file (written by the Blender script that painted it) that says where the patch lies. */
+const PATCHES = [{ id: "camp-gate", mask: "ground-camp-gate_mask.png", layout: "camp-gate-layout.json" }];
 
 const sha = (...parts) => {
   const h = createHash("sha256");
@@ -115,7 +117,14 @@ for (const patch of PATCHES) {
     built++;
     console.log(`built  ${patch.id} mask ${(fs.statSync(target).size / 1024).toFixed(0)} KB`);
   }
-  manifest.patches[patch.id] = { mask: `/textures/twin/ground/${patch.id}-mask.ktx2?v=${sha(fs.readFileSync(target))}`, key };
+  const layout = JSON.parse(fs.readFileSync(path.join(ROOT, "components", "twin", "data", "sources", patch.layout), "utf8")).patch;
+  manifest.patches[patch.id] = {
+    mask: `/textures/twin/ground/${patch.id}-mask.ktx2?v=${sha(fs.readFileSync(target))}`,
+    // the mask covers this square of the location's ground (x, z of its lowest corner, and its side)
+    min: [layout.centre[0] - layout.size / 2, layout.centre[2] - layout.size / 2],
+    size: layout.size,
+    key,
+  };
 }
 
 fs.rmSync(tmp, { recursive: true, force: true });

@@ -43,6 +43,13 @@ export type StageId = "cleared" | "excavation" | "rebar" | "formwork" | "poured"
 
 export type Placement = { asset: string; p: Vec3; r: Vec3; s: number; stage?: StageId[]; pick?: string };
 
+/**
+ * A lamp of a zone. `hours` is when it is lit (minutes after midnight; the span may run through
+ * midnight). `aim` (optional, added in P02a) is a point the lamp shines at; without it the lamp
+ * shines all round.
+ */
+export type ZoneLight = { kind: "lamp" | "window" | "flood"; p: Vec3; colorK: number; lumens: number; hours: [number, number]; aim?: Vec3 };
+
 /** `zones/<zone id>.json`, written by scripts/blender/twin/export_zone.py (CONTRACTS section 4.2). */
 export type Zone = {
   id: string;
@@ -54,7 +61,7 @@ export type Zone = {
   /** Optional, added in P01c: a zone that loads only when asked for with ?testzone=1. */
   test?: boolean;
   placements: Placement[];
-  lights: { kind: "lamp" | "window" | "flood"; p: Vec3; colorK: number; lumens: number; hours: [number, number] }[];
+  lights: ZoneLight[];
   cameras: { id: string; title: string; pos: Vec3; target: Vec3 }[];
 };
 
@@ -63,4 +70,6 @@ export type ZoneIndexEntry = Pick<Zone, "id" | "title" | "bounds" | "streamIn" |
   location: LocationId;
   assets: string[];
   placements: number;
+  /** The zone's named views (added in P02a), so `?place=` works before the zone has streamed in. */
+  cameras?: Zone["cameras"];
 };

@@ -88,22 +88,24 @@ def pbr_material(name, colour, normal, orm, cutout=False, two_sided=False):
         occlusion.node_tree = model_kit._gltf_output_group()
         links.new(split.outputs["Red"], occlusion.inputs["Occlusion"])
     else:
-        bsdf.inputs["Roughness"].default_value = 0.6
+        bsdf.inputs["Roughness"].default_value = 0.62 if two_sided else 0.85
     mat.use_backface_culling = not two_sided
     return mat
 
 
 def materials():
+    # Leaves carry colour only: a normal map and a roughness map were most of each file and of the
+    # cost of shading a leaf, for a difference that cannot be seen at the size a leaf is drawn.
+    # Bark keeps its normal map: a trunk is seen close.
     t = model_kit.TEX_DIR
-    pbr_material("flora-acacia-leaves", f"{t}/flora-acacia-leaves_color.png", f"{t}/flora-acacia-leaves_normal.png", f"{t}/flora-acacia-leaves_orm.png", cutout=True, two_sided=True)
-    pbr_material("flora-acacia-bark", f"{t}/flora-acacia-bark_color.png", f"{t}/flora-acacia-bark_normal.png", f"{t}/flora-acacia-bark_orm.png")
-    pbr_material("flora-banana", f"{t}/flora-banana_color.png", f"{t}/flora-banana_normal.png", f"{t}/flora-banana_orm.png", cutout=True, two_sided=True)
+    pbr_material("flora-acacia-leaves", f"{t}/flora-acacia-leaves_color.png", None, None, cutout=True, two_sided=True)
+    pbr_material("flora-acacia-bark", f"{t}/flora-acacia-bark_color.png", f"{t}/flora-acacia-bark_normal.png", None)
+    pbr_material("flora-banana", f"{t}/flora-banana_color.png", None, None, cutout=True, two_sided=True)
     for name, pid in (("flora-shrub", "shrub_02"), ("flora-broadleaf", "calathea_orbifolia_01"), ("flora-fern", "fern_02")):
         d = os.path.join(PH, pid, "textures")
-        pbr_material(name, f"{d}/{pid}_diff_2k.jpg", f"{d}/{pid}_nor_gl_2k.jpg", f"{d}/{pid}_arm_2k.jpg", two_sided=True)
+        pbr_material(name, f"{d}/{pid}_diff_2k.jpg", None, None, two_sided=True)
     # (the grass tufts are cards with a cut-out; the other three are modelled leaf by leaf)
-    d = os.path.join(PH, "grass_medium_01", "textures")
-    pbr_material("flora-grass", f"{t}/flora-grass_color.png", f"{d}/grass_medium_01_nor_gl_2k.jpg", f"{d}/grass_medium_01_arm_2k.jpg", cutout=True, two_sided=True)
+    pbr_material("flora-grass", f"{t}/flora-grass_color.png", None, None, cutout=True, two_sided=True)
 
 
 # ---- a plant mesh in the making -----------------------------------------------------------------------
@@ -519,16 +521,16 @@ def adopt(asset_id, parts, material, credits, targets, lod_distances, wind_heigh
 
 def build_adopted():
     out = {}
-    out["flora.shrub.a"] = adopt("flora.shrub.a", [("shrub_02_b", 1.25, (0, 0), 0), ("shrub_02_d", 1.1, (0.35, 0.25), 140)], "flora-shrub", ["polyhaven.shrub_02"], (1500, 300), (18, 55))
+    out["flora.shrub.a"] = adopt("flora.shrub.a", [("shrub_02_b", 1.25, (0, 0), 0), ("shrub_02_d", 1.1, (0.35, 0.25), 140)], "flora-shrub", ["polyhaven.shrub_02"], (1200, 260), (18, 55))
     out["flora.broadleaf.a"] = adopt(
         "flora.broadleaf.a",
         [("calathea_orbifolia_01_a", 1.9, (0, 0), 0), ("calathea_orbifolia_01_c", 1.7, (0.45, 0.3), 80), ("calathea_orbifolia_01_b", 1.6, (-0.35, 0.4), 200)],
         "flora-broadleaf",
         ["polyhaven.calathea_orbifolia_01"],
-        (1500, 300),
+        (1000, 220),
         (15, 45),
     )
-    out["flora.fern.a"] = adopt("flora.fern.a", [("fern_02_b", 1.3, (0, 0), 0)], "flora-fern", ["polyhaven.fern_02"], (1500, 300), (15, 45))
+    out["flora.fern.a"] = adopt("flora.fern.a", [("fern_02_b", 1.3, (0, 0), 0)], "flora-fern", ["polyhaven.fern_02"], (900, 200), (15, 45))
     out["flora.grass.a"] = adopt(
         "flora.grass.a",
         [
@@ -541,8 +543,8 @@ def build_adopted():
         ],
         "flora-grass",
         ["polyhaven.grass_medium_01"],
-        (1500, 300),
-        (14, 40),
+        (700, 160),
+        (12, 40),
     )
     return out
 

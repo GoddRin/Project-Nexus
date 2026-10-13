@@ -36,8 +36,13 @@
  ],
  "patches": {
   "camp-gate": {
-   "mask": "/textures/twin/ground/camp-gate-mask.ktx2?v=c38addc1ff",
-   "key": "46ea346ca4"
+   "mask": "/textures/twin/ground/camp-gate-mask.ktx2?v=430dca24cb",
+   "min": [
+    62,
+    -97.5
+   ],
+   "size": 60,
+   "key": "6f062c656b"
   }
  }
 }

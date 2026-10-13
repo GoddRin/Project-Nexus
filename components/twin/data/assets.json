@@ -1,8 +1,8 @@
 [
  {
   "id": "flora.acacia.a",
-  "url": "/models/twin/flora/acacia.a.glb?v=44c223a6b7",
-  "bytes": 4035576,
+  "url": "/models/twin/flora/acacia.a.glb?v=f2649901bc",
+  "bytes": 2715004,
   "tris": [
    14989,
    3296,
@@ -32,8 +32,8 @@
  },
  {
   "id": "flora.acacia.b",
-  "url": "/models/twin/flora/acacia.b.glb?v=5775dc2e9b",
-  "bytes": 3721668,
+  "url": "/models/twin/flora/acacia.b.glb?v=36024d3d29",
+  "bytes": 2401096,
   "tris": [
    5196,
    1210,
@@ -63,8 +63,8 @@
  },
  {
   "id": "flora.banana.a",
-  "url": "/models/twin/flora/banana.a.glb?v=0035f096d6",
-  "bytes": 482160,
+  "url": "/models/twin/flora/banana.a.glb?v=982f324c0e",
+  "bytes": 153652,
   "tris": [
    816,
    140,
@@ -93,11 +93,11 @@
  },
  {
   "id": "flora.broadleaf.a",
-  "url": "/models/twin/flora/broadleaf.a.glb?v=96465cd16b",
-  "bytes": 1393984,
+  "url": "/models/twin/flora/broadleaf.a.glb?v=bcae11ba19",
+  "bytes": 185064,
   "tris": [
-   1500,
-   300,
+   999,
+   220,
    0
   ],
   "lodDistances": [
@@ -113,7 +113,7 @@
    "max": [
     0.744,
     0.807,
-    0.497
+    0.501
    ]
   },
   "materials": 1,
@@ -123,11 +123,11 @@
  },
  {
   "id": "flora.fern.a",
-  "url": "/models/twin/flora/fern.a.glb?v=1dad523a01",
-  "bytes": 989644,
+  "url": "/models/twin/flora/fern.a.glb?v=999c8af063",
+  "bytes": 144540,
   "tris": [
-   1500,
-   300,
+   900,
+   200,
    0
   ],
   "lodDistances": [
@@ -142,7 +142,7 @@
    ],
    "max": [
     0.644,
-    0.558,
+    0.554,
     0.582
    ]
   },
@@ -153,26 +153,26 @@
  },
  {
   "id": "flora.grass.a",
-  "url": "/models/twin/flora/grass.a.glb?v=39ad4a6029",
-  "bytes": 1658140,
+  "url": "/models/twin/flora/grass.a.glb?v=c9c5a8ae2f",
+  "bytes": 325452,
   "tris": [
-   1500,
-   300,
+   700,
+   159,
    0
   ],
   "lodDistances": [
-   14,
+   12,
    40
   ],
   "bounds": {
    "min": [
-    -0.409,
+    -0.381,
     0,
-    -0.299
+    -0.278
    ],
    "max": [
     0.515,
-    0.742,
+    0.741,
     0.437
    ]
   },
@@ -183,11 +183,11 @@
  },
  {
   "id": "flora.shrub.a",
-  "url": "/models/twin/flora/shrub.a.glb?v=b9242993dd",
-  "bytes": 1162096,
+  "url": "/models/twin/flora/shrub.a.glb?v=2392ddaabb",
+  "bytes": 185644,
   "tris": [
-   1500,
-   299,
+   1199,
+   260,
    0
   ],
   "lodDistances": [
@@ -201,9 +201,9 @@
     -0.865
    ],
    "max": [
-    0.856,
-    1.477,
-    0.865
+    0.855,
+    1.467,
+    0.867
    ]
   },
   "materials": 1,
@@ -213,8 +213,8 @@
  },
  {
   "id": "ground.camp-gate",
-  "url": "/models/twin/ground/camp-gate.glb?v=d11e64d0d2",
-  "bytes": 204728,
+  "url": "/models/twin/ground/camp-gate.glb?v=587f6ba12e",
+  "bytes": 204456,
   "tris": [
    45000,
    0,

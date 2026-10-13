@@ -4,7 +4,7 @@
  * Also holds the ground-height function the camera uses to stay above the terrain.
  */
 import * as THREE from "three/webgpu";
-import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
+import { CENTER, MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 
 const pickables: THREE.Object3D[] = [];
 const raycaster = new THREE.Raycaster();
@@ -12,10 +12,12 @@ const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
 
 /** Make `mesh` pickable. Returns the function that removes it and frees its hierarchy. */
-export function addPickable(mesh: THREE.Mesh): () => void {
+export function addPickable(mesh: THREE.Mesh, quick = false): () => void {
   // (cast: drei carries its own copy of three-mesh-bvh, whose typings also claim `boundsTree`)
   const geometry = mesh.geometry as unknown as { boundsTree?: MeshBVH };
-  if (!geometry.boundsTree) geometry.boundsTree = new MeshBVH(mesh.geometry);
+  // `quick`: split at the middle and stop at larger leaves, which builds several times faster for a
+  // mesh registered while the user is looking (a streamed ground patch); rays are a little slower
+  if (!geometry.boundsTree) geometry.boundsTree = new MeshBVH(mesh.geometry, quick ? { strategy: CENTER, maxLeafSize: 32 } : undefined);
   mesh.raycast = acceleratedRaycast;
   pickables.push(mesh);
   return () => {
@@ -50,7 +52,27 @@ export function setGround(fn: GroundFn): () => void {
   };
 }
 
+type Rect = { minX: number; maxX: number; minZ: number; maxZ: number };
+const overrides: { rect: Rect; fn: GroundFn }[] = [];
+
+/**
+ * A finer piece of ground laid over the location's own (a detailed patch): inside `rect` its height
+ * is used instead. Returns the function that takes it away.
+ */
+export function addGroundOverride(rect: Rect, fn: GroundFn): () => void {
+  const entry = { rect, fn };
+  overrides.push(entry);
+  return () => {
+    const i = overrides.indexOf(entry);
+    if (i >= 0) overrides.splice(i, 1);
+  };
+}
+
 /** Ground height in metres (local Y) at a local position. */
 export function groundY(x: number, z: number): number {
+  for (let i = overrides.length - 1; i >= 0; i--) {
+    const r = overrides[i].rect;
+    if (x >= r.minX && x <= r.maxX && z >= r.minZ && z <= r.maxZ) return overrides[i].fn(x, z);
+  }
   return ground(x, z);
 }

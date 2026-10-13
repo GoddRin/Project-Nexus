@@ -3,20 +3,20 @@
  "base": "http://localhost:3100",
  "browser": "chrome",
  "forcedWebGL": false,
- "when": "2026-10-10T03:31:05.266Z",
+ "when": "2026-10-13T11:56:57.751Z",
  "start": {
-  "fps": 58.80417820692669,
-  "ms": 17.005594338570443,
-  "p95": 18.399999618530273,
-  "calls": 2,
-  "tris": 8193,
-  "programs": 2,
-  "textures": 3,
-  "geometries": 2,
-  "heapMB": 23.17526626586914,
+  "fps": 30.583293591632195,
+  "ms": 32.69759017300893,
+  "p95": 90.4000015258789,
+  "calls": 7,
+  "tris": 17370,
+  "programs": 11,
+  "textures": 19,
+  "geometries": 15,
+  "heapMB": 132.99172401428223,
   "zonesLoaded": 0,
   "agents": 0,
-  "gpuMB": 11.649263381958008,
+  "gpuMB": 77.91445732116699,
   "lights": 1,
   "pixelRatio": 1,
   "resolution": 1,
@@ -32,8 +32,8 @@
    "hidden": 0,
    "draws": 0,
    "tasksQueued": 0,
-   "longestTaskMs": 0,
-   "longestTaskKind": ""
+   "longestTaskMs": 11.799999999813735,
+   "longestTaskKind": "pipeline"
   },
   "assets": {
    "cached": 0,
@@ -43,42 +43,47 @@
    1184,
    844
   ],
-  "overviewCalls": 2,
-  "overviewTris": 8193
+  "overviewCalls": 7,
+  "overviewTris": 17370
  },
  "streamIn": {
-  "median": 16.699999999999818,
-  "worst": 17.5,
-  "p95": 17,
-  "frames": 149,
-  "task": 3.300000011920929,
-  "kind": "pipeline"
+  "median": 16.700000000000728,
+  "worst": 583.7000000000044,
+  "p95": 17.099999999998545,
+  "frames": 669,
+  "task": 24.299999999813735,
+  "kind": "instances",
+  "build": 14.799999999813735,
+  "builds": 25,
+  "program": 1,
+  "pipelines": 68,
+  "programs": 56
  },
  "probe": {
   "tier": "medium",
-  "score": 3.545148009174536,
+  "score": 1.771908374015509,
   "remembered": false
  },
  "results": [
   {
    "name": "empty world: starting values",
    "pass": true,
-   "detail": "overview 2 draw calls, 8193 triangles; from the far pose: GPU 11.6 MB, 3 textures, 2 geometries, 2 pipelines"
+   "detail": "overview 7 draw calls, 17370 triangles; from the far pose: GPU 77.9 MB, 19 textures, 15 geometries, 11 pipelines"
   },
   {
    "name": "test zone streams in",
-   "pass": true,
-   "detail": "backend webgpu; page usable in 1003 ms, zone in 493 ms later; 2500 placements of 5 assets (760 KB)"
+   "pass": false,
+   "detail": "backend webgpu; page usable in 1380 ms, zone in 15558 ms later; 3134 placements of 16 assets (14749 KB)"
   },
   {
    "name": "2,500 props in 15 draw calls or fewer",
-   "pass": true,
-   "detail": "5 draw calls for the zone (7 in all, 2 without it); 2462 props in view as LOD0/1/2 = 0/0/2462, 38 outside the view; 411543 triangles"
+   "pass": false,
+   "detail": "74 draw calls for the zone (81 in all, 7 without it); 2486 props in view as LOD0/1/2 = 1/0/2485, 648 outside the view; 2166916 triangles"
   },
   {
    "name": "near the props: all three LODs in use",
    "pass": true,
-   "detail": "LOD0/1/2 = 9/328/1649, 514 outside the view or beyond the draw distance; 8 draw calls for the zone, 426845 triangles, 59.2 fps"
+   "detail": "LOD0/1/2 = 10/399/1827, 898 outside the view or beyond the draw distance; 85 draw calls for the zone, 2528419 triangles, 33.4 fps"
   },
   {
    "name": "still camera: no prop changes level",
@@ -88,17 +93,17 @@
   {
    "name": "flying away unloads the zone; GPU memory within 5% of the start",
    "pass": true,
-   "detail": "GPU 32.5 MB with the zone, 11.6 MB after, 11.6 MB at the start (0.0% apart); textures 3 against 3, geometries 2 against 2; 0 assets still cached"
+   "detail": "GPU 84.9 MB with the zone, 77.9 MB after, 77.9 MB at the start (0.0% apart); textures 19 against 19, geometries 15 against 15; 0 assets still cached"
   },
   {
-   "name": "streaming in: no task holds a frame for more than 8 ms",
-   "pass": true,
-   "detail": "longest task 3.3 ms (pipeline); zone back in 1868 ms over 149 frames; worst frame 17.5 ms, p95 17.0 ms, against 16.7 ms with nothing loading"
+   "name": "streaming in: nothing holds the page for more than 8 ms",
+   "pass": false,
+   "detail": "longest streaming task 24.3 ms (instances); longest shader-build step in three.js 14.8 ms (25 builds); longest wait on the browser's shader compile 1.0 ms; 68 pipelines and 56 vertex programs in all. Zone back in 15032 ms over 669 frames; worst frame 583.7 ms, p95 17.1 ms, against 16.7 ms with nothing loading"
   },
   {
    "name": "five loads and unloads: no growth",
    "pass": true,
-   "detail": "GPU after each unload: 11.6, 11.6, 11.6, 11.6, 11.6 MB; textures 3, 3, 3, 3, 3; geometries 2, 2, 2, 2, 2; JS heap 29, 29, 32, 47, 50 MB"
+   "detail": "GPU after each unload: 77.9, 77.9, 77.9, 77.9, 77.9 MB; textures 19, 19, 19, 19, 19; geometries 15, 15, 15, 15, 15; JS heap 127, 180, 221, 270, 293 MB"
   },
   {
    "name": "shell stand-in: shown while the zone is out, hidden while it is in",
@@ -123,12 +128,12 @@
   {
    "name": "start-up probe chooses a tier and remembers it",
    "pass": true,
-   "detail": "first visit: score 3.55, tier medium, usable in 4469 ms; second visit: tier medium from memory, usable in 980 ms; ?q= left out of the address (null)"
+   "detail": "first visit: score 1.77, tier medium, usable in 5085 ms; second visit: tier medium from memory, usable in 1651 ms; ?q= left out of the address (null)"
   },
   {
    "name": "KTX2 textures on this renderer",
-   "pass": null,
-   "detail": "not measured: KTX-Software is not installed on this machine, so the build wrote WebP; the loader has KTX2 wired (engine/assets.ts) but no .ktx2 file has been through it"
+   "pass": true,
+   "detail": "15 of 15 textures of the zone are compressed on the GPU, as BC7, 512 px with 10 mip levels"
   },
   {
    "name": "no console errors",

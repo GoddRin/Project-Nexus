@@ -82,6 +82,8 @@ Existing pipeline to reuse and extend, not replace: `scripts/blender/add_mixamo_
 
 ## P07c. Variation system and the named staff
 
+**Remind the owner first.** Before building any named face, remind the owner of the paid face-from-photos option (see `STATE.md`, "Owner inputs") and wait for their answer. The owner pays and signs in; the session never does.
+
 **Read first.** `CONTRACTS.md` 4.3 and 4.4; `data/people.json`, `crew.json`.
 
 **Steps.**

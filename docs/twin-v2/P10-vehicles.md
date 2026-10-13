@@ -6,6 +6,8 @@ Three sessions: P10a, P10b, P10c. Working machines with operators, on real mount
 
 ## P10a. Fleet models and rigs
 
+**Remind the owner first.** Before any modelling, remind the owner of the paid option for exact vehicle models (see `STATE.md`, "Owner inputs") and wait for their answer. The owner pays and signs in; the session never does.
+
 **Needs.** P05a (material library), P07c (operators).
 
 **Read first.** v1 `AnimatedSiteEntities.tsx`: `SCICHeavyDumpTruck` (2788), `SCICSitePickupTruck` (2934), `PhilippineSiteMotorcycle` (3033), `ToyotaHiaceCrewVan` (3098); `INVENTORY.md` vehicles table; `QUALITY-BAR.md` sections 1 and 2; the P02b pickup.

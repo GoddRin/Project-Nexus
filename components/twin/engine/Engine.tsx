@@ -16,8 +16,10 @@ import { assets } from "./assets";
 import { cameraApi } from "./camera";
 import { loop } from "./loop";
 import { pickAt } from "./picking";
+import { createPost, type Post } from "./post";
 import { applyOutput, backendOf, type RendererBackend } from "./renderer";
 import { startStreaming, streaming } from "./streaming";
+import { lamps } from "../world/lamps";
 import { createProbe, pixelRatioNow, rememberedTier, resolution, type Probe } from "./tiers";
 
 export type TwinStats = {
@@ -104,10 +106,21 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
         probe = createProbe(live(), backend);
       }
     }
+    // what is done to the picture after the scene is drawn depends on the tier: made on first use,
+    // thrown away when the tier changes
+    let post: Post | null = null;
+    let postFor: string | null = null;
     const stopTier = twinStore.subscribe(
       (s) => s.quality.tier,
-      () => resolution.reset(),
+      () => {
+        resolution.reset();
+        post?.dispose();
+        post = null;
+        postFor = null;
+      },
     );
+    // a frame is several passes now (shadows, the scene, occlusion): count them all, not the last
+    live().info.autoReset = false;
 
     let drawn = 0;
     const stopSim = loop.add("sim", (dt) => clock.tick(dt));
@@ -115,7 +128,8 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       const { gl, scene, camera, size, setDpr } = get();
       if (size.width < 2 || size.height < 2) return; // not laid out yet: never draw at the default 300 x 150
       const renderer = gl as unknown as THREE.WebGPURenderer;
-      applyOutput(renderer);
+      const quality = twinStore.getState().quality.tier;
+      applyOutput(renderer, quality === "high" || quality === "ultra");
 
       const frameMs = dt * 1000;
       if (probe) {
@@ -141,7 +155,14 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
         lens.aspect = aspect;
         lens.updateProjectionMatrix();
       }
-      renderer.render(scene, camera);
+      renderer.info.reset();
+      const tier = twinStore.getState().quality.tier;
+      if (!probe && postFor !== tier) {
+        postFor = tier;
+        post = createPost(renderer, scene as unknown as THREE.Scene, camera as unknown as THREE.Camera);
+      }
+      if (post) post.render();
+      else renderer.render(scene, camera);
       // the loading screen stays up until the probe has chosen a tier
       if (!probe && ++drawn === 2) onFirstFrame(backendOf(renderer));
     });
@@ -179,6 +200,7 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       stopSim();
       stopRender();
       stopTier();
+      post?.dispose();
       probe?.dispose();
       if (host.__TWIN__ === hook) delete host.__TWIN__;
     };
@@ -198,13 +220,18 @@ export function ZoneStreamer() {
 
   useEffect(() => {
     const { gl, scene, camera } = get();
-    return startStreaming({
+    const stopLamps = lamps.attach(scene as unknown as THREE.Scene);
+    const stopStreaming = startStreaming({
       scene: scene as unknown as THREE.Scene,
       camera: camera as unknown as THREE.PerspectiveCamera,
       renderer: gl as unknown as THREE.WebGPURenderer,
       viewHeight: () => get().size.height,
       testZones: new URLSearchParams(window.location.search).get("testzone") === "1",
     });
+    return () => {
+      stopStreaming();
+      stopLamps();
+    };
   }, [get]);
 
   return null;

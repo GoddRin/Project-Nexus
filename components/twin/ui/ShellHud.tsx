@@ -10,7 +10,7 @@ import { CAMERA_PLACES } from "../data/site";
 import { cameraApi, hasPlaces } from "../engine/camera";
 import type { RendererBackend } from "../engine/renderer";
 import { clock, formatClock } from "../sim/clock";
-import { TIERS, twinActions, useTwin, type Tier } from "../state/store";
+import { TIERS, WEATHER_STATES, twinActions, useTwin, type Tier, type WeatherState } from "../state/store";
 
 const card = "pointer-events-auto rounded-xl border border-border-hairline bg-card/90 shadow-xl backdrop-blur-md dark:bg-[#0B1013]/80";
 const field = "h-8 rounded-lg border border-border-hairline bg-transparent px-2 text-xs text-text-primary outline-none focus-visible:border-scic-green";
@@ -22,6 +22,7 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
   const time = useTwin((s) => formatClock(s.clock.minutes));
   const tier = useTwin((s) => s.quality.tier);
   const auto = useTwin((s) => s.quality.auto);
+  const weather = useTwin((s) => s.weather.state);
 
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-2.5 sm:p-4">
@@ -83,6 +84,23 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
         >
           Live
         </button>
+
+        <select
+          aria-label="Weather (simulated)"
+          title="Weather. Simulated: it is set here, not read from the site."
+          className={field}
+          value={weather}
+          onChange={(e) => {
+            twinActions.setWeather(e.target.value as WeatherState, "simulated");
+            e.target.blur();
+          }}
+        >
+          {WEATHER_STATES.map((w) => (
+            <option key={w} value={w}>
+              Simulated: {w}
+            </option>
+          ))}
+        </select>
 
         <select
           aria-label="Picture quality"
