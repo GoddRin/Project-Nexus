@@ -86,3 +86,6 @@ scripts/tmp-*.mjs
 # Twin v2: GLBs exported from Blender for the asset build (rebuilt from the .blend), and Python caches
 /assets-src/twin/export/
 __pycache__/
+
+# Twin v2 review videos stay on the build machine (the stills are the record)
+/docs/twin-v2/review/**/*.webm

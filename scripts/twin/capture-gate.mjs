@@ -4,14 +4,15 @@
  *
  *   node scripts/twin/capture-gate.mjs [--base=http://localhost:3000] [--out=docs/twin-v2/review/P02a]
  *        [--place=gate-approach] [--tier=medium] [--shots=noon,night] [--label=] [--force-webgl] [--settle=3500]
- *        [--uncapped] [--query=shadows=0]
+ *        [--uncapped] [--query=shadows=0] [--gate=9,16,24]
  *
  * Shots are named moments (docs/twin-v2/QUALITY-BAR.md section 7): dawn, morning, noon, golden, dusk,
  * night, rain; or `name:HHMM:weather` for any other. Each is written as <place>-<name><label>.jpg with
  * the frame's numbers (draw calls, triangles, frame rate) in captures<label>.json, and any console
  * error is printed. `--uncapped` takes the display's frame cap off, so the frame rate printed is what
  * the card can do rather than the screen's 60 (use it against the production build, with a longer
- * --settle); `--query` adds test switches to the address.
+ * --settle); `--query` adds test switches to the address. `--gate` holds the gate's staged loop
+ * (sim/gate-scene.ts) at each of the given seconds and takes a picture there, named ...-g<seconds>.jpg.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -30,6 +31,7 @@ const SETTLE = Number(arg("settle", "3500"));
 const FORCE = process.argv.includes("--force-webgl");
 const UNCAPPED = process.argv.includes("--uncapped");
 const QUERY = arg("query", "");
+const GATE = arg("gate", "").split(",").filter(Boolean).map(Number);
 const MOMENTS = {
   dawn: ["0548", "clear"],
   morning: ["0810", "clear"],
@@ -82,9 +84,27 @@ for (const place of PLACES) {
       const s = t.stats();
       return { backend: t.backend, fps: +s.fps.toFixed(1), p95: +s.p95.toFixed(1), calls: s.calls, tris: s.tris, programs: s.programs, lights: s.lights, gpuMB: +s.gpuMB.toFixed(1), heapMB: +s.heapMB.toFixed(0), lod: s.streaming.lod, zones: t.streaming.zones() };
     });
-    const file = `${place}-${shot.name}${LABEL}.jpg`;
     const clip = await page.locator("canvas").first().boundingBox();
-    await page.screenshot({ path: path.join(OUT, file), type: "jpeg", quality: 90, ...(clip ? { clip } : {}) });
+    let file = `${place}-${shot.name}${LABEL}.jpg`;
+    if (GATE.length === 0) await page.screenshot({ path: path.join(OUT, file), type: "jpeg", quality: 90, ...(clip ? { clip } : {}) });
+    for (const seconds of GATE) {
+      // the staged loop held at a moment: seek a little before it and let it run in, so clips have blended
+      await page.evaluate((s) => {
+        window.__TWIN__.gate.hold(false);
+        window.__TWIN__.gate.seek(Math.max(0, s - 1.5));
+      }, seconds);
+      await sleep(1500);
+      // (the window is on the owner's screen: a stray drag or scroll moves the view, so it is put back)
+      await page.evaluate((id) => {
+        window.__TWIN__.gate.hold(true);
+        if (window.__TWIN__.store.getState().camera.place !== id) window.__TWIN__.rig.flyTo(id);
+      }, place);
+      await page.waitForFunction(() => !window.__TWIN__.rig.isFlying(), null, { timeout: 15000 }).catch(() => {});
+      await sleep(400);
+      file = `${place}-${shot.name}${LABEL}-g${String(seconds).padStart(2, "0")}.jpg`;
+      await page.screenshot({ path: path.join(OUT, file), type: "jpeg", quality: 90, ...(clip ? { clip } : {}) });
+      console.log(`   ${file}  ${JSON.stringify(await page.evaluate(() => window.__TWIN__.gate.status()))}`);
+    }
     results.push({ place, ...shot, file, ...stats, errors });
     console.log(`${file.padEnd(34)} ${stats.backend}  ${String(stats.fps).padStart(5)} fps  p95 ${stats.p95} ms  ${stats.calls} calls  ${stats.tris} tris  ${stats.programs} pipelines  ${stats.lights} lights  gpu ${stats.gpuMB} MB`);
     for (const e of errors) {

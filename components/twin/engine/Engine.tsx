@@ -10,8 +10,10 @@ import { useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import type * as THREE from "three/webgpu";
 import { clock } from "../sim/clock";
+import { gateScene } from "../sim/gate-scene";
 import { twinActions, twinStore } from "../state/store";
 import { isDebugUrl } from "../state/url";
+import { actorCount } from "./actors";
 import { assets } from "./assets";
 import { cameraApi } from "./camera";
 import { loop } from "./loop";
@@ -75,7 +77,7 @@ function readStats(renderer: THREE.WebGPURenderer, scene: THREE.Object3D): TwinS
     geometries: memory.geometries,
     heapMB: heap ? heap.usedJSHeapSize / 1048576 : 0,
     zonesLoaded: stream.zonesLoaded,
-    agents: 0,
+    agents: actorCount(),
     gpuMB: (memory.total ?? 0) / 1048576,
     lights,
     pixelRatio: renderer.getPixelRatio(),
@@ -192,6 +194,7 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       assets,
       resolution,
       probe: () => probed,
+      gate: gateScene,
     };
     const host = window as unknown as { __TWIN__?: unknown };
     if (isDebugUrl()) host.__TWIN__ = hook;

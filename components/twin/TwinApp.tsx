@@ -9,6 +9,7 @@
  * P01c: quality tiers with a start-up probe and dynamic resolution, and zones of placed assets
  * streamed in around the camera.
  * P02a: the camp gate slice: real sun, sky and shadows by the clock, weather, lamps at night.
+ * P02b: things that move at the gate (engine/actors.ts): a pickup, the camp dog, the barrier arm.
  */
 import { Profiler, memo, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -18,6 +19,7 @@ import { Engine, ZoneStreamer, countReactCommit } from "./engine/Engine";
 import { createRenderer, graphicsSupport, type RendererBackend } from "./engine/renderer";
 import { pixelRatioNow } from "./engine/tiers";
 import { twinActions, twinStore } from "./state/store";
+import { GateSlice } from "./structures/GateSlice";
 import { readUrlIntoStore, startUrlSync } from "./state/url";
 import { ShellHud } from "./ui/ShellHud";
 import { TwinErrorBoundary, TwinLoading, TwinMessage } from "./ui/TwinMessage";
@@ -68,6 +70,7 @@ const TwinCanvas = memo(function TwinCanvas({ onLost, onError, onFirstFrame }: T
       <TempWorld />
       <SkyLight />
       <ZoneStreamer />
+      <GateSlice />
     </Canvas>
   );
 });

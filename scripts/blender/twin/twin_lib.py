@@ -5,6 +5,9 @@ How an asset is laid out in a .blend:
   LIB_<category>                      collection, one per id prefix (LIB_prop, LIB_veh, ...)
     <asset id>                        collection named by the asset id, e.g. "prop.drum-red"
       <name>_LOD0, _LOD1, _LOD2       one mesh object per level; <name> is the id without its prefix
+      <name>_<part>                   optional (P02b): a part that moves on its own (a wheel), a mesh object
+                                      parented to LOD0 with its origin at its pivot and the custom
+                                      properties twin_part, twin_pivot (and twin_axis, twin_radius)
   Custom properties on the asset collection:
     twin_class            a class from scripts/twin/asset-budgets.json (e.g. "small-prop")
     twin_lod_distances    optional [lod1, lod2] in metres; the class's distances if absent
@@ -120,15 +123,37 @@ def prepare(coll):
             obj.matrix_world = Matrix.Identity(4)
         mesh.name = f"__twin_{name}_LOD{level}"
         out[level] = obj
+        # moving parts: children of the level, kept as children with their origins at their pivots
+        for part in src.children:
+            if part.type != "MESH" or "twin_part" not in part:
+                continue
+            pmesh = part.data.copy()
+            world = part.matrix_world
+            pmesh.transform(Matrix.Translation(-world.translation) @ world)
+            pobj = bpy.data.objects.new(f"__twin_{part.name}", pmesh)
+            bpy.context.scene.collection.objects.link(pobj)
+            for key in part.keys():
+                if not key.startswith("_"):
+                    pobj[key] = part[key]
+            pobj.parent = obj
+            pobj.location = world.translation
+            pobj["_twin_part_of"] = part.name
+    bpy.context.view_layer.update()  # (new objects have no world matrix until then)
     return out
+
+
+def parts_of(obj):
+    """The moving parts prepared with a level (see `prepare`)."""
+    return [c for c in obj.children if "twin_part" in c]
 
 
 def discard(objects):
     for obj in objects.values():
-        mesh = obj.data
-        bpy.data.objects.remove(obj, do_unlink=True)
-        if mesh.users == 0:
-            bpy.data.meshes.remove(mesh)
+        for one in parts_of(obj) + [obj]:
+            mesh = one.data
+            bpy.data.objects.remove(one, do_unlink=True)
+            if mesh.users == 0:
+                bpy.data.meshes.remove(mesh)
 
 
 def bounds_of(obj):

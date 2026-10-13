@@ -101,17 +101,24 @@ def export_asset(asset_id, force=False):
         originals = twin_lib.lod_objects(coll)
         for level, obj in originals.items():
             obj.name = f"__src_{name}_LOD{level}"
+        moving = []
         for level, obj in objs.items():
             obj.name = f"{name}_LOD{level}"
             obj.data.name = obj.name
             obj["lod"] = level
+            for part in twin_lib.parts_of(obj):
+                original = bpy.data.objects[part["_twin_part_of"]]
+                original.name = "__src_" + original.name
+                part.name = part["_twin_part_of"]
+                part.data.name = part.name
+                moving.append(part)
 
         bpy.ops.object.select_all(action="DESELECT")
         # (select_all leaves objects in hidden collections alone, and the exporter would take them too)
         for other in bpy.context.view_layer.objects:
             if other.select_get():
                 other.select_set(False)
-        for obj in list(objs.values()) + list(rigs):
+        for obj in list(objs.values()) + list(rigs) + moving:
             obj.hide_viewport = False
             obj.hide_set(False)
             obj.select_set(True)
@@ -127,6 +134,11 @@ def export_asset(asset_id, force=False):
             export_materials="EXPORT",
             export_image_format="AUTO",
             export_animations=bool(rigs),
+            # a rig's clips are its NLA tracks (one muted track per clip, named as the clip):
+            # other actions left in the file, such as a download's raw take, are not exported
+            export_animation_mode="NLA_TRACKS",
+            export_anim_single_armature=True,
+            export_optimize_animation_size=True,
             export_skins=bool(rigs),
             export_cameras=False,
             export_lights=False,

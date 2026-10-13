@@ -18,6 +18,7 @@ import os
 import sys
 
 import bpy
+from mathutils import Vector
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import twin_lib  # noqa: E402
@@ -52,7 +53,7 @@ def check_asset(asset_id):
                     fails.append(f"LOD{level} is missing (class {class_name} needs it)")
                 continue
             mesh = obj.data
-            tris = twin_lib.triangle_count(mesh)
+            tris = twin_lib.triangle_count(mesh) + sum(twin_lib.triangle_count(p.data) for p in twin_lib.parts_of(obj))
             facts["tris"][level] = tris
             if allowed is None:
                 allowed = budget.get("lod2Optional") if level == 2 else None
@@ -87,8 +88,15 @@ def check_asset(asset_id):
                 bones = sum(1 for b in rig.data.bones if b.use_deform)
                 if "maxBones" in budget and level > 0 and bones > budget["maxBones"]:
                     fails.append(f"LOD{level}: {bones} deforming bones, limit {budget['maxBones']}")
+                if level == 0:  # the rest pose's box; the runtime pads it for motion
+                    lo, hi = twin_lib.bounds_of(obj)
+                    facts["bounds"] = twin_lib.bounds_y_up(lo, hi)
             else:
                 lo, hi = twin_lib.bounds_of(obj)
+                for part in twin_lib.parts_of(obj):  # a vehicle stands on its wheels
+                    plo, phi = twin_lib.bounds_of(part)
+                    lo = Vector((min(lo.x, plo.x), min(lo.y, plo.y), min(lo.z, plo.z)))
+                    hi = Vector((max(hi.x, phi.x), max(hi.y, phi.y), max(hi.z, phi.z)))
                 size = hi - lo
                 # origin at base centre: the lowest point on Z = 0, the footprint centred on X and Y
                 # twin_origin on the collection: "free" lets the footprint sit off-centre (a set piece
@@ -102,7 +110,8 @@ def check_asset(asset_id):
                 if level == 0:
                     facts["bounds"] = twin_lib.bounds_y_up(lo, hi)
                     facts["size"] = [round(size.x, 3), round(size.y, 3), round(size.z, 3)]
-            materials.update(slot.material.name for slot in obj.material_slots if slot.material)
+            for one in [obj] + twin_lib.parts_of(obj):
+                materials.update(slot.material.name for slot in one.material_slots if slot.material)
 
         facts["materials"] = len(materials)
         if len(materials) > budget["materials"]:

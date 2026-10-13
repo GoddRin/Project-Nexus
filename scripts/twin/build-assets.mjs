@@ -137,7 +137,10 @@ async function buildAsset(id, glb, side) {
   const tris = lods.map((node) => {
     if (!node) return 0;
     let n = 0;
-    for (const prim of node.getMesh().listPrimitives()) n += (prim.getIndices() ? prim.getIndices().getCount() : prim.getAttribute("POSITION").getCount()) / 3;
+    // (the moving parts of a level, such as wheels, are child nodes with meshes of their own)
+    node.traverse((one) => {
+      for (const prim of one.getMesh()?.listPrimitives() ?? []) n += (prim.getIndices() ? prim.getIndices().getCount() : prim.getAttribute("POSITION").getCount()) / 3;
+    });
     return Math.round(n);
   });
   const materials = root.listMaterials().length;

@@ -345,6 +345,11 @@ export const streaming = {
     };
   },
   zones: () => runs.map((r) => ({ id: r.entry.id, state: r.state })),
+  /** The placed copies of an asset in a loaded zone, or null while the zone is not in (to move one: `InstanceSet.move`). */
+  instancesOf(zoneId: string, assetId: string): InstanceSet | null {
+    const run = runs.find((r) => r.entry.id === zoneId);
+    return run?.sets.find((s) => s.assetId === assetId) ?? null;
+  },
   resetLongestTask() {
     longestTaskMs = 0;
     longestTaskKind = "";

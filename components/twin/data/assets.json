@@ -1,5 +1,35 @@
 [
  {
+  "id": "fauna.aspin.a",
+  "url": "/models/twin/fauna/aspin.a.glb?v=552856365c",
+  "bytes": 1817108,
+  "tris": [
+   9999,
+   2999,
+   800
+  ],
+  "lodDistances": [
+   15,
+   50
+  ],
+  "bounds": {
+   "min": [
+    -0.111,
+    0,
+    -0.478
+   ],
+   "max": [
+    0.111,
+    0.601,
+    0.434
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "sketchfab.maxdesign-dog-animated"
+  ]
+ },
+ {
   "id": "flora.acacia.a",
   "url": "/models/twin/flora/acacia.a.glb?v=f2649901bc",
   "bytes": 2715004,
@@ -485,6 +515,37 @@
    "polyhaven.concrete_wall_008",
    "polyhaven.rusty_metal_02",
    "polyhaven.rusty_metal_03",
+   "scic.wordmark"
+  ]
+ },
+ {
+  "id": "veh.pickup.a",
+  "url": "/models/twin/vehicles/pickup.a.glb?v=a42667bde5",
+  "bytes": 2138196,
+  "tris": [
+   24347,
+   7999,
+   1999
+  ],
+  "lodDistances": [
+   20,
+   70
+  ],
+  "bounds": {
+   "min": [
+    -1.002,
+    0,
+    -2.543
+   ],
+   "max": [
+    1.002,
+    1.657,
+    2.815
+   ]
+  },
+  "materials": 3,
+  "credits": [
+   "sketchfab.zhabotinsky-lightbody-90-md-pickup",
    "scic.wordmark"
   ]
  }

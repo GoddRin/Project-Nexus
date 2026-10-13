@@ -20,6 +20,7 @@ The source take is 24 fps and plays in place.
 import math
 import os
 
+import bmesh
 import bpy
 from mathutils import Matrix, Quaternion, Vector
 
@@ -177,8 +178,9 @@ def stage_clean():
 # ---- clips -------------------------------------------------------------------------------------------
 #
 # A pose is a flat set of numbers (degrees and metres, all 0 when standing at rest). The dog faces -Y
-# and stands on Z = 0. The legs are driven by temporary IK targets at the wrists and hind feet, so a
-# planted paw stays planted whatever the body does; every frame is then written as plain bone keys.
+# and stands on Z = 0. Each leg is solved to a target at its wrist or hind foot, so a planted paw stays
+# planted whatever the body does; every frame is then written as plain bone keys. (The solver is this
+# file's own: in the download a bone's tail is not where its child begins, which Blender's IK assumes.)
 
 B = {
     "pelvis": "Bip001-Pelvis_00", "spine1": "Bip001-Spine1_02", "spine2": "Bip001-Spine2_03",
@@ -187,11 +189,11 @@ B = {
     "tail0": "Bip001-Tail_034", "tail1": "Bip001-Tail1_035", "tail2": "Bip001-Tail2_036", "tail3": "Bip001-Tail3_037",
     "clavL": "Bip001-L-Clavicle_010", "clavR": "Bip001-R-Clavicle_016",
 }
-LEGS = {  # leg: (bone the IK constraint sits on, chain length, paw bone, toe bones)
-    "FL": ("Bip001-L-Forearm_012", 3, "Bip001-L-Hand_013"),
-    "FR": ("Bip001-R-Forearm_018", 3, "Bip001-R-Hand_019"),
-    "HL": ("Bip001-L-HorseLink_026", 3, "Bip001-L-Foot_027"),
-    "HR": ("Bip001-R-HorseLink_031", 3, "Bip001-R-Foot_032"),
+LEGS = {  # leg: (joints that bend, shoulder or hip first, with how freely each turns; paw bone)
+    "FL": ((("Bip001-L-Clavicle_010", 0.25), ("Bip001-L-UpperArm_011", 1.0), ("Bip001-L-Forearm_012", 1.0)), "Bip001-L-Hand_013"),
+    "FR": ((("Bip001-R-Clavicle_016", 0.25), ("Bip001-R-UpperArm_017", 1.0), ("Bip001-R-Forearm_018", 1.0)), "Bip001-R-Hand_019"),
+    "HL": ((("Bip001-L-Thigh_024", 1.0), ("Bip001-L-Calf_025", 1.0), ("Bip001-L-HorseLink_026", 0.6)), "Bip001-L-Foot_027"),
+    "HR": ((("Bip001-R-Thigh_029", 1.0), ("Bip001-R-Calf_030", 1.0), ("Bip001-R-HorseLink_031", 0.6)), "Bip001-R-Foot_032"),
 }
 X, Y, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))
 
@@ -218,25 +220,12 @@ class DogPoser:
         self.arm = arm
         self.rest = {b.name: b.matrix_local.copy() for b in arm.data.bones}
         self.order = [b.name for b in arm.data.bones]
-        self.targets = {}
-        self.paw_rest = {}
+        self.paw_rest = {leg: self.rest[paw].copy() for leg, (_, paw) in LEGS.items()}
         bind(arm, None)
-        self.reset()
-        for leg, (bone, chain, paw) in LEGS.items():
-            empty = bpy.data.objects.get("ik." + leg) or bpy.data.objects.new("ik." + leg, None)
-            if empty.name not in scene.collection.objects:
-                scene.collection.objects.link(empty)
-            self.paw_rest[leg] = self.rest[paw].copy()
-            empty.location = self.rest[paw].translation
-            self.targets[leg] = empty
-            pb = arm.pose.bones[bone]
+        for pb in arm.pose.bones:
             for c in list(pb.constraints):
                 pb.constraints.remove(c)
-            c = pb.constraints.new("IK")
-            c.target = empty
-            c.chain_count = chain
-            c.use_tail = True
-            c.iterations = 200
+        self.reset()
         vl.update()
 
     def reset(self):
@@ -287,25 +276,44 @@ class DogPoser:
         for i, key in enumerate(("tail0", "tail1", "tail2", "tail3")):
             self.turn(key, X, g("tail_up") * (1.0 if i == 0 else 0.0) + g("tail_curl"))
             self.turn(key, Z, g("tail_wag") * (0.4 + 0.3 * i))
-        for leg, empty in self.targets.items():
-            r = self.paw_rest[leg].translation
-            empty.location = r + Vector((g(leg + "x"), g(leg + "y"), g(leg + "z")))
-        vl.update()
-        for leg, (bone, chain, paw) in LEGS.items():  # paws keep their rest attitude, plus a pitch (toes down)
+        for leg, (joints, paw) in LEGS.items():
+            target = self.paw_rest[leg].translation + Vector((g(leg + "x"), g(leg + "y"), g(leg + "z")))
+            self.reach(joints, paw, target)
+            # paws keep their rest attitude, plus a pitch (toes down)
             pb = self.arm.pose.bones[paw]
+            vl.update()
             m = (Matrix.Rotation(math.radians(g(leg + "p")), 3, X) @ self.paw_rest[leg].to_3x3()).to_4x4()
             m.translation = pb.matrix.translation
             pb.matrix = m
         vl.update()
         return {n: self.arm.pose.bones[n].matrix.copy() for n in self.order}
 
+    def reach(self, joints, paw, target):
+        """Turn a leg's joints, each about its own head, until the paw bone's head is at `target`."""
+        vl.update()
+        names = [n for n, _ in joints]
+        mats = [self.arm.pose.bones[n].matrix.copy() for n in names]
+        tip = self.arm.pose.bones[paw].matrix.translation.copy()
+        for _ in range(60):
+            if (tip - target).length < 2e-4:
+                break
+            for i in range(len(names) - 1, -1, -1):
+                pivot = mats[i].translation.copy()
+                a, b = tip - pivot, target - pivot
+                if a.length < 1e-6 or b.length < 1e-6:
+                    continue
+                q = Quaternion().slerp(a.rotation_difference(b), joints[i][1])
+                r = Matrix.Translation(pivot) @ q.to_matrix().to_4x4() @ Matrix.Translation(-pivot)
+                for j in range(i, len(names)):
+                    mats[j] = r @ mats[j]
+                tip = r @ tip
+        for n, m in zip(names, mats):
+            self.arm.pose.bones[n].matrix = m
+            vl.update()
+
     def bake(self, name, frames, pose_at):
         """Write `frames` + 1 keys of pose_at(i) into the action aspin.<name>."""
         samples = [self.apply(pose_at(i)) for i in range(frames + 1)]
-        constraints = [(self.arm.pose.bones[bone], chain) for bone, chain, _ in LEGS.values()]
-        for pb, _ in constraints:
-            for c in pb.constraints:
-                c.mute = True
         old = bpy.data.actions.get("aspin." + name)
         if old:
             bpy.data.actions.remove(old)
@@ -327,32 +335,23 @@ class DogPoser:
                 pb.keyframe_insert("rotation_quaternion", frame=i)
                 pb.keyframe_insert("location", frame=i)
         bind(self.arm, None)
-        for pb, _ in constraints:
-            for c in pb.constraints:
-                c.mute = False
         print("[dog] clip", name, frames, "frames")
         return action
 
     def finish(self):
-        for bone, _, _ in LEGS.values():
-            pb = self.arm.pose.bones[bone]
-            for c in list(pb.constraints):
-                pb.constraints.remove(c)
-        for empty in self.targets.values():
-            bpy.data.objects.remove(empty, do_unlink=True)
         self.reset()
 
 
 # Key poses. Standing at rest is {}.
 SIT = {
-    "body_z": -0.215, "body_y": -0.09, "body_pitch": 40, "spine_pitch": -10, "neck_pitch": -8, "head_pitch": -22,
-    "HLy": -0.15, "HRy": -0.23, "HLx": 0.035, "HRx": -0.035, "HLp": 0, "HRp": 0,
-    "FLy": 0.0, "FRy": -0.04, "tail_up": -25, "tail_curl": -8,
+    "body_z": -0.2, "body_y": -0.10, "body_pitch": 45, "spine_pitch": -12, "neck_pitch": -10, "head_pitch": -24,
+    "HLy": -0.17, "HRy": -0.25, "HLx": 0.05, "HRx": -0.05, "FRy": -0.04, "tail_up": 30,
 }
+# (lying like a sphinx; the folded hind legs sink a few centimetres into the ground, out of sight)
 LIE = {
-    "body_z": -0.235, "body_y": -0.02, "body_pitch": 4, "body_roll": 0, "spine_pitch": 6, "neck_pitch": 6, "head_pitch": 14,
-    "FLy": -0.165, "FRy": -0.205, "FLz": -0.03, "FRz": -0.033, "FLp": 0, "FRp": 0,
-    "HLy": -0.15, "HRy": -0.225, "HLx": 0.05, "HRx": -0.05, "tail_up": -30, "tail_curl": -10,
+    "body_z": -0.215, "body_y": -0.02, "body_pitch": 2, "spine_pitch": 3, "neck_pitch": 4, "head_pitch": -4, "head_yaw": 8,
+    "FLy": -0.20, "FRy": -0.24, "FLz": -0.04, "FRz": -0.043,
+    "HLy": -0.17, "HRy": -0.25, "HLx": 0.07, "HRx": -0.07, "tail_up": 22,
 }
 
 
@@ -495,3 +494,111 @@ if "clean" in STAGES:  # noqa: F821
     stage_clean()
 if "clips" in STAGES:  # noqa: F821
     stage_clips(globals().get("ONLY"))
+
+
+# ---- levels of detail and the asset collection -------------------------------------------------------
+
+CLIPS = ("idle", "walk", "trot", "sit", "lie", "lieDown", "getUp", "bark")
+LOD_TRIS = (10000, 3000, 800)
+
+
+def stage_lods():
+    import numpy as np
+
+    arm = bpy.data.objects[RIG]
+    src = bpy.data.objects[NAME + "_SRC"]
+    coll = bpy.data.collections[ASSET]
+    coll["twin_class"] = "large-animal"
+    coll["twin_credits"] = "sketchfab.maxdesign-dog-animated"
+    bind(arm, None)
+    for pb in arm.pose.bones:
+        pb.rotation_quaternion = Quaternion()
+        pb.location = (0, 0, 0)
+    vl.update()
+
+    # the coat as downloaded is a saturated orange: pulled towards the tan of a village dog, once
+    mat = src.data.materials[0]
+    mat.name = "aspin.coat"
+    nodes = mat.node_tree.nodes
+    bsdf = next(n for n in nodes if n.type == "BSDF_PRINCIPLED")
+    bsdf.inputs["Roughness"].default_value = 0.78
+    bsdf.inputs["Metallic"].default_value = 0.0
+    image = bsdf.inputs["Base Color"].links[0].from_node.image
+    if not image.get("twin_toned"):
+        px = np.empty(image.size[0] * image.size[1] * 4, dtype=np.float32)
+        image.pixels.foreach_get(px)
+        px = px.reshape(-1, 4)
+        grey = px[:, :3].mean(axis=1, keepdims=True)
+        px[:, :3] = np.clip((grey + (px[:, :3] - grey) * 0.72) * np.array([0.97, 0.98, 1.0], dtype=np.float32), 0, 1)
+        image.pixels.foreach_set(px.ravel())
+        image["twin_toned"] = True
+        image.pack()
+
+    full = sum(len(p.vertices) - 2 for p in src.data.polygons)
+    for level, target in enumerate(LOD_TRIS):
+        name = f"{NAME}_LOD{level}"
+        old = bpy.data.objects.get(name)
+        if old:
+            bpy.data.objects.remove(old, do_unlink=True)
+        obj = bpy.data.objects.new(name, src.data.copy())
+        obj.data.name = name
+        coll.objects.link(obj)
+        for g in src.vertex_groups:
+            obj.vertex_groups.new(name=g.name)
+        ratio = min(1.0, target / full)
+        while True:
+            mod = obj.modifiers.new("lod", "DECIMATE")
+            mod.ratio = ratio
+            dg = bpy.context.evaluated_depsgraph_get()
+            mesh = bpy.data.meshes.new_from_object(obj.evaluated_get(dg), preserve_all_data_layers=True, depsgraph=dg)
+            obj.modifiers.clear()
+            bm = bmesh.new()  # decimation leaves stray edges and vertices behind
+            bm.from_mesh(mesh)
+            bmesh.ops.dissolve_degenerate(bm, edges=bm.edges, dist=1e-6)
+            bmesh.ops.delete(bm, geom=[e for e in bm.edges if not e.link_faces], context="EDGES")
+            bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+            bm.to_mesh(mesh)
+            bm.free()
+            if sum(len(p.vertices) - 2 for p in mesh.polygons) <= target:
+                break
+            bpy.data.meshes.remove(mesh)
+            ratio *= 0.97
+        old_mesh = obj.data
+        obj.data = mesh
+        mesh.name = name
+        bpy.data.meshes.remove(old_mesh)
+        # at most four bones a vertex, weights summing to one
+        for v in mesh.vertices:
+            groups = sorted(v.groups, key=lambda g: -g.weight)
+            for g in groups[4:]:
+                obj.vertex_groups[g.group].remove([v.index])
+            total = sum(g.weight for g in groups[:4])
+            if total > 0:
+                for g in groups[:4]:
+                    g.weight /= total
+        obj.parent = arm
+        mod = obj.modifiers.new("Armature", "ARMATURE")
+        mod.object = arm
+        obj.hide_render = level > 0
+        obj.hide_viewport = level > 0
+        print("[dog] LOD", level, sum(len(p.vertices) - 2 for p in mesh.polygons), "triangles")
+    src.hide_render = True
+    src.hide_viewport = True
+    if src.name in coll.objects:  # the full mesh stays in the file, outside the asset
+        coll.objects.unlink(src)
+        collection("SRC_sketchfab").objects.link(src)
+
+    # one muted NLA track per clip: the exporter writes each as its own animation
+    for track in list(arm.animation_data.nla_tracks):
+        arm.animation_data.nla_tracks.remove(track)
+    for clip in CLIPS:
+        action = bpy.data.actions["aspin." + clip]
+        track = arm.animation_data.nla_tracks.new()
+        track.name = clip
+        strip = track.strips.new(clip, 0, action)
+        strip.name = clip
+        track.mute = True
+
+
+if "lods" in STAGES:  # noqa: F821
+    stage_lods()

@@ -362,6 +362,19 @@ export const assets = {
     if (slot.loaded) dispose(slot.loaded);
   },
 
+  /**
+   * A built asset's file as the loader reads it, node tree and animation clips included, for
+   * engine/actors.ts (things that move keep their tree; placed things are flattened by `acquire`).
+   * Not cached and not counted here: the caller owns what comes back.
+   */
+  gltf(entry: AssetEntry) {
+    let timer = 0;
+    const late = new Promise<never>((_, reject) => {
+      timer = window.setTimeout(() => reject(new Error(`asset ${entry.id}: not loaded after ${LOAD_TIMEOUT_MS / 1000} s`)), LOAD_TIMEOUT_MS);
+    });
+    return Promise.race([getLoader().loadAsync(entry.url), late]).finally(() => window.clearTimeout(timer));
+  },
+
   /** A KTX2 texture that is not part of an asset file. Every `texture` needs one `releaseTexture`. */
   texture: acquireTexture,
   releaseTexture,

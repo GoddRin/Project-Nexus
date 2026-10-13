@@ -30,6 +30,10 @@ export type InstanceSet = {
   update: (camera: THREE.Camera, frustum: THREE.Frustum, k: number, cull: number, shadowReach: number) => void;
   /** Copies drawn at each level after the last update, and how many were left out. */
   tally: () => { lod: [number, number, number]; hidden: number };
+  /** The placements the copies were made from, in order. */
+  placements: readonly Placement[];
+  /** Put copy `index` somewhere else (a barrier arm being raised). Shown from the next update. */
+  move: (index: number, matrix: THREE.Matrix4) => void;
   dispose: () => void;
 };
 
@@ -81,7 +85,7 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
     scales[i] = place.s;
   }
 
-  type Bucket = InstanceDraw & { baked: Float32Array; buffer: THREE.InstancedInterleavedBuffer };
+  type Bucket = InstanceDraw & { baked: Float32Array; buffer: THREE.InstancedInterleavedBuffer; part: THREE.Matrix4 };
   const buckets: Bucket[] = [];
   const byLevel: Bucket[][] = [[], [], []];
 
@@ -107,7 +111,7 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
       mesh.matrixAutoUpdate = false;
       mesh.receiveShadow = true;
       mesh.castShadow = asset.castsShadow && !part.instanced.transparent;
-      const bucket = { mesh, level, baked, buffer };
+      const bucket = { mesh, level, baked, buffer, part: part.matrix };
       buckets.push(bucket);
       byLevel[level].push(bucket);
     }
@@ -175,6 +179,16 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
     },
 
     tally: () => ({ lod: [counts[0], counts[1], counts[2]], hidden }),
+
+    placements,
+
+    move(index, matrix) {
+      if (index < 0 || index >= n) return;
+      matrix.toArray(world, index * 16);
+      p.copy(asset.centre).applyMatrix4(matrix).toArray(centres, index * 3);
+      for (const bucket of buckets) m.copy(matrix).multiply(bucket.part).toArray(bucket.baked, index * 16);
+      drawn[index] = -2; // (not a level: the next update writes this copy again)
+    },
 
     dispose() {
       for (const bucket of buckets) {
