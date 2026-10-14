@@ -1,6 +1,6 @@
 # P02. Vertical slice: the gate
 
-Three sessions. One small area is finished to final quality before anything is mass-produced, so the look, the pipeline and the real cost of each kind of asset are proven on a 40 m patch instead of discovered after ten phases.
+Three sessions, and a fourth (P02d, people polish) added on 2026-10-14 that runs before P02c. One small area is finished to final quality before anything is mass-produced, so the look, the pipeline and the real cost of each kind of asset are proven on a 40 m patch instead of discovered after ten phases.
 
 **The slice:** the camp gate. Guardhouse and boom barrier, 40 m of access road, the verge with forest edge, three people (security guard, site engineer, labourer), one aspin dog, one pickup truck. Full 24-hour light and rain on that patch only.
 
@@ -69,3 +69,28 @@ Three sessions. One small area is finished to final quality before anything is m
 **Pass when.**
 - [ ] Budgets rewritten from measurement.
 - [ ] The owner has replied with approval or changes. If changes, they are done in a follow-up `P02d` before P03 starts.
+
+## P02d. People polish (added 2026-10-14; runs before P02c)
+
+**Why.** P02b's people read well from the gate cameras but are less convincing than the Atlas Navigator close up: cloth is library garments recoloured, with no real folds; cuffs, collars and hems have no thickness; faces are smooth; hair is a cap. The owner left the decision to the session (2026-10-14): polish them before the gate rather than accept them as they are.
+
+**Needs.** P02b. Blender open on `assets-src/twin/site_master.blend` with the MCP add-on running.
+
+**Read first.** `review/P02b/REPORT.md` (checklists and known gaps); `scripts/blender/twin/build_gate_people.py` and `build_gate_people_clips.py`; `QUALITY-BAR.md` sections 3 and 4; reference R4 (what the site's clothes look like).
+
+**Steps.**
+1. **Draped cloth.** For each shirt, sweater and pair of trousers: a subdivided copy, a cloth simulation over a collision shell made from the garment's own rest shape pulled in a few millimetres, with the cloth a few percent oversize so it buckles into folds at the elbows, waist, knees and crotch; collar, shoulder seams, cuffs, waistband and hems pinned. Keep the low mesh's silhouette; bake the dense mesh's normals onto the sheet (selected to active), masked to the garment's own texels so skin and hard parts keep theirs. The vest takes the shirt's folds.
+2. **Thickness.** A turned-in rim at every cuff, collar, hem and waistband, and at the vest's armholes.
+3. **Fabric.** Weave and wear from CC0 fabric sets (Poly Haven, ambientCG: cotton drill for shirts and trousers, denim, knit, rubber) in place of noise; seams and stitching lines in the normal map along the garments' UV borders; sweat and dust where they would be (collar, armpits, knees, cuffs).
+4. **Faces and hands.** Eyelids that shade the eye, a wet line on the lower lid, lips with their own roughness, stubble and brow density from the skin sets, knuckle and nail detail; more of the head's share of the sheet if the budget allows. Hair with strands at the edge for the bare-headed case (the guard without his cap is P08e's, but the mesh should exist).
+5. **Fit of the hands to things.** The guard's hands on the barrier's counterweight (place the hold from the boom arm's real geometry); the baton hanging from its ring instead of standing stiff.
+6. **Clips from the owner's Mixamo downloads** in `assets-src/mixamo/twin_*.fbx`, if they are there: stop, start, turns, sit, squat, pick up, reach. Add them to `MIXAMO` in `build_gate_people_clips.py`; use stop, start and the turns in the gate's loop in place of turning on the spot. If the files are not there, skip this step and say so.
+7. Rebuild all three people, re-run the contact sheets (fit-test poses included), re-render the navigator comparison with the same camera, and capture the verge pair and the three faces again.
+8. Keep each person inside the named-person budget (20,000 / 6,000 / 1,500 triangles, one 2K sheet, two materials). Do not add download: if a texture grows, another shrinks.
+
+**Deliver.** The three people rebuilt; new contact sheets; the comparison before and after in `review/P02d/`; `review/P02d/REPORT.md` with the person and motion checklists filled in again.
+
+**Pass when.**
+- [ ] Side by side with the Atlas Navigator at equal framing, each of the three is at least as convincing, judged line by line against `QUALITY-BAR.md` section 3; or the report says plainly which lines still fail and why, for the owner to decide at the P02c gate.
+- [ ] No poke-through in any clip or fit-test pose.
+- [ ] Triangles, textures and download per person no higher than P02b's.
