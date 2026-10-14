@@ -78,6 +78,8 @@ Five sessions (P08a to P08e). Job-true movement from motion capture where it exi
 
 ## P08e. Real-time actions: putting on, taking off, picking up, handing over
 
+**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI" and its idea list). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does.
+
 **Needs.** P08c, P08d, P07d (sockets), P09a.
 
 The owner asked (2026-10-10) for people to visibly **take their hard hats off and put them on** as real animations, and for more actions of that kind. The rule this serves: nothing about a person changes by popping. If a hat, tool, raincoat or phone appears on or leaves a person, you see the hand do it.

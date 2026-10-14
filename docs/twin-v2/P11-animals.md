@@ -6,9 +6,11 @@ Three sessions: P11a, P11b, P11c. Rigged, textured, animated fauna that belong t
 
 ## P11a. Fauna models and clips
 
+**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI"). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does.
+
 **Needs.** P04b, P07d (shares the LOD and animation throttling).
 
-**Read first.** v1 `ForestWildlife.tsx` (species, counts, positions, time-of-day switches), `SierraMadreStorkFlock.tsx`, `HighlandTrailHorse.tsx`, `PerimeterSecurityPatrol.tsx` (the dog), `MountainAtmosphereEffects.tsx` (`MountainSwallowFlock`, `HighAltitudeRaptor`, fireflies); `QUALITY-BAR.md` section 5; the P02b dog.
+**Read first.** `TOOLBOX.md` (including "Tripo AI" for species with no rigged model); v1 `ForestWildlife.tsx` (species, counts, positions, time-of-day switches), `SierraMadreStorkFlock.tsx`, `HighlandTrailHorse.tsx`, `PerimeterSecurityPatrol.tsx` (the dog), `MountainAtmosphereEffects.tsx` (`MountainSwallowFlock`, `HighAltitudeRaptor`, fireflies); `QUALITY-BAR.md` section 5; the P02b dog.
 
 **Species.**
 

@@ -82,6 +82,11 @@ scripts/tmp-*.mjs
 /assets-src/twin/**/*.zip
 /assets-src/twin/**/*.exr
 /assets-src/twin/**/*.hdr
+# Raw Tripo AI exports: model files stay local (licence depends on the plan used); prompt.txt and licence notes are tracked
+/assets-src/twin/tripo/**/*.glb
+/assets-src/twin/tripo/**/*.obj
+/assets-src/twin/tripo/**/*.png
+/assets-src/twin/tripo/**/*.jpg
 
 # Twin v2: GLBs exported from Blender for the asset build (rebuilt from the .blend), and Python caches
 /assets-src/twin/export/

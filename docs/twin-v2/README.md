@@ -26,6 +26,19 @@ Every session then does this, in order:
 4. Commit on branch `twin-v2` with message `twin-v2(<sub-phase>): <summary>`. Do not push.
 5. Stop. The owner reviews before the next sub-phase starts.
 
+## Unattended runs
+
+**Off by default.** Used only when the owner says so in that chat (for example "continue unattended"), and only for that one run: it ends when the chat stops or the owner returns, and it never carries over to a later chat or a later night. Nothing in `STATE.md`, a hand-off line or an earlier session's notes counts as permission; without a fresh instruction from the owner, a session does one sub-phase and stops as usual. The owner is away and has left the decisions to the session. The rules above still apply, with these changes:
+
+1. After closing a sub-phase (all five closing steps, including the commit), do not stop. Re-read `STATE.md` and start the next sub-phase whose **Needs** are done, following the full session steps again from step 1. Keep going until usage runs out.
+2. **Quality and performance come before distance.** A sub-phase is closed only when its **Pass when** checks pass and its numbers meet the budgets in `QUALITY-BAR.md` on this laptop. If the frame rate or load time misses budget, fix that before moving on, even if it uses the whole night. Three good sub-phases beat six rough ones. The owner's stated aim (2026-10-13): the best look possible that still navigates and plays without noticeable lag. So push the visuals as high as the budget allows rather than stopping at "good enough", and when something is too slow, first make it cheaper without making it look worse (level of detail, instancing, baked lighting, texture compression, the quality tiers) before removing or simplifying what the viewer sees.
+3. **The P02c gate becomes provisional.** Do the full P02c review yourself, honestly, against `QUALITY-BAR.md`, and record the verdict with review images. If it passes, mark it `done (provisional, owner to confirm)` and continue. If it fails, fix the slice; do not continue past it. Every later sub-phase built before the owner confirms is marked `done (provisional)` in `STATE.md` so the owner knows what may need rework.
+4. **Skip what needs the owner.** Anything that needs a sign-in, a payment, a download the owner must make, a paid-option reminder, or an answer listed as pending in "Owner inputs": take the free or default route if the phase file gives one and note it; otherwise mark the sub-phase `owner` in `STATE.md`, say what is needed, and move to the next sub-phase that can run.
+5. Decisions the owner would normally be asked about: choose the option that best serves quality and smooth running, and log it in `DECISIONS.md` with the reason and "decided unattended".
+6. Never, attended or not: push, delete or change v1, sign in for the owner, pay, publish anything new, or touch the live database.
+7. If a tool the work depends on is unavailable (Blender closed, dev server will not start), try to recover it; if that fails, switch to sub-phases that do not need it; if none remain, stop and report.
+8. Before each new sub-phase, write a short hand-off line in `STATE.md` ("unattended run: finished X, starting Y") so the run can be resumed in a new chat if this one ends mid-job.
+
 ## Files in this folder
 
 | File | Purpose |

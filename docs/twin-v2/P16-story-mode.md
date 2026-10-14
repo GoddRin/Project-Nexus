@@ -4,7 +4,7 @@ The owner asked (2026-10-10) for a story or campaign mode with missions, playabl
 
 **Where it sits.** Story mode is built **after P15** (the twin is finished and live first). It runs on top of walk mode and free roam (P13d to P13k) and uses every system before it. It is for signed-in accounts, not the public page.
 
-**Read first, every P16 session:** this whole file; `P13-walk-mode.md`; `P09-routines.md`; `P12-living-environment.md`; `data/history.json`; `reference/INDEX.md`.
+**Read first, every P16 session:** this whole file; `TOOLBOX.md` ("Tripo AI": folklore beings and story objects); `P13-walk-mode.md`; `P09-routines.md`; `P12-living-environment.md`; `data/history.json`; `reference/INDEX.md`.
 
 ## 1. The idea
 
@@ -171,6 +171,8 @@ The career system (ranks, mentors, pay, changing jobs) and the site, tunnel and 
 The staff-office careers in section 5 (IT support, document controller, AutoCAD operator, timekeeper, admin, HR, planning, purchasing, warehouse, the PM's track), safety, care and camp careers, set in the real office interior (P06a). **Pass when:** one full rank can be climbed in each; the CCTV installation mission follows drawing R1.
 
 ### P16e. The night framework and three cases
+
+**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI"). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does. The owner liked the trial kapre (2026-10-14): rebuild it first, from `assets-src/twin/tripo/kapre/prompt.txt`.
 Kaba, light and fuel, darkness tuning, the presence behaviours (watching, following, luring, blocking, fleeing light), sound design for dread, the case structure, folklore sources file; cases: the mound on the road cut, the bend, the tikbalang's road. **Pass when:** each case plays from first clue to resolution and leaves its mark on the site; intensity settings work.
 
 ### P16f. Prologue and Act I: Ang Daan

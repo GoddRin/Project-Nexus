@@ -6,7 +6,7 @@ Four sessions. The land and the light are finished for the whole site before str
 
 **Needs.** P02c approved.
 
-**Read first.** `lib/twin/terrain.ts`; `public/data/gis-terrain-mesh.json`, `terrain-heightmap.json`, `terrain-contours.json`; v1 `terrainData.ts` (the flattened pads and blends it applies); `scripts/fetch-real-copernicus-dem.mjs`, `generate-terrain-mesh.mjs`; `data/site-layout.json`, `routes.json`, `exclusions.json`; the P02a ground material.
+**Read first.** `TOOLBOX.md` ("Tripo AI", for distant scenery buildings); `lib/twin/terrain.ts`; `public/data/gis-terrain-mesh.json`, `terrain-heightmap.json`, `terrain-contours.json`; v1 `terrainData.ts` (the flattened pads and blends it applies); `scripts/fetch-real-copernicus-dem.mjs`, `generate-terrain-mesh.mjs`; `data/site-layout.json`, `routes.json`, `exclusions.json`; the P02a ground material.
 
 **Locations.** There are three surface locations (`weir`, `midway`, `powerhouse`; the two tunnels are underground and need no terrain). Build the terrain system once, driven by `data/locations.json`, and produce the `powerhouse` terrain in this sub-phase. The `weir` and `midway` terrains are produced with the same tools at the start of P05g and P05h, using `scripts/fetch-real-copernicus-dem.mjs` for their coordinates. Positions come from `data/locations.json` as derived in P00a. If one is missing or its recorded error is over 100 m, derive it again with the P00a method (the owner does not know the coordinates), then check the fetched terrain shows a river where the weir should be before building on it.
 

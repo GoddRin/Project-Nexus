@@ -8,6 +8,8 @@ Everything here is simulated behaviour. It is generated from plausible site prac
 
 ## P09e. The site calendar: weekly, monthly, seasonal
 
+**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI" and its idea list). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does.
+
 **Needs.** P09d.
 
 **Read first.** `sim/clock.ts`, `programme.json`, `sim/agent.ts`; v1 labels that state real practice (the toolbox meeting window on the court, office door hours, shift times in `personnelData.ts`); `data/history.json`; the monthly reviews' note that progress photos are taken the day before each submission (`reference/INDEX.md`).
