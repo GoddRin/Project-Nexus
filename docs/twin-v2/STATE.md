@@ -112,7 +112,7 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Whether to close the public equipment call and move the `.blend` files out of `public/` before the plan reaches them | any time | asked in the P00a report |
 | A photograph of the real camp gate and guardhouse | P02c (optional) | asked in the P02a report: the booth is a design in the camp's building style |
 | Approval of the vertical slice | P02c | pending |
-| Mixamo sign-in and downloads from the list | P08a | pending |
+| Mixamo sign-in and downloads from the list | P08a | **done for 94 clips** (2026-10-14): 24 downloaded by the owner, 70 fetched by the session in the owner's signed-in Chrome on the owner's instruction; list in `reference/mixamo-clips.md`. P08a may still ask for more |
 | Confirmation of which staff details are real and cleared (licence, experience, province) and that photos match names | P09d | pending |
 | Stage-mapping rules reviewed | P14b | pending |
 | Which Kia truck model the site uses, and local vehicles | P10a | **answered** (2026-10-10): Kia K2500-type white cab-over drop-side truck (photo shown by the owner); include the hired passenger motorcycle, the tricycle at the lower gate and the carabao sled |
