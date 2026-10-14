@@ -58,7 +58,7 @@ Every session then does this, in order:
 | --- | --- | --- |
 | P00 Baseline | a | Inventory of v1, extracted site data, licence audit, baseline numbers |
 | P01 Foundation | a b c | Renderer decision, scene shell, asset pipeline, quality tiers |
-| P02 Vertical slice | a b c | One small area at final quality; the owner approves the look before mass production |
+| P02 Vertical slice | a b d c e f | One small area at final quality; the owner approves the look before mass production (d: people polish; e: performance and download; f: detail kit) |
 | P03 World | a b c d | Terrain, sky and 24-hour light, water, weather |
 | P04 Vegetation | a b | Plant library, scatter, wind |
 | P05 Hydro works | a b c d e f g h | Powerhouse, turbine hall, switchyard, waterways, Tunnels 1 and 2, construction stages, the weir location (weir, intake, desander), the midway location (pipe bridge and portals) |

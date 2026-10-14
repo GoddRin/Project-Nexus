@@ -1,6 +1,6 @@
 # P02. Vertical slice: the gate
 
-Three sessions, and a fourth (P02d, people polish) added on 2026-10-14 that runs before P02c. One small area is finished to final quality before anything is mass-produced, so the look, the pipeline and the real cost of each kind of asset are proven on a 40 m patch instead of discovered after ten phases.
+Three sessions, and a fourth (P02d, people polish) added on 2026-10-14 that runs before P02c; P02e and P02f (added 2026-10-15 from the owner's gate answers) run after P02c and before P03. One small area is finished to final quality before anything is mass-produced, so the look, the pipeline and the real cost of each kind of asset are proven on a 40 m patch instead of discovered after ten phases.
 
 **The slice:** the camp gate. Guardhouse and boom barrier, 40 m of access road, the verge with forest edge, three people (security guard, site engineer, labourer), one aspin dog, one pickup truck. Full 24-hour light and rain on that patch only.
 
@@ -94,3 +94,132 @@ Three sessions, and a fourth (P02d, people polish) added on 2026-10-14 that runs
 - [ ] Side by side with the Atlas Navigator at equal framing, each of the three is at least as convincing, judged line by line against `QUALITY-BAR.md` section 3; or the report says plainly which lines still fail and why, for the owner to decide at the P02c gate.
 - [ ] No poke-through in any clip or fit-test pose.
 - [ ] Triangles, textures and download per person no higher than P02b's.
+
+## The owner's gate answers (2026-10-15)
+
+1. **Look:** approved, but the owner prefers it polished further, "more superbly realistic and well made", with extra small details. Full planning and implementation are left to the sessions. If it cannot be improved further, the current slice stands.
+2. **People:** good enough to multiply. Their remaining polish goes to P07b (and P07c's faces).
+3. **Screen-space occlusion on Medium:** the balance of quality and performance for the owner's laptop, **without making it uglier or using low-quality effects**. Decided: keep occlusion on Medium and pay for it (P02e).
+4. **ETC1S textures and shared textures:** approved.
+5. **Further changes:** left to the session (the ideas are in P02f).
+
+So two follow-ups run before P03:
+- **P02e** frees frame time and download.
+- **P02f** spends it on detail.
+
+After P02f the slice counts as approved and P03 starts. P02f's before-and-after goes to the owner as a report, not a new gate.
+
+## P02e. Pay for the look: lamps, occlusion, textures, streaming (added 2026-10-15)
+
+**Needs.** P02c (owner's answers above).
+
+**Read first.**
+- `review/P02c/REPORT.md`: the cost table and the lamp, occlusion and texture findings.
+- `components/twin/world/lamps.ts`, `engine/post.ts`, `engine/tiers.ts`, `engine/streaming.ts`, `engine/assets.ts`.
+- `scripts/twin/build-assets.mjs`, `scripts/twin/cost.mjs`.
+- The RISKS rows on lamps, `compileAsync`, shader-build steps and shared textures.
+
+**Steps.**
+1. **Lamps are lights only while lit.**
+   - A lamp's light is in the scene only between its fade-in and fade-out. By day it is a glowing surface at most.
+   - Hide the shader rebuild the light-set change causes. Compile both light sets ahead (`compileAsync` on the zone's materials with the lamps in and out, behind the loading screen), so the switch at dusk has no stall.
+   - The pickup's headlamp spot follows the same rule.
+   - Check: the longest frame across 17:30 to 18:30, played at speed, stays under 50 ms; noon costs 9.5 ms less at full HD (`cost.mjs --only=lamps`).
+2. **Occlusion back on Medium, at the cheapest setting that looks the same.**
+   - Try, at full HD on the gate:
+     - half resolution with fewer samples (4, 6, 8);
+     - quarter resolution with a depth-aware upscale;
+     - occlusion recomputed every other frame with reprojection, if three's GTAO allows.
+   - For each: the frame cost from `cost.mjs`, and a still at noon, golden hour and night beside today's half-resolution 8-sample picture. Compare the canopy, the booth base, the pickup's underside and the shirt folds.
+   - Keep the cheapest setting the owner could not tell apart, and set it in `tiers.ts` for Medium. High keeps half resolution at full quality; Ultra keeps full.
+   - Never ship a setting that shows banding, halos around people, or flicker when the camera moves.
+3. **ETC1S sheets.**
+   - In `build-assets.mjs`: ETC1S (normal mode for normal maps) for people, animals, trees and props.
+   - UASTC is kept only for hero structures' trim sheets, and for the ground layers if the trial says so.
+   - Rebuild Z of two-channel normal maps in the material (TSL, both renderer paths).
+   - Check by eye at the closest gate cameras and in the face captures, against the current build; numbers as in the texture trial.
+   - Target: people at about 3.5 MB each.
+4. **Shared textures.**
+   - Textures used by more than one asset (the acacias' bark and leaves; future trim sheets) are written once beside the files and loaded by address, as the ground's layers already are (`assets.texture`).
+   - The build detects identical images across assets and shares them.
+5. **Streaming.**
+   - Actors load after the zone, nearest first.
+   - The 27 ms instances step and the 19 ms shader-build step are split, or moved behind the loading screen.
+   - Everything in view arrives within 20 s on a warm cache.
+   - Check with `check-pipeline.mjs` and `bench.mjs`.
+6. **Bench and report.** Run `bench.mjs` (all three profiles) and `cost.mjs`; capture the slice's seven moments again beside P02c's.
+
+**Deliver.** The changes above, and `review/P02e/REPORT.md` with before and after numbers and the occlusion comparison stills.
+
+**Pass when.**
+- [ ] The gate holds 45 fps at full HD on Medium **with occlusion on**, or the report shows the closest setting and what it would cost to reach 45.
+- [ ] No frame over 50 ms at the dusk switch; lamps still come on in sequence.
+- [ ] Download to the first view 15 MB or less, or the report says what is left and why.
+- [ ] Occlusion and texture changes judged side by side: no visible loss of quality at the gate cameras.
+
+## P02f. Detail and realism pass (added 2026-10-15)
+
+**Needs.** P02e. Blender open on the master scene with the MCP add-on running.
+
+**Why.**
+- The owner wants the gate "more superbly realistic and well made", with extra small details, before it is multiplied.
+- Everything made here is built as a **kit the whole site reuses** (P05, P06), so the effort pays across the project, not only at the gate.
+- Spend the frame time P02e freed, and stay inside MASTER-BRIEF section 5 at full HD.
+
+**Read first.**
+- `review/P02c/REPORT.md` and its captures.
+- Reference R4 (site photographs) and `reference/gate/`.
+- `QUALITY-BAR.md` sections 1, 2, 6 and 7; `TOOLBOX.md`.
+- The cost table: a small prop costs about 0.03 ms a copy once its material is loaded, but each new material adds a fixed cost and pipelines, so props share atlases.
+
+**Steps** (in order of effect on realism; do as many as quality allows, and say which were cut):
+1. **Ground storytelling** (decals on the ground material, one atlas):
+   - tyre ruts with standing water in them after rain;
+   - an oil stain and tyre scrub at the stop line;
+   - footprints and a worn path between the booth and the barrier;
+   - gravel spill at the road edge;
+   - leaf litter under each acacia;
+   - mud tracked onto the speed hump;
+   - a drainage ditch along the road, with a concrete culvert pipe end.
+2. **Grounding everything** (QUALITY-BAR section 6):
+   - splash dirt and grass tufts at the booth's plinth and every post;
+   - rust streaks under fixings;
+   - moss on the shaded side of concrete;
+   - dust on horizontal surfaces;
+   - water stains under the roof's drip line.
+3. **A site dressing kit** (one shared 2K atlas, small-prop class):
+   - outside: sandbags and rice-sack bags, a monobloc plastic chair, a GI pipe offcut, a wooden pallet, an extension cord run, a rubber hose, a jerrycan by the booth, slippers by the door, an umbrella, a trash drum;
+   - on the booth: a hard hat hung on a nail, a CCTV camera;
+   - inside: a water tumbler and thermos, a logbook with a pen on a string, a wall clock and calendar, an electric fan, a radio on its charger.
+4. **Perimeter and services.**
+   - A short run of the camp fence either side of the gate: GI posts with chain-link or barbed wire, built as one fence kit for P06.
+   - A power pole with a drop wire to the booth, and conduit down the booth wall.
+5. **Signage set to Philippine site conventions**, all with the official wordmark:
+   - a PPE-required pictogram board ("No hard hat, no entry");
+   - visitor rules;
+   - the speed limit (already there);
+   - a "Visitors report here" sign.
+   - **No safety-statistic boards with numbers**: incident counts are internal (MASTER-BRIEF rule 5).
+6. **Plants a Filipino camp actually has** (additions to the shared atlas; P04 builds the full library):
+   - santan (ixora) or San Francisco (croton) by the booth, in painted tyre or drum planters;
+   - cogon grass in the verge;
+   - a vine on the fence;
+   - leaf litter and fallen pods under the acacias.
+7. **A driver in the pickup.** A seated man from the P02 bodies with the sit clip, hands on the wheel, who turns his head to the guard. This also retires the RISKS row about the empty cab.
+8. **Small life** (cheap, and carries to P12). Each is added only if it costs under 0.5 ms:
+   - dust kicked up behind the pickup on a dry day;
+   - drips from the roof edge after rain;
+   - moths at the flood lamp at night;
+   - a few birds in the acacias (sprites or simple meshes).
+9. **Re-review.**
+   - The seven moments and the six gate cameras.
+   - Three close-ups: the booth window, the barrier, the verge pair. The navigator comparison stays as P02d's.
+   - `bench.mjs` at full HD.
+   - A contact sheet of the new kit in Blender (front, side, three-quarter, close-up).
+
+**Deliver.** The kit assets (with credits rows), the dressed gate, and `review/P02f/REPORT.md` with before and after stills at the same cameras and the numbers.
+
+**Pass when.**
+- [ ] Mesh and structure checklists pass for every new asset; credits written.
+- [ ] The gate still holds 45 fps at full HD on Medium with occlusion on, and the download to the first view stays at 15 MB or less.
+- [ ] Before and after stills at the same cameras are in the report; the report lists what was cut and why.
