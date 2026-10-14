@@ -9,8 +9,9 @@ Run inside the master scene after build_gate_people.py has made the people:
 Stages:
   retarget  every Mixamo file in MIXAMO (assets-src/mixamo/, exported on Y Bot without skin, 30 fps,
             in place) baked onto the man's rig as an action called <who>:<clip>
-  author    the clips made here: `tablet` (engineer), `barrier` and `waveThrough` (guard),
-            `restShovel` and `shovel` (labourer); and each man's hand grips laid over every clip
+  author    the clips made here: `tablet` (engineer), `barrier` and `barrierDown` (guard, hands on the
+            counterweight as the arm moves), `restShovel` and `shovel` (labourer); each man's hand grips
+            laid over every clip; the guard's baton hung from its ring on every clip
   tracks    one muted NLA track per clip, named as the clip, which is what the exporter writes
   tests     the poses QUALITY-BAR section 3 asks every outfit to be tried in and no clip here covers:
             squat, overhead reach, arm across chest, sit, bend to floor. Actions called
@@ -46,7 +47,40 @@ MIXAMO = {
     "atlas_acknowledge": "acknowledge",
     "atlas_look_around": "lookAround",
     "atlas_wave": "wave",
+    # the owner's downloads of 2026-10-14 (reference/mixamo-clips.md)
+    "twin_walk_start": "walkStart",
+    "twin_walk_stop": "walkStop",
+    "twin_turn_left_90": "turnLeft",
+    "twin_turn_right_90": "turnRight",
+    "twin_turn_180": "turn180",
+    "twin_stand_to_sit": "sitDown",
+    "twin_sit_idle": "sit",
+    "twin_sit_to_stand": "standUp",
+    "twin_squat": "squat",
+    "twin_pick_up": "pickUp",
+    "twin_reach_up": "reachUp",
 }
+# Clips retargeted for the review sheets and the fit test but not shipped yet: nothing in the slice
+# plays them, and every clip is download (P08 ships them in shared clip files).
+REVIEW_ONLY = {"sitDown", "sit", "standUp", "squat", "pickUp", "reachUp"}
+# Only the men who walk in the slice ship the clips that set off, stop and turn (and their curves);
+# the others keep them for the review sheets. Download per person may not grow (P02d step 8).
+LOCOMOTION = {"walkStart", "walkStop", "turnLeft", "turnRight", "turn180"}
+WALKERS = ("guard",)
+# What each man ships: the clips his part in the gate's loop plays, and his idles (sim/gate-scene.ts).
+# The rest stay in the master scene for the review sheets; P08's shared clip files bring them back.
+SHIPPED = {
+    "guard": {"idle", "idleShift", "walk", "talk", "barrier", "barrierDown", "waveThrough"} | LOCOMOTION,
+    "engineer": {"idle", "idleShift", "talk", "talk2", "tablet", "listen", "point"},
+    "labourer": {"idle", "idleShift", "restShovel", "shovel"},
+}
+# Clips that move the man: their travel (metres forward) or turn (radians to his left) is taken out
+# of the hips and handed to the runtime as a curve, so the script that places him moves him exactly
+# as far as his feet go (LOD0 extras `twin_travel`, `twin_turn`; one value a frame at 30 fps).
+ROOT = {"walkStart": "travel", "walkStop": "travel", "turnLeft": "turn", "turnRight": "turn", "turn180": "turn"}
+# Clips played once (not looped): the baton settles from where it hangs instead of wrapping round
+ONCE = {"barrier", "barrierDown", "walkStart", "walkStop", "turnLeft", "turnRight", "turn180", "sitDown", "standUp", "pickUp",
+        "reachUp", "tablet", "point", "waveThrough", "acknowledge", "wave"}
 PEOPLE = ("guard", "engineer", "labourer")
 ALIGNED = ("Shoulder", "Arm", "ForeArm", "Hand")  # bones whose rest differs between a T-pose and an A-pose
 
@@ -148,13 +182,29 @@ def retarget(who, src, action, clip):
     out = new_action(who, clip)
     reset_pose(tgt)
     bind(tgt, out)
+    root = ROOT.get(clip)
+    curve = []
+    facing0 = None
+    turned = 0.0
     for f in range(f0, f1 + 1):
         scene.frame_set(f)
         vl.update()
+        strip = Matrix.Identity(3)
+        if root == "turn":
+            # his facing, from the hips, unwrapped: the whole pose is turned back by it
+            facing = (src.matrix_world @ src.pose.bones[s_hips].matrix).to_3x3() @ Vector((0, 0, 1))
+            facing = Vector((facing.x, facing.y, 0)).normalized()
+            if facing0 is None:
+                facing0, last = facing, facing
+            step = math.atan2(last.cross(facing).z, last.dot(facing))
+            turned += step
+            last = facing
+            curve.append(round(turned, 5))
+            strip = Matrix.Rotation(-turned, 3, "Z")
         want = {}
         for sname, tname in pairs.items():
             now = (src.matrix_world @ src.pose.bones[sname].matrix).to_3x3().normalized()
-            want[tname] = (now @ s_rest[sname].inverted()) @ ref[tname]
+            want[tname] = strip @ ((now @ s_rest[sname].inverted()) @ ref[tname])
         pose_rot = {}
         for name in order:
             b = tgt.data.bones[name]
@@ -172,9 +222,18 @@ def retarget(who, src, action, clip):
             else:
                 pose_rot[name] = inherited
         offset = ((src.matrix_world @ src.pose.bones[s_hips].matrix.to_translation()) - src_hip_rest) * scale
+        offset = strip @ offset
+        if root == "travel":  # (forward is -Y: the distance goes to the curve, the hips stay over the feet)
+            curve.append(round(-offset.y, 5))
+            offset.y = 0.0
         hp = tgt.pose.bones[hips]
         hp.location = rest[hips].to_3x3().inverted() @ (world3.inverted() @ offset)
         hp.keyframe_insert("location", frame=f - f0)
+    if root:
+        curves = dict(tgt.get(f"twin_{root}", {}))
+        curves[clip] = curve
+        tgt[f"twin_{root}"] = curves
+        print(f"[clips] {who}:{clip} {root} {curve[-1]:+.3f} {'m' if root == 'travel' else 'rad'}")
     return f1 - f0 + 1
 
 
@@ -505,24 +564,127 @@ def author_engineer(who):
     author(who, "tablet", 8 * FPS, "idle", tablet, loop=False)
 
 
-def author_guard(who):
-    def barrier(p, t, f):
-        # leans in, takes the counterweight end of the arm in both hands at waist height and bears down on it
-        k = window(t, 0.0, 0.2, 0.8, 1.0)
-        push = window(t, 0.25, 0.48, 0.7, 0.82)
-        p.turn_axis("Spine", (-1, 0, 0), -(9 * k + 12 * push))
-        p.turn_axis("Spine1", (-1, 0, 0), -(7 * k + 9 * push))
-        p.turn_axis("Spine2", (-1, 0, 0), -(3 * k + 5 * push))
-        p.turn_axis("Neck", (-1, 0, 0), 6 * push)
-        p.turn_axis("Head", (-1, 0, 0), 9 * k)
-        for side, s in (("Left", 1), ("Right", -1)):
-            rest = p.head(f"{side}Hand").copy()
-            hold = Vector((s * 0.11, -0.44, 1.0 - 0.24 * push))
-            p.reach(side, rest.lerp(hold, k), (s * 0.9, 0.45, -0.3))
-            p.hand(side, (-s * 0.35, -0.9, -0.2), (0, -0.15, -1), amount=k)
+# The barrier at the gate, as the zone has it (kit.boom-arm in the master scene; sim/gate-scene.ts):
+# the arm turns about its pivot 0.94 m above where the guard stands (1.06 m above the ground, and he
+# stands on the booth's 12 cm apron step there: walk map, bake_walkmap.py); the counterweight is a
+# block behind the pivot from 0.62 to 0.98 m along the arm, 0.24 m wide, its top 0.06 m above the pivot.
+# The guard stands 0.62 m from the arm's line, facing the point 0.75 m behind the pivot, which is at his
+# right hand. The boom rises 82 degrees over 2.2 s, starting 1.1 s into his clip (BARRIER_CLIP, BOOM_UP).
+BOOM = {"pivot_h": 0.94, "ahead": 0.75, "stand": 0.62, "top": 0.06, "half": 0.12, "up": 82.0, "start": 1.1, "seconds": 2.2}
+BARRIER_SECONDS = 4.5
 
-    author(who, "barrier", int(4.5 * FPS), "idle", barrier, loop=False)
-    overlay_window("guard", "barrier", lambda p, k: (p.curl("Left", (38 * k, 50 * k, 30 * k)), p.curl("Right", (38 * k, 50 * k, 30 * k))), lambda t: window(t, 0.05, 0.22, 0.78, 0.95))
+
+def boom_angle(ts, lowering):
+    """Degrees the arm stands up `ts` seconds into the guard's clip."""
+    e = smooth((ts - BOOM["start"]) / BOOM["seconds"])
+    return BOOM["up"] * (1 - e if lowering else e)
+
+
+def on_counterweight(along, inward, up, degrees):
+    """
+    A point on the counterweight (metres along the arm from the pivot, negative behind it; towards the
+    guard from the arm's line; up from the pivot), in the guard's own frame, with the arm at `degrees`.
+    """
+    r = math.radians(degrees)
+    x = along * math.cos(r) - up * math.sin(r)
+    z = along * math.sin(r) + up * math.cos(r)
+    return Vector((-(x + BOOM["ahead"]), -(BOOM["stand"] - inward), BOOM["pivot_h"] + z))
+
+
+def author_guard(who):
+    def make(lowering):
+        def barrier(p, t, f):
+            ts = t * BARRIER_SECONDS
+            th = boom_angle(ts, lowering)
+            if lowering:
+                # he waits with his hands near its path, takes it as it comes down and holds it at rest
+                c = smooth((50 - th) / 18) * (1 - smooth((ts - 3.65) / 0.55))
+                hold = max(0.0, min(th, 34.0))
+                press = c * smooth((ts - 2.3) / 0.6)
+            else:
+                # he takes the block, bears down until the arm swings up on its own, and lets go
+                c = smooth((ts - 0.25) / 0.65) * (1 - smooth((th - 20) / 12))
+                hold = min(th, 30.0)
+                press = c * smooth((ts - 0.85) / 0.5)
+            p.crouch(0.035 * press, back=0.01 * press)
+            p.turn_axis("Spine", (-1, 0, 0), -(7 * c + 7 * press))
+            p.turn_axis("Spine1", (-1, 0, 0), -(5 * c + 5 * press))
+            p.turn_axis("Spine2", (-1, 0, 0), -(2 * c + 3 * press))
+            p.turn_axis("Head", (-1, 0, 0), 10 * c)
+            r = math.radians(hold)
+            normal = Vector((math.sin(r), 0, math.cos(r)))  # the block's top, turned with the arm
+            for side, along in (("Left", -0.91), ("Right", -0.69)):
+                palm_at = on_counterweight(along, 0.05, BOOM["top"], hold)
+                wrist = palm_at + Vector((0, 0.075, 0)) + normal * 0.028
+                rest = p.head(f"{side}Hand").copy()
+                s = 1 if side == "Left" else -1
+                p.reach(side, rest.lerp(wrist, c), (s * 0.9, 0.5, -0.25))
+                p.hand(side, (0, -1, -0.15), -normal, amount=c)
+
+        return barrier
+
+    author(who, "barrier", int(BARRIER_SECONDS * FPS), "idle", make(False), loop=False)
+    author(who, "barrierDown", int(BARRIER_SECONDS * FPS), "idle", make(True), loop=False)
+    for clip, lowering in (("barrier", False), ("barrierDown", True)):
+        def contact(t, lowering=lowering):
+            ts = t * BARRIER_SECONDS
+            th = boom_angle(ts, lowering)
+            if lowering:
+                return smooth((50 - th) / 18) * (1 - smooth((ts - 3.65) / 0.55))
+            return smooth((ts - 0.25) / 0.65) * (1 - smooth((th - 20) / 12))
+        overlay_window("guard", clip, lambda p, k: (p.curl("Left", (10 * k, 14 * k, 8 * k), thumb=(4 * k, 6 * k, 6 * k)), p.curl("Right", (10 * k, 14 * k, 8 * k), thumb=(4 * k, 6 * k, 6 * k))), contact)
+
+
+def hang_baton(who):
+    """
+    The baton swings from its ring: on every clip of the man, a damped pendulum keeps it hanging
+    towards the ground, never more than 40 degrees off the line of his hips (the ring holds it).
+    """
+    rig = rig_of(who)
+    name = "mixamorig:Baton"
+    if name not in rig.pose.bones:
+        return
+    poser = Poser(who)
+    hips_pb = rig.pose.bones["mixamorig:Hips"]
+    b = rig.data.bones[name]
+    hang_rest = (rig.data.bones["mixamorig:Hips"].matrix_local.to_3x3().inverted() @ (b.tail_local - b.head_local)).normalized()
+    down = Vector((0, 0, -1))
+    dt = 1.0 / FPS
+    for act in [a for a in bpy.data.actions if a.name.startswith(who + ":")]:
+        clip = act.name.split(":", 1)[1]
+        bind(rig, act)
+        f0, f1 = int(act.frame_range[0]), int(act.frame_range[1])
+        frames = list(range(f0, f1 + 1))
+        looping = clip not in ONCE and not clip.startswith("test-")
+        hips_down = []
+        for f in frames:
+            scene.frame_set(f)
+            vl.update()
+            hips_down.append(((poser.M @ hips_pb.matrix).to_3x3() @ hang_rest).normalized())
+        aim, vel = None, Vector()
+        for pass_ in range(3 if looping else 1):
+            dirs = []
+            for hd in hips_down:
+                target = down
+                if hd.angle(target) > math.radians(40):
+                    target = hd.slerp(down, math.radians(40) / hd.angle(down))
+                if aim is None:
+                    aim = target.copy()
+                vel += (target - aim) * 70 * dt - vel * 9 * dt
+                aim = (aim + vel * dt).normalized()
+                if aim.angle(hd) > math.radians(45):
+                    aim = hd.slerp(aim, math.radians(45) / aim.angle(hd))
+                dirs.append(aim.copy())
+        for f, d in zip(frames, dirs):
+            scene.frame_set(f)
+            pb = rig.pose.bones[name]
+            pb.rotation_quaternion = Quaternion()
+            vl.update()
+            poser.aim("Baton", d)
+            pb.keyframe_insert("rotation_quaternion", frame=f)
+    bind(rig, None)
+    reset_pose(rig)
+    print(f"[clips] {who}: baton hung on every clip")
 
 
 def author_labourer(who):
@@ -670,6 +832,8 @@ def stage_tests(people):
         for name, fn in (("squat", squat), ("overhead", overhead), ("across", across), ("sit", sit), ("bend", bend)):
             author(who, f"test-{name}", int(2.4 * FPS), "idle", fn, loop=False)
     stage_author_grips(people)
+    if "guard" in people:
+        hang_baton("guard")
 
 
 def stage_author_grips(people):
@@ -686,6 +850,7 @@ def stage_author(people):
         overlay_hands("engineer", {"Left": grip_tablet})
     if "guard" in people:
         author_guard("guard")
+        hang_baton("guard")
     if "labourer" in people:
         author_labourer("labourer")
         overlay_hands("labourer", {"Right": grip_shaft})
@@ -704,7 +869,7 @@ def stage_tracks(people):
         names = []
         for act in sorted((a for a in bpy.data.actions if a.name.startswith(who + ":")), key=lambda a: a.name):
             clip = act.name.split(":", 1)[1]
-            if clip.startswith("test-"):  # (fit-test poses are for the review sheets only)
+            if clip not in SHIPPED.get(who, {clip}):  # (fit-test poses and unshipped clips are for the review sheets only)
                 continue
             track = rig.animation_data.nla_tracks.new()
             track.name = clip
@@ -713,6 +878,13 @@ def stage_tracks(people):
             track.mute = True
             names.append(f"{clip} {(act.frame_range[1] - act.frame_range[0]) / FPS:.2f}s")
         reset_pose(rig)
+        lod0 = next((o for o in bpy.data.objects if o.name == f"{who}.a_LOD0"), None)
+        if lod0 is not None:
+            for key in ("twin_travel", "twin_turn"):
+                if key in rig and who in WALKERS:
+                    lod0[key] = {k: list(v) for k, v in rig[key].items()}
+                elif key in lod0:
+                    del lod0[key]
         print(f"[clips] {who}: tracks {names}")
     scene.frame_set(0)
 

@@ -24,6 +24,9 @@ import { streaming } from "../engine/streaming";
 import { tierSettings } from "../engine/tiers";
 import { twinStore } from "../state/store";
 import { air } from "../world/air";
+import walkMeta from "../data/zones/powerhouse.camp-gate.walk.json";
+import { curvesFrom, planBeats, poseAt, walkSeconds as plannedWalk, type Beat, type Walker } from "./walk-plan";
+import { DOG as DOG_BODY, PERSON, Polyline, WalkMap, type WalkMeta } from "./walkmap";
 
 export type GateSceneContext = {
   scene: THREE.Scene;
@@ -51,7 +54,7 @@ const CHECK_SECONDS = 4.4;
 const BOOM_SECONDS = 2.2;
 /** The people's walk: the speed the clip was recorded at, and the speed they walk at here (metres a second). */
 const WALK = { clip: "walk", made: 1.38, speed: 1.3 };
-/** The guard's `barrier` clip: seconds in all, and seconds into it at which he bears down. */
+/** The guard's `barrier` and `barrierDown` clips: seconds in all, and seconds into them at which the arm starts to move. */
 const BARRIER_CLIP = { seconds: 4.5, push: 1.1 };
 const BOOM_UP = THREE.MathUtils.degToRad(82);
 /** Speeds the dog's clips were made for, metres a second (scripts/blender/twin/build_gate_dog.py). */
@@ -88,19 +91,14 @@ const turnTowards = (from: number, to: number, most: number) => {
   return from + Math.sign(d) * Math.min(Math.abs(d), most);
 };
 
-/** One stretch of a person's part in the loop: stand somewhere doing something, or walk from the last place to `to`. */
-type Beat = {
-  until: number;
-  to?: THREE.Vector3;
-  /** A point to face while standing (the pickup, the other man). */
-  face?: THREE.Vector3;
-  clip: string;
-  once?: boolean;
-};
+/** Where a dog's front and hind paws are from its middle, metres (its body follows the ground under both). */
+const DOG_HALF_LENGTH = 0.27;
 
 type Status = { seconds: number; length: number; phase: string; actors: number; held: boolean };
 let status: Status = { seconds: 0, length: 0, phase: "loading", actors: 0, held: false };
 let seekTo: number | null = null;
+/** Where each actor stands now, for checks: position, the ground there and the walk map's verdict. */
+const where: Record<string, { x: number; y: number; z: number; ground: number; free: boolean }> = {};
 let held = false;
 
 /** For captures and checks (`window.__TWIN__.gate`). */
@@ -114,6 +112,10 @@ export const gateScene = {
   hold(on: boolean) {
     held = on;
   },
+  /** Where the people and the dog stand at this moment (checks of feet and routes). */
+  where: () => ({ ...where }),
+  /** The location's ground height at a point (checks). */
+  ground: (x: number, z: number) => groundY(x, z),
 };
 
 export function startGateScene(ctx: GateSceneContext): () => void {
@@ -144,7 +146,13 @@ export function startGateScene(ctx: GateSceneContext): () => void {
 
   const start = async () => {
     const wanted = [PICKUP, DOG, GUARD, ENGINEER, LABOURER].filter((id) => ASSETS.has(id));
-    const models = await Promise.all(wanted.map((id) => acquireActorModel(id)));
+    const [models, walk] = await Promise.all([
+      Promise.all(wanted.map((id) => acquireActorModel(id))),
+      WalkMap.load(walkMeta as unknown as WalkMeta).catch((error) => {
+        console.warn("[twin] no walk map: people and the dog keep to straight lines on the ground", error);
+        return null;
+      }),
+    ]);
     if (stopped) {
       for (const id of wanted) releaseActorModel(id);
       return;
@@ -217,17 +225,26 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const pivot = boomPlace ? new THREE.Vector3(boomPlace.p[0], 0, boomPlace.p[2]) : boothPoint(2.6, 0);
     const tail = pivot.clone().addScaledVector(across, -0.75);
     const atBarrier = tail.clone().addScaledVector(inward, -0.62);
-    const walkSeconds = (a: THREE.Vector3, b: THREE.Vector3) => a.distanceTo(b) / WALK.speed;
-    const tOut = tStop - 0.9; // he starts across as the pickup brakes
-    const tDoor = tOut + walkSeconds(post, door);
+    // a man's walk: turn to the way, set off, walk, stop, turn to face what is next (sim/walk-plan.ts),
+    // on a route round the booth and whatever else is in the way (sim/walkmap.ts)
+    const walkerOf = (actor: Actor | null): Walker => ({
+      curves: curvesFrom(actor?.data),
+      walk: WALK,
+      route: walk ? (a, b) => walk.findPath(a, b, PERSON) : undefined,
+    });
+    const guardWalker = walkerOf(guard);
+    const walkSeconds = (a: THREE.Vector3, b: THREE.Vector3, before: THREE.Vector3, after: THREE.Vector3) => plannedWalk(guardWalker, a, b, before, after);
+    const gateSide = gate.clone().addScaledVector(inward, -1.5);
+    const tOut = tStop - 0.9 - 2.4; // he sets off as the pickup slows
+    const tDoor = tOut + walkSeconds(post, door, gateSide, cab);
     const tChecked = Math.max(tDoor, tStop + 0.6) + CHECK_SECONDS;
-    const tAtBarrier = tChecked + walkSeconds(door, atBarrier);
+    const tAtBarrier = tChecked + walkSeconds(door, atBarrier, cab, tail);
     const tBoomUp = tAtBarrier + BARRIER_CLIP.push;
     const tLeave = tBoomUp + BOOM_SECONDS + 0.9;
     const tGone = tLeave + travel(leaveTo - stopAt, 0).seconds;
     const tBoomDown = tLeave + 6.5;
     const tLowered = tBoomDown - BARRIER_CLIP.push + BARRIER_CLIP.seconds;
-    const tPost = tLowered + walkSeconds(atBarrier, post);
+    const tPost = tLowered + walkSeconds(atBarrier, post, tail, gateSide);
     const rearAxleAt = (t: number) => {
       if (t < tLeave) {
         const move = travel(stopAt - from, t - tGo);
@@ -240,22 +257,24 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     let tAlert = tGo;
     while (tAlert < tStop && rearAxleAt(tAlert).s < gateAt - 26) tAlert += 0.1;
 
-    const rest = boothPoint(DOG_REST.across, DOG_REST.inward);
-    const watch = boothPoint(DOG_WATCH.across, DOG_WATCH.inward);
-    const dogRun = rest.distanceTo(watch);
+    const restWanted = boothPoint(DOG_REST.across, DOG_REST.inward);
+    const watchWanted = boothPoint(DOG_WATCH.across, DOG_WATCH.inward);
+    const rest = walk ? walk.nearestFree(restWanted, DOG_BODY) : restWanted;
+    const watch = walk ? walk.nearestFree(watchWanted, DOG_BODY) : watchWanted;
+    const runOut = new Polyline(walk ? walk.findPath(rest, watch, DOG_BODY) : [rest, watch]);
+    const runBack = new Polyline(walk ? walk.findPath(watch, rest, DOG_BODY) : [watch, rest]);
     const tUp = tAlert + 1.4; // on its feet
     const tBark = tUp + 0.7;
     const tTrot = tBark + 1.6;
-    const tWatch = tTrot + dogRun / DOG_TROT.speed;
+    const tWatch = tTrot + runOut.total / DOG_TROT.speed;
     const tStand = tLeave + 1.5;
     const tHome = tStand + 4;
-    const tBack = tHome + dogRun / DOG_WALK.speed;
+    const tBack = tHome + runBack.total / DOG_WALK.speed;
     const tDown = tBack + 1.2; // turned round, starts to lie down
     const tLying = tDown + 1.6;
     const loopSeconds = Math.max(tGone + 5, tLying + 6, tPost + 4);
 
     // ---- the people's parts ---------------------------------------------------------------------------
-    const gateSide = gate.clone().addScaledVector(inward, -1.5);
     const guardBeats: Beat[] = [
       { until: tOut, clip: "idle", face: gateSide },
       { until: tDoor, clip: WALK.clip, to: door },
@@ -264,7 +283,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       { until: tAtBarrier + BARRIER_CLIP.seconds, clip: "barrier", once: true, face: tail },
       { until: tAtBarrier + BARRIER_CLIP.seconds + 3.4, clip: "waveThrough", once: true, face: gateSide },
       { until: tBoomDown - BARRIER_CLIP.push, clip: "idleShift", face: gate.clone().addScaledVector(inward, 6) },
-      { until: tLowered, clip: "barrier", once: true, face: tail },
+      { until: tLowered, clip: guard?.model.clips.has("barrierDown") ? "barrierDown" : "barrier", once: true, face: tail },
       { until: tPost, clip: WALK.clip, to: post },
       { until: Infinity, clip: "idle", face: gateSide },
     ];
@@ -289,40 +308,33 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       { until: Infinity, clip: "restShovel", face: digAt },
     ];
     const people = [
-      { actor: guard, beats: guardBeats, at: post.clone(), heading: 0, home: post, phase: 0 },
-      { actor: engineer, beats: engineerBeats, at: engineerAt.clone(), heading: 0, home: engineerAt, phase: 0.37 },
-      { actor: labourer, beats: labourerBeats, at: labourerAt.clone(), heading: 0, home: labourerAt, phase: 0.71 },
-    ];
-    for (const person of people) {
+      { actor: guard, beats: guardBeats, home: post, phase: 0 },
+      { actor: engineer, beats: engineerBeats, home: engineerAt, phase: 0.37 },
+      { actor: labourer, beats: labourerBeats, home: labourerAt, phase: 0.71 },
+    ].map((person) => {
+      const walker = walkerOf(person.actor);
       const first = person.beats[0].face;
-      if (first) person.heading = Math.atan2(first.x - person.at.x, first.z - person.at.z);
-    }
-    const from3 = new THREE.Vector3();
+      const heading = first ? Math.atan2(first.x - person.home.x, first.z - person.home.z) : 0;
+      return { ...person, walker, plan: planBeats(walker, person.beats, person.home, heading) };
+    });
+    const at3 = new THREE.Vector3();
     /** Where a person is, what he faces and what he plays, `t` seconds into the loop. */
     const act = (person: (typeof people)[number], t: number, dt: number, k: number, cull: number) => {
-      const { actor, beats } = person;
+      const { actor, walker, plan } = person;
       if (!actor) return;
-      let index = 0;
-      while (beats[index].until <= t) index++;
-      const beat = beats[index];
-      const began = index ? beats[index - 1].until : 0;
-      // the place he stands at the start of this beat: the last place walked to
-      from3.copy(person.home);
-      for (let i = 0; i < index; i++) if (beats[i].to) from3.copy(beats[i].to!);
-      let want = person.heading;
-      if (beat.to) {
-        const u = (t - began) / Math.max(0.001, beat.until - began);
-        person.at.copy(from3).lerp(beat.to, Math.min(1, Math.max(0, u)));
-        want = Math.atan2(beat.to.x - from3.x, beat.to.z - from3.z);
-        actor.play(beat.clip, { fade: 0.25, speed: WALK.speed / WALK.made, phase: person.phase });
+      const { heading, seg, clipTime } = poseAt(walker, plan, t, at3);
+      if (seg.kind === "walk") {
+        actor.play(seg.clip, { fade: 0.3, speed: WALK.speed / WALK.made, phase: person.phase });
+      } else if (clipTime !== null) {
+        // (a clip that moves him, or one played once: its time is the loop's, so any moment shows again)
+        actor.play(seg.clip, { fade: seg.kind === "stand" ? 0.35 : 0.22, loop: false, speed: 0 });
+        actor.setTime(clipTime);
       } else {
-        person.at.copy(from3);
-        if (beat.face) want = Math.atan2(beat.face.x - person.at.x, beat.face.z - person.at.z);
-        actor.play(beat.clip, { fade: 0.35, loop: !beat.once, phase: beat.once ? 0 : person.phase });
+        actor.play(seg.clip, { fade: 0.35, loop: true, phase: person.phase });
       }
-      person.heading = turnTowards(person.heading, want, (beat.to ? 5 : 2.6) * Math.max(dt, 1 / 240));
-      actor.object.position.set(person.at.x, groundY(person.at.x, person.at.z), person.at.z);
-      actor.object.rotation.y = person.heading;
+      // (standing on the highest walkable top under his feet: the booth's apron, a step)
+      actor.object.position.set(at3.x, walk ? walk.standY(at3.x, at3.z, 0.13) : groundY(at3.x, at3.z), at3.z);
+      actor.object.rotation.y = heading;
       actor.update(dt, ctx.camera.position, k, cull);
     };
 
@@ -344,6 +356,9 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       boom.angle = -1;
       setBoom(0);
     });
+
+    // heights from the walk map, which arrives long before the ground patch (and is right from the start)
+    const surfaceY = (x: number, z: number) => (walk ? walk.heightAt(x, z) : groundY(x, z));
 
     // ---- per frame -----------------------------------------------------------------------------------
     const rear = new THREE.Vector3();
@@ -382,12 +397,12 @@ export function startGateScene(ctx: GateSceneContext): () => void {
         onRoad(s, rear);
         onRoad(s + wheelbase, front);
         const heading = Math.atan2(front.x - rear.x, front.z - rear.z);
-        const yRear = groundY(rear.x, rear.z);
-        const yFront = groundY(front.x, front.z);
+        const yRear = surfaceY(rear.x, rear.z);
+        const yFront = surfaceY(front.x, front.z);
         side.set(Math.cos(heading), 0, -Math.sin(heading)); // the pickup's left
         const mid = ahead.copy(rear).lerp(front, 0.5);
-        const yLeft = groundY(mid.x + side.x * track * 0.5, mid.z + side.z * track * 0.5);
-        const yRight = groundY(mid.x - side.x * track * 0.5, mid.z - side.z * track * 0.5);
+        const yLeft = surfaceY(mid.x + side.x * track * 0.5, mid.z + side.z * track * 0.5);
+        const yRight = surfaceY(mid.x - side.x * track * 0.5, mid.z - side.z * track * 0.5);
         // (springs: the body takes a moment to follow the wheels)
         const follow = seekTo === null && dt > 0 ? 1 - Math.exp(-dt * 7) : 1;
         pitch += (Math.atan2(yFront - yRear, wheelbase) - pitch) * follow;
@@ -439,9 +454,10 @@ export function startGateScene(ctx: GateSceneContext): () => void {
           dog.play("bark", { fade: 0.15, loop: false });
           phase += ", dog barking";
         } else if (t < tWatch) {
-          dogAt.copy(rest).lerp(watch, (t - tTrot) / (tWatch - tTrot));
-          want = Math.atan2(watch.x - rest.x, watch.z - rest.z);
-          turn = 5;
+          const s = (t - tTrot) * DOG_TROT.speed;
+          runOut.at(s, dogAt);
+          want = runOut.heading(s);
+          turn = 7;
           dog.play(DOG_TROT.clip, { fade: 0.2, speed: DOG_TROT.speed / DOG_TROT.made });
         } else if (t < tStand) {
           dogAt.copy(watch);
@@ -453,9 +469,10 @@ export function startGateScene(ctx: GateSceneContext): () => void {
           want = truckHeading;
           dog.play("idle", { fade: 0.5 });
         } else if (t < tBack) {
-          dogAt.copy(watch).lerp(rest, (t - tHome) / (tBack - tHome));
-          want = Math.atan2(rest.x - watch.x, rest.z - watch.z);
-          turn = 3;
+          const s = (t - tHome) * DOG_WALK.speed;
+          runBack.at(s, dogAt);
+          want = runBack.heading(s);
+          turn = 4;
           dog.play(DOG_WALK.clip, { fade: 0.3, speed: DOG_WALK.speed / DOG_WALK.made });
         } else if (t < tDown) {
           dogAt.copy(rest);
@@ -467,14 +484,28 @@ export function startGateScene(ctx: GateSceneContext): () => void {
           dog.play("lieDown", { fade: 0.2, loop: false });
         }
         dogHeading = turnTowards(dogHeading, want, turn * Math.max(dt, 1 / 240));
-        dog.object.position.set(dogAt.x, groundY(dogAt.x, dogAt.z), dogAt.z);
-        dog.object.rotation.y = dogHeading;
+        // front and hind paws each on what is under them: up a step, the body tilts and rises with it
+        const fx = Math.sin(dogHeading) * DOG_HALF_LENGTH;
+        const fz = Math.cos(dogHeading) * DOG_HALF_LENGTH;
+        const yFront = walk ? walk.standY(dogAt.x + fx, dogAt.z + fz, 0.08) : groundY(dogAt.x + fx, dogAt.z + fz);
+        const yHind = walk ? walk.standY(dogAt.x - fx, dogAt.z - fz, 0.08) : groundY(dogAt.x - fx, dogAt.z - fz);
+        dog.object.position.set(dogAt.x, (yFront + yHind) / 2, dogAt.z);
+        dog.object.rotation.set(-Math.atan2(yFront - yHind, 2 * DOG_HALF_LENGTH), dogHeading, 0, "YXZ");
         dog.update(dt, ctx.camera.position, k, tier.drawDistance);
       }
       for (const person of people) {
         if (person.actor) person.actor.object.visible = layers.people;
         act(person, t, dt, k, tier.drawDistance);
       }
+      const note = (name: string, actor: Actor | null, body: typeof PERSON) => {
+        if (!actor) return;
+        const p = actor.object.position;
+        where[name] = { x: p.x, y: p.y, z: p.z, ground: groundY(p.x, p.z), free: walk ? walk.nearestFree(p, body, 0).distanceTo(p) < 1e-6 : true };
+      };
+      note("guard", guard, PERSON);
+      note("engineer", engineer, PERSON);
+      note("labourer", labourer, PERSON);
+      note("dog", dog, DOG_BODY);
       status.seconds = t;
       status.phase = phase;
       status.held = held;

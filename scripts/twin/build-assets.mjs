@@ -253,7 +253,7 @@ for (const e of list) {
 
 const zoneIndex = [];
 if (fs.existsSync(ZONES_DIR)) {
-  for (const f of fs.readdirSync(ZONES_DIR).filter((n) => n.endsWith(".json") && n !== "index.json").sort()) {
+  for (const f of fs.readdirSync(ZONES_DIR).filter((n) => n.endsWith(".json") && n !== "index.json" && !n.endsWith(".walk.json")).sort()) {
     const zone = JSON.parse(fs.readFileSync(path.join(ZONES_DIR, f), "utf8"));
     if (`${zone.id}.json` !== f) failures.push(`zones/${f}: its id is '${zone.id}'`);
     const used = [...new Set(zone.placements.map((p) => p.asset))].sort();

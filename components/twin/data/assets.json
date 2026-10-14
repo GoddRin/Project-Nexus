@@ -1,12 +1,12 @@
 [
  {
   "id": "char.engineer.a",
-  "url": "/models/twin/characters/engineer.a.glb?v=fbad9b52fa",
-  "bytes": 6878328,
+  "url": "/models/twin/characters/engineer.a.glb?v=13dcb03e2f",
+  "bytes": 6800400,
   "tris": [
-   19495,
-   5879,
-   1407
+   19485,
+   5856,
+   1366
   ],
   "lodDistances": [
    12,
@@ -15,7 +15,7 @@
   "bounds": {
    "min": [
     -0.556,
-    -0.024,
+    -0.026,
     -0.135
    ],
    "max": [
@@ -30,18 +30,21 @@
    "mpfb.elvaerwyn-shirt",
    "mpfb.punkduck-jeans",
    "mpfb.mindfront-boots",
+   "polyhaven.stretch_poplin",
+   "polyhaven.denim_fabric_06",
+   "polyhaven.bi_stretch",
    "mixamo.motion",
    "twin.authored"
   ]
  },
  {
   "id": "char.guard.a",
-  "url": "/models/twin/characters/guard.a.glb?v=ed30eefbdf",
-  "bytes": 6818896,
+  "url": "/models/twin/characters/guard.a.glb?v=64bb42c206",
+  "bytes": 6628880,
   "tris": [
-   19499,
-   5899,
-   1446
+   19441,
+   5898,
+   1438
   ],
   "lodDistances": [
    12,
@@ -51,11 +54,11 @@
    "min": [
     -0.545,
     -0.003,
-    -0.116
+    -0.115
    ],
    "max": [
     0.545,
-    1.704,
+    1.703,
     0.352
    ]
   },
@@ -65,18 +68,20 @@
    "mpfb.elvaerwyn-shirt",
    "mpfb.elvaerwyn-trouser",
    "mpfb.mrt-cap",
+   "polyhaven.stretch_poplin",
+   "polyhaven.rough_linen",
    "mixamo.motion",
    "twin.authored"
   ]
  },
  {
   "id": "char.labourer.a",
-  "url": "/models/twin/characters/labourer.a.glb?v=7ec928bfbf",
-  "bytes": 6550940,
+  "url": "/models/twin/characters/labourer.a.glb?v=59a0659132",
+  "bytes": 5670496,
   "tris": [
-   19086,
-   5900,
-   1447
+   19026,
+   5898,
+   1441
   ],
   "lodDistances": [
    12,
@@ -101,6 +106,8 @@
    "mpfb.mindfront-trousers",
    "mpfb.punkduck-boots",
    "mpfb.mrt-gloves",
+   "polyhaven.cotton_jersey",
+   "polyhaven.denim_fabric_05",
    "mixamo.motion",
    "twin.authored"
   ]

@@ -106,6 +106,8 @@ type StageId = "cleared" | "excavation" | "rebar" | "formwork" | "poured" | "fin
 
 `ground.json` (written by `scripts/twin/build-ground-textures.mjs`, never by hand): the ground material's layers (`{ id, sizeM, cr, nh, credit }`: colour with roughness in alpha, and normal with occlusion and height) and, per ground patch, its mask and the square of ground the mask covers. `sources/camp-gate-layout.json` (written by `scripts/blender/twin/gate_ground.py`): the gate slice's patch, gate, booth pose and road line.
 
+`zones/<zone-id>.walk.json` (optional, P02d; written by `scripts/blender/twin/bake_walkmap.py`, never by hand) describes the zone's walk map, a PNG in `public/textures/twin/walk/`: `{ url, origin: [x0, z0], cell, size: [w, h], low, high }`, a grid in the location frame whose first row is at `z0` and counts up from the image's bottom. Per cell: R the height of a walkable top above the ground patch in cm; G bit 0 solid between `low` metres above that top (in a dog's and a person's way), bit 1 solid in the `high` band (in a person's way); B a soft cost 0 to 255 (undergrowth). Read by `components/twin/sim/walkmap.ts`. P09a's navigation mesh replaces its routing.
+
 ### 4.3 `people.json` (the public registry; migrated from v1 `personnelData.ts` in P00)
 
 ```ts
@@ -162,6 +164,8 @@ type Clip = {
   source: "mixamo" | "mesh2motion" | "authored";
 };
 ```
+
+Until the shared clip files exist (P08), a person's clips travel inside his own asset file, and clips that move him carry their motion as extras of the LOD0 node (P02d): `twin_travel` (`{ clip: number[] }`, metres forward) and `twin_turn` (`{ clip: number[] }`, radians to his left, three.js `rotation.y`), one value a frame at 30 fps. The clip itself then stays on the spot; the script that places him moves and turns him along the curve (`components/twin/sim/walk-plan.ts`). `rootSpeed` above is the same idea for a looping clip.
 
 ### 4.6 `stations.json` (exported from `STN_` empties)
 

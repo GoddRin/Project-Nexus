@@ -65,6 +65,8 @@ export type Actor = {
   playing: () => string | null;
   /** Change the playing clip's rate without restarting it. */
   setSpeed: (speed: number) => void;
+  /** Put the playing clip at a moment, seconds (a clip driven by a script's clock: play it at speed 0 and set this each frame). */
+  setTime: (seconds: number) => void;
   /** Brightness of the actor's lamp surfaces (materials named EMIT_...), 0 to 1 and beyond. */
   setGlow: (k: number) => void;
   /**
@@ -306,6 +308,10 @@ export function createActor(model: ActorModel): Actor {
 
     setSpeed(speed) {
       if (current) current.timeScale = speed;
+    },
+
+    setTime(seconds) {
+      if (current) current.time = Math.min(Math.max(0, seconds), current.getClip().duration);
     },
 
     setGlow(k) {
