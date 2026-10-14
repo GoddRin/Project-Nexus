@@ -1406,31 +1406,76 @@ def dress_guard(who):
 
 
 def vest_from(who, shirt, colour):
-    """A sleeveless hi-vis vest cut from the shirt's own torso and worn 7 mm over it."""
+    """
+    The site's reflectorized vest, as the owner photographed it (2026-10-14): lime mesh, open down
+    the front (two narrow panels, no zip), deep armholes open at the sides down to a band at the
+    hem, ending at the waist above the belt. Wide silver prismatic tape: straight down each front
+    panel from the shoulder, a V on the back from the shoulders towards the middle of the hem, and a
+    band round the hem. Edges bound in lime; a small orange name tag on the left chest.
+    Every measure is taken from the man's own torso (shoulder width, neck, hips), so it fits his
+    frame. Cut from his shirt for its bone weights; worn 7 mm over it; below the chest it hangs
+    straight instead of following the body.
+    """
     arm_groups = {g.index for g in shirt.vertex_groups if any(k in g.name for k in ("Arm", "Hand"))}
     hips = bone_head(who, "Hips")
     neck = bone_head(who, "Neck")
+    chest_z = bone_head(who, "Spine2").z
     shoulder_x = abs(bone_head(who, "LeftArm").x) - 0.012
+    hem = hips.z + 0.045  # (at the waist, just above the belt)
+    armpit = bone_head(who, "LeftArm").z - 0.06
+    opening = max(0.05, 0.3 * shoulder_x)  # half the gap between the front panels
+    band = 0.065 * shoulder_x / 0.17  # the hem band's height, by his frame
     bm = bmesh.new()
     bm.from_mesh(shirt.data)
     deform = bm.verts.layers.deform.verify()
     keep = set()
     for v in bm.verts:
         arm_w = sum(w for g, w in v[deform].items() if g in arm_groups)
-        # the V of the neck: from the breastbone up to about 8 cm either side at the collar (P02b's V took the whole upper chest)
-        v_open = v.co.y < 0 and abs(v.co.x) < 0.012 + (v.co.z - (neck.z - 0.21)) * 0.34 and v.co.z > neck.z - 0.21
-        if arm_w < 0.3 and abs(v.co.x) < shoulder_x and hips.z - 0.03 < v.co.z < neck.z - 0.012 and not v_open:
-            keep.add(v)
+        x, y, z = v.co
+        if arm_w >= 0.55 or abs(x) >= shoulder_x or not (hem < z < neck.z - 0.012):
+            continue
+        if y < 0 and abs(x) < opening:  # (open down the front)
+            continue
+        # deep armholes: the sides are open from the armpit down to the hem band
+        side = abs(y) < 0.45 * abs(x) and abs(x) > 0.6 * shoulder_x
+        if side and hem + band + 0.012 < z < armpit + 0.06:
+            continue
+        keep.add(v)
     bmesh.ops.delete(bm, geom=[f for f in bm.faces if not all(v in keep for v in f.verts)], context="FACES")
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+    # (the shirt's pockets, buttons and flaps are pieces of their own: the vest is flat over them.
+    #  Its yoke and panels are pieces too, and stay)
+    bmesh.ops.delete(bm, geom=[f for piece, area in loose_pieces(bm) if area < 0.015 for f in piece], context="FACES")
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+    bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=24)  # (where a pocket lay over the shirt)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
     # (the cut follows the shirt's triangles: straighten its zigzag along the edges)
-    for _ in range(4):
+    for _ in range(12):
         edge = [v for v in bm.verts if v.is_boundary]
         bmesh.ops.smooth_vert(bm, verts=edge, factor=0.5, use_axis_x=True, use_axis_y=False, use_axis_z=True)
+    # the front panels' real width at the chest (the armhole takes what the arm's weights did)
+    outer = max((abs(v.co.x) for v in bm.verts if v.co.y < 0 and abs(v.co.z - chest_z) < 0.04), default=shoulder_x * 0.9)
     bm.normal_update()
     for v in bm.verts:
         v.co += v.normal * 0.007
-    for _ in range(2):
+    # below the chest it hangs: front and back never come in closer than the chest and the
+    # shoulder blades (by columns across the body)
+    front, back = {}, {}
+    for v in bm.verts:
+        if chest_z - 0.03 < v.co.z < chest_z + 0.05:
+            k = round(v.co.x / 0.02)
+            if v.co.y < 0:
+                front[k] = min(front.get(k, 0.0), v.co.y)
+            else:
+                back[k] = max(back.get(k, 0.0), v.co.y)
+    for v in bm.verts:
+        if v.co.z < chest_z:
+            k = round(v.co.x / 0.02)
+            if v.co.y < 0 and k in front:
+                v.co.y = min(v.co.y, front[k] + 0.004)
+            elif v.co.y >= 0 and k in back:
+                v.co.y = max(v.co.y, back[k] - 0.004)
+    for _ in range(3):
         bmesh.ops.smooth_vert(bm, verts=[v for v in bm.verts if not v.is_boundary], factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
     mesh = bpy.data.meshes.new(f"{who}.vest")
     bm.to_mesh(mesh)
@@ -1445,7 +1490,7 @@ def vest_from(who, shirt, colour):
         vest.vertex_groups.new(name=g.name)
     vest["twin_outer_faces"] = len(mesh.polygons)  # (solidify keeps the original faces first: the outside)
     mod = vest.modifiers.new("Solid", "SOLIDIFY")
-    mod.thickness = 0.006
+    mod.thickness = 0.004
     mod.offset = -1
     select_only(vest)
     bpy.ops.object.modifier_apply(modifier=mod.name)
@@ -1453,34 +1498,88 @@ def vest_from(who, shirt, colour):
     mod.object = rig_of(who)
     vest["twin_made"] = True
 
-    mat = flat_material(f"{who}.vest.mat", colour, rough=0.8, grain=0.8)
-    spine = bone_head(who, "Spine1")
-    tape = any_of(
-        mat,
-        band_mask(mat, (0, 0, spine.z - 0.06), (0, 0, 1), 0.0, 0.034, soft=0.002),
-        band_mask(mat, (0.098, 0, 0), (1, 0, 0), 0.0, 0.032, soft=0.002),
-        band_mask(mat, (-0.13, 0, 0), (1, 0, 0), 0.0, 0.032, soft=0.002),
-    )
-    # orange edging either side of the silver tape, as on the site's vests
-    edge = any_of(
-        mat,
-        band_mask(mat, (0, 0, spine.z - 0.072), (0, 0, 1), 0.0, 0.058, soft=0.002),
-        band_mask(mat, (0.086, 0, 0), (1, 0, 0), 0.0, 0.056, soft=0.002),
-        band_mask(mat, (-0.142, 0, 0), (1, 0, 0), 0.0, 0.056, soft=0.002),
-    )
-    overlay(mat, edge, (0.9, 0.36, 0.05), rough=0.7)
-    overlay(mat, tape, (0.62, 0.63, 0.62), rough=0.35, metal=0.0)
-    zip_line = band_mask(mat, (-0.004, 0, 0), (1, 0, 0), 0.0, 0.008, soft=0.001)
-    front = band_mask(mat, (0, 0.0, 0), (0, -1, 0), 0.0, 1.0)
+    # the mesh: lime net over a dark shirt reads darker and grainier than a solid lime
+    mat = flat_material(f"{who}.vest.mat", colour, rough=0.85, grain=0.4)
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
-    both = nodes.new("ShaderNodeMath")
-    both.operation = "MULTIPLY"
-    links.new(zip_line, both.inputs[0])
-    links.new(front, both.inputs[1])
-    overlay(mat, both.outputs[0], (0.06, 0.06, 0.06), rough=0.5)
+    net = nodes.new("ShaderNodeTexVoronoi")
+    net.inputs["Scale"].default_value = 260
+    holes = nodes.new("ShaderNodeMapRange")
+    holes.inputs["From Min"].default_value = 0.15
+    holes.inputs["From Max"].default_value = 0.45
+    holes.inputs["To Min"].default_value = 0.55
+    holes.inputs["To Max"].default_value = 0.0
+    links.new(net.outputs["Distance"], holes.inputs["Value"])
+    overlay(mat, holes.outputs[0], tuple(c * 0.38 for c in colour))
+
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(position(mat), sep.inputs[0])
+
+    def math(op, a, b=None, clamp=False):
+        n = nodes.new("ShaderNodeMath")
+        n.operation = op
+        n.use_clamp = clamp
+        for i, x in enumerate((a, b)):
+            if x is None:
+                continue
+            if isinstance(x, (int, float)):
+                n.inputs[i].default_value = x
+            else:
+                links.new(x, n.inputs[i])
+        return n.outputs[0]
+
+    def within(value, half, soft=0.0015):
+        """1 where |value| < half, with a soft edge."""
+        r = nodes.new("ShaderNodeMapRange")
+        r.interpolation_type = "SMOOTHSTEP"
+        r.inputs["From Min"].default_value = half - soft
+        r.inputs["From Max"].default_value = half + soft
+        r.inputs["To Min"].default_value = 1.0
+        r.inputs["To Max"].default_value = 0.0
+        links.new(math("ABSOLUTE", value), r.inputs["Value"])
+        return r.outputs[0]
+
+    X, Y, Z = sep.outputs["X"], sep.outputs["Y"], sep.outputs["Z"]
+    absx = math("ABSOLUTE", X)
+    is_front = math("LESS_THAN", Y, 0.0)
+    is_back = math("GREATER_THAN", Y, 0.0)
+    # front: straight down the middle of each panel, with lime either side (tape width by his frame)
+    panel_mid = (opening + outer) / 2
+    w = min(0.052 * shoulder_x / 0.17, 0.5 * (outer - opening))
+    front_tape = math("MULTIPLY", within(math("SUBTRACT", absx, panel_mid), w / 2), is_front)
+    # back: a V from the shoulders to near the middle of the hem band
+    top_x, bottom_x = 0.6 * shoulder_x, 0.2 * shoulder_x
+    z_top, z_bot = neck.z - 0.02, hem + band
+    t = math("DIVIDE", math("SUBTRACT", Z, z_bot), z_top - z_bot)
+    centre = math("ADD", math("MULTIPLY", t, top_x - bottom_x), bottom_x)
+    back_tape = math("MULTIPLY", math("MULTIPLY", within(math("SUBTRACT", absx, centre), w / 2), is_back), math("GREATER_THAN", Z, z_bot - 0.005))
+    # round the hem
+    hem_tape = within(math("SUBTRACT", Z, hem + 0.008 + (band - 0.01) / 2), (band - 0.01) / 2)
+    tape = math("MAXIMUM", math("MAXIMUM", front_tape, back_tape), hem_tape)
+    # the prismatic tape: silver, smooth, a faint diamond pattern in its roughness
+    prism = nodes.new("ShaderNodeTexVoronoi")
+    prism.inputs["Scale"].default_value = 90
+    shine = nodes.new("ShaderNodeMapRange")
+    shine.inputs["To Min"].default_value = 0.18
+    shine.inputs["To Max"].default_value = 0.4
+    links.new(prism.outputs["Distance"], shine.inputs["Value"])
+    overlay(mat, tape, (0.72, 0.74, 0.74), metal=0.0)
+    r = bsdf_of(mat).inputs["Roughness"]
+    mix = nodes.new("ShaderNodeMix")
+    mix.data_type = "FLOAT"
+    links.new(r.links[0].from_socket, mix.inputs["A"])
+    links.new(shine.outputs[0], mix.inputs["B"])
+    links.new(tape, mix.inputs["Factor"])
+    links.new(mix.outputs["Result"], r)
+    # the name tag on the left chest: orange with a silver stripe
+    tag_x, tag_z = panel_mid, chest_z + 0.035
+    tag = math("MULTIPLY", math("MULTIPLY", within(math("SUBTRACT", X, tag_x), w / 2 + 0.004), within(math("SUBTRACT", Z, tag_z), 0.011)), is_front)
+    stripe = math("MULTIPLY", tag, within(math("SUBTRACT", Z, tag_z), 0.004))
+    overlay(mat, tag, (0.92, 0.34, 0.06), rough=0.6)
+    overlay(mat, stripe, (0.7, 0.72, 0.72), rough=0.3)
     mesh.materials.clear()
     mesh.materials.append(mat)
     fabric(mat, vest, "bi_stretch", 0.2, strength=0.7, tone=0.15)
+    print(f"[people] {who}: vest, front opening {opening * 200:.0f} cm, panels {(outer - opening) * 100:.1f} cm, hem {hem:.2f} m, tape {w * 100:.1f} cm")
     return vest
 
 
@@ -1544,8 +1643,18 @@ def dress_engineer(who):
     bm.to_mesh(boots.data)
     bm.free()
 
-    vest = vest_from(who, shirt, (0.74, 0.86, 0.06))
+    vest = vest_from(who, shirt, (0.62, 0.9, 0.03))  # (fluorescent lime)
     hide_under(who, shirt, vest)
+    # (the shirt's pockets stand off it further than the vest: those the vest lies over go)
+    tree, keep = bvh_of(vest)
+    bm = bmesh.new()
+    bm.from_mesh(shirt.data)
+    doomed = [f for piece, area in loose_pieces(bm) if area < 0.04 and tree.find_nearest(sum((f.calc_center_median() for f in piece), Vector()) / len(piece), 0.03)[0] is not None for f in piece]
+    bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+    bm.to_mesh(shirt.data)
+    bm.free()
+    keep.free()
     chest = bone_head(who, "Spine2")
     front_y = min(v.co.y for v in vest.data.vertices if abs(v.co.z - chest.z) < 0.04)
     decal(who, "id", vest, Vector((-0.1, front_y, chest.z + 0.0)), (-0.2, -1, 0.05), 0.055, 0.085, flat_material(f"{who}.id.mat", (0.9, 0.9, 0.88), rough=0.35), nx=2, ny=3, lift=0.004)

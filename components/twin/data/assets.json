@@ -1,12 +1,12 @@
 [
  {
   "id": "char.engineer.a",
-  "url": "/models/twin/characters/engineer.a.glb?v=13dcb03e2f",
-  "bytes": 6800400,
+  "url": "/models/twin/characters/engineer.a.glb?v=0ee3ac5a6d",
+  "bytes": 6629128,
   "tris": [
-   19485,
-   5856,
-   1366
+   19481,
+   5865,
+   1389
   ],
   "lodDistances": [
    12,
@@ -39,8 +39,8 @@
  },
  {
   "id": "char.guard.a",
-  "url": "/models/twin/characters/guard.a.glb?v=64bb42c206",
-  "bytes": 6628880,
+  "url": "/models/twin/characters/guard.a.glb?v=810af910da",
+  "bytes": 6638304,
   "tris": [
    19441,
    5898,
