@@ -1,6 +1,6 @@
 Owner liked this result (2026-10-14 trial, Free plan, H3.1 best quality, text only). Screenshot: docs/twin-v2/review/tripo-trial/kapre.png
 Studio task: https://studio.tripo3d.ai/workspace/generate/a3ec64a7-e319-41ad-8a98-2879da7b7f68
-Licence: Free plan = public, non-commercial. Do NOT ship this result. On Pro: try the trial result's image as the input (image to 3D) so the new model matches it, else re-run this prompt.
+Licence: Free plan = public, non-commercial. Do NOT ship this result. In the Tripo month (Max, private): try the trial result's image as the input (image to 3D) so the new model matches it, else re-run this prompt.
 Fix after: cigar is club-sized; scale to 3 m; rig for P16 motion.
 
 Prompt:

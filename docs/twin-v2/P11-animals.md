@@ -6,7 +6,7 @@ Three sessions: P11a, P11b, P11c. Rigged, textured, animated fauna that belong t
 
 ## P11a. Fauna models and clips
 
-**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI"). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does.
+**Tripo models.** This phase's Tripo items were generated in the single Tripo month at P06a (`TOOLBOX.md`, "The Tripo month") and wait in `assets-src/twin/tripo/`. Clean them up and use them here. If something needed is missing, list it and ask the owner whether to buy one month of Pro 3k; never use Free-plan results.
 
 **Needs.** P04b, P07d (shares the LOD and animation throttling).
 

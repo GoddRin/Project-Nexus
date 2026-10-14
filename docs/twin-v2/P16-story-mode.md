@@ -172,7 +172,7 @@ The staff-office careers in section 5 (IT support, document controller, AutoCAD 
 
 ### P16e. The night framework and three cases
 
-**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI"). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does. The owner liked the trial kapre (2026-10-14): rebuild it first, from `assets-src/twin/tripo/kapre/prompt.txt`.
+**Tripo models.** This phase's Tripo items were generated in the single Tripo month at P06a (`TOOLBOX.md`, "The Tripo month") and wait in `assets-src/twin/tripo/`. Clean them up and use them here. If something needed is missing, list it and ask the owner whether to buy one month of Pro 3k; never use Free-plan results. The owner liked the trial kapre (2026-10-14); it is regenerated in the Tripo month from `assets-src/twin/tripo/kapre/prompt.txt`, so start the night beings with it.
 Kaba, light and fuel, darkness tuning, the presence behaviours (watching, following, luring, blocking, fleeing light), sound design for dread, the case structure, folklore sources file; cases: the mound on the road cut, the bend, the tikbalang's road. **Pass when:** each case plays from first clue to resolution and leaves its mark on the site; intensity settings work.
 
 ### P16f. Prologue and Act I: Ang Daan

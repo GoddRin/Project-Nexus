@@ -61,15 +61,41 @@ Credit costs on that page: HD generate 15, Smart Mesh 35, retopology 5, texture 
 | Carabao sled (paragos) | **Failed:** it made a table on legs with two sacks on top | Unfamiliar local objects need a reference photo (image or multi-view to 3D), not words |
 | Kapre (folklore giant) | Very good: strong silhouette, hair, loincloth, glowing eyes, eerie; the cigar came out club-sized | Creatures are its strength; expect to fix proportions of held items |
 
-**Which plan (decided 2026-10-14): Pro 3k (3,000 credits; ₱615 the first month, then ₱1,230 a month, as the owner saw on 2026-10-14), paid monthly, only in the months that build assets**, then cancelled. Those windows are listed in the budget below (camp, people and motion, calendar to weather, story mode), each reminded in its phase file. At 55 credits a model, 3,000 credits is about 54 best-quality models a month; batch the work so a month's credits are used up. Not yearly (the asset months are spread out), not Max (US$90, far more than needed), and not credit packs on the Free plan (no commercial licence). Take the 50% first-month coupon if it is still offered.
+**Which plan (revised 2026-10-14 from the owner's screenshots): one month of Max, all at once, at P06a.** Prices seen: Pro 3k ₱615 first month then ₱1,230; Pro 6k ₱923 then ₱1,845; Pro 12k ₱1,538 then ₱3,075; Max (25,000 credits) ₱2,775 first month then ₱5,550. The first-month half price applies once, so the cheapest way to cover the whole idea list (about 13,500 credits) is one discounted month: Max gives 25,000 credits for ₱2,775, against ₱2,768 for 15,000 credits by Pro 12k plus a later Pro 3k month, or about ₱5,500 for five Pro 3k months. Max also allows 100 tasks at once, so the batch fits in the month. The spare 11,500 credits are allocated in "The spare credits" below. **The owner turns auto-renewal off on the day of subscribing**, or it renews at ₱5,550. Later gaps: one month of Pro 3k (₱1,230) only if something important is missing.
 
-**The kapre:** the owner liked the trial kapre and wants it in story mode. Its prompt and notes are in `assets-src/twin/tripo/kapre/prompt.txt`; rebuild it on Pro at P16e.
+**The kapre:** the owner liked the trial kapre and wants it in story mode. Its prompt and notes are in `assets-src/twin/tripo/kapre/prompt.txt`; it is regenerated in the Tripo month (first in the story-mode part of the batch) and used at P16e.
 
 **More uses to try once on Pro:** auto-rig (20 credits) as a quick first rig for creatures before the proper Blender rig; Smart Segmentation to split a model into parts (a truck's doors, a machine's arm) so they can move; image-to-3D from the R4 and R5 photographs for signs, the office water dispenser and the guard booth fittings; variations of one prop (five different oil drums) so repeats do not look copied; night-case relics and offerings for story mode (a bottle of lambanog, candles, an old lantern); a carved bulul as a mystery item; the santelmo as a glowing orb with a model inside.
 
-Conclusion: worth taking Pro when P06a starts, used mainly with photos for local objects and with text for creatures and generic clutter.
+Conclusion: worth paying for when P06a starts, used mainly with photos for local objects and with text for creatures and generic clutter.
 
 **Do not use Tripo for:** anything built from drawings (powerhouse, tunnels, waterways, weir, camp buildings) because sizes must be exact; the named staff's faces (the P07c route is better); main characters' bodies, which need the shared rig and outfits of P07; the main vehicles when a bought or library model of the exact type exists.
+
+## The Tripo month (run at P06a)
+
+0. **Owner's standing instruction (2026-10-14): use every credit of the month.** Before subscribing, review the whole idea list and the spare-credit list against the plan as it then stands: sharpen each prompt (materials, wear, local detail, size), drop items a free source now covers, and brainstorm new items for any phase that has grown, so the batch is worth more than the credits. Keep a ranked overflow list so the last-week top-up never runs dry.
+1. Before subscribing: write `assets-src/twin/tripo/BATCH.md`, every item of the idea list below with its prompt or reference photos, tier, target phase and asset id. Items for phases not yet detailed (P16 especially) are written from the phase file as it stands; extra variations cover later changes.
+2. The owner subscribes to Max and turns auto-renewal off. Set privacy to Private.
+3. Generate the batch in priority order (the camp and office first, story mode last), up to 100 at once. Review each result in the studio and retry failures (photos instead of words for local objects). Export every keeper as GLB into `assets-src/twin/tripo/<asset-id>/` with its `prompt.txt`, plan and date.
+4. Check the licence terms once more and record in `DECISIONS.md` that the commercial licence covers models generated during the subscription after it ends.
+5. Do not clean up everything that month: each model is cleaned up and checked in the phase that uses it. The month only generates and downloads.
+
+### The spare credits (about 11,500 of Max's 25,000)
+
+Monthly credits do not carry over (check on the day), so every credit is spent inside the month. After the core list (about 13,500, retries included), the spare goes to these, in this order:
+
+| # | Use | Count and tier | Credits with retries |
+| --- | --- | --- | --- |
+| S1 | **Real objects from the owner's photographs** (image or multi-view to 3D): the site's own signs, tools, machines, a cement bag, a rock from the river, the guard booth fittings, the office water dispenser. The truest "it looks like ours" route | 30 Hero | 2,150 |
+| S2 | **Variations of anything repeated** so copies are not noticed: three to five versions of drums, chairs, sandbag stacks, bags, crates, debris | about 60 Standard | 2,000 |
+| S3 | **Story packs 1 to 10 in advance:** each pack's collectibles and objects (idea 22) | 10 packs | 3,300 |
+| S4 | **Five more night beings, rigged:** for later packs (for example the batibat, the berbalang, a bungisngis, the mangangayaw ghost, a haunted tunnel worker) | 5 Rigged | 490 |
+| S5 | **Small hydro-works fittings** that drawings do not detail: valves and handwheels, pressure gauges, flanges, cable trays, fire extinguisher stands, panel knobs, warning lamps (sizes then set from the drawings) | 25 Standard | 810 |
+| S6 | **River and forest details:** driftwood, river-stone clusters, a termite mound, bird nests, fallen logs, a fallen bamboo clump | 20 Standard | 650 |
+| S7 | **PPE and clothing as objects:** hard hats on a shelf, boots by a door, raincoats and umbrellas on hooks, gloves drying on a rebar | 15 Standard | 490 |
+| S8 | **Last-week top-up:** whatever is left in the final days goes to more variations (S2) and the next story packs (S3 onward) | the rest | about 1,600 |
+
+Rule for the month: by the last week, check the balance every day; nothing is left unspent when the month ends.
 
 ## Tripo idea list and credit budget (2026-10-14)
 
@@ -98,22 +124,22 @@ Every idea below passes the same rules and clean-up as any Tripo model, and each
 | 17 | **Typhoon aftermath:** fallen branches, torn roof sheets, landslide debris, flood litter, a toppled sign | P12c | 12 Standard | 390 |
 | 18 | **Wildlife sculpt bases:** Philippine eagle, cloud rat, Luzon bleeding-heart, monitor lizard, civet, hornbill, and others with no rigged model | P11a, P11c | 12 Rigged | 1,170 |
 | 19 | **Play objects:** kite, sipa, tumbang preso can, a fishing rod and catch, a karaoke microphone, cards | P13j | 12 Standard | 390 |
-| 20 | **Folklore beings:** the kapre (the owner's favourite; see below), tikbalang, aswang, manananggal, duwende, white lady, sigbin, tiyanak, the nuno's mound | P16e and packs | 10 Rigged | 975 |
+| 20 | **Folklore beings:** the kapre (the owner's favourite; see above), tikbalang, aswang, manananggal, duwende, white lady, sigbin, tiyanak, the nuno's mound | P16e and packs | 10 Rigged | 975 |
 | 21 | **Night-case objects:** relics and offerings, old lanterns, candles, an anting-anting, a carved bulul, the santelmo's glowing core, a tunnel shrine | P16e and packs | 20 Standard | 650 |
 | 22 | **Story collectibles:** one set per pack (old photographs, letters, a survey peg from 2019, a worker's lost ID) | each P16 pack | 10 Standard per pack | 330 per pack |
 | 23 | **Milestone keepsakes:** a commemorative plaque, a ribbon-cutting set, the first-power trophy | P14b | 3 Hero | 215 |
 
-**Budget against the owner's plan (Pro 3k: 3,000 credits a month, ₱615 the first month then ₱1,230 a month, seen 2026-10-14).**
+**Budget by window** (all generated in the one Tripo month; the windows only say which phase uses them):
 
-| Window | Ideas | Credits | Pro 3k months |
+| Window | Ideas | Credits | Share of Max's 25,000 |
 | --- | --- | --- | --- |
-| Camp and office (P05f, P06) | 1 to 10, 14 | about 5,700 | 2 |
-| People and motion (P08e, P13) | 11, 12, 19 | about 3,000 | 1 |
-| Calendar, vehicles, animals, weather (P09e to P12) | 13, 15 to 18 | about 2,900 | 1 |
-| Story mode start (P16e) and P14b | 20, 21, 23 | about 1,840 | 1 |
-| Each later story pack | 22 plus new beings | about 330 to 1,000 | share one month across 3 to 9 packs |
+| Camp and office (P05f, P06) | 1 to 10, 14 | about 5,700 | 23% |
+| People and motion (P08e, P13) | 11, 12, 19 | about 3,000 | 12% |
+| Calendar, vehicles, animals, weather (P09e to P12) | 13, 15 to 18 | about 2,900 | 12% |
+| Story mode start (P16e) and P14b | 20, 21, 23 | about 1,840 | 7% |
+| Each later story pack | 22 plus new beings | about 330 to 1,000 | the remaining 46%, about 11,500 credits, for packs generated in advance |
 
-**Total for the core plan: about 13,500 credits, five Pro 3k months, roughly ₱5,500** (one month at ₱615 and four at ₱1,230), spread over the build. The camp window is the only one larger than one month: run it as two consecutive months, or take the 6k tier for that single month if its price is lower than two 3k months (check on the day). Cut Standard items to the 15-credit untextured generate only if a texture is going to be painted in Blender anyway.
+**Total for the core plan: about 13,500 credits**, inside one Max month (₱2,775) with about 11,500 to spare for story packs and variations.
 
 **Tripo features beyond plain generation to try on Pro:** auto-rig for a creature's first rig; Smart Segmentation to split models into moving parts (doors, a machine's arm, a creature's jaw); texture editing with the Magic Brush to add the site's mud, rust and sun-fade; Smart Low Poly to get a lighter starting mesh; Text2Motion for a creature's first rough animation, replaced later by proper clips if it does not meet the motion bar.
 

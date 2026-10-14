@@ -8,7 +8,7 @@ Everything here is simulated behaviour. It is generated from plausible site prac
 
 ## P09e. The site calendar: weekly, monthly, seasonal
 
-**Remind the owner first.** Tripo Pro is needed for this work (`TOOLBOX.md`, "Tripo AI" and its idea list). At the start, check whether the owner's Tripo plan is Pro; if not, remind them to subscribe (monthly, then cancel when the asset work ends) and wait for the answer. The owner pays and signs in; the session never does.
+**Tripo models.** This phase's Tripo items were generated in the single Tripo month at P06a (`TOOLBOX.md`, "The Tripo month") and wait in `assets-src/twin/tripo/`. Clean them up and use them here. If something needed is missing, list it and ask the owner whether to buy one month of Pro 3k; never use Free-plan results.
 
 **Needs.** P09d.
 

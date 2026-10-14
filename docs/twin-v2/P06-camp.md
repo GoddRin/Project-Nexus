@@ -14,7 +14,7 @@ Common to every sub-phase: the "common" list at the top of `P05-hydro-works.md` 
 
 ## P06a. Building kit, site, main office (exterior and interior)
 
-**Remind the owner first.** Before building props, remind the owner of the paid AI 3D generation option (Tripo Pro; see `STATE.md`, "Owner inputs", and `TOOLBOX.md`, "Tripo AI") and wait for their answer. The owner pays and signs in; the session never does.
+**Remind the owner first: the Tripo month.** Before building props, remind the owner that this is when to take one month of Tripo **Max** (`TOOLBOX.md`, "The Tripo month") and wait for their answer. If they subscribe, run the Tripo month as written there before the rest of this sub-phase. The owner pays, signs in and turns off auto-renewal; the session never does.
 
 **v1 source.** `TemfacilFacility.tsx` 132 to 720 (pad, kerbs, drains, pavers, parking, office shell, doors, yard pole), `TemfacilOfficeInterior.tsx` (all of it: zones 1 to 6, desks, screens, plotter, meeting table, PM office), `screenTextures.ts`, `SharedMaterials.tsx`.
 
