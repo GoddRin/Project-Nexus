@@ -1,6 +1,6 @@
 # P02b report: three people, a dog and a pickup at the camp gate
 
-2026-10-14, branch `twin-v2`. Second session of this sub-phase. The first (2026-10-13) made the dog, the pickup and the runtime for things that move; this one made the three people, their clothes and motion, and put them in the gate's loop.
+2026-10-14, branch `twin-v2` (amended the same day: fit-test poses, the shell, pipeline and bench checks, other browsers, and frame rates measured with nothing else running). Second session of this sub-phase. The first (2026-10-13) made the dog, the pickup and the runtime for things that move; this one made the three people, their clothes and motion, and put them in the gate's loop.
 
 **Status: built, with one pass check not met.** The guard, the engineer and the labourer are in the slice and the loop plays through. Beside the Atlas Navigator they are not yet as convincing as he is, which the person checklist asks for. That is the owner's call at the P02c gate, and the part most worth improving before people are mass-produced.
 
@@ -12,7 +12,7 @@ To see it: `http://localhost:3000/digital-twin?v=2&place=gate-approach` on the d
 | --- | --- |
 | Person, motion and animal checklists pass | **Partly.** Tables below. The line that fails outright is "at least as convincing as the Atlas Navigator" |
 | Side-by-side still with the Atlas Navigator at equal framing | **Done:** `navigator-beside-engineer-full.jpg`, `-close.jpg` (rendered in Blender, same camera and light; taken before the cloth was rumpled and the collar bones corrected) |
-| No poke-through on any outfit in any test clip | **None found at the size checked.** Every clip on every outfit is on the contact sheets (`sheet-guard.jpg`, `sheet-engineer.jpg`, `sheet-labourer.jpg`: 37 clips, four moments each, front and side) and about 40 of the stills were looked at full size. A still is 300 pixels wide, so an intersection of a centimetre or two (the baton against the thigh in the walk, the tablet against the leg) would not show. The test set the checklist names includes squat, overhead reach, arm across chest, sit and bend to floor: **those clips do not exist yet** (not among the Mixamo files on this machine), so the outfits are untested in them |
+| No poke-through on any outfit in any test clip | **None found at the size checked.** Every clip on every outfit is on the contact sheets (`sheet-guard.jpg`, `sheet-engineer.jpg`, `sheet-labourer.jpg`: 52 clips, four moments each, front and side) and about 65 of the stills were looked at full size. The checklist's own test set is there too: walk, and five poses authored for the purpose because no clip covered them (`test-squat`, `test-overhead`, `test-across`, `test-sit`, `test-bend`; they are in the sheets and are not exported). In all of them sleeve stays on wrist, collar on neck, trouser on boot and shirt in the waistband, and no skin shows. A still is 300 pixels wide, so an intersection of a centimetre or two would not show. Seen and left: bending forward, the guard's baton stands out stiffly behind him (it is bound to the hips and does not hang) |
 
 ## What was built
 
@@ -37,7 +37,7 @@ Budget for a named person is 20,000 / 6,000 / 1,500 triangles, a 2K sheet and tw
 
 - From Mixamo files already on this machine, retargeted to each man's skeleton: `idle` (9.9 s, breathing), `idleShift` (8.8 s, weight shifts), `walk` (1.03 s, recorded at 1.38 m/s), `talk`, `talk2`, `point`, `waveThrough`, `listen`, `acknowledge`, `lookAround`, `wave`.
 - Authored here on a two-bone solver: `tablet` (engineer: raises the tablet, looks down, taps and swipes with the other hand; 8 s), `barrier` (guard: leans in, takes the counterweight end in both hands and bears down; 4.5 s), `restShovel` (labourer: stands with the blade on the ground, hand on the shaft), `shovel` (labourer: sets the blade, drives it in, levers, lifts and throws; 3.2 s, with a crouch that keeps his feet planted).
-- **Not made:** stop and turn (no Mixamo file for them here; in the loop a man turns on the spot while his clip plays). Mesh2Motion clips were not fetched.
+- **Not made:** stop and turn (no Mixamo file for them here; in the loop a man turns on the spot while his clip plays, and a walk ends by blending into the next clip). They need the owner's Mixamo downloads, listed at the end. Mesh2Motion clips were not fetched.
 
 **In the loop** (`components/twin/sim/gate-scene.ts`): the guard stands at his post, walks to the driver's door as the pickup brakes, talks for four seconds, walks to the barrier, bears down on the counterweight as the arm rises, waves the pickup through, lowers the barrier and walks back. On the booth's side of the road outside the gate the engineer talks, reads his tablet, listens and points while the labourer rests on his shovel and digs. The dog does what it did before.
 
@@ -61,20 +61,43 @@ No reference photographs were added to `reference/` for the people beyond the ow
 
 ## Numbers
 
-Production build, Iris Xe, Chrome, Medium, frame cap off, loop running, five actors. One run each; Blender was open; this laptop's readings wander by 10 to 20% between runs.
+`node scripts/twin/bench.mjs p02b`: production build, Iris Xe, Chrome, Medium, frame cap off, resolution held, nothing else running on the machine. One run.
 
-| View | Frame rate | p95 | Draw calls | Triangles (all passes) | Pipelines |
+| Budget line | Measured | Budget | |
+| --- | --- | --- | --- |
+| Median frame rate, overview | 79.9 fps | 45 or better | pass |
+| Frame rate over the fly-through | 91.5 fps; worst place 25.2 (`temfacil-guardhouse`, v1's view of the gate) | 45 or better | pass on the median |
+| p95 frame time, overview | 17.5 ms | 33 ms or less | pass |
+| Draw calls, most seen | 152 | 350 or fewer | pass |
+| Triangles in view, most seen | 767,642 | 700,000 or fewer | **fail** |
+| Pipelines | 154 | 40 or fewer | **fail** |
+| Real-time lights | 4 | 9 or fewer | pass |
+| First usable view, warm | 8.8 s; everything in after 93 s | 6 s or less | **fail** |
+| Download to first view | 39.0 MB (twin assets 37.5) | 12 MB or less | **fail** |
+| Download, whole site | 54.5 MB | 70 MB or less | pass |
+| JS heap | +4.3 MB a minute over 1.7 minutes; no 20-minute soak was run | no growth | **not established** |
+
+At the gate itself, with the loop running and five actors: **38 fps, p95 45.9 ms**, 119 draw calls, 505,000 triangles. That is under the 45 fps line. Other single readings of the gate views on this laptop, taken with other programs open, ran from 23 to 45 fps (Low tier: 46 to 74); they are in `captures-*.json` and are not benchmarks.
+
+The people add about 20 MB of download (3.4 MB of each is the 2K normal map). The frame rate at the gate, the pipelines, the download and the 93 seconds for everything to arrive are all P02c's to cut.
+
+**Checks run** (production build; results in `checks/`):
+
+| Check | Chrome (WebGPU) | Chrome forced to WebGL2 | Edge | Playwright Firefox | Playwright WebKit |
 | --- | --- | --- | --- | --- | --- |
-| `gate-approach` | 45.2 fps | 39.7 ms | 110 | 734,000 | 126 |
-| `gate-booth` | 35.2 fps | 31.8 ms | 134 | 1,065,000 | 119 |
-| `gate-over` | 45.4 fps | 39.3 ms | 101 | 540,000 | 134 |
-| `gate-approach`, Low tier | 74.2 fps | 14.1 ms | 58 | 269,000 | 63 |
+| `check-shell.mjs` | 21 of 22 | 20 of 22 | 21 of 22 | 18 of 22 | 19 of 22 |
 
-These were measured just before the last rebuild of the people (rumpled cloth, the vest's tape), which did not change their triangle counts or texture sizes. A second run after it did not finish before this report was written. Capped at the screen's 60 fps, the later captures ran between 19 and 45 fps with other programs open.
+- Failing everywhere: "night is darker than noon and not black" (18:30 at the switchyard reads 18 against a line of 20). Carried over from P02a; a lighting matter for P03b.
+- WebGL2, Firefox, WebKit: "store changes reach the URL" (the time stays in the address after Live is pressed). Not seen on WebGPU. **Not investigated**: these three run the fallback at a few frames a second with the slice loaded, so it may be the check's timing or a real fault in the fallback.
+- Firefox: two of the five Escape-to-overview cases ended a metre or two from the overview pose. The other three passed. Probably the same slowness, but **not proven**; it touches the free-navigation rule, so P02c should run it again on a faster fallback.
+- WebKit: after a lost device the rebuilt picture was too dark (brightness 11).
+- The "20 loads" line first failed on 16 of 20 loads. It was the check: dynamic resolution resizes the canvas, the same renderer asks for its context again, and the count took that for a second renderer. The check now holds the resolution for that line.
 
-Budget lines for Medium: 45 fps, p95 33 ms, 350 draw calls, 700k triangles, 40 pipelines. The slice with its actors is at or under the frame-rate line at the gate views and well over on pipelines. The people add about 20 MB of download (3.4 MB of each is the 2K normal map), taking the slice to about 45 MB against 12 MB to a first view. All of that is P02c's to measure and cut.
+`check-pipeline.mjs` (Chrome): 11 of 15. Two failures are lines that assume the test yard is the only thing loaded (draw calls; memory back to the start, where the gate's actors stay loaded by design). Two are real and worse than in P02a: the test zone took 35.9 s to stream in beside the slice (15 s then), and one streaming step held the page for 52.8 ms (24 ms then; the line is 8 ms).
 
-`check-shell.mjs`, `check-pipeline.mjs` and `bench.mjs` were **not run** this session. Type check and lint pass for the files touched.
+`bench.mjs` needed its wait for streaming raised from 120 to 300 seconds to finish at all, which is itself the finding above. Only the desktop profile was run.
+
+Type check and lint pass for the files touched.
 
 ## Checklists
 
@@ -112,13 +135,14 @@ Budget lines for Medium: 45 fps, p95 33 ms, 350 draw calls, 700k triangles, 40 p
 
 - **The people are below the navigator** (above). In order of effect: cloth draped by simulation and baked from a dense mesh; garment textures from photographs of the site's own clothing; faces from the staff photographs (P07c).
 - **The pickup has no driver**: the guard talks to an empty cab. A vehicle's operator is P10's.
-- No stop or turn clips; no squat, sit, overhead-reach or bend clips to test the outfits on.
+- No stop or turn clips. The squat, sit, reach, arm-across and bend poses are fit tests, not motion fit to show.
 - The guard's hands are not fitted to the barrier's counterweight.
 - The labourer digs at night and in rain as he does at noon (a programme is P09's).
 - Glasses are a frame without lenses.
 - Each man carries his own copy of every clip.
 - From the first session, still open: the pickup is a single cab with fixed doors and pops in and out at the ends of the road; the dog's walk is slow and its hind legs sink when it lies.
-- Not checked: the WebGL2 fallback, Edge, Firefox, WebKit, a phone, High and Ultra, leaving and re-entering the location, a lost device, the shell and pipeline checks.
+- The fallback's failures in the checks above are not explained.
+- Not checked: a real phone, real Safari, High and Ultra, leaving and re-entering the location with actors, the bench's phone profile, a 20-minute heap soak.
 
 ## Faults found on the way
 
@@ -132,6 +156,27 @@ Budget lines for Medium: 45 fps, p95 33 ms, 350 draw calls, 700k triangles, 40 p
 ## For the owner
 
 1. **Look at the people first**: `verge-pair-noon-verge-g12.jpg`, the three `face-…` captures and `navigator-beside-engineer-full.jpg`. The question for the gate is whether this level is acceptable for site staff seen from a few metres, or whether the bodies nearest the camera should be built another way.
-2. **Optional, and it would help most:** phone photographs of the real PPE and work clothes (TOOLBOX, "Optional captures") and the Mixamo downloads for stop, turn, squat, sit, reach and bend.
-3. The first session's question still stands: is a single-cab pickup acceptable for the slice?
-4. Blender has `assets-src/twin/site_master.blend` open and saved, with `LIB_char` and the working collections `WORK_people.*` added.
+2. **Mixamo downloads (about 15 minutes; needs your free Adobe sign-in, which a session may not do for you):**
+   1. Open https://www.mixamo.com and sign in.
+   2. In the Characters tab choose **Y Bot**.
+   3. For each motion below: search for it in the Animations tab, click it, tick **In Place** where the box is offered, click **Download**, and choose Format **FBX Binary (.fbx)**, Skin **Without Skin**, Frames per Second **30**, Keyframe Reduction **none**.
+   4. Save each file into `assets-src/mixamo/` under the name given.
+
+   | Search for | Save as |
+   | --- | --- |
+   | Left Turn 90 (a standing turn) | `twin_turn_left_90.fbx` |
+   | Right Turn 90 | `twin_turn_right_90.fbx` |
+   | Turn 180 (standing) | `twin_turn_180.fbx` |
+   | Walk To Stop (or Walking To Standing) | `twin_walk_stop.fbx` |
+   | Start Walking (or Standing To Walking) | `twin_walk_start.fbx` |
+   | Stand To Sit | `twin_stand_to_sit.fbx` |
+   | Sitting Idle | `twin_sit_idle.fbx` |
+   | Sit To Stand | `twin_sit_to_stand.fbx` |
+   | Crouch (or Squat) idle | `twin_squat.fbx` |
+   | Picking Up Object (from the ground) | `twin_pick_up.fbx` |
+   | Reaching Up (or Taking Item from a shelf) | `twin_reach_up.fbx` |
+
+   If a name is not there, take the closest one and keep the file name. These are also the first clips P08a will ask for, so nothing is wasted.
+3. **Optional, and it would help the look most:** phone photographs of the real PPE and work clothes (`TOOLBOX.md`, "Optional captures the owner can provide").
+4. The first session's question still stands: is a single-cab pickup acceptable for the slice?
+5. `assets-src/twin/site_master.blend` is saved with `LIB_char` and the working collections `WORK_people.*` added. Blender was closed when this was amended; the fit-test stills were rendered by running it from the command line, and nothing was saved back.

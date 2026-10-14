@@ -396,7 +396,9 @@ if (RELOADS > 0) {
   let errorsSeen = 0;
   const times = [];
   for (let i = 0; i < RELOADS; i++) {
-    const { page, errors, startMs } = await open(ctx, "&t=1200");
+    // (resolution held still: when dynamic resolution resizes the canvas the same renderer asks for
+    //  its context again, which this count would take for a second renderer)
+    const { page, errors, startMs } = await open(ctx, "&t=1200&dynres=0");
     await sleep(400);
     const lum = await brightness(page);
     const drawn = await page.evaluate(() => ({ tris: window.__TWIN__.stats().tris, contexts: window.__contexts, rigs: window.__TWIN__.rig.builds(), hit: window.__TWIN__.pick(720, 600) }));

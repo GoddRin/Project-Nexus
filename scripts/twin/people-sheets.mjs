@@ -21,10 +21,14 @@ const H = 220;
 const LABEL = 96;
 
 for (const who of WHO) {
-  const files = fs.readdirSync(SRC).filter((f) => f.startsWith(`${who}-`) && f.endsWith(".jpg"));
-  const clips = [...new Set(files.map((f) => f.split("-")[1]))].sort();
+  // <who>-<clip>-<front|side>-<n>.jpg (a clip's name may itself contain a hyphen: test-squat)
+  const stills = fs
+    .readdirSync(SRC)
+    .map((f) => new RegExp(`^${who}-(.+)-(front|side)-(\\d+)\\.jpg$`).exec(f))
+    .filter(Boolean);
+  const clips = [...new Set(stills.map((m) => m[1]))].sort();
   if (!clips.length) continue;
-  const shots = Math.max(...files.map((f) => Number(f.split("-")[3].replace(".jpg", "")))) + 1;
+  const shots = Math.max(...stills.map((m) => Number(m[3]))) + 1;
   const composite = [];
   for (const [row, clip] of clips.entries()) {
     const text = Buffer.from(`<svg width="${LABEL}" height="${H}"><rect width="${LABEL}" height="${H}" fill="#2a2c2e"/><text x="6" y="${H / 2}" font-size="13" fill="#fff" font-family="Arial">${clip}</text></svg>`);

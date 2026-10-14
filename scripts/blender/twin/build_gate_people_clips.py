@@ -12,6 +12,9 @@ Stages:
   author    the clips made here: `tablet` (engineer), `barrier` and `waveThrough` (guard),
             `restShovel` and `shovel` (labourer); and each man's hand grips laid over every clip
   tracks    one muted NLA track per clip, named as the clip, which is what the exporter writes
+  tests     the poses QUALITY-BAR section 3 asks every outfit to be tried in and no clip here covers:
+            squat, overhead reach, arm across chest, sit, bend to floor. Actions called
+            <who>:test-<pose>; they are in the review sheets and are never exported
   review    stills of every clip on every outfit, front and side: the poke-through sheets
 
 Mixamo's rigs rest in a T-pose and MPFB2's in an A-pose. A bone's motion is carried over as its
@@ -279,13 +282,15 @@ class Poser:
         self.aim(upper, (S + n * a + u * h) - S)
         self.aim(fore, (S + n * d) - self.head(fore))
 
-    def crouch(self, drop, back=0.0):
-        """Lower the hips by `drop` metres (and shift them back) with both feet staying planted."""
+    def crouch(self, drop, back=0.0, tilt=0.0):
+        """Lower the hips by `drop` metres (shift them back, tip them forward by `tilt` degrees) with both feet staying planted."""
         vl.update()
         feet = {side: ((self.M @ self.pb(f"{side}Foot").matrix).copy()) for side in ("Left", "Right")}
         hips = self.pb("Hips")
         mw = self.M @ hips.matrix
-        mw.translation = mw.translation + Vector((0, back, -drop))
+        at = mw.translation + Vector((0, back, -drop))
+        mw = (Matrix.Rotation(math.radians(tilt), 3, Vector((1, 0, 0))) @ mw.to_3x3()).to_4x4()
+        mw.translation = at
         hips.matrix = self.Mi @ mw
         vl.update()
         for side, was in feet.items():
@@ -611,6 +616,70 @@ def author_labourer(who):
     author(who, "shovel", int(3.2 * FPS), "idle", dig, loop=True)
 
 
+def stage_tests(people):
+    """The fit test's poses, each eased in over the idle, held, and eased out (2.4 s)."""
+    for who in people:
+        p0 = Poser(who)
+        reset_pose(rig_of(who))
+        vl.update()
+        top = p0.head("Head").z
+        chest_z = p0.head("Spine2").z
+
+        def squat(p, t, f):
+            k = window(t, 0.0, 0.4, 0.7, 1.0)
+            p.crouch(0.36 * k, back=0.14 * k, tilt=14 * k)
+            p.turn_axis("Spine", (-1, 0, 0), -10 * k)
+            p.turn_axis("Spine1", (-1, 0, 0), -8 * k)
+            for side, s in (("Left", 1), ("Right", -1)):
+                rest = p.head(f"{side}Hand").copy()
+                p.reach(side, rest.lerp(Vector((s * 0.2, -0.42, chest_z - 0.42)), k), (s * 0.8, 0.3, -0.5))
+
+        def overhead(p, t, f):
+            k = window(t, 0.0, 0.4, 0.7, 1.0)
+            p.turn_axis("Spine2", (-1, 0, 0), 5 * k)
+            for side, s in (("Left", 1), ("Right", -1)):
+                rest = p.head(f"{side}Hand").copy()
+                p.reach(side, rest.lerp(Vector((s * 0.2, -0.12, top + 0.42)), k), (s * 1.0, -0.2, 0.2))
+
+        def across(p, t, f):
+            a = window(t, 0.0, 0.25, 0.4, 0.55)
+            b = window(t, 0.45, 0.7, 0.85, 1.0)
+            rest = p.head("RightHand").copy()
+            p.reach("Right", rest.lerp(Vector((0.19, -0.16, chest_z + 0.1)), a), (-0.3, -0.5, -0.8))
+            rest = p.head("LeftHand").copy()
+            p.reach("Left", rest.lerp(Vector((-0.19, -0.16, chest_z + 0.1)), b), (0.3, -0.5, -0.8))
+
+        def sit(p, t, f):
+            k = window(t, 0.0, 0.4, 0.7, 1.0)
+            p.crouch(0.40 * k, back=0.30 * k, tilt=4 * k)
+            for side, s in (("Left", 1), ("Right", -1)):
+                rest = p.head(f"{side}Hand").copy()
+                p.reach(side, rest.lerp(Vector((s * 0.16, -0.30, chest_z - 0.52)), k), (s * 0.8, 0.5, -0.2))
+
+        def bend(p, t, f):
+            k = window(t, 0.0, 0.4, 0.7, 1.0)
+            p.crouch(0.10 * k, back=0.16 * k, tilt=52 * k)
+            p.turn_axis("Spine", (-1, 0, 0), -24 * k)
+            p.turn_axis("Spine1", (-1, 0, 0), -20 * k)
+            p.turn_axis("Spine2", (-1, 0, 0), -12 * k)
+            p.turn_axis("Head", (-1, 0, 0), 20 * k)
+            for side, s in (("Left", 1), ("Right", -1)):
+                rest = p.head(f"{side}Hand").copy()
+                p.reach(side, rest.lerp(Vector((s * 0.17, -0.48, 0.12)), k), (s * 0.9, 0.2, 0.3))
+
+        for name, fn in (("squat", squat), ("overhead", overhead), ("across", across), ("sit", sit), ("bend", bend)):
+            author(who, f"test-{name}", int(2.4 * FPS), "idle", fn, loop=False)
+    stage_author_grips(people)
+
+
+def stage_author_grips(people):
+    """The hands that hold something keep their grip in the test poses too."""
+    if "engineer" in people:
+        overlay_hands("engineer", {"Left": grip_tablet})
+    if "labourer" in people:
+        overlay_hands("labourer", {"Right": grip_shaft})
+
+
 def stage_author(people):
     if "engineer" in people:
         author_engineer("engineer")
@@ -635,6 +704,8 @@ def stage_tracks(people):
         names = []
         for act in sorted((a for a in bpy.data.actions if a.name.startswith(who + ":")), key=lambda a: a.name):
             clip = act.name.split(":", 1)[1]
+            if clip.startswith("test-"):  # (fit-test poses are for the review sheets only)
+                continue
             track = rig.animation_data.nla_tracks.new()
             track.name = clip
             strip = track.strips.new(clip, int(act.frame_range[0]), act)
@@ -718,6 +789,8 @@ if "retarget" in STAGES:  # noqa: F821
     stage_retarget(WHO)
 if "author" in STAGES:  # noqa: F821
     stage_author(WHO)
+if "tests" in STAGES:  # noqa: F821
+    stage_tests(WHO)
 if "tracks" in STAGES:  # noqa: F821
     stage_tracks(WHO)
 if "review" in STAGES:  # noqa: F821
