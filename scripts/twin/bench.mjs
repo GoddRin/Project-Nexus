@@ -6,7 +6,8 @@
  *   node scripts/twin/bench.mjs [label] [options]
  *
  *   --base=http://localhost:3100   server to measure
- *   --profiles=desktop,phone       desktop is 1440 x 900 on the Medium tier; phone is 390 x 844 at 2x on Low
+ *   --profiles=desktop,fullhd,phone  desktop is 1440 x 900 on the Medium tier; fullhd is 1920 x 1080 on Medium (the
+ *                                  office laptop's own screen, P02c); phone is 390 x 844 at 2x on Low
  *   --tier=<tier>                  measure every profile on this tier instead
  *   --testzone                     include zones marked as test (the P01c pipeline test yard)
  *   --capped                       leave the display's frame cap on (the default takes it off)
@@ -45,14 +46,20 @@ const TIER = arg("tier", null);
 
 const ALL_PROFILES = {
   desktop: { tier: "medium", context: { viewport: { width: 1440, height: 900 } } },
+  fullhd: { tier: "medium", context: { viewport: { width: 1920, height: 1080 } } },
   phone: { tier: "low", context: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } },
 };
-const PROFILES = arg("profiles", "desktop,phone").split(",").filter((p) => ALL_PROFILES[p]);
+const PROFILES = arg("profiles", "desktop,fullhd,phone").split(",").filter((p) => ALL_PROFILES[p]);
 
-/** docs/twin-v2/MASTER-BRIEF.md section 5 (starting targets; P02c rewrites them). */
+/**
+ * docs/twin-v2/MASTER-BRIEF.md section 5, as rewritten from measurement in P02c (binding from then on).
+ * `lights` counts every light in the scene, lit or not (an unlit lamp costs nearly as much as a lit one).
+ * `siteMB` is one location's whole download: only one location is loaded at a time.
+ */
 const BUDGET = {
-  desktop: { fps: 45, p95: 33, calls: 350, tris: 700_000, programs: 40, lights: 9, firstViewS: 6, firstViewMB: 12, siteMB: 70 },
-  phone: { fps: 30, p95: 50, calls: 200, tris: 300_000, programs: 30, lights: 5, firstViewS: 8, firstViewMB: 8, siteMB: 40 },
+  desktop: { fps: 45, p95: 33, calls: 350, tris: 1_000_000, programs: 160, lights: 3, firstViewS: 6, firstViewMB: 15, siteMB: 60 },
+  fullhd: { fps: 45, p95: 33, calls: 350, tris: 1_000_000, programs: 160, lights: 3, firstViewS: 6, firstViewMB: 15, siteMB: 60 },
+  phone: { fps: 30, p95: 50, calls: 200, tris: 400_000, programs: 100, lights: 2, firstViewS: 8, firstViewMB: 8, siteMB: 30 },
 };
 /** JS heap growth, in MB a minute, under which the heap counts as having no trend. */
 const HEAP_TREND_MB_PER_MIN = 1;
@@ -261,7 +268,7 @@ try {
       ["Real-time lights (sun included)", `${end.lights}`, `${budget.lights} or fewer`, end.lights <= budget.lights],
       ["First usable view (warm cache)", `${round(warmMs / 1000, 2)} s (everything in: ${round(warmAllInMs / 1000, 2)} s)`, `${budget.firstViewS} s or less`, warmMs / 1000 <= budget.firstViewS],
       ["Download to first view", `${round(firstViewBytes / 1048576, 2)} MB (twin assets ${round(firstViewKinds.twinModels / 1048576, 2)}, scripts ${round(firstViewKinds.script / 1048576, 2)})`, `${budget.firstViewMB} MB or less`, firstViewBytes / 1048576 <= budget.firstViewMB],
-      ["Download, whole site", `${round(siteBytes / 1048576, 2)} MB`, `${budget.siteMB} MB or less`, siteBytes / 1048576 <= budget.siteMB],
+      ["Download, one location", `${round(siteBytes / 1048576, 2)} MB`, `${budget.siteMB} MB or less`, siteBytes / 1048576 <= budget.siteMB],
       ["JS heap trend", `${slope >= 0 ? "+" : ""}${round(slope, 2)} MB a minute over ${round(heapMinutes, 1)} minutes (${heapSamples.map((s) => round(s.mb, 0)).join(", ")} MB)${SOAK_MIN >= 20 ? "" : "; the budget asks for 20 minutes: run with --soak=20"}`, "no growth trend", slope <= HEAP_TREND_MB_PER_MIN],
     ];
 

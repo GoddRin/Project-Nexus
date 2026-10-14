@@ -4,22 +4,24 @@ Pass/fail standards. "Looks real" is never accepted as a check; use these.
 
 ## 1. Budgets per asset type
 
-Starting values; P02c recalibrates them from measurement.
+Recalibrated in P02c (2026-10-14). The triangle lines stand: on the office laptop the frame is limited by pixel shading, and these meshes are not what costs (`review/P02c/REPORT.md`). New are the download line (checked as a warning by `scripts/twin/build-assets.mjs`, from `scripts/twin/asset-budgets.json`) and the measured frame cost per copy at LOD0 / LOD1 / LOD2 on Medium at 1440 x 900, which is what limits how many can be in view (MASTER-BRIEF section 5).
 
-| Asset type | LOD0 triangles | LOD1 | LOD2 | Texture | Materials | LOD1 / LOD2 at |
-| --- | --- | --- | --- | --- | --- | --- |
-| Named person (close-up capable) | 20k | 6k | 1.5k | 2K atlas | 1 body+outfit, 1 hair | 12 m / 40 m |
-| Crew person | 12k | 4k | 1.2k | 1K atlas | 1 | 10 m / 35 m |
-| Large animal | 10k | 3k | 800 | 1K | 1 | 15 m / 50 m |
-| Small animal, bird | 3k | 800 | 200 | 512 | 1 | 8 m / 25 m |
-| Hero tree | 25k | 6k | impostor | 2K bark, 2K leaf atlas shared by species set | 2 | 30 m / 90 m |
-| Shrub, fern, grass clump | 1.5k | 300 | none (culled) | shared atlas | 1 | 15 m / 45 m (cull) |
-| Heavy equipment | 40k | 12k | 3k | 2K | 2 | 25 m / 80 m |
-| Light vehicle | 25k | 8k | 2k | 2K | 2 | 20 m / 70 m |
-| Hero structure (per building) | 120k | 35k | 8k | trim sheets + 2K uniques | 6 | 60 m / 180 m |
-| Kit piece (wall, roof bay, column) | 2k | 500 | 100 | trim sheet | 1 | 30 m / 100 m |
-| Small prop | 1.5k | 400 | none (culled) | 512 or atlas | 1 | 10 m / 30 m (cull) |
-| Interior room (all contents) | 150k | not loaded | not loaded | atlases | 8 | loads inside 30 m |
+Download rules from the P02c texture trial: a 2K normal map in the high-quality UASTC mode is 1.9 to 3.2 MB, the same map in ETC1S is 0.7 MB (mean error 1.7 degrees against 1.0); a 1K map in either mode loses the fine detail (3 degrees). Textures two assets share are written once and shared by address.
+
+| Asset type | LOD0 triangles | LOD1 | LOD2 | Texture | Materials | LOD1 / LOD2 at | Download | Frame cost on Medium (P02c) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Named person (close-up capable) | 20k | 6k | 1.5k | 2K atlas | 1 body+outfit, 1 hair | 12 m / 40 m | 3.5 MB | 0.45 / 0.22 / 0.07 ms |
+| Crew person | 12k | 4k | 1.2k | 1K atlas | 1 | 10 m / 35 m | 1.2 MB | as named, slightly less |
+| Large animal | 10k | 3k | 800 | 1K | 1 | 15 m / 50 m | 1.5 MB | 0.13 ms at LOD0 |
+| Small animal, bird | 3k | 800 | 200 | 512 | 1 | 8 m / 25 m | 0.4 MB | not measured |
+| Hero tree | 25k | 6k | impostor | 2K bark, 2K leaf atlas shared by species set | 2 | 30 m / 90 m | 1.5 MB (shared sheets not counted) | about 2.5 ms a species in view, then 0.1 a copy (0.03 at LOD2) |
+| Shrub, fern, grass clump | 1.5k | 300 | none (culled) | shared atlas | 1 | 15 m / 45 m (cull) | 0.2 MB | 0.03 ms a copy |
+| Heavy equipment | 40k | 12k | 3k | 2K | 2 | 25 m / 80 m | 3 MB | not measured |
+| Light vehicle | 25k | 8k | 2k | 2K | 2 | 20 m / 70 m | 2 MB | 0.55 / 0.28 ms |
+| Hero structure (per building) | 120k | 35k | 8k | trim sheets + 2K uniques | 6 | 60 m / 180 m | 4 MB | not measured |
+| Kit piece (wall, roof bay, column) | 2k | 500 | 100 | trim sheet | 1 | 30 m / 100 m | 0.3 MB | not measured |
+| Small prop | 1.5k | 400 | none (culled) | 512 or atlas | 1 | 10 m / 30 m (cull) | 0.3 MB | not measured |
+| Interior room (all contents) | 150k | not loaded | not loaded | atlases | 8 | loads inside 30 m | 6 MB | not measured |
 
 Animation: at most 4 bone influences per vertex; 65 bones or fewer for people (fingers on LOD0 only); clips baked at 30 fps and compressed.
 

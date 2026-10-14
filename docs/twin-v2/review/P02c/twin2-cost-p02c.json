@@ -1,0 +1,1485 @@
+{
+ "label": "p02c",
+ "at": "2026-10-14T10:51:12.447Z",
+ "place": "gate-approach",
+ "dsf": 1,
+ "info": {
+  "backend": "webgpu",
+  "canvas": [
+   1184,
+   844
+  ],
+  "pixelRatio": 1,
+  "tier": "medium"
+ },
+ "baseline": {
+  "ms": 26.47,
+  "cpuMs": 25.88,
+  "fps": 37.8,
+  "calls": 120,
+  "tris": 798584,
+  "programs": 127,
+  "lights": 4,
+  "gpuMB": 88.6
+ },
+ "results": [
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD0 @8m",
+   "n": 5,
+   "baseMs": 26.79,
+   "withMs": 28.75,
+   "deltaMs": 1.96,
+   "perCopyMs": 0.392,
+   "cpuMs": [
+    25.93,
+    28.03
+   ],
+   "perCopyCpuMs": 0.42,
+   "fps": [
+    37.3,
+    34.8
+   ],
+   "calls": [
+    120,
+    191
+   ],
+   "tris": [
+    798584,
+    1406543
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    88.6,
+    88.8
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD0 @8m",
+   "n": 10,
+   "baseMs": 26.44,
+   "withMs": 31.08,
+   "deltaMs": 4.64,
+   "perCopyMs": 0.464,
+   "cpuMs": [
+    25.66,
+    30.47
+   ],
+   "perCopyCpuMs": 0.481,
+   "fps": [
+    37.8,
+    32.2
+   ],
+   "calls": [
+    147,
+    235
+   ],
+   "tris": [
+    984455,
+    1832615
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    88.8,
+    89.1
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD0 @8m",
+   "n": 20,
+   "baseMs": 26.52,
+   "withMs": 34.77,
+   "deltaMs": 8.25,
+   "perCopyMs": 0.413,
+   "cpuMs": [
+    25.94,
+    34.07
+   ],
+   "perCopyCpuMs": 0.406,
+   "fps": [
+    37.7,
+    28.8
+   ],
+   "calls": [
+    147,
+    253
+   ],
+   "tris": [
+    982764,
+    2102165
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    89.1,
+    89.9
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD1 @22m",
+   "n": 10,
+   "baseMs": 26.46,
+   "withMs": 28.25,
+   "deltaMs": 1.79,
+   "perCopyMs": 0.179,
+   "cpuMs": [
+    25.17,
+    27.36
+   ],
+   "perCopyCpuMs": 0.219,
+   "fps": [
+    37.8,
+    35.4
+   ],
+   "calls": [
+    119,
+    234
+   ],
+   "tris": [
+    795106,
+    1238605
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    89.9,
+    90.5
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD1 @22m",
+   "n": 20,
+   "baseMs": 26.76,
+   "withMs": 31.35,
+   "deltaMs": 4.59,
+   "perCopyMs": 0.229,
+   "cpuMs": [
+    26.46,
+    30.43
+   ],
+   "perCopyCpuMs": 0.198,
+   "fps": [
+    37.4,
+    31.9
+   ],
+   "calls": [
+    147,
+    320
+   ],
+   "tris": [
+    981162,
+    1489476
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    90.5,
+    91.2
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD1 @22m",
+   "n": 40,
+   "baseMs": 26.53,
+   "withMs": 32.35,
+   "deltaMs": 5.82,
+   "perCopyMs": 0.146,
+   "cpuMs": [
+    25.33,
+    31.96
+   ],
+   "perCopyCpuMs": 0.166,
+   "fps": [
+    37.7,
+    30.9
+   ],
+   "calls": [
+    119,
+    494
+   ],
+   "tris": [
+    796797,
+    2001055
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    91.2,
+    92.6
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD2 @55m",
+   "n": 20,
+   "baseMs": 25.79,
+   "withMs": 26.98,
+   "deltaMs": 1.19,
+   "perCopyMs": 0.06,
+   "cpuMs": [
+    26,
+    26.3
+   ],
+   "perCopyCpuMs": 0.015,
+   "fps": [
+    38.8,
+    37.1
+   ],
+   "calls": [
+    147,
+    187
+   ],
+   "tris": [
+    982615,
+    893278
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    92.6,
+    93.1
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD2 @55m",
+   "n": 40,
+   "baseMs": 26.86,
+   "withMs": 28.38,
+   "deltaMs": 1.52,
+   "perCopyMs": 0.038,
+   "cpuMs": [
+    24.88,
+    27.71
+   ],
+   "perCopyCpuMs": 0.071,
+   "fps": [
+    37.2,
+    35.2
+   ],
+   "calls": [
+    119,
+    253
+   ],
+   "tris": [
+    796797,
+    984313
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    93.1,
+    93.8
+   ]
+  },
+  {
+   "group": "people",
+   "name": "char.engineer.a LOD2 @55m",
+   "n": 80,
+   "baseMs": 26.56,
+   "withMs": 31.68,
+   "deltaMs": 5.12,
+   "perCopyMs": 0.064,
+   "cpuMs": [
+    24.98,
+    31
+   ],
+   "perCopyCpuMs": 0.075,
+   "fps": [
+    37.6,
+    31.6
+   ],
+   "calls": [
+    119,
+    492
+   ],
+   "tris": [
+    796797,
+    1459750
+   ],
+   "programs": [
+    127,
+    127
+   ],
+   "gpuMB": [
+    93.8,
+    95.2
+   ]
+  },
+  {
+   "group": "people",
+   "name": "three men mixed LOD0 @8m",
+   "n": 15,
+   "baseMs": 27.61,
+   "withMs": 33.03,
+   "deltaMs": 5.42,
+   "perCopyMs": 0.361,
+   "cpuMs": [
+    24.92,
+    32.37
+   ],
+   "perCopyCpuMs": 0.497,
+   "fps": [
+    36.2,
+    30.3
+   ],
+   "calls": [
+    120,
+    219
+   ],
+   "tris": [
+    798584,
+    1762597
+   ],
+   "programs": [
+    127,
+    129
+   ],
+   "gpuMB": [
+    95.2,
+    95.8
+   ]
+  },
+  {
+   "group": "animals",
+   "name": "fauna.aspin.a LOD0 @8m",
+   "n": 5,
+   "baseMs": 26.29,
+   "withMs": 26.59,
+   "deltaMs": 0.3,
+   "perCopyMs": 0.06,
+   "cpuMs": [
+    24.6,
+    25.78
+   ],
+   "perCopyCpuMs": 0.236,
+   "fps": [
+    38,
+    37.6
+   ],
+   "calls": [
+    147,
+    137
+   ],
+   "tris": [
+    984455,
+    967729
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    95.8,
+    95.9
+   ]
+  },
+  {
+   "group": "animals",
+   "name": "fauna.aspin.a LOD0 @8m",
+   "n": 10,
+   "baseMs": 26.48,
+   "withMs": 27.8,
+   "deltaMs": 1.32,
+   "perCopyMs": 0.132,
+   "cpuMs": [
+    26.15,
+    27.16
+   ],
+   "perCopyCpuMs": 0.101,
+   "fps": [
+    37.8,
+    36
+   ],
+   "calls": [
+    119,
+    153
+   ],
+   "tris": [
+    796797,
+    1130097
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    95.9,
+    96
+   ]
+  },
+  {
+   "group": "vehicles",
+   "name": "veh.pickup.a LOD0 @15m",
+   "n": 3,
+   "baseMs": 26.58,
+   "withMs": 28.09,
+   "deltaMs": 1.51,
+   "perCopyMs": 0.503,
+   "cpuMs": [
+    24.8,
+    27.07
+   ],
+   "perCopyCpuMs": 0.757,
+   "fps": [
+    37.6,
+    35.6
+   ],
+   "calls": [
+    119,
+    196
+   ],
+   "tris": [
+    796797,
+    1039889
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96,
+    96
+   ]
+  },
+  {
+   "group": "vehicles",
+   "name": "veh.pickup.a LOD0 @15m",
+   "n": 6,
+   "baseMs": 26.23,
+   "withMs": 29.64,
+   "deltaMs": 3.41,
+   "perCopyMs": 0.568,
+   "cpuMs": [
+    25.31,
+    29.41
+   ],
+   "perCopyCpuMs": 0.683,
+   "fps": [
+    38.1,
+    33.7
+   ],
+   "calls": [
+    147,
+    273
+   ],
+   "tris": [
+    981162,
+    1284517
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96,
+    96.1
+   ]
+  },
+  {
+   "group": "vehicles",
+   "name": "veh.pickup.a LOD1 @40m",
+   "n": 6,
+   "baseMs": 26.33,
+   "withMs": 27.98,
+   "deltaMs": 1.65,
+   "perCopyMs": 0.275,
+   "cpuMs": [
+    25.44,
+    26.71
+   ],
+   "perCopyCpuMs": 0.212,
+   "fps": [
+    38,
+    35.7
+   ],
+   "calls": [
+    120,
+    159
+   ],
+   "tris": [
+    800476,
+    908507
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.1
+   ]
+  },
+  {
+   "group": "vehicles",
+   "name": "veh.pickup.a LOD1 @40m",
+   "n": 12,
+   "baseMs": 27.7,
+   "withMs": 27.12,
+   "deltaMs": -0.58,
+   "perCopyMs": -0.048,
+   "cpuMs": [
+    26.31,
+    26.34
+   ],
+   "perCopyCpuMs": 0.003,
+   "fps": [
+    36.1,
+    36.9
+   ],
+   "calls": [
+    147,
+    251
+   ],
+   "tris": [
+    984455,
+    1299666
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.1
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD0 @25m",
+   "n": 5,
+   "baseMs": 27.06,
+   "withMs": 30.03,
+   "deltaMs": 2.97,
+   "perCopyMs": 0.594,
+   "cpuMs": [
+    25.66,
+    29.18
+   ],
+   "perCopyCpuMs": 0.704,
+   "fps": [
+    37,
+    33.3
+   ],
+   "calls": [
+    119,
+    156
+   ],
+   "tris": [
+    796797,
+    1097035
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.4
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD0 @25m",
+   "n": 10,
+   "baseMs": 27.14,
+   "withMs": 31.14,
+   "deltaMs": 4,
+   "perCopyMs": 0.4,
+   "cpuMs": [
+    26.54,
+    30.42
+   ],
+   "perCopyCpuMs": 0.388,
+   "fps": [
+    36.9,
+    32.1
+   ],
+   "calls": [
+    147,
+    126
+   ],
+   "tris": [
+    984455,
+    972493
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.4
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD0 @25m",
+   "n": 20,
+   "baseMs": 27.69,
+   "withMs": 32.69,
+   "deltaMs": 5,
+   "perCopyMs": 0.25,
+   "cpuMs": [
+    26.76,
+    31.95
+   ],
+   "perCopyCpuMs": 0.259,
+   "fps": [
+    36.1,
+    30.6
+   ],
+   "calls": [
+    119,
+    126
+   ],
+   "tris": [
+    796797,
+    1143197
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.4
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD1 @50m",
+   "n": 20,
+   "baseMs": 27.2,
+   "withMs": 29.31,
+   "deltaMs": 2.11,
+   "perCopyMs": 0.105,
+   "cpuMs": [
+    26.49,
+    28.53
+   ],
+   "perCopyCpuMs": 0.102,
+   "fps": [
+    36.8,
+    34.1
+   ],
+   "calls": [
+    147,
+    156
+   ],
+   "tris": [
+    982764,
+    1087244
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD1 @50m",
+   "n": 40,
+   "baseMs": 26.25,
+   "withMs": 30.74,
+   "deltaMs": 4.49,
+   "perCopyMs": 0.112,
+   "cpuMs": [
+    26.64,
+    29.56
+   ],
+   "perCopyCpuMs": 0.073,
+   "fps": [
+    38.1,
+    32.5
+   ],
+   "calls": [
+    120,
+    156
+   ],
+   "tris": [
+    800476,
+    1191874
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD2 @110m",
+   "n": 40,
+   "baseMs": 27.3,
+   "withMs": 27.43,
+   "deltaMs": 0.13,
+   "perCopyMs": 0.003,
+   "cpuMs": [
+    26.66,
+    26.59
+   ],
+   "perCopyCpuMs": -0.002,
+   "fps": [
+    36.6,
+    36.5
+   ],
+   "calls": [
+    119,
+    156
+   ],
+   "tris": [
+    796797,
+    1045468
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "trees",
+   "name": "flora.acacia.b LOD2 @110m",
+   "n": 80,
+   "baseMs": 26.36,
+   "withMs": 28.43,
+   "deltaMs": 2.07,
+   "perCopyMs": 0.026,
+   "cpuMs": [
+    25.33,
+    27.67
+   ],
+   "perCopyCpuMs": 0.029,
+   "fps": [
+    37.9,
+    35.2
+   ],
+   "calls": [
+    120,
+    155
+   ],
+   "tris": [
+    798443,
+    1102371
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "plants",
+   "name": "flora.shrub.a LOD0 @12m",
+   "n": 50,
+   "baseMs": 26.3,
+   "withMs": 28,
+   "deltaMs": 1.7,
+   "perCopyMs": 0.034,
+   "cpuMs": [
+    25.62,
+    27.03
+   ],
+   "perCopyCpuMs": 0.028,
+   "fps": [
+    38,
+    35.7
+   ],
+   "calls": [
+    119,
+    122
+   ],
+   "tris": [
+    796797,
+    918484
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "plants",
+   "name": "flora.shrub.a LOD0 @12m",
+   "n": 100,
+   "baseMs": 26.61,
+   "withMs": 29.36,
+   "deltaMs": 2.75,
+   "perCopyMs": 0.028,
+   "cpuMs": [
+    26.19,
+    28.55
+   ],
+   "perCopyCpuMs": 0.024,
+   "fps": [
+    37.6,
+    34.1
+   ],
+   "calls": [
+    147,
+    149
+   ],
+   "tris": [
+    984455,
+    1222415
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "plants",
+   "name": "flora.grass.a LOD0 @10m",
+   "n": 100,
+   "baseMs": 28.57,
+   "withMs": 29.41,
+   "deltaMs": 0.84,
+   "perCopyMs": 0.008,
+   "cpuMs": [
+    30.15,
+    28.54
+   ],
+   "perCopyCpuMs": -0.016,
+   "fps": [
+    35,
+    34
+   ],
+   "calls": [
+    147,
+    149
+   ],
+   "tris": [
+    980880,
+    1122615
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "plants",
+   "name": "flora.grass.a LOD0 @10m",
+   "n": 200,
+   "baseMs": 26.09,
+   "withMs": 32.16,
+   "deltaMs": 6.07,
+   "perCopyMs": 0.03,
+   "cpuMs": [
+    25.04,
+    31.34
+   ],
+   "perCopyCpuMs": 0.032,
+   "fps": [
+    38.3,
+    31.1
+   ],
+   "calls": [
+    120,
+    150
+   ],
+   "tris": [
+    798443,
+    1268490
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "plants",
+   "name": "flora.banana.a LOD0 @18m",
+   "n": 50,
+   "baseMs": 25.5,
+   "withMs": 31.38,
+   "deltaMs": 5.88,
+   "perCopyMs": 0.118,
+   "cpuMs": [
+    24.96,
+    30.6
+   ],
+   "perCopyCpuMs": 0.113,
+   "fps": [
+    39.2,
+    31.9
+   ],
+   "calls": [
+    119,
+    123
+   ],
+   "tris": [
+    796797,
+    935176
+   ],
+   "programs": [
+    129,
+    129
+   ],
+   "gpuMB": [
+    96.1,
+    96.2
+   ]
+  },
+  {
+   "group": "lights",
+   "name": "point lights, no shadow",
+   "n": 2,
+   "baseMs": 25.57,
+   "withMs": 28.09,
+   "deltaMs": 2.52,
+   "perCopyMs": 1.26,
+   "cpuMs": [
+    24.5,
+    27.36
+   ],
+   "perCopyCpuMs": 1.43,
+   "fps": [
+    39.1,
+    35.6
+   ],
+   "calls": [
+    147,
+    147
+   ],
+   "tris": [
+    984455,
+    982615
+   ],
+   "programs": [
+    129,
+    159
+   ],
+   "gpuMB": [
+    96.1,
+    97.7
+   ]
+  },
+  {
+   "group": "lights",
+   "name": "point lights, no shadow",
+   "n": 4,
+   "baseMs": 25.45,
+   "withMs": 30.47,
+   "deltaMs": 5.02,
+   "perCopyMs": 1.255,
+   "cpuMs": [
+    25.05,
+    29.99
+   ],
+   "perCopyCpuMs": 1.235,
+   "fps": [
+    39.3,
+    32.8
+   ],
+   "calls": [
+    147,
+    120
+   ],
+   "tris": [
+    984455,
+    798751
+   ],
+   "programs": [
+    129,
+    159
+   ],
+   "gpuMB": [
+    96.1,
+    97.9
+   ]
+  },
+  {
+   "group": "lights",
+   "name": "point lights, no shadow",
+   "n": 8,
+   "baseMs": 25.68,
+   "withMs": 36.87,
+   "deltaMs": 11.19,
+   "perCopyMs": 1.399,
+   "cpuMs": [
+    25.02,
+    36.14
+   ],
+   "perCopyCpuMs": 1.39,
+   "fps": [
+    38.9,
+    27.1
+   ],
+   "calls": [
+    147,
+    147
+   ],
+   "tris": [
+    984455,
+    984455
+   ],
+   "programs": [
+    129,
+    159
+   ],
+   "gpuMB": [
+    96.1,
+    98.4
+   ]
+  },
+  {
+   "group": "lights",
+   "name": "point lights, 512 px shadow",
+   "n": 1,
+   "baseMs": 25.76,
+   "withMs": 36.65,
+   "deltaMs": 10.89,
+   "perCopyMs": 10.89,
+   "cpuMs": [
+    25.42,
+    35.95
+   ],
+   "perCopyCpuMs": 10.53,
+   "fps": [
+    38.8,
+    27.3
+   ],
+   "calls": [
+    119,
+    285
+   ],
+   "tris": [
+    796797,
+    2032346
+   ],
+   "programs": [
+    129,
+    159
+   ],
+   "gpuMB": [
+    96.1,
+    103.7
+   ]
+  },
+  {
+   "group": "lights",
+   "name": "point lights, 512 px shadow",
+   "n": 2,
+   "baseMs": 25.53,
+   "withMs": 48.85,
+   "deltaMs": 23.32,
+   "perCopyMs": 11.66,
+   "cpuMs": [
+    24.93,
+    48.11
+   ],
+   "perCopyCpuMs": 11.59,
+   "fps": [
+    39.2,
+    20.5
+   ],
+   "calls": [
+    147,
+    396
+   ],
+   "tris": [
+    984455,
+    2895502
+   ],
+   "programs": [
+    129,
+    159
+   ],
+   "gpuMB": [
+    96.1,
+    110
+   ]
+  },
+  {
+   "group": "shadows",
+   "name": "sun cascades 3 -> 1",
+   "n": 0,
+   "baseMs": 26.51,
+   "withMs": 24.71,
+   "deltaMs": -1.8,
+   "perCopyMs": null,
+   "cpuMs": [
+    25.52,
+    23.9
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    37.7,
+    40.5
+   ],
+   "calls": [
+    147,
+    110
+   ],
+   "tris": [
+    984455,
+    734244
+   ],
+   "programs": [
+    129,
+    149
+   ],
+   "gpuMB": [
+    96.1,
+    96.3
+   ]
+  },
+  {
+   "group": "shadows",
+   "name": "sun cascades 3 -> 2",
+   "n": 0,
+   "baseMs": 24.89,
+   "withMs": 24.83,
+   "deltaMs": -0.06,
+   "perCopyMs": null,
+   "cpuMs": [
+    24.73,
+    24.11
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    40.2,
+    40.3
+   ],
+   "calls": [
+    110,
+    110
+   ],
+   "tris": [
+    734244,
+    734244
+   ],
+   "programs": [
+    156,
+    163
+   ],
+   "gpuMB": [
+    96.4,
+    96.5
+   ]
+  },
+  {
+   "group": "shadows",
+   "name": "shadow map 1024 -> 2048",
+   "n": 0,
+   "baseMs": 24.87,
+   "withMs": 24.68,
+   "deltaMs": -0.19,
+   "perCopyMs": null,
+   "cpuMs": [
+    24.53,
+    23.89
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    40.2,
+    40.5
+   ],
+   "calls": [
+    110,
+    110
+   ],
+   "tris": [
+    734244,
+    734244
+   ],
+   "programs": [
+    170,
+    177
+   ],
+   "gpuMB": [
+    96.6,
+    96.7
+   ]
+  },
+  {
+   "group": "shadows",
+   "name": "shadow map 1024 -> 512",
+   "n": 0,
+   "baseMs": 24.63,
+   "withMs": 24.97,
+   "deltaMs": 0.34,
+   "perCopyMs": null,
+   "cpuMs": [
+    23.9,
+    24.15
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    40.6,
+    40.1
+   ],
+   "calls": [
+    110,
+    110
+   ],
+   "tris": [
+    734244,
+    734244
+   ],
+   "programs": [
+    184,
+    191
+   ],
+   "gpuMB": [
+    96.8,
+    96.9
+   ]
+  },
+  {
+   "group": "occlusion",
+   "name": "occlusion half -> off",
+   "n": 0,
+   "baseMs": 24.75,
+   "withMs": 20.69,
+   "deltaMs": -4.06,
+   "perCopyMs": null,
+   "cpuMs": [
+    24.07,
+    20.11
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    40.4,
+    48.3
+   ],
+   "calls": [
+    110,
+    72
+   ],
+   "tris": [
+    734244,
+    463261
+   ],
+   "programs": [
+    198,
+    223
+   ],
+   "gpuMB": [
+    97,
+    74.2
+   ]
+  },
+  {
+   "group": "occlusion",
+   "name": "occlusion half -> full",
+   "n": 0,
+   "baseMs": 24.8,
+   "withMs": 32.82,
+   "deltaMs": 8.02,
+   "perCopyMs": null,
+   "cpuMs": [
+    24.11,
+    32.29
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    40.3,
+    30.5
+   ],
+   "calls": [
+    110,
+    110
+   ],
+   "tris": [
+    734244,
+    734244
+   ],
+   "programs": [
+    232,
+    239
+   ],
+   "gpuMB": [
+    97.4,
+    98.2
+   ]
+  },
+  {
+   "group": "tiers",
+   "name": "tier medium -> low",
+   "n": 0,
+   "baseMs": 24.93,
+   "withMs": 20.26,
+   "deltaMs": -4.67,
+   "perCopyMs": null,
+   "cpuMs": [
+    24.32,
+    19.51
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    40.1,
+    49.4
+   ],
+   "calls": [
+    110,
+    74
+   ],
+   "tris": [
+    734244,
+    317799
+   ],
+   "programs": [
+    246,
+    248
+   ],
+   "gpuMB": [
+    97.6,
+    74.8
+   ]
+  },
+  {
+   "group": "tiers",
+   "name": "tier medium -> high",
+   "n": 0,
+   "baseMs": 24.35,
+   "withMs": 24.54,
+   "deltaMs": 0.19,
+   "perCopyMs": null,
+   "cpuMs": [
+    23.8,
+    23.85
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    41.1,
+    40.7
+   ],
+   "calls": [
+    112,
+    115
+   ],
+   "tris": [
+    548310,
+    875847
+   ],
+   "programs": [
+    268,
+    267
+   ],
+   "gpuMB": [
+    98.1,
+    91.2
+   ]
+  },
+  {
+   "group": "tiers",
+   "name": "tier medium -> ultra",
+   "n": 0,
+   "baseMs": 30.07,
+   "withMs": 32.71,
+   "deltaMs": 2.64,
+   "perCopyMs": null,
+   "cpuMs": [
+    51.28,
+    32.21
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    33.3,
+    30.6
+   ],
+   "calls": [
+    110,
+    115
+   ],
+   "tris": [
+    734244,
+    922823
+   ],
+   "programs": [
+    294,
+    300
+   ],
+   "gpuMB": [
+    104.4,
+    117.1
+   ]
+  },
+  {
+   "group": "shadows",
+   "name": "sun shadows off (fresh page)",
+   "n": 0,
+   "baseMs": 26.47,
+   "withMs": 20.25,
+   "deltaMs": -6.22,
+   "perCopyMs": null,
+   "fps": [
+    37.8,
+    49.4
+   ],
+   "calls": [
+    120,
+    82
+   ],
+   "tris": [
+    798584,
+    546586
+   ],
+   "programs": [
+    127,
+    100
+   ],
+   "gpuMB": [
+    88.6,
+    63.7
+   ]
+  }
+ ],
+ "errors": []
+}

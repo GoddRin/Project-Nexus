@@ -16,6 +16,7 @@ import { isDebugUrl } from "../state/url";
 import { actorCount } from "./actors";
 import { assets } from "./assets";
 import { cameraApi } from "./camera";
+import { costProbe } from "./cost-probe";
 import { loop } from "./loop";
 import { pickAt } from "./picking";
 import { createPost, type Post } from "./post";
@@ -28,6 +29,8 @@ export type TwinStats = {
   fps: number;
   ms: number;
   p95: number;
+  /** Script work per frame, milliseconds (P02c): what is left of `ms` is the graphics card, or waiting. */
+  cpuMs: number;
   calls: number;
   tris: number;
   programs: number;
@@ -195,9 +198,17 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       resolution,
       probe: () => probed,
       gate: gateScene,
+      cost: costProbe,
     };
     const host = window as unknown as { __TWIN__?: unknown };
-    if (isDebugUrl()) host.__TWIN__ = hook;
+    if (isDebugUrl()) {
+      host.__TWIN__ = hook;
+      costProbe.attach({
+        scene: () => get().scene as unknown as THREE.Scene,
+        camera: () => get().camera as unknown as THREE.PerspectiveCamera,
+        renderer: live,
+      });
+    }
 
     return () => {
       stopSim();
@@ -205,6 +216,7 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       stopTier();
       post?.dispose();
       probe?.dispose();
+      costProbe.clear();
       if (host.__TWIN__ === hook) delete host.__TWIN__;
     };
   }, [get, onFirstFrame]);

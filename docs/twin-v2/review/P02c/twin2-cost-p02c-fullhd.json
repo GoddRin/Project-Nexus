@@ -1,0 +1,232 @@
+{
+ "label": "p02c-fullhd",
+ "at": "2026-10-14T11:27:30.889Z",
+ "place": "gate-approach",
+ "dsf": 1,
+ "info": {
+  "backend": "webgpu",
+  "canvas": [
+   1664,
+   1024
+  ],
+  "pixelRatio": 1,
+  "tier": "medium"
+ },
+ "baseline": {
+  "ms": 43.49,
+  "cpuMs": 45.4,
+  "fps": 23,
+  "calls": 139,
+  "tris": 1079749,
+  "programs": 120,
+  "lights": 4,
+  "gpuMB": 112.5
+ },
+ "results": [
+  {
+   "group": "occlusion",
+   "name": "occlusion half -> off",
+   "n": 0,
+   "baseMs": 43.83,
+   "withMs": 35.43,
+   "deltaMs": -8.4,
+   "perCopyMs": null,
+   "cpuMs": [
+    43.41,
+    35.48
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    22.8,
+    28.2
+   ],
+   "calls": [
+    139,
+    75
+   ],
+   "tris": [
+    1079390,
+    560872
+   ],
+   "programs": [
+    120,
+    144
+   ],
+   "gpuMB": [
+    112.5,
+    73.4
+   ]
+  },
+  {
+   "group": "occlusion",
+   "name": "occlusion half -> full",
+   "n": 0,
+   "baseMs": 40.82,
+   "withMs": 55.85,
+   "deltaMs": 15.03,
+   "perCopyMs": null,
+   "cpuMs": [
+    45.66,
+    56.66
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    24.5,
+    17.9
+   ],
+   "calls": [
+    115,
+    115
+   ],
+   "tris": [
+    888205,
+    888205
+   ],
+   "programs": [
+    162,
+    169
+   ],
+   "gpuMB": [
+    112.9,
+    114.2
+   ]
+  },
+  {
+   "group": "resolution",
+   "name": "pixel ratio 1 -> 0.7",
+   "n": 0,
+   "baseMs": 43.25,
+   "withMs": 26.3,
+   "deltaMs": -16.95,
+   "perCopyMs": null,
+   "cpuMs": [
+    54.17,
+    25.7
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    23.1,
+    38
+   ],
+   "calls": [
+    115,
+    115
+   ],
+   "tris": [
+    888205,
+    888205
+   ],
+   "programs": [
+    176,
+    183
+   ],
+   "gpuMB": [
+    113.1,
+    93.1
+   ]
+  },
+  {
+   "group": "resolution",
+   "name": "pixel ratio 1 -> 0.5",
+   "n": 0,
+   "baseMs": 42.35,
+   "withMs": 18.15,
+   "deltaMs": -24.2,
+   "perCopyMs": null,
+   "cpuMs": [
+    42.24,
+    17.47
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    23.6,
+    55.1
+   ],
+   "calls": [
+    115,
+    115
+   ],
+   "tris": [
+    888205,
+    888205
+   ],
+   "programs": [
+    190,
+    197
+   ],
+   "gpuMB": [
+    113.3,
+    83.9
+   ]
+  },
+  {
+   "group": "resolution",
+   "name": "pixel ratio 1 -> 0.25",
+   "n": 0,
+   "baseMs": 43.29,
+   "withMs": 10.94,
+   "deltaMs": -32.35,
+   "perCopyMs": null,
+   "cpuMs": [
+    42.25,
+    10.42
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    23.1,
+    91.4
+   ],
+   "calls": [
+    115,
+    115
+   ],
+   "tris": [
+    888205,
+    888205
+   ],
+   "programs": [
+    204,
+    211
+   ],
+   "gpuMB": [
+    113.5,
+    76.7
+   ]
+  },
+  {
+   "group": "lamps",
+   "name": "zone lamps removed (noon)",
+   "n": 0,
+   "baseMs": 44.68,
+   "withMs": 35.13,
+   "deltaMs": -9.55,
+   "perCopyMs": null,
+   "cpuMs": [
+    43.83,
+    32.98
+   ],
+   "perCopyCpuMs": null,
+   "fps": [
+    22.4,
+    28.5
+   ],
+   "calls": [
+    115,
+    115
+   ],
+   "tris": [
+    888205,
+    888205
+   ],
+   "programs": [
+    218,
+    240
+   ],
+   "gpuMB": [
+    113.7,
+    114.4
+   ]
+  }
+ ],
+ "errors": []
+}

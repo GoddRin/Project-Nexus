@@ -281,7 +281,7 @@ await context.close();
     seen[tier] = await ratio();
   }
   const css = seen.medium.css;
-  record("tiers set the pixel ratio", seen.low.pr === 1 && seen.medium.pr === 1.25 && seen.high.pr === 1.5 && seen.ultra.pr === 2 && Math.abs(seen.ultra.w - css * 2) <= 2 && Object.values(seen).every((x) => x.css === css), `on a 2x screen: low ${seen.low.pr}, medium ${seen.medium.pr}, high ${seen.high.pr}, ultra ${seen.ultra.pr}; canvas ${seen.low.w}, ${seen.medium.w}, ${seen.high.w}, ${seen.ultra.w} px wide for ${css} CSS px`);
+  record("tiers set the pixel ratio", seen.low.pr === 1 && seen.medium.pr === 1 && seen.high.pr === 1.5 && seen.ultra.pr === 2 && Math.abs(seen.ultra.w - css * 2) <= 2 && Object.values(seen).every((x) => x.css === css), `on a 2x screen: low ${seen.low.pr}, medium ${seen.medium.pr}, high ${seen.high.pr}, ultra ${seen.ultra.pr}; canvas ${seen.low.w}, ${seen.medium.w}, ${seen.high.w}, ${seen.ultra.w} px wide for ${css} CSS px`);
 
   await page.evaluate(() => window.__TWIN__.store.setState({ quality: { tier: "medium", auto: false } }));
   await frames(6);
@@ -307,7 +307,7 @@ await context.close();
   await frames(6);
   const back = await ratio();
   await page.evaluate(() => window.__TWIN__.resolution.reset());
-  record("dynamic resolution: down to 60% under slow frames, back to 100% when they are quick", down.join() === "0.9,0.8,0.7,0.6" && low.pr === 0.75 && low.css === css && up.join() === "0.7,0.8,0.9,1" && back.pr === 1.25, `slow frames: scale ${down.join(" > ")}, pixel ratio ${low.pr}, canvas ${low.w} px for ${low.css} CSS px; quick frames: scale ${up.join(" > ")}, pixel ratio ${back.pr}, canvas ${back.w} px`);
+  record("dynamic resolution: down to 60% under slow frames, back to 100% when they are quick", down.join() === "0.9,0.8,0.7,0.6" && low.pr === 0.6 && low.css === css && up.join() === "0.7,0.8,0.9,1" && back.pr === 1, `slow frames: scale ${down.join(" > ")}, pixel ratio ${low.pr}, canvas ${low.w} px for ${low.css} CSS px; quick frames: scale ${up.join(" > ")}, pixel ratio ${back.pr}, canvas ${back.w} px`);
 
   // a window resize must not put React Three Fiber's own pixel ratio back
   await page.evaluate(() => {

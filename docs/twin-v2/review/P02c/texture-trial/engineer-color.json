@@ -1,0 +1,31 @@
+{
+ "id": "char.engineer.a",
+ "slot": "color",
+ "rows": [
+  {
+   "trial": "uastc-rdo1-2k (as built)",
+   "kb": 1282,
+   "quality": "PSNR 46.7 dB"
+  },
+  {
+   "trial": "uastc-rdo4-2k",
+   "kb": 1044,
+   "quality": "PSNR 40.4 dB"
+  },
+  {
+   "trial": "uastc-rdo1-1k",
+   "kb": 385,
+   "quality": "PSNR 29.6 dB"
+  },
+  {
+   "trial": "etc1s-q255-2k",
+   "kb": 360,
+   "quality": "PSNR 36.0 dB"
+  },
+  {
+   "trial": "etc1s-q255-1k",
+   "kb": 127,
+   "quality": "PSNR 28.6 dB"
+  }
+ ]
+}

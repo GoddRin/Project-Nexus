@@ -2,9 +2,12 @@
  * Quality tiers: what each of Low, Medium, High and Ultra turns on, the start-up probe that picks
  * one, and dynamic resolution, which lowers the pixel ratio when frames run long.
  *
- * Starting values (docs/twin-v2/MASTER-BRIEF.md section 5). P02c measures real content and
- * rewrites them. Only pixel ratio, draw distance, LOD bias and texture size have a consumer yet;
- * the shadow, occlusion, crowd, vegetation and light fields are read by the phases that build those.
+ * Values rewritten from measurement in P02c (docs/twin-v2/MASTER-BRIEF.md section 5, the cost table in
+ * docs/twin-v2/review/P02c/REPORT.md). On the office laptop (Iris Xe) the frame is mostly pixel shading:
+ * at the gate, full HD on Medium, 34 of 43 ms scale with resolution. So Medium draws at 1:1 pixels with no
+ * screen-space occlusion (8.4 ms there; the assets carry baked occlusion), and crowd and light caps are
+ * set from the measured cost of each person and lamp. Low, High and Ultra keep their place relative to
+ * Medium; only Medium and Low were measured (no faster card was available).
  */
 import * as THREE from "three/webgpu";
 import { Fn, Loop, float, fract, length, sin, uv, vec3, vec4 } from "three/tsl";
@@ -22,22 +25,22 @@ export type TierSettings = {
   drawDistance: number;
   /** Multiplies every LOD switch distance: below 1 swaps to lighter meshes sooner. */
   lodBias: number;
-  /** Most animated people in view (P07d), share of scattered vegetation kept (P04b). */
+  /** Most animated people in view (P07d; about 0.45 / 0.22 / 0.07 ms each at LOD0/1/2 on Medium), share of scattered vegetation kept (P04b). */
   crowd: number;
   vegetationDensity: number;
   /** Textures larger than this are scaled down when loaded. */
   textureSize: number;
-  /** Real-time lights beside the sun (P03b). */
+  /** Real-time lights beside the sun (P03b). Each costs about 1.3 ms on Medium (1.9 at full HD), lit or not. */
   lights: number;
   /** 95th-percentile frame time, in milliseconds, that dynamic resolution holds the tier to. */
   frameBudgetMs: number;
 };
 
 export const TIER_SETTINGS: Record<Tier, TierSettings> = {
-  low: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 1, ambientOcclusion: "off", drawDistance: 450, lodBias: 0.7, crowd: 16, vegetationDensity: 0.35, textureSize: 512, lights: 4, frameBudgetMs: 50 },
-  medium: { pixelRatio: 1.25, shadowMapSize: 1024, shadowCascades: 3, ambientOcclusion: "half", drawDistance: 900, lodBias: 1, crowd: 40, vegetationDensity: 0.6, textureSize: 1024, lights: 8, frameBudgetMs: 33 },
-  high: { pixelRatio: 1.5, shadowMapSize: 2048, shadowCascades: 3, ambientOcclusion: "half", drawDistance: 1600, lodBias: 1.4, crowd: 80, vegetationDensity: 0.85, textureSize: 2048, lights: 8, frameBudgetMs: 33 },
-  ultra: { pixelRatio: 2, shadowMapSize: 4096, shadowCascades: 3, ambientOcclusion: "full", drawDistance: 3000, lodBias: 2, crowd: 120, vegetationDensity: 1, textureSize: 4096, lights: 8, frameBudgetMs: 25 },
+  low: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 1, ambientOcclusion: "off", drawDistance: 450, lodBias: 0.7, crowd: 12, vegetationDensity: 0.35, textureSize: 512, lights: 1, frameBudgetMs: 50 },
+  medium: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 3, ambientOcclusion: "off", drawDistance: 900, lodBias: 1, crowd: 24, vegetationDensity: 0.6, textureSize: 1024, lights: 2, frameBudgetMs: 33 },
+  high: { pixelRatio: 1.5, shadowMapSize: 2048, shadowCascades: 3, ambientOcclusion: "half", drawDistance: 1600, lodBias: 1.4, crowd: 48, vegetationDensity: 0.85, textureSize: 2048, lights: 4, frameBudgetMs: 33 },
+  ultra: { pixelRatio: 2, shadowMapSize: 4096, shadowCascades: 3, ambientOcclusion: "full", drawDistance: 3000, lodBias: 2, crowd: 80, vegetationDensity: 1, textureSize: 4096, lights: 6, frameBudgetMs: 25 },
 };
 
 /** Settings of the tier in the store. */

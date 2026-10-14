@@ -51,21 +51,55 @@ Decoders (Basis transcoder, Meshopt) are copied into `public/vendor/twin/` so no
 
 ## 5. Performance budget
 
-Starting targets. P02c measures real costs and rewrites this table from evidence; after that it is binding.
+Rewritten from measurement in P02c (2026-10-14) and binding from then on. Evidence: `review/P02c/REPORT.md` and `scripts/twin/cost.mjs` (the marginal cost of each kind of content, added copy by copy on the gate slice). `scripts/twin/bench.mjs` checks these lines.
 
-| Measure | Medium tier, desktop overview (Iris Xe, 1440x900) | Low tier, phone profile |
+**What the measurements say about this laptop (Intel Iris Xe, Chrome, WebGPU).** The frame is mostly pixel shading, not draw calls or triangles. At the gate on Medium:
+- At 1440 x 900, 18 of 26 ms scale with resolution.
+- At the owner's full-HD screen, 34 of 43 ms.
+
+So budgets are set in milliseconds of frame and checked at full HD as well as at 1440 x 900. The costliest items are lights (every light in the scene, lit or not, about 1.3 ms; 1.9 at full HD), screen-space occlusion (4 ms; 8 at full HD) and sun shadows (6 ms).
+
+| Measure | Medium, desktop (Iris Xe, 1440 x 900 and 1920 x 1080) | Low, phone profile |
 | --- | --- | --- |
-| Median frame rate | 45 fps or better | 30 fps or better |
+| Median frame rate (overview, and each close view) | 45 fps or better | 30 fps or better |
 | p95 frame time | 33 ms or less | 50 ms or less |
-| Draw calls | 350 or fewer | 200 or fewer |
-| Triangles in view | 700k or fewer | 300k or fewer |
-| Shader programs / pipelines | 40 or fewer | 30 or fewer |
-| Real-time lights | 1 sun + fixed pool of 8 | 1 sun + 4 |
-| First usable view (warm cache) | 6 s or less | 8 s or less |
-| Download to first view / whole site | 12 MB / 70 MB | 8 MB / 40 MB |
+| Draw calls | 350 or fewer (about 0.013 ms each) | 200 or fewer |
+| Triangles in view | 1,000k or fewer (not the limiting cost) | 400k or fewer |
+| Pipelines per location | 160 or fewer, all compiled before they draw; no streaming step over 8 ms | 100 or fewer |
+| Real-time lights in the scene (lit or not) | sun + 2, unshadowed point or one shadowed spot; a lamp is a light only while it is lit | sun + 1 |
+| First usable view (warm cache) | 6 s or less; everything in view in 20 s | 8 s or less |
+| Download to first view / one location | 15 MB / 60 MB | 8 MB / 30 MB |
 | JS heap after 20 minutes | No growth trend | No growth trend |
 
-Tiers: Low, Medium, High, Ultra. Chosen automatically from a 2-second start-up probe, changeable by the user, with dynamic resolution when frames run long.
+**The Medium frame plan** (22 ms for 45 fps, at the slice's full-HD view with resolution held at 1):
+
+| Share | ms | Notes |
+| --- | --- | --- |
+| Fixed work (draws, skinning, script) | 9 | Measured floor at a quarter of the pixels |
+| World shading (ground, sky, built things, undergrowth) | 6 to 9 | The ground's blended material is most of it |
+| Sun shadows, 3 cascades, 1024 px | 6 | 1 cascade saves 1.8 ms; map size makes no difference |
+| People, animals, vehicles, trees beyond the base | the rest, by the costs below | Dynamic resolution may take the view down to 0.75 before anything is removed |
+
+| Each extra, on Medium at 1440 x 900 | ms a frame |
+| --- | --- |
+| Person at LOD0 / LOD1 / LOD2 | 0.45 / 0.22 / 0.07 |
+| Dog (large-animal class) at LOD0 | 0.13 |
+| Pickup at LOD0 / LOD1 | 0.55 / 0.28 |
+| A tree species in view (one instanced set) | about 2.5 fixed, then 0.1 a copy at LOD0 to LOD1 and 0.03 at LOD2 |
+| Shrub or grass clump | 0.03 |
+| Light, unshadowed / with a cube shadow | 1.3 / 11 |
+| Screen-space occlusion half / full resolution | 4 / 12 |
+
+**What each tier keeps** (`components/twin/engine/tiers.ts`):
+
+| Tier | Pixels | Sun shadows | Occlusion | Lights beside the sun | People animated in view | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Low | 1:1, dynamic down to 0.6 | 1 cascade, 1024 | baked only | 1 | 12 (at most 2 at LOD0) | 512 px textures |
+| Medium | 1:1, dynamic down to 0.6 | 3 cascades, 1024 | baked only | 2 | 24 (at most 4 at LOD0, 8 at LOD1) | the office laptop's tier |
+| High | 1.5, dynamic | 3 cascades, 2048 | half resolution | 4 | 48 | for cards about 3 times the laptop's (not measured) |
+| Ultra | 2, dynamic | 3 cascades, 4096 | full | 6 | 80 | for cards about 8 times the laptop's (not measured) |
+
+Tiers are chosen automatically from a 2-second start-up probe, can be changed by the user, and use dynamic resolution when frames run long. Only the office laptop has been measured. High and Ultra are placed relative to Medium, and the probe's lines for them are still estimates.
 
 ## 6. How to verify
 

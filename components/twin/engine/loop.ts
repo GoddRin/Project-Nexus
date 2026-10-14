@@ -14,6 +14,8 @@ const SAMPLES = 240;
 const stages: Record<LoopStage, LoopCallback[]> = { sim: [], animation: [], camera: [], render: [] };
 const frameMs = new Float32Array(SAMPLES);
 const sorted = new Float32Array(SAMPLES);
+/** Milliseconds of script work inside each frame (all stages, the render stage's command encoding included). */
+const workMs = new Float32Array(SAMPLES);
 let sampleCount = 0;
 let sampleAt = 0;
 let lastTickMs = 0;
@@ -33,11 +35,8 @@ export const loop = {
   /** Run one frame. `dt` is seconds since the last frame. */
   tick(dt: number) {
     const nowMs = performance.now();
-    if (lastTickMs > 0) {
-      frameMs[sampleAt] = nowMs - lastTickMs;
-      sampleAt = (sampleAt + 1) % SAMPLES;
-      if (sampleCount < SAMPLES) sampleCount++;
-    }
+    const sampled = lastTickMs > 0;
+    if (sampled) frameMs[sampleAt] = nowMs - lastTickMs;
     lastTickMs = nowMs;
 
     const step = Math.min(Math.max(dt, 0), MAX_DT);
@@ -47,6 +46,11 @@ export const loop = {
       const list = stages[stage];
       for (let i = 0; i < list.length; i++) list[i](step, elapsed);
     }
+    if (sampled) {
+      workMs[sampleAt] = performance.now() - nowMs;
+      sampleAt = (sampleAt + 1) % SAMPLES;
+      if (sampleCount < SAMPLES) sampleCount++;
+    }
   },
 
   /** Frames run since the page opened. */
@@ -54,16 +58,18 @@ export const loop = {
     return frames;
   },
 
-  /** Frame pacing over the last 240 frames (about 4 seconds at 60 fps). */
-  timing(): { fps: number; ms: number; p95: number } {
-    if (sampleCount === 0) return { fps: 0, ms: 0, p95: 0 };
+  /** Frame pacing over the last 240 frames (about 4 seconds at 60 fps), and the script work per frame (`cpuMs`, P02c). */
+  timing(): { fps: number; ms: number; p95: number; cpuMs: number } {
+    if (sampleCount === 0) return { fps: 0, ms: 0, p95: 0, cpuMs: 0 };
     let sum = 0;
+    let work = 0;
     for (let i = 0; i < sampleCount; i++) {
       sum += frameMs[i];
+      work += workMs[i];
       sorted[i] = frameMs[i];
     }
     const view = sorted.subarray(0, sampleCount).sort();
     const ms = sum / sampleCount;
-    return { fps: 1000 / ms, ms, p95: view[Math.min(sampleCount - 1, Math.floor(sampleCount * 0.95))] };
+    return { fps: 1000 / ms, ms, p95: view[Math.min(sampleCount - 1, Math.floor(sampleCount * 0.95))], cpuMs: work / sampleCount };
   },
 };

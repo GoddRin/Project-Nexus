@@ -155,6 +155,8 @@ async function buildAsset(id, glb, side) {
   if (!side.bounds) problems.push("no bounds in the sidecar");
 
   const bytes = await io.writeBinary(doc);
+  // (download is a warning, not a failure: P02c set the line, and the slice's assets are still over it)
+  if (budget.downloadMB && bytes.byteLength > budget.downloadMB * 1e6) console.warn(`${id}: ${(bytes.byteLength / 1e6).toFixed(2)} MB, download budget ${budget.downloadMB} MB`);
   const hash = sha(bytes).slice(0, 10);
   const file = path.join(OUT, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });

@@ -112,7 +112,7 @@ code{font-family:var(--mono);font-size:.92em}
   </header>
   <section class="summary" aria-label="Summary">
     <div class="tile"><div class="k">Jobs done</div><div class="v">${done} of ${total}</div><div class="bar" role="img" aria-label="${pct} percent of jobs done"><i></i></div><div class="n">${pct}% of jobs, not of effort: later jobs are larger</div></div>
-    <div class="tile next"><div class="k">Next job</div><div class="v">${next ? esc(next.code) + " · " + cell(next.title) : "All jobs done"}</div>${next ? `<div class="n">Open a new chat and send:</div><div class="cmd">Read docs/twin-v2/README.md and follow it for sub-phase ${esc(next.code.replace(/-pack-1 to 28/, "-pack-1"))}.</div>` : ""}</div>
+    <div class="tile next"><div class="k">Next job</div><div class="v">${next ? esc(next.code) + " · " + cell(next.title) : "All jobs done"}</div>${next && next.state === "owner" ? `<div class="n">Waiting on your reply: read <code>docs/twin-v2/review/${esc(next.code)}/REPORT.md</code> and answer its questions in a chat.</div>` : next ? `<div class="n">Open a new chat and send:</div><div class="cmd">Read docs/twin-v2/README.md and follow it for sub-phase ${esc(next.code.replace(/-pack-1 to 28/, "-pack-1"))}.</div>` : ""}</div>
     <div class="tile"><div class="k">Waiting on you</div><div class="v">${waiting.length}</div><div class="n">${waiting.length ? "Listed at the bottom; most are optional" : "Nothing right now"}</div></div>
   </section>
   ${groups.map((g) => {
