@@ -39,6 +39,39 @@ The three braid together. A man you befriended in the morning is the one who goe
   - The night shift's **Three Marias** of the canteen, drivers, a rival basketball team from the weir camp, vendors at the lower gate.
 - **The unseen** (section 6).
 
+## 2a. The real office in the story: "Ang mga Tagapag-ingat" (draft, 2026-10-15)
+
+A first casting of the colleagues the owner has photographed so far. It is a draft: P16-0 finishes it when the owner's personnel list is complete, and not everyone has to appear. All of it follows the rules in section 2 (real staff are kind, professional and never scripted as victims, villains, possessed or frightened); drama and danger fall on the invented characters.
+
+**The theme for the office: the keepers.** By day the site office looks like the dull part of the project: timesheets, transmittals, maps, drawings, schedules, permits. In this story it is the project's memory. Every person in it keeps one kind of record, and the night's mysteries (section 6) are never solved by force: they are solved by **evidence**, and the evidence lives in their records. A face in the tunnel is matched to an old ID in the HR files; a road that makes drivers circle shows up as a loop in the GPS tracks; a mound appears on one survey and not the next. The player becomes the bridge: the one who walks the mountain at night and then brings the questions back to the office in the morning. The ending turns on the same idea: the guardian asks what the project took, and the office can answer exactly, because they wrote everything down. Remembering truly is how the debt is paid.
+
+**Cast and roles:**
+
+| Colleague | Role in the story | Day (Araw) | Morning (Umaga) | Night (Gabi): how they help, never in danger |
+| --- | --- | --- | --- | --- |
+| **Johnny Farong-Ey**, Surveyor | **The first mentor.** The Prologue starts on his survey crew in April 2022, setting the first pegs in forest | Leads the Surveyor career; teaches you to read slope, water and rock; his benchmarks become the map's first fixed points | Coffee before dawn at the crew truck; stories of older projects; how to tell rain coming over the ridge | His benchmarks are the night's "known ground": points measured exactly, which anchor the player when the road starts to lie. He knows which pegs keep going missing |
+| **Amor Floresca Jr.**, Geo Mapper | **The cartographer of both worlds.** Builds the project map, and quietly, with Mang Isko, a second map of the old names and places | Mapping missions: drone and GPS surveys, landslide mapping after storms, the as-built record | Walks the old trails with Mang Isko; teaches the local place names | His tracks prove the "drivers who circle" case (Act I); his before-and-after surveys reveal the mound that moves; the folklore layer on his map becomes the player's night guide |
+| **Angelo Sarmiento**, Timekeeper | **The one who counts.** Knows every worker's name and where they are supposed to be | Timekeeper career: gates, biometrics, overtime, payroll cut-off; the human cost of a delay as hours | Knows everyone's birthday and hometown; the friendliest face at the gate | The headcount that is off by one every night (473 on the list, 474 at the gate); the worker clocked in at two gates at once (Act IV). His records narrow who it is |
+| **Jayson Aggabao**, Document Controller | **The archivist.** Every drawing, letter and transmittal passes through him | Document Controller career: controlled copies, revisions, the archive after a flood, the scanner that never stops | Tidy rituals, the "I.T." chair, fixing everyone's printer | An unsigned transmittal that arrives in the tray each new moon; a 2022 drawing with an annotation nobody made; the old letters that reveal what was promised to the barangay and forgotten |
+| **Elbert Figuracion**, AutoCAD Operator | **The draughtsman who sees the overlay.** | Drafting career: turning survey into drawings, revision clouds, the as-built set | The coffee run, music in his earphones, the office's running jokes | Overlaying old and new drawings shows the alignment crosses the balete tree and the mound; a layer that appears in the file overnight, named in old words, becomes a clue |
+| **May Ann Parallag**, Planning Engineer | **The rising engineer.** From the Junior Engineer programme to planner: her growth mirrors the player's own | Planning missions: recovering the schedule after the typhoon, the S-curve, look-ahead plans; she turns the night's disruptions into a schedule the project can still keep | Early-morning planning by the water dispenser; her first project far from home | She notices that the delays line up with the moon. Her charts are what convince the sceptics (Dado, Engr. Mika) that something real is happening |
+| **Rovigail Joy Abellar**, HR Officer | **The one who brings you in.** Hires you in the Prologue: contract, ID, PPE issue | HR missions: hiring, leave, welfare, a worker's family who arrives at the gate | Letters and calls from home; helping workers send money to families | The ID of a worker who is on no list; the family of the missing man (Act IV) comes to her, and through her the player learns who he was |
+| **Marvin Sibal**, Safety Officer | **The protector.** Toolbox talks every morning; the voice that keeps you alive | Safety Officer career: permits, inspections, near-miss reports, the rescue drill that becomes real | The 07:00 toolbox talk as a daily scene; his whistle and his backpack | Sets the night rules: buddy, light, radio, tell someone where you go. His whistle is an item that calls the night patrol. Following his rules is how the player survives |
+| **Zandre Villaver**, Mechanical Superintendent | **The old hand of Acts IV and V.** Has brought plants to life before | Mechanical career: turbines arriving, alignment, the first spin | Stories of past plants; the silver chain from home | During the longest night of Act V he keeps the commissioning team at their posts in the powerhouse: the light that must not go out |
+| **Noel Lavapie**, Project Control Head | **The month-end.** Each month's review meeting closes a chapter | Monthly reviews as chapter checkpoints: your work appears on a slide (physical progress only; no internal figures, per the confidentiality rule) | The office head's morning walk round the desks | Calls the office together the night the records must be gathered for the guardian |
+| **Randy Gamboa**, Admin Assistant | **The one who makes the camp run.** | Supplies, transport, the tricycle and van schedules | The canteen orders, the pasalubong runs to town | Knows which drivers refuse the upper road after dark and why |
+
+**Set pieces built around the office:**
+
+1. **Kuwentuhan sa Opisina (stories in the office).** A brownout during month-end: the generator fails, the office finishes the review by phone light, and while they wait each colleague tells a story from their own province. Each tale becomes a short playable flashback with invented characters: an anthology of Philippine folklore told by the real team, safe and cozy in the office while something only knocks on the panels outside.
+2. **The month-end review** as a recurring ritual: the whole office, pancit if someone has a birthday, the S-curve on the screen, the player's work on a slide.
+3. **The office calendar:** Christmas party and Monito-Monita, Valentine's snacks, the basketball rivalry with the weir camp, the coffee rota, the typhoon night when everyone sleeps in the office.
+4. **The final gathering (Act V):** to answer the guardian, the player must collect every keeper's record: Johnny's benchmarks, Amor's map, Angelo's headcount, Jayson's letters, Elbert's overlay, May Ann's schedule, Rovigail's names, Marvin's reports, Zandre's machines. Together they are the true account of what the project took and what it gives back. At first power, the office lights come on first.
+
+**Tone:** warm by morning, proud and pressured by day, eerie by night, and never cruel to the real people. The horror happens outside the office; inside it there is light, coffee and colleagues.
+
+**Still to decide at P16-0 (the owner may answer any time):** who else from the personnel list joins; whether any colleague wants a larger personal arc; whether a colleague may appear in a night scene directly (default: only in the office, the camp or with the patrol, never alone in the dark).
+
 ## 3. Structure and length
 
 **Five acts, about sixty chapters**, following the real record:
@@ -183,6 +216,9 @@ The morning mission set; the friendship system's story steps; the first personal
 
 ### P16h. The endless layer
 Generated daily and weekly jobs from site state; calendar missions by date, moon, season and weather; leagues and records; collections; the year wheel in the journal. **Pass when:** a simulated real-time year surfaces every calendar item at its time and generates varied jobs without repeats inside a week.
+
+### Cutscenes (Higgsfield, approved 2026-10-15)
+Pre-rendered cutscenes (the Prologue arrival, act openings, night visions, dreams, Chronicles flashbacks) may be made with the Higgsfield API, paid per use, starting from engine captures of the twin as first frames. P16-0 lists each cutscene with its length and estimated cost (about US$25 to 40 for 2 minutes), and the owner approves the list. Only shots that are clearly worth it get made; the rest stay in-engine. The owner confirmed (2026-10-15) that all staff and workers have consented to the use of their likeness. Rules: `TOOLBOX.md` "Higgsfield".
 
 ### Packs (P16-pack-N, added indefinitely)
 One session each, in any order the owner chooses: an act's next six chapters; three night cases; one career's upper ranks; four personal arcs; a season's calendar set. Acts II to V are delivered this way (about eight packs). Each pack lists what it adds in `STATE.md`.

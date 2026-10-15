@@ -143,6 +143,54 @@ Every idea below passes the same rules and clean-up as any Tripo model, and each
 
 **Tripo features beyond plain generation to try on Pro:** auto-rig for a creature's first rig; Smart Segmentation to split models into moving parts (doors, a machine's arm, a creature's jaw); texture editing with the Magic Brush to add the site's mud, rust and sun-fade; Smart Low Poly to get a lighter starting mesh; Text2Motion for a creature's first rough animation, replaced later by proper clips if it does not meet the motion bar.
 
+## Higgsfield (AI video and images; approved 2026-10-15)
+
+**Status: approved by the owner on 2026-10-15** as an exception to `MASTER-BRIEF.md` rule 2, on tight terms: **API pay-per-use only**, used only where it is clearly worth it and needed. **Scope:** the cutscene and trailer tool for P15 and P16, plus cheap textures (signs, decals, posters) in P06d. It is not added to any other phase. For 3D, keep Tripo **or** Meshy, never both. **Owed to the owner:** at the first real use (P06d), compare the API's pay-per-use cost with a one-month subscription for that phase's actual batch and report which is cheaper before spending.
+
+**What it is** (from Higgsfield's own pages and third-party reviews, October 2026; check again on the day of use):
+- A hub for AI **video and images**: its own models (Soul 2 and Soul Cinema for images, DoP for camera moves) and others' (Kling 3.0, Seedance 2.x, Wan, MiniMax, Veo). **Soul ID** keeps a real person's face consistent across shots from about 20 photos; **Soul Cast** does the same for invented characters.
+- **3D:** image-to-3D and text-to-3D, resold from Meshy (one image or 2 to 4 views, plus rigging), Meta SAM 3 and Tripo. GLB out, optional PBR maps, auto-rig (humanoids only), 678 animation clips, polycount 100 to 300,000, quad or triangle topology. **3D Jutsu** (5 September 2026) is a browser scene builder for previz that renders 1 to 60 s of MP4 or exports GLB.
+- **Access:** a pay-per-generation **API** (open.higgsfield.ai, launched 17 September 2026): a prepaid US-dollar balance, no subscription, requests stop at zero, a cost preflight before spending. MCP and CLI access exist, so a session could drive it. The web app has subscriptions (about US$15 to 130 a month, depending on source and billing).
+
+**Costs** (third-party guides, October 2026; prices vary by resolution and audio, so confirm on the live pricing page):
+
+| Item | Price quoted |
+| --- | --- |
+| Soul 2 image | about US$0.003 |
+| Kling 3.0 video | about US$0.08 to 0.11 a second |
+| Seedance 2.0 / 2.5 video | about US$0.14 / 0.21 a second |
+| DoP camera move | about US$0.125 a generation |
+| Soul ID training | about 25 credits (about US$1.25) |
+| 3D generation | not published; use the cost preflight |
+
+Worked estimates: a 2-minute cutscene with about three tries a shot, US$25 to 40; a 60 s trailer, US$20 to 40; a hundred signs and decals, under US$1.
+
+**Where it would help, by phase:**
+
+| Use | Phase | Benefit |
+| --- | --- | --- |
+| **Story-mode cutscenes:** an engine capture of the real twin as the first frame, animated with Kling or Seedance (the Prologue arrival in April 2022, act openings, night visions of folklore beings, dreams, the Chronicles flashbacks) | P16, `IDEAS-BACKLOG.md` sections 1 and 2 | **High.** Saves weeks of real-time cutscene work; horror and dreams forgive AI glitches |
+| **Trailer and launch video:** real engine captures with generated shots between them | P15 | **High** for presenting the twin |
+| **Flat textures:** safety signs in Filipino and English, tarpaulins, posters, sari-sari packaging, notice boards, menu boards, decals | P02f, P06d, P12e | **Medium to high.** Local items are missing from free libraries, and they cost almost nothing |
+| **Reference sheets:** multi-view pictures of a local object to feed image-to-3D (paragos, tricycle sidecar, kaldero) | P06, P10a | **Medium.** Improves whichever 3D tool is used |
+| **Concept art** for folklore beings and invented characters before modelling | P07c, P16 | Medium |
+| **Video for screens in the world:** canteen TV, office projector, a phone in story mode | P12e, P16 | Low, but cheap |
+| Image-to-3D (Meshy, Tripo through Higgsfield) | Tripo idea list | **Low as an addition.** Repeats the Tripo month. Could *replace* it (pay as you go, polycount chosen up front) but never run both |
+| 3D Jutsu previz | none | Very low: the twin's own engine is a better previz tool |
+| Real-time people, the Atlas Navigator, motion | P07, P08 | None: video cannot drive a real-time rig, and the clip library is weaker than Mixamo and Mesh2Motion |
+
+**Overall:** small for the real-time twin (P02 to P14), about 5% of the work, mostly textures and references; large for story mode (P16) and the launch (P15). Recommended plan if approved: cutscene and trailer tool for P15 and P16, API-generated textures in P06d, and only one of Tripo or Meshy for 3D.
+
+**Rules if approved:**
+1. **The API, not a subscription,** unless the owner decides otherwise: pay only for what each phase uses. The owner loads the balance and holds the keys; a session never pays, signs in or stores a key in a tracked file.
+2. **Licence check on the day of use.** Higgsfield's help centre says outputs belong to the user and may be used commercially (Terms of Use section 4.4), but the terms were rewritten in 2026 after complaints about an earlier broad, permanent licence, and sources disagree about the free plan (likely no commercial use and watermarked). **Nothing made on a free plan goes into `public/` or the app.** Record the terms read in `DECISIONS.md` and each output in the credits file, with the model used.
+3. **No fabricated data.** Generated footage never passes as real progress footage of the project. It belongs in story mode or in trailer shots that are clearly fiction or clearly marked as generated.
+4. **Real staff likeness.** The owner confirmed on 2026-10-15 that all staff and workers have given consent and approval. A person's `likeness` flags (P07c) still allow opting someone out. Never upload internal documents.
+5. **Same quality bar as any source.** Any 3D output goes through the Tripo clean-up in Blender (rule 6 of the Tripo section). Textures go through the normal KTX2 pipeline and atlases. A result that fails `QUALITY-BAR.md` is dropped.
+6. Save each output to `assets-src/twin/higgsfield/<asset-id>/` (media git-ignored, text notes tracked) with `prompt.txt`, the input images, the model, the date and the cost.
+
+**Sources read 2026-10-15:** higgsfield.ai/blog/higgsfield-api; higgsfield.ai/blog/higgsfield-3d-jutsu; scriptable.com/posts/higgsfield/3d-models; Higgsfield help centre, "Who owns my generations and can I use them commercially"; aitoolcurator.com (terms update); apiframe.ai and wireflow.ai (pricing); creatify.ai (free plan; a competitor, so read with care).
+
 ## Motion
 
 - **Mixamo:** free with an Adobe account; large human motion-capture library and an auto-rigger. The owner signs in; raw files stay out of git.

@@ -32,7 +32,8 @@ Two sessions. Nothing new is built; everything is measured, fixed and released.
 2. Update links into the twin (`lib/services/projectProfileService.ts`, `components/atlas/profile/ProjectProfileView.tsx`, sidebar, search modal, home launchpad and flagship spotlight) only as far as their targets change; their behaviour otherwise stays as is.
 3. Update the assistant's knowledge of the page if it describes v1 (`lib/rag/generate.ts` mentions the digital twin): make the description match v2.
 4. Write `docs/twin-v2/HANDBOOK.md`: architecture map; how to add an asset, a zone, a person, an outfit, a clip, a station, an activity, a vehicle, a species, a tour; how to run the pipeline and the bench; tier and budget tables; known limits.
-5. Final report `review/P15b/REPORT.md`: before and after (v1 baseline against v2 numbers and images), what was dropped and why, open items.
-6. **Only if the owner asks in a later session:** remove `components/digital-twin/`, v1-only assets in `public/models/` and `public/textures/`, and the `?v=1` switch. List exactly what will be deleted and get a yes before deleting anything.
+5. **Launch trailer (Higgsfield, approved 2026-10-15):** cut a trailer from real engine captures. Generated shots between them come from the Higgsfield API, paid per use, on a tight budget (about US$20 to 40 for 60 s). Mark generated shots as such, and never pass them off as real progress footage (`TOOLBOX.md` "Higgsfield").
+6. Final report `review/P15b/REPORT.md`: before and after (v1 baseline against v2 numbers and images), what was dropped and why, open items.
+7. **Only if the owner asks in a later session:** remove `components/digital-twin/`, v1-only assets in `public/models/` and `public/textures/`, and the `?v=1` switch. List exactly what will be deleted and get a yes before deleting anything.
 
 **Pass when.** `/digital-twin` opens v2 for signed-out and signed-in visitors; every inbound link works; the handbook lets a new session add a prop and a person without reading engine code.

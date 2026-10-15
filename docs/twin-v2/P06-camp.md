@@ -65,6 +65,8 @@ Common to every sub-phase: the "common" list at the top of `P05-hydro-works.md` 
 - **Site goods:** wheelbarrow, buckets, cement bags, rebar offcuts, formwork ply, scaffold tubes and couplers, cones, barriers, caution tape, signage set, extinguishers, first-aid box, water jugs, tool boxes, cable reels, hoses, lights on stands, ladders.
 - **Personal:** hard hats in rack colours, vests, gloves, boots, raincoats, umbrellas, backpacks, lunch containers, water bottles, towels, phones.
 
+**Higgsfield textures (approved 2026-10-15, `TOOLBOX.md` "Higgsfield"):** flat textures that free libraries lack (safety signs in Filipino and English, tarpaulins, posters, sari-sari packaging, notice boards, menu boards, decals) may be generated through the Higgsfield API, paid per use, only where no free source does the job. **Before spending, compare the batch's API cost with a one-month subscription and report to the owner which is cheaper.** Record each image in the credits file.
+
 Then a dressing pass across all camp and works zones: place clutter, stains, decals and wear so each area tells what happens there. Every hand prop has a grip frame (an empty at the hold point) named `GRIP_R` and, for two-handed tools, `GRIP_L`.
 
 **Pass when.** Every activity in `activities.json` (drafted here, completed in P09) can name its props from the library; every prop passes the mesh checklist; total prop materials stay within the atlas plan.
