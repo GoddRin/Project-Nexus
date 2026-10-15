@@ -124,7 +124,7 @@ The hand-off between sessions. Update at the end of every session. Status is one
 | Voice recordings of the line list by willing colleagues (phone, quiet room), or a free speech account for generated voices | P13g | optional; pending |
 | Who may use free roam (default: signed-in owner and admin accounts only, not the public) | P13i | default set; owner may change |
 | The plant's real start-up sequence, if the control-room simulation should follow it | P13k | optional |
-| Photographs of the remaining staff (front neutral, both sides, one full length) and, for each person, consent to use their face | P07c | 5 photos received 2026-10-10 (reference R5); consent flags pending  Owner stated 2026-10-10 that staff and workers have approved, including being hurt or killed in free roam and story mode |
+| Photographs of the remaining staff (front neutral, both sides, one full length) and, for each person, consent to use their face | P07c | 5 photos received 2026-10-10 (reference R5); front and side sets for Zandre Villaver (Mechanical Superintendent) and Marvin Sibal (Safety Officer) received 2026-10-15 (R5, added); consent flags pending  Owner stated 2026-10-10 that staff and workers have approved, including being hurt or killed in free roam and story mode |
 | Which v1 office rooms exist beyond what the R5 photographs show | P06a | pending |
 | Go-ahead to make v2 the default | P15b | pending |
 | Phone photographs of real site objects for the Tripo month (signs, tools, machines, a cement bag, river rocks, the guard booth fittings, the office water dispenser): 3 to 8 photos each from different sides, no people in the frame; see `TOOLBOX.md`, "The spare credits" S1 | before P06a | optional; pending |
