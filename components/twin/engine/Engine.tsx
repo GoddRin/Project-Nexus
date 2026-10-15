@@ -20,6 +20,7 @@ import { costProbe } from "./cost-probe";
 import { loop } from "./loop";
 import { pickAt } from "./picking";
 import { createPost, type Post } from "./post";
+import { precompile } from "./precompile";
 import { applyOutput, backendOf, type RendererBackend } from "./renderer";
 import { startStreaming, streaming } from "./streaming";
 import { lamps } from "../world/lamps";
@@ -115,10 +116,13 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
     // thrown away when the tier changes
     let post: Post | null = null;
     let postFor: string | null = null;
+    /** Whether precompile has been told this tier's passes (once the pipeline has drawn a frame). */
+    let passesTold = false;
     const stopTier = twinStore.subscribe(
       (s) => s.quality.tier,
       () => {
         resolution.reset();
+        precompile.dropPasses();
         post?.dispose();
         post = null;
         postFor = null;
@@ -165,9 +169,18 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       if (!probe && postFor !== tier) {
         postFor = tier;
         post = createPost(renderer, scene as unknown as THREE.Scene, camera as unknown as THREE.Camera);
+        passesTold = false;
       }
       if (post) post.render();
       else renderer.render(scene, camera);
+      // one compiled object a frame drawn once, out of sight, so its pipeline is finished before it is needed
+      if (!probe) precompile.warm(renderer, scene as unknown as THREE.Scene, camera as unknown as THREE.Camera);
+      // (a pass's state is known once it has drawn: from then on draws are compiled ahead for it)
+      if (!probe && !passesTold) {
+        passesTold = true;
+        const current = post;
+        precompile.setPasses(current ? current.passes : () => [{ target: null, mrt: null, context: null, depth: 0, lighting: true }]);
+      }
       // the loading screen stays up until the probe has chosen a tier
       if (!probe && ++drawn === 2) onFirstFrame(backendOf(renderer));
     });
@@ -199,6 +212,7 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       probe: () => probed,
       gate: gateScene,
       cost: costProbe,
+      lamps,
     };
     const host = window as unknown as { __TWIN__?: unknown };
     if (isDebugUrl()) {

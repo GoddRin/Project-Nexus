@@ -1,0 +1,58 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "verge-pair-noon-half8-g12.jpg",
+  "backend": "webgpu",
+  "fps": 40.2,
+  "p95": 38.9,
+  "calls": 87,
+  "tris": 697348,
+  "programs": 100,
+  "lights": 1,
+  "gpuMB": 66.5,
+  "heapMB": 170,
+  "lod": [
+   30,
+   153,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "golden",
+  "time": "1705",
+  "weather": "clear",
+  "file": "verge-pair-golden-half8-g12.jpg",
+  "backend": "webgpu",
+  "fps": 35.7,
+  "p95": 40.2,
+  "calls": 117,
+  "tris": 916860,
+  "programs": 99,
+  "lights": 1,
+  "gpuMB": 66.5,
+  "heapMB": 210,
+  "lod": [
+   30,
+   153,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

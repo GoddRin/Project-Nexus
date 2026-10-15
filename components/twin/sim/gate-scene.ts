@@ -15,15 +15,17 @@
 import * as THREE from "three/webgpu";
 import layout from "../data/sources/camp-gate-layout.json";
 import { ASSETS } from "../data/site";
-import { acquireActorModel, createActor, releaseActorModel, type Actor } from "../engine/actors";
+import { acquireActorModel, createActor, releaseActorModel, type Actor, type ActorModel } from "../engine/actors";
 import { assets } from "../engine/assets";
 import { lodScale } from "../engine/lod";
 import { loop } from "../engine/loop";
 import { groundY } from "../engine/picking";
+import { precompile } from "../engine/precompile";
 import { streaming } from "../engine/streaming";
 import { tierSettings } from "../engine/tiers";
 import { twinStore } from "../state/store";
 import { air } from "../world/air";
+import { lamps } from "../world/lamps";
 import walkMeta from "../data/zones/powerhouse.camp-gate.walk.json";
 import { curvesFrom, planBeats, poseAt, walkSeconds as plannedWalk, type Beat, type Walker } from "./walk-plan";
 import { DOG as DOG_BODY, PERSON, Polyline, WalkMap, type WalkMeta } from "./walkmap";
@@ -146,8 +148,32 @@ export function startGateScene(ctx: GateSceneContext): () => void {
 
   const start = async () => {
     const wanted = [PICKUP, DOG, GUARD, ENGINEER, LABOURER].filter((id) => ASSETS.has(id));
+    // The actors come after the zone they stand in (P02e): its ground, booth and trees are the first
+    // view, and five files of people and vehicles downloading beside them held it back. Then the
+    // nearest first, two at a time.
+    while (!stopped && streaming.zones().find((z) => z.id === ZONE)?.state !== "in") await new Promise((r) => setTimeout(r, 250));
+    if (stopped) return;
+    const spotOf: Record<string, THREE.Vector3> = {
+      [PICKUP]: onRoad(3, new THREE.Vector3()),
+      [DOG]: boothPoint(DOG_REST.across, DOG_REST.inward),
+      [GUARD]: boothPoint(1.55, -1.3),
+      [ENGINEER]: gate.clone().addScaledVector(inward, -7.5).addScaledVector(across, -4.0),
+      [LABOURER]: gate.clone().addScaledVector(inward, -8.7).addScaledVector(across, -5.0),
+    };
+    const eye = ctx.camera.position;
+    const nearestFirst = wanted.slice().sort((a, b) => spotOf[a].distanceTo(eye) - spotOf[b].distanceTo(eye));
+    const loading = new Map<string, Promise<ActorModel | null>>();
+    let next = 0;
+    const startNext = (): Promise<void> | undefined => {
+      const id = nearestFirst[next++];
+      if (!id) return undefined;
+      const promise = acquireActorModel(id);
+      loading.set(id, promise);
+      return promise.then(() => startNext(), () => startNext());
+    };
+    const lanes = [startNext(), startNext()];
     const [models, walk] = await Promise.all([
-      Promise.all(wanted.map((id) => acquireActorModel(id))),
+      Promise.all(lanes).then(() => Promise.all(wanted.map((id) => loading.get(id)!))),
       WalkMap.load(walkMeta as unknown as WalkMeta).catch((error) => {
         console.warn("[twin] no walk map: people and the dog keep to straight lines on the ground", error);
         return null;
@@ -163,8 +189,9 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       if (!model) return null;
       const actor = createActor(model);
       try {
-        // (built before it is shown, so its first frame does not stall)
-        await ctx.renderer.compileAsync(actor.object as unknown as THREE.Object3D, ctx.camera, ctx.scene);
+        // (built before it is shown, for every pass and both sets of lights, so neither its first
+        // frame nor the lamps coming on stall)
+        await precompile.object(ctx.renderer, ctx.scene, ctx.camera, actor.object as unknown as THREE.Object3D);
       } catch (error) {
         console.warn("[twin] actor was not precompiled", error);
       }
@@ -193,16 +220,19 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const nose = pickup ? pickup.model.entry.bounds.max[2] : 2.8;
     pickup?.object.rotation.set(0, 0, 0, "YXZ");
 
-    // headlamps: one real light for the pair, always in the scene (a light that comes and goes
-    // rebuilds every shader), dark by day
-    let beam: THREE.SpotLight | null = null;
+    // headlamps: one real light for the pair, on the tiers with lights to spare. It is a light only
+    // while it shines, and joins the scene with the lamps (world/lamps.ts), whose shaders are built for it
+    let headlampsWanted = false;
     if (pickup && tierSettings().lights > 4) {
       const heads = (pickup.data.twin_headlights as number[][] | undefined) ?? [[0, 0.85, nose]];
-      beam = new THREE.SpotLight(0xfff1d6, 0, 38, THREE.MathUtils.degToRad(34), 0.6, 1.6);
-      beam.name = "lamp:pickup:headlamps";
+      const beam = new THREE.SpotLight(0xfff1d6, 0, 38, THREE.MathUtils.degToRad(34), 0.6, 1.6);
       beam.position.set(0, heads[0][1], heads[0][2]);
       beam.target.position.set(0, -0.4, heads[0][2] + 14);
-      pickup.object.add(beam, beam.target);
+      const drop = lamps.extra("lamp:pickup:headlamps", beam, pickup.object as unknown as THREE.Object3D, 55, () => headlampsWanted);
+      undo.push(() => {
+        drop();
+        beam.dispose();
+      });
     }
 
     // ---- the script's times ------------------------------------------------------------------------
@@ -424,7 +454,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
         // lamps: on in the dark and in rain; brake lamps show while it slows or stands
         const lampsOn = Math.max(night, air.wetness.value > 0.6 ? 1 : 0);
         pickup.setGlow(lampsOn * 5 + (v < 0.2 || (t < tStop && t > tStop - CRUISE / ACCEL) ? 0.9 : 0));
-        if (beam) beam.intensity = lampsOn * 55;
+        headlampsWanted = lampsOn > 0.5;
         pickup.update(dt, ctx.camera.position, k, tier.drawDistance);
       }
 

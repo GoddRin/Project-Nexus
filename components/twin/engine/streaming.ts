@@ -21,6 +21,7 @@ import { assets, type LoadedAsset } from "./assets";
 import { createInstanceSet, setDrawCount, type InstanceSet } from "./instances";
 import { lodScale } from "./lod";
 import { loop } from "./loop";
+import { precompile as precompiler } from "./precompile";
 import { isProbing, tierSettings } from "./tiers";
 
 /** Zones loading at the same time. */
@@ -63,12 +64,38 @@ export type StreamingContext = {
 
 const queue: Task[] = [];
 let waiting = false;
+/** Pipeline tasks still compiling, and how many may at once (P02e: one at a time took over a second each). */
+let compiling = 0;
+const MAX_COMPILING = 4;
+/**
+ * Work that brings nothing into view: compiling everything for the set of lights not in use (the
+ * lamps' sweep). It runs only while the main queue is empty and is not counted as loading.
+ */
+const background: Task[] = [];
+let backgroundWaiting = false;
 let longestTaskMs = 0;
 let longestTaskKind = "";
 /** The last tasks run, newest last: what each was and how long it held the frame (for the checks). */
 const taskLog: { kind: string; ms: number }[] = [];
 let runs: ZoneRun[] = [];
 let loading = 0;
+
+/** Run one background task when the main queue has nothing to do. */
+function pumpBackground() {
+  if (backgroundWaiting || waiting || compiling || queue.length || !background.length) return;
+  const task = background.shift()!;
+  let result: void | Promise<unknown>;
+  try {
+    result = task.run();
+  } catch (error) {
+    console.error("[twin] background task failed", error);
+    return;
+  }
+  if (result) {
+    backgroundWaiting = true;
+    result.catch((error) => console.error("[twin] background task failed", error)).finally(() => (backgroundWaiting = false));
+  }
+}
 
 /** Run queued tasks until the slice is used up. A task that returns a promise holds the queue until it settles. */
 function pump() {
@@ -81,7 +108,9 @@ function pump() {
     // A pipeline task starts a shader build inside three.js whose first step cannot be cut smaller
     // (4 to 5 ms in Chrome, 10 to 12 ms in the Firefox and WebKit test browsers): it gets a frame to
     // itself instead of being stacked on top of texture uploads.
-    if (queue[0].kind === "pipeline" && ran > 0) break;
+    if (queue[0].kind === "pipeline" && (ran > 0 || compiling >= MAX_COMPILING)) break;
+    // a zone is in only once every draw of it has finished compiling
+    if (queue[0].kind === "done" && compiling > 0) break;
     const task = queue.shift()!;
     ran++;
     let result: void | Promise<unknown>;
@@ -97,6 +126,12 @@ function pump() {
     if (took > longestTaskMs) {
       longestTaskMs = took;
       longestTaskKind = task.kind;
+    }
+    if (result && task.kind === "pipeline") {
+      // (the GPU's part of a pipeline compiles beside the page: several go at once, started a frame apart)
+      compiling++;
+      result.catch((error) => console.error("[twin] streaming task failed", error)).finally(() => compiling--);
+      break;
     }
     if (result) {
       waiting = true;
@@ -116,20 +151,70 @@ function groupByAsset(placements: Placement[]): Map<string, Placement[]> {
   return byAsset;
 }
 
-/** Compile an instanced draw's pipeline before it is shown, so its first frame does not stall. */
-async function precompile(ctx: StreamingContext, mesh: THREE.Mesh) {
+/**
+ * Compile an instanced draw's pipelines before it is shown, for every pass and both sets of lights
+ * (engine/precompile.ts), so its first frame and the lamps coming on do not stall.
+ */
+async function precompile(ctx: StreamingContext, mesh: THREE.Mesh, alive?: () => boolean, whenDrawn?: (onDrawn: (done: () => void) => void) => void, onlyNow = false) {
   const geometry = mesh.geometry as THREE.InstancedBufferGeometry;
   const count = geometry.instanceCount;
-  // (an invisible draw, or one with no copies, would be skipped by the compile)
+  // (a draw with no copies would be skipped by the compile)
   setDrawCount(mesh, 1);
   try {
-    await ctx.renderer.compileAsync(mesh, ctx.camera, ctx.scene);
-  } catch (error) {
-    console.warn("[twin] pipeline was not precompiled", error);
+    await precompiler.drawable(ctx.renderer, ctx.scene, ctx.camera, mesh, alive, whenDrawn, onlyNow);
   } finally {
     // (copies may have been assigned while it compiled: only undo the stand-in count)
     if (geometry.instanceCount === 1) setDrawCount(mesh, count);
   }
+}
+
+// ---- sweeps: everything in the scene compiled again when the lamps or the passes change ------------
+
+let sweepQueued = false;
+let sweepDirty = false;
+/** A lamp version compiled for, waiting for its objects' first draws before the lamps may use it. */
+let readyWhenWarm: number | null = null;
+/** Whether the lamps have rehearsed for the version waiting in `readyWhenWarm`. */
+let rehearsed = false;
+
+/**
+ * Compile every drawable in the scene for the current lamps and passes, one per frame, then tell
+ * the lamps they may come on. A change while a sweep runs starts another when it ends.
+ */
+function requestSweep(ctx: StreamingContext) {
+  if (sweepQueued) {
+    sweepDirty = true;
+    return;
+  }
+  sweepQueued = true;
+  sweepDirty = false;
+  // (until the sweep is through, the lamps may not come in)
+  lamps.hold();
+  const lampVersion = lamps.version();
+  background.push({
+    kind: "sweep",
+    run: () => {
+      for (const drawable of precompiler.drawables(ctx.scene)) {
+        background.push({
+          kind: "pipeline",
+          run: () => {
+            if (!drawable.parent) return; // (gone since the sweep began)
+            const instanced = (drawable as THREE.Mesh).geometry as THREE.InstancedBufferGeometry | undefined;
+            if (instanced?.isInstancedBufferGeometry && instanced.instanceCount === 0) return precompile(ctx, drawable as THREE.Mesh);
+            return precompiler.drawable(ctx.renderer, ctx.scene, ctx.camera, drawable);
+          },
+        });
+      }
+      background.push({
+        kind: "sweep-done",
+        run: () => {
+          sweepQueued = false;
+          if (sweepDirty || lamps.version() !== lampVersion) requestSweep(ctx);
+          else readyWhenWarm = lampVersion;
+        },
+      });
+    },
+  });
 }
 
 function unload(run: ZoneRun) {
@@ -189,7 +274,10 @@ async function loadZone(ctx: StreamingContext, run: ZoneRun) {
           for (const draw of set.draws.slice().reverse()) {
             queue.unshift({
               kind: "pipeline",
-              run: () => (live() ? precompile(ctx, draw.mesh).then(() => void (live() && group.add(draw.mesh))) : undefined),
+              // (shown only once compiled and drawn once out of sight, so its first frame costs nothing
+              // extra; the queue moves on once it is compiled)
+              // (for the lights in use now; the other set is the background sweep's, below)
+              run: () => (live() ? precompile(ctx, draw.mesh, live, (onDrawn) => onDrawn(() => void (live() && group.add(draw.mesh))), true) : undefined),
             });
           }
         },
@@ -202,6 +290,8 @@ async function loadZone(ctx: StreamingContext, run: ZoneRun) {
         run.state = "in";
         loading--;
         if (run.shell) run.shell.group.visible = false;
+        // the zone's draws were compiled for the lights in use: the other set follows in the background
+        requestSweep(ctx);
       },
     });
   } catch (error) {
@@ -257,6 +347,10 @@ export function startStreaming(ctx: StreamingContext): () => void {
   }));
   runs = mine;
 
+  // the lamps join the scene only once everything is compiled for them
+  const stopLampWatch = lamps.onChange(() => requestSweep(ctx));
+  const stopPassWatch = precompiler.onPasses(() => requestSweep(ctx));
+
   let sinceCheck = CHECK_EVERY;
   const decide = () => {
     const location = twinStore.getState().location;
@@ -277,12 +371,24 @@ export function startStreaming(ctx: StreamingContext): () => void {
 
   const stopSim = loop.add("sim", (dt) => {
     if (isProbing()) return; // the start-up probe is timing the graphics card: keep the frame clear
+    // (the lamps may come in once everything compiled for them has also drawn once)
+    if (readyWhenWarm !== null && precompiler.warming() === 0) {
+      if (!rehearsed) {
+        rehearsed = true;
+        lamps.rehearse();
+      } else if (!lamps.rehearsing()) {
+        lamps.ready(readyWhenWarm);
+        readyWhenWarm = null;
+        rehearsed = false;
+      }
+    }
     sinceCheck += dt;
     if (sinceCheck >= CHECK_EVERY) {
       sinceCheck = 0;
       decide();
     }
     pump();
+    pumpBackground();
   });
 
   const frustum = new THREE.Frustum();
@@ -305,6 +411,12 @@ export function startStreaming(ctx: StreamingContext): () => void {
   return () => {
     stopSim();
     stopLods();
+    stopLampWatch();
+    stopPassWatch();
+    sweepQueued = false;
+    sweepDirty = false;
+    readyWhenWarm = null;
+    rehearsed = false;
     for (const run of mine) {
       if (run.state !== "out") unload(run);
       dropShell(run);
@@ -312,6 +424,7 @@ export function startStreaming(ctx: StreamingContext): () => void {
     if (runs === mine) {
       runs = [];
       queue.length = 0;
+      background.length = 0;
     }
   };
 }
@@ -339,7 +452,9 @@ export const streaming = {
       hidden,
       /** Instanced draw calls the loaded zones are costing this frame. */
       draws,
-      tasksQueued: queue.length + (waiting ? 1 : 0),
+      tasksQueued: queue.length + (waiting ? 1 : 0) + compiling,
+      /** Background work left (compiling for the other set of lights). */
+      background: background.length + (backgroundWaiting ? 1 : 0),
       longestTaskMs,
       longestTaskKind,
     };

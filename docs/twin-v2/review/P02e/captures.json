@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "verge-pair-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 36,
+  "p95": 72.1,
+  "calls": 107,
+  "tris": 856811,
+  "programs": 76,
+  "lights": 1,
+  "gpuMB": 63.9,
+  "heapMB": 165,
+  "lod": [
+   30,
+   153,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

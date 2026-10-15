@@ -40,6 +40,7 @@ import { ASSETS } from "../data/site";
 import type { AssetEntry } from "../data/types";
 import { air } from "../world/air";
 import { groundMaterial, groundTextureUrls } from "../world/ground";
+import { hasTwoChannelNormals, applyTwoChannelNormals } from "./normals";
 import { tierSettings } from "./tiers";
 
 /**
@@ -87,6 +88,50 @@ const TRANSCODER_PATH = "/vendor/twin/basis/";
 const TEXTURE_SLOTS = ["map", "normalMap", "roughnessMap", "metalnessMap", "aoMap", "emissiveMap", "alphaMap"] as const;
 
 const slots = new Map<string, Slot>();
+
+/** A texture slot filled from a shared file: where the file is and how the slot reads it (glTF terms). */
+type SharedTexture = {
+  url: string;
+  slot: "baseColorTexture" | "normalTexture" | "occlusionTexture" | "metallicRoughnessTexture" | "emissiveTexture";
+  texCoord: number;
+  wrapS: number;
+  wrapT: number;
+  /** Normal scale or occlusion strength, where the slot has one. */
+  scale?: number;
+};
+
+/** glTF sampler wrap modes as three's. */
+const WRAP: Record<number, THREE.Wrapping> = { 10497: THREE.RepeatWrapping, 33071: THREE.ClampToEdgeWrapping, 33648: THREE.MirroredRepeatWrapping };
+
+/** Put a shared texture into the slot of `material` it came out of. */
+function useShared(material: THREE.MeshStandardMaterial, texture: THREE.Texture, spec: SharedTexture) {
+  // (the build shares a texture only between slots that read it the same way, so these agree)
+  texture.channel = spec.texCoord;
+  texture.wrapS = WRAP[spec.wrapS] ?? THREE.RepeatWrapping;
+  texture.wrapT = WRAP[spec.wrapT] ?? THREE.RepeatWrapping;
+  switch (spec.slot) {
+    case "baseColorTexture":
+      material.map = texture;
+      break;
+    case "normalTexture":
+      material.normalMap = texture;
+      // (the loader set normalScale to (1, -1) or (1, 1) for a missing map; keep its sign)
+      if (spec.scale !== undefined) material.normalScale.multiplyScalar(spec.scale);
+      break;
+    case "occlusionTexture":
+      material.aoMap = texture;
+      if (spec.scale !== undefined) material.aoMapIntensity = spec.scale;
+      break;
+    case "metallicRoughnessTexture":
+      material.roughnessMap = texture;
+      material.metalnessMap = texture;
+      break;
+    case "emissiveTexture":
+      material.emissiveMap = texture;
+      break;
+  }
+  material.needsUpdate = true;
+}
 let loader: GLTFLoader | null = null;
 let ktx2: KTX2Loader | null = null;
 let ktx2For: unknown = null;
@@ -153,6 +198,10 @@ function instancedMaterial(material: THREE.Material, kind: AssetKind, entry: Ass
       // normals point every way, and the undersides of its blades came out near black
       (node as THREE.MeshStandardNodeMaterial).normalNode = transformNormalToView(normalWorld.mul(0.35).add(vec3(0, 0.75, 0)).normalize());
     }
+    if (!node.normalNode && hasTwoChannelNormals(material)) applyTwoChannelNormals(node, material);
+    // two-sided glass in one pass, not back faces then front: three cannot build the two-pass kind
+    // ahead of time (engine/precompile.ts), so it stalled the frame it first appeared in (P02e)
+    if (node.transparent && node.side === THREE.DoubleSide) node.forceSinglePass = true;
     if ((source.alphaTest ?? 0) > 0) {
       // cut-out leaves: with multisampling on, let the edge fade over the samples instead of stair-stepping;
       // and cut a little lower than the file says, because a scaled-down cut-out thins out and a far tree goes bare
@@ -221,6 +270,28 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
     for (const t of loaded) textures.add(t);
     ground = groundMaterial(patch, loaded);
   }
+
+  // textures this asset shares with others are not in its file but beside it, loaded by address
+  // once for every asset that uses them (scripts/twin/build-assets.mjs writes `twinShared`)
+  const sharedFor = new Map<THREE.Material, SharedTexture[]>();
+  gltf.scene.traverse((node) => {
+    const mesh = node as unknown as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      const list = material.userData?.twinShared as SharedTexture[] | undefined;
+      if (list?.length && !sharedFor.has(material)) sharedFor.set(material, list);
+    }
+  });
+  await Promise.all(
+    [...sharedFor].flatMap(([material, list]) =>
+      list.map(async (spec) => {
+        shared.push(spec.url);
+        const texture = await acquireTexture(spec.url);
+        textures.add(texture);
+        useShared(material as THREE.MeshStandardMaterial, texture, spec);
+      }),
+    ),
+  );
 
   gltf.scene.traverse((node) => {
     // (the exporter writes the level as an extra; the name is the fallback)

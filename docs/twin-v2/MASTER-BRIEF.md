@@ -95,7 +95,7 @@ So budgets are set in milliseconds of frame and checked at full HD as well as at
 | Tier | Pixels | Sun shadows | Occlusion | Lights beside the sun | People animated in view | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Low | 1:1, dynamic down to 0.6 | 1 cascade, 1024 | baked only | 1 | 12 (at most 2 at LOD0) | 512 px textures |
-| Medium | 1:1, dynamic down to 0.6 | 3 cascades, 1024 | baked only | 2 | 24 (at most 4 at LOD0, 8 at LOD1) | the office laptop's tier |
+| Medium | 1:1, dynamic down to 0.6 | 3 cascades, 1024 | half resolution, 6 samples (P02e) | 2 | 24 (at most 4 at LOD0, 8 at LOD1) | the office laptop's tier |
 | High | 1.5, dynamic | 3 cascades, 2048 | half resolution | 4 | 48 | for cards about 3 times the laptop's (not measured) |
 | Ultra | 2, dynamic | 3 cascades, 4096 | full | 6 | 80 | for cards about 8 times the laptop's (not measured) |
 

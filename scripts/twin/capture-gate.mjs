@@ -95,6 +95,8 @@ for (const place of PLACES) {
     const view = POSE.length === 6 && NAME ? NAME : place;
     let file = `${view}-${shot.name}${LABEL}.jpg`;
     if (GATE.length === 0) await page.screenshot({ path: path.join(OUT, file), type: "jpeg", quality: 90, ...(clip ? { clip } : {}) });
+    // (since P02e the gate's actors load after its zone: wait for them, and for the lamps' warm-up)
+    if (GATE.length) await page.waitForFunction(() => window.__TWIN__.gate.status().actors >= 5 && (!window.__TWIN__.lamps || window.__TWIN__.lamps.isReady()), null, { timeout: 300_000 }).catch(() => console.log("   (actors not all in)"));
     for (const seconds of GATE) {
       // the staged loop held at a moment: seek a little before it and let it run in, so clips have blended
       await page.evaluate((s) => {

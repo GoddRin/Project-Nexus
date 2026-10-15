@@ -193,8 +193,9 @@ if (ONLY.includes("resolution")) {
   for (const ratio of [0.7, 0.5, 0.25]) await step(page, "resolution", `pixel ratio 1 -> ${ratio}`, 0, override({ pixelRatio: ratio }), reset);
 }
 if (ONLY.includes("lamps")) {
-  // the zone's own lamps (unlit by day, but in the scene so dusk needs no shader rebuild)
-  await step(page, "lamps", "zone lamps removed (noon)", 0, () => page.evaluate(() => { const gone = []; window.__TWIN__.scene.traverse((o) => { if (o.isLight && /^lamp:/.test(o.name)) gone.push(o); }); window.__gone = gone.map((o) => [o, o.parent]); for (const o of gone) o.removeFromParent(); }), () => page.evaluate(() => { for (const [o, parent] of window.__gone) parent.add(o); }));
+  // since P02e the lamps are out of the scene by day; this puts them back in, dark, as they were before,
+  // so the step shows what taking them out saved
+  await step(page, "lamps", "zone lamps held in, dark (as before P02e)", 0, () => page.evaluate(() => window.__TWIN__.lamps.force(true)), () => page.evaluate(() => window.__TWIN__.lamps.force(false)));
 }
 if (ONLY.includes("tiers")) {
   for (const tier of ["low", "high", "ultra"]) {

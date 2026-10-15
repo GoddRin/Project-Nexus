@@ -1,8 +1,8 @@
 [
  {
   "id": "char.engineer.a",
-  "url": "/models/twin/characters/engineer.a.glb?v=0ee3ac5a6d",
-  "bytes": 6629128,
+  "url": "/models/twin/characters/engineer.a.glb?v=09afff581a",
+  "bytes": 2875068,
   "tris": [
    19481,
    5865,
@@ -39,8 +39,8 @@
  },
  {
   "id": "char.guard.a",
-  "url": "/models/twin/characters/guard.a.glb?v=810af910da",
-  "bytes": 6638304,
+  "url": "/models/twin/characters/guard.a.glb?v=eeea15253e",
+  "bytes": 3097960,
   "tris": [
    19441,
    5898,
@@ -76,8 +76,8 @@
  },
  {
   "id": "char.labourer.a",
-  "url": "/models/twin/characters/labourer.a.glb?v=59a0659132",
-  "bytes": 5670496,
+  "url": "/models/twin/characters/labourer.a.glb?v=b2f415c188",
+  "bytes": 2279548,
   "tris": [
    19026,
    5898,
@@ -114,8 +114,8 @@
  },
  {
   "id": "fauna.aspin.a",
-  "url": "/models/twin/fauna/aspin.a.glb?v=552856365c",
-  "bytes": 1817108,
+  "url": "/models/twin/fauna/aspin.a.glb?v=19821713c0",
+  "bytes": 1098860,
   "tris": [
    9999,
    2999,
@@ -144,8 +144,8 @@
  },
  {
   "id": "flora.acacia.a",
-  "url": "/models/twin/flora/acacia.a.glb?v=f2649901bc",
-  "bytes": 2715004,
+  "url": "/models/twin/flora/acacia.a.glb?v=21643e74d1",
+  "bytes": 524832,
   "tris": [
    14989,
    3296,
@@ -175,8 +175,8 @@
  },
  {
   "id": "flora.acacia.b",
-  "url": "/models/twin/flora/acacia.b.glb?v=36024d3d29",
-  "bytes": 2401096,
+  "url": "/models/twin/flora/acacia.b.glb?v=713bf953c8",
+  "bytes": 210916,
   "tris": [
    5196,
    1210,
@@ -206,8 +206,8 @@
  },
  {
   "id": "flora.banana.a",
-  "url": "/models/twin/flora/banana.a.glb?v=982f324c0e",
-  "bytes": 153652,
+  "url": "/models/twin/flora/banana.a.glb?v=228064a039",
+  "bytes": 169876,
   "tris": [
    816,
    140,
@@ -236,8 +236,8 @@
  },
  {
   "id": "flora.broadleaf.a",
-  "url": "/models/twin/flora/broadleaf.a.glb?v=bcae11ba19",
-  "bytes": 185064,
+  "url": "/models/twin/flora/broadleaf.a.glb?v=3919ec05e2",
+  "bytes": 221864,
   "tris": [
    999,
    220,
@@ -266,8 +266,8 @@
  },
  {
   "id": "flora.fern.a",
-  "url": "/models/twin/flora/fern.a.glb?v=999c8af063",
-  "bytes": 144540,
+  "url": "/models/twin/flora/fern.a.glb?v=e4641eea8b",
+  "bytes": 176140,
   "tris": [
    900,
    200,
@@ -296,8 +296,8 @@
  },
  {
   "id": "flora.grass.a",
-  "url": "/models/twin/flora/grass.a.glb?v=c9c5a8ae2f",
-  "bytes": 325452,
+  "url": "/models/twin/flora/grass.a.glb?v=31da97f909",
+  "bytes": 379316,
   "tris": [
    700,
    159,
@@ -326,8 +326,8 @@
  },
  {
   "id": "flora.shrub.a",
-  "url": "/models/twin/flora/shrub.a.glb?v=2392ddaabb",
-  "bytes": 185644,
+  "url": "/models/twin/flora/shrub.a.glb?v=fc6e1994e6",
+  "bytes": 221756,
   "tris": [
    1199,
    260,
@@ -386,8 +386,8 @@
  },
  {
   "id": "kit.boom-arm",
-  "url": "/models/twin/kit/boom-arm.glb?v=c557c64759",
-  "bytes": 168452,
+  "url": "/models/twin/kit/boom-arm.glb?v=81c32f5192",
+  "bytes": 12204,
   "tris": [
    204,
    48,
@@ -417,8 +417,8 @@
  },
  {
   "id": "prop.cement-bag",
-  "url": "/models/twin/props/cement-bag.glb?v=ac8d89c6b3",
-  "bytes": 356052,
+  "url": "/models/twin/props/cement-bag.glb?v=bc118eed55",
+  "bytes": 209612,
   "tris": [
    844,
    400,
@@ -447,8 +447,8 @@
  },
  {
   "id": "prop.drum-blue",
-  "url": "/models/twin/props/drum-blue.glb?v=a8bcdb7f18",
-  "bytes": 407512,
+  "url": "/models/twin/props/drum-blue.glb?v=cff9426770",
+  "bytes": 269272,
   "tris": [
    1473,
    400,
@@ -477,8 +477,8 @@
  },
  {
   "id": "prop.drum-red",
-  "url": "/models/twin/props/drum-red.glb?v=05372aab30",
-  "bytes": 416320,
+  "url": "/models/twin/props/drum-red.glb?v=7b012fc219",
+  "bytes": 291880,
   "tris": [
    1498,
    399,
@@ -507,8 +507,8 @@
  },
  {
   "id": "prop.jerrycan",
-  "url": "/models/twin/props/jerrycan.glb?v=65340cd5e2",
-  "bytes": 456652,
+  "url": "/models/twin/props/jerrycan.glb?v=e109c4c374",
+  "bytes": 322288,
   "tris": [
    1499,
    399,
@@ -537,8 +537,8 @@
  },
  {
   "id": "prop.propane-tank",
-  "url": "/models/twin/props/propane-tank.glb?v=bca0547b59",
-  "bytes": 512864,
+  "url": "/models/twin/props/propane-tank.glb?v=2ace7df391",
+  "bytes": 370656,
   "tris": [
    1475,
    375,
@@ -567,8 +567,8 @@
  },
  {
   "id": "prop.traffic-cone",
-  "url": "/models/twin/props/traffic-cone.glb?v=0781199ce8",
-  "bytes": 164796,
+  "url": "/models/twin/props/traffic-cone.glb?v=9957936603",
+  "bytes": 8548,
   "tris": [
    98,
    42,
@@ -597,8 +597,8 @@
  },
  {
   "id": "struct.guardhouse",
-  "url": "/models/twin/structures/guardhouse.glb?v=f734cb4b08",
-  "bytes": 6305888,
+  "url": "/models/twin/structures/guardhouse.glb?v=42cf7fa59e",
+  "bytes": 4238704,
   "tris": [
    4210,
    1420,
@@ -633,8 +633,8 @@
  },
  {
   "id": "veh.pickup.a",
-  "url": "/models/twin/vehicles/pickup.a.glb?v=a42667bde5",
-  "bytes": 2138196,
+  "url": "/models/twin/vehicles/pickup.a.glb?v=239467f5e5",
+  "bytes": 1106764,
   "tris": [
    24347,
    7999,

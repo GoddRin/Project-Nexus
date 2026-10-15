@@ -23,6 +23,7 @@ import { ASSETS } from "../data/site";
 import type { AssetEntry } from "../data/types";
 import { assets } from "./assets";
 import { CULLED, selectLod } from "./lod";
+import { hasTwoChannelNormals, applyTwoChannelNormals } from "./normals";
 import { air } from "../world/air";
 
 export type ActorModel = {
@@ -103,6 +104,10 @@ function weathered(material: THREE.Material): THREE.Material {
   const wet = air.wetness.mul(normalWorld.y.max(0).mul(0.6).add(0.4));
   node.colorNode = materialColor.mul(vec4(vec3(mix(1, 0.72, wet)), 1));
   node.roughnessNode = materialRoughness.mul(mix(1, 0.55, wet));
+  if (hasTwoChannelNormals(material)) applyTwoChannelNormals(node, material);
+  // two-sided glass in one pass, not back faces then front: three cannot build the two-pass kind
+  // ahead of time, and the pickup's windows stalled the lamps' first frame (P02e)
+  if (node.transparent && node.side === THREE.DoubleSide) node.forceSinglePass = true;
   return node;
 }
 
@@ -233,7 +238,7 @@ export function createActor(model: ActorModel): Actor {
         own.set(material, mine);
         const lamp = mine as THREE.MeshStandardMaterial;
         glowing.push({ material: lamp, full: lamp.emissiveIntensity });
-        lamp.emissiveIntensity = 0;
+        lamp.emissiveIntensity = 1e-4; // (dark, but not 0: see setGlow)
       }
       return mine;
     };
@@ -315,7 +320,9 @@ export function createActor(model: ActorModel): Actor {
     },
 
     setGlow(k) {
-      for (const lamp of glowing) lamp.material.emissiveIntensity = lamp.full * k;
+      // (never quite 0: three builds a material again when a number in it crosses between zero and
+      // not, so brake lamps going on and off rebuilt the pickup's lamp shader every loop, P02e)
+      for (const lamp of glowing) lamp.material.emissiveIntensity = Math.max(1e-4, lamp.full * k);
     },
 
     update(dt, eye, k, cull) {

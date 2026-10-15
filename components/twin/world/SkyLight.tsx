@@ -36,6 +36,12 @@ const EXPOSURE = 0.47;
 /** Metres from the camera that sun shadows reach. */
 export const SHADOW_FAR = 110;
 const SKY_SIZE = 5200;
+/**
+ * Side of the environment cube made from the sky, in pixels. The sky's light is soft, and at 256 each
+ * refresh took about 200 ms on the office laptop (the cloudy sky model drawn six times, then filtered);
+ * at 128 it is a quarter of the pixels (P02e).
+ */
+const ENV_SIZE = 128;
 
 /** Unit vector towards the sun (or the moon) in the location's frame, and its altitude in radians. */
 function skyBody(body: "sun" | "moon", when: Date, location: Location, out: THREE.Vector3): number {
@@ -170,6 +176,12 @@ export function SkyLight() {
     let cascadesFor = "";
     // `?shadows=0` (a test switch): no sun shadows, to tell their cost and their faults from the rest
     const noShadows = new URLSearchParams(window.location.search).get("shadows") === "0";
+    // (debug: `?envhold=1` makes the environment light once and never again, to measure what a refresh costs)
+    const envHold = new URLSearchParams(window.location.search).get("envhold") === "1";
+    // (debug: `?envsize=` overrides the environment cube's side; each refresh's time is kept in `window.__twinEnvTimes`)
+    const envSize = Number(new URLSearchParams(window.location.search).get("envsize")) || ENV_SIZE;
+    const envTimes: { cpuMs: number; gpuMs: number }[] = [];
+    (window as unknown as { __twinEnvTimes?: unknown }).__twinEnvTimes = envTimes;
     if (noShadows) sun.castShadow = false;
     const setUpShadows = () => {
       if (noShadows) return;
@@ -202,6 +214,9 @@ export function SkyLight() {
     let litFor = NaN;
     let lookFor = "";
     let envAt = { x: 9, y: 9, z: 9, cloud: -1, sun: -1, dim: -1 };
+    // (made a second time half a second after the first: the first re-make after loading built the
+    // environment's materials again, a 0.4 s frame wherever it fell, P02e; now it falls during loading)
+    let envAgain = 0;
     let envDue = 0;
     let lastAspect = 0;
     let frame = 0;
@@ -249,7 +264,7 @@ export function SkyLight() {
       }
 
       const minutes = clock.minutes();
-      if (!moving && !first && Math.abs(minutes - litFor) < 0.05) return;
+      if (!moving && !first && envAgain !== 1 && Math.abs(minutes - litFor) < 0.05) return;
       litFor = minutes;
       const location = getLocation(state.location);
       const when = clock.date();
@@ -327,15 +342,20 @@ export function SkyLight() {
 
       // environment light: re-made when the sun or the cloud has moved enough to show
       const moved = Math.hypot(toSun.x - envAt.x, toSun.y - envAt.y, toSun.z - envAt.z);
-      if (elapsed >= envDue && (moved > 0.035 || Math.abs(duskAmount.value + duskHigh.value.b * 4 - envAt.dim) > 0.04 || Math.abs(now.cloud - envAt.cloud) > 0.02 || Math.abs(now.sun - envAt.sun) > 0.03)) {
+      if (elapsed >= envDue && !(envHold && envTarget) && (envAgain === 1 || moved > 0.035 || Math.abs(duskAmount.value + duskHigh.value.b * 4 - envAt.dim) > 0.04 || Math.abs(now.cloud - envAt.cloud) > 0.02 || Math.abs(now.sun - envAt.sun) > 0.03)) {
         envDue = elapsed + 0.5;
+        envAgain++;
         envAt = { x: toSun.x, y: toSun.y, z: toSun.z, cloud: now.cloud, sun: now.sun, dim: duskAmount.value + duskHigh.value.b * 4 };
         for (const name of ["turbidity", "rayleigh", "mieCoefficient", "mieDirectionalG", "cloudCoverage", "cloudDensity", "cloudElevation"] as const) envSky[name].value = sky[name].value;
         envSky.sunPosition.value.copy(skySun);
-        const old = envTarget;
-        envTarget = pmrem.fromScene(envScene as unknown as THREE.Scene, 0, 1, 2000);
-        scene.environment = envTarget.texture;
-        old?.dispose();
+        // (into the same target every time: a new environment texture is a new environment for every
+        // material, and three built every shader in view again, 1.5 to 2 s at a time at dusk, P02e)
+        const t0 = performance.now();
+        envTarget = pmrem.fromScene(envScene as unknown as THREE.Scene, 0, 1, 2000, { size: envSize, renderTarget: envTarget });
+        const t1 = performance.now();
+        const queue = (renderer as unknown as { backend?: { device?: GPUDevice } }).backend?.device?.queue;
+        if (queue && envTimes.length < 200) void queue.onSubmittedWorkDone().then(() => envTimes.push({ cpuMs: t1 - t0, gpuMs: performance.now() - t0 }));
+        if (scene.environment !== envTarget.texture) scene.environment = envTarget.texture;
       }
     });
 

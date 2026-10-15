@@ -4,9 +4,10 @@
  *
  * Values rewritten from measurement in P02c (docs/twin-v2/MASTER-BRIEF.md section 5, the cost table in
  * docs/twin-v2/review/P02c/REPORT.md). On the office laptop (Iris Xe) the frame is mostly pixel shading:
- * at the gate, full HD on Medium, 34 of 43 ms scale with resolution. So Medium draws at 1:1 pixels with no
- * screen-space occlusion (8.4 ms there; the assets carry baked occlusion), and crowd and light caps are
- * set from the measured cost of each person and lamp. Low, High and Ultra keep their place relative to
+ * at the gate, full HD on Medium, 34 of 43 ms scale with resolution. So Medium draws at 1:1 pixels, and
+ * crowd and light caps are set from the measured cost of each person and lamp. Occlusion came back on
+ * Medium in P02e at half resolution and 6 samples (5 ms at full HD; 4, 6 and 8 samples could not be told
+ * apart, docs/twin-v2/review/P02e/REPORT.md), paid for by the lamps leaving the scene by day. Low, High and Ultra keep their place relative to
  * Medium; only Medium and Low were measured (no faster card was available).
  */
 import * as THREE from "three/webgpu";
@@ -19,8 +20,10 @@ export type TierSettings = {
   /** Shadow map side in pixels and number of sun cascades (P03b). */
   shadowMapSize: number;
   shadowCascades: number;
-  /** Ambient occlusion: off, half resolution or full (P12a; full halves the frame rate on Iris Xe). */
+  /** Screen-space ambient occlusion: off, or worked out at half or full resolution (engine/post.ts). */
   ambientOcclusion: "off" | "half" | "full";
+  /** Occlusion samples per pixel. */
+  aoSamples: number;
   /** Metres beyond which placed assets are not drawn. */
   drawDistance: number;
   /** Multiplies every LOD switch distance: below 1 swaps to lighter meshes sooner. */
@@ -37,10 +40,10 @@ export type TierSettings = {
 };
 
 export const TIER_SETTINGS: Record<Tier, TierSettings> = {
-  low: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 1, ambientOcclusion: "off", drawDistance: 450, lodBias: 0.7, crowd: 12, vegetationDensity: 0.35, textureSize: 512, lights: 1, frameBudgetMs: 50 },
-  medium: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 3, ambientOcclusion: "off", drawDistance: 900, lodBias: 1, crowd: 24, vegetationDensity: 0.6, textureSize: 1024, lights: 2, frameBudgetMs: 33 },
-  high: { pixelRatio: 1.5, shadowMapSize: 2048, shadowCascades: 3, ambientOcclusion: "half", drawDistance: 1600, lodBias: 1.4, crowd: 48, vegetationDensity: 0.85, textureSize: 2048, lights: 4, frameBudgetMs: 33 },
-  ultra: { pixelRatio: 2, shadowMapSize: 4096, shadowCascades: 3, ambientOcclusion: "full", drawDistance: 3000, lodBias: 2, crowd: 80, vegetationDensity: 1, textureSize: 4096, lights: 6, frameBudgetMs: 25 },
+  low: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 1, ambientOcclusion: "off", aoSamples: 8, drawDistance: 450, lodBias: 0.7, crowd: 12, vegetationDensity: 0.35, textureSize: 512, lights: 1, frameBudgetMs: 50 },
+  medium: { pixelRatio: 1, shadowMapSize: 1024, shadowCascades: 3, ambientOcclusion: "half", aoSamples: 6, drawDistance: 900, lodBias: 1, crowd: 24, vegetationDensity: 0.6, textureSize: 1024, lights: 2, frameBudgetMs: 33 },
+  high: { pixelRatio: 1.5, shadowMapSize: 2048, shadowCascades: 3, ambientOcclusion: "half", aoSamples: 8, drawDistance: 1600, lodBias: 1.4, crowd: 48, vegetationDensity: 0.85, textureSize: 2048, lights: 4, frameBudgetMs: 33 },
+  ultra: { pixelRatio: 2, shadowMapSize: 4096, shadowCascades: 3, ambientOcclusion: "full", aoSamples: 16, drawDistance: 3000, lodBias: 2, crowd: 80, vegetationDensity: 1, textureSize: 4096, lights: 6, frameBudgetMs: 25 },
 };
 
 /** Settings of the tier in the store. */
