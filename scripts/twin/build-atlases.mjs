@@ -732,10 +732,12 @@ async function decalPainters(sheet, W) {
     const ridge = smooth(0.0, 0.08, v) * smooth(0.2, 0.1, v) + smooth(1.0, 0.92, v) * smooth(0.8, 0.9, v);
     tap(mudD, x, y, t);
     const k = 0.75 + 0.3 * fbm(x, y, W, 120, 601, 3);
-    const c = [mix(LATERITE[0], DAMP[0], 0.3 + lug * 0.45) * k, mix(LATERITE[1], DAMP[1], 0.3 + lug * 0.45) * k, mix(LATERITE[2], DAMP[2], 0.3 + lug * 0.45) * k];
+    // (owner's review: at full strength the prints read as black paint on the road; a tyre presses the
+    // laterite only a little darker and the print breaks up)
+    const c = [mix(LATERITE[0], DAMP[0], 0.15 + lug * 0.25) * k, mix(LATERITE[1], DAMP[1], 0.15 + lug * 0.25) * k, mix(LATERITE[2], DAMP[2], 0.15 + lug * 0.25) * k];
     for (let i = 0; i < 3; i++) c[i] = mix(c[i], t[i] * 0.9, 0.3);
     const gaps = 0.55 + 0.45 * smooth(0.25, 0.6, fbm(x * 0.4, y, W, 16, 603, 4)); // the print breaks up where the ground was hard
-    const a = across(y, px, 0.16) * gaps;
+    const a = across(y, px, 0.2) * gaps * 0.55;
     const nx = Math.cos((xm / 0.034) * Math.PI * 2) * 0.35 * smooth(0.12, 0.2, v) * smooth(0.88, 0.8, v);
     set(o, c, a, nx, (ridge > 0 ? (v < 0.5 ? -1 : 1) : 0) * ridge * 0.5, 1 - lug * 0.3, 0.88 - lug * 0.1);
   };

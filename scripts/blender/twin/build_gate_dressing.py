@@ -1146,7 +1146,8 @@ class Services:
                 for x in (-0.8, 0.0, 0.8):
                     a = A @ Vector((x, 0, 8.745))
                     b = B @ Vector((x, 0, 8.745))
-                    k.sweep(D, "rubber", self.catenary(a, b, 0.28, n), 0.0065, segs=sides, caps=False)
+                    # (bare aluminium conductors, as the site's service line is: only the drop to the booth is black triplex)
+                    k.sweep(D, "stainless", self.catenary(a, b, 0.28, n), 0.0055, segs=sides, caps=False)
             # guys on the two end poles, each with its yellow guard
             for M, away in ((poles[0], poles[0].translation - poles[1].translation), (poles[-1], poles[-1].translation - poles[-2].translation)):
                 away.z = 0
