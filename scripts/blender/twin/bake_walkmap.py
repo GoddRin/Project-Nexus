@@ -35,8 +35,10 @@ SURFACE_PROBE = 0.6  # a top this high above the ground or lower can be stood on
 LOW = (0.1, 0.7)
 HIGH = (0.7, 1.75)
 MOVING = {"kit.boom-arm"}
+# (laid on surfaces or hung high: in nobody's way; P02f)
+NOT_SOLID = {"kit.gate-decals", "kit.gate-services", "prop.slippers.a", "prop.pipe-offcuts.a"}
 TRUNKS = ("flora.acacia", "flora.banana")
-SOFT = ("flora.shrub", "flora.broadleaf")
+SOFT = ("flora.shrub", "flora.broadleaf", "flora.croton", "flora.ixora")
 
 
 def lod0_of(coll):
@@ -94,7 +96,7 @@ def bake(zone_id):
             continue
         if asset.startswith("ground."):
             ground.append((M, lod))
-        elif asset.startswith(("struct.", "kit.", "prop.")) and asset not in MOVING:
+        elif asset.startswith(("struct.", "kit.", "prop.")) and asset not in MOVING and asset not in NOT_SOLID:
             solid.append((M, lod))
         elif asset.startswith(TRUNKS):
             s = M.to_scale().x

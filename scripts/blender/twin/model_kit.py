@@ -18,6 +18,7 @@ the shading of the flat faces beside it.
 import json
 import math
 import os
+import random
 
 import bmesh
 import bpy
@@ -62,6 +63,33 @@ class Signs:
         for key, (x, y, w, h) in s["rects"].items():
             n = s["size"]
             self.rects[key] = ((x + 1) / n, 1 - (y + h - 1) / n, (x + w - 1) / n, 1 - (y + 1) / n)
+
+
+class Prints(Signs):
+    """UV rectangles of the printed pieces laid over a trim sheet's `print` band (P02f)."""
+
+    def __init__(self, atlas, name):
+        s = spec(atlas)["trims"][name]
+        self.name = name
+        n = s["size"]
+        self.rects = {key: ((x + 1) / n, 1 - (y + h - 1) / n, (x + w - 1) / n, 1 - (y + 1) / n) for key, (x, y, w, h) in s["prints"].items()}
+
+
+class Stamps(Signs):
+    """UV rectangles of the stamps on a decal or card sheet, and the sheet's bands (P02f)."""
+
+    def __init__(self, atlas, name, kind="decals"):
+        s = spec(atlas)[kind][name]
+        self.name = name
+        n = s["size"]
+        self.size = n
+        self.tile = s.get("tileM", 1.0)
+        self.rects = {key: ((x + 1) / n, 1 - (y + h - 1) / n, (x + w - 1) / n, 1 - (y + 1) / n) for key, (x, y, w, h) in s["rects"].items()}
+        self.bands = {}
+        top = 0
+        for band in s.get("bands", []):
+            self.bands[band["name"]] = (1 - (top + band["px"] - 1.5) / n, 1 - (top + 1.5) / n)
+            top += band["px"]
 
 
 # ---- materials ----------------------------------------------------------------------------------------
@@ -332,7 +360,7 @@ class Kit:
         bm.normal_update()
         self._emit(bm, mat, M)
 
-    def plate(self, mat, rect, lo, hi, face):
+    def plate(self, mat, rect, lo, hi, face, M=None):
         """
         One flat face carrying a rectangle of a sign sheet (or any (u0, v0, u1, v1)), on the `face`
         side ("+x", "-x", "+y", "-y", "+z") of the box lo..hi. Text reads the right way round from outside.
@@ -356,7 +384,7 @@ class Kit:
         for loop, c in zip(f.loops, [(u0, v0), (u1, v0), (u1, v1), (u0, v1)]):
             loop[uv].uv = c
         bm.normal_update()
-        self._emit(bm, mat)
+        self._emit(bm, mat, M)
 
     def disc(self, mat, band, centre, normal, r, segs=16, dome=0.0):
         """A round plate (a sign back, a mirror). `dome` bulges it out along the normal (convex mirror)."""
@@ -380,6 +408,259 @@ class Kit:
                 loop[uv].uv = (0.02, mid) if loop.vert is hub else (0.02 + 0.01, mid)
         bm.normal_update()
         self._emit(bm, mat)
+
+    # -- turned, swept and free shapes (P02f: the site dressing kit)
+
+    def _segs(self, segs):
+        """Sides of a round thing at this level: fewer further off, never more than at LOD 0."""
+        return min(segs, max(4, segs // (2 if self.lod == 1 else 3))) if self.lod else segs
+
+    def lathe(self, mat, band, profile, centre=(0, 0, 0), segs=16, M=None, cap_ends=True, uoff=0.37):
+        """
+        A turned shape: `profile` is (radius, height) from bottom to top, revolved about Z through `centre`.
+        The band's length runs round it (at real size) and its height up the profile. A first or last
+        point with radius 0 closes that end; otherwise `cap_ends` closes it with a flat disc.
+        """
+        c = Vector(centre)
+        n = self._segs(segs)
+        bm = bmesh.new()
+        uv = bm.loops.layers.uv.new("UVMap")
+        # each ring has a doubled vertex at the seam so the band runs on unbroken; doubles are merged after
+        rings = []
+        for r, z in profile:
+            rings.append([bm.verts.new(c + Vector((r * math.cos(2 * math.pi * i / n), r * math.sin(2 * math.pi * i / n), z))) for i in range(n + 1)])
+        runs = [0.0]
+        for (r0, z0), (r1, z1) in zip(profile, profile[1:]):
+            runs.append(runs[-1] + math.hypot(r1 - r0, z1 - z0))
+        total = max(runs[-1], 1e-6)
+        v0, v1 = self._band(band)
+        rmax = max(r for r, _ in profile)
+        around = 2 * math.pi * rmax / self.sheet.tile
+        for k in range(len(profile) - 1):
+            va = v0 + runs[k] / total * (v1 - v0)
+            vb = v0 + runs[k + 1] / total * (v1 - v0)
+            for i in range(n):
+                # (from the middle of the band: its ends carry the dirt at the foot of things that run along it)
+                ua, ub = uoff + i / n * around, uoff + (i + 1) / n * around
+                if profile[k][0] < 1e-6:
+                    corners = [(rings[k][i], (ua, va)), (rings[k + 1][i + 1], (ub, vb)), (rings[k + 1][i], (ua, vb))]
+                elif profile[k + 1][0] < 1e-6:
+                    corners = [(rings[k][i], (ua, va)), (rings[k][i + 1], (ub, va)), (rings[k + 1][i], (ua, vb))]
+                else:
+                    corners = [(rings[k][i], (ua, va)), (rings[k][i + 1], (ub, va)), (rings[k + 1][i + 1], (ub, vb)), (rings[k + 1][i], (ua, vb))]
+                f = bm.faces.new([v for v, _ in corners])
+                for loop, (_, co) in zip(f.loops, corners):
+                    loop[uv].uv = co
+        if cap_ends:
+            mid = (v0 + v1) / 2
+            for k, flip in ((0, True), (len(profile) - 1, False)):
+                if profile[k][0] < 1e-6:
+                    continue
+                ring = rings[k][:n]
+                f = bm.faces.new(list(reversed(ring)) if flip else ring)
+                for loop in f.loops:
+                    loop[uv].uv = (0.01, mid)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=1e-6)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        bm.normal_update()
+        self._emit(bm, mat, M)
+
+    def sweep(self, mat, band, points, radius, segs=6, flat=1.0, caps=True, twist=0.0, uoff=0.0):
+        """
+        A tube along a run of points (a hose, a cord, a wire): parallel-transported rings, the band's
+        length along it at real size and its height round it. `flat` < 1 squashes the section (a strap).
+        """
+        pts = [Vector(p) for p in points]
+        if len(pts) < 2:
+            return
+        n = self._segs(segs)
+        bm = bmesh.new()
+        uv = bm.loops.layers.uv.new("UVMap")
+        tangents = []
+        for i in range(len(pts)):
+            a = pts[max(0, i - 1)]
+            b = pts[min(len(pts) - 1, i + 1)]
+            tangents.append((b - a).normalized())
+        normal = tangents[0].cross(Vector((0, 0, 1)))
+        if normal.length < 1e-4:
+            normal = tangents[0].cross(Vector((1, 0, 0)))
+        normal.normalize()
+        rings = []
+        run = 0.0
+        runs = []
+        for i, p in enumerate(pts):
+            if i:
+                # parallel transport: turn the previous normal by the change in tangent
+                axis = tangents[i - 1].cross(tangents[i])
+                if axis.length > 1e-6:
+                    ang = tangents[i - 1].angle(tangents[i])
+                    normal = Matrix.Rotation(ang, 3, axis.normalized()) @ normal
+                run += (pts[i] - pts[i - 1]).length
+            runs.append(run)
+            side = tangents[i].cross(normal).normalized()
+            spin = twist * run
+            ring = []
+            for s in range(n):
+                a = 2 * math.pi * s / n + spin
+                d = normal * math.cos(a) * flat + side * math.sin(a)
+                ring.append(bm.verts.new(p + d * radius))
+            rings.append(ring)
+        v0, v1 = self._band(band)
+        for k in range(len(pts) - 1):
+            for s in range(n):
+                t = (s + 1) % n
+                f = bm.faces.new((rings[k][s], rings[k][t], rings[k + 1][t], rings[k + 1][s]))
+                coords = [(runs[k], s / n), (runs[k], (s + 1) / n), (runs[k + 1], (s + 1) / n), (runs[k + 1], s / n)]
+                for loop, (ru, sv) in zip(f.loops, coords):
+                    loop[uv].uv = (uoff + ru / self.sheet.tile, v0 + sv * (v1 - v0))
+        if caps:
+            mid = (v0 + v1) / 2
+            for ring, flip in ((rings[0], True), (rings[-1], False)):
+                f = bm.faces.new(list(reversed(ring)) if flip else ring)
+                for loop in f.loops:
+                    loop[uv].uv = (uoff + 0.01, mid)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        bm.normal_update()
+        self._emit(bm, mat)
+
+    def label(self, mat, rect, centre, r, a0, a1, z0, z1, segs=8):
+        """A printed rectangle wrapped on a cylinder of radius `r` about Z through `centre`, from angle a0 to a1 (a drum's label)."""
+        c = Vector(centre)
+        u0, v0, u1, v1 = rect
+        n = max(2, segs // (self.lod + 1))
+        bm = bmesh.new()
+        uv = bm.loops.layers.uv.new("UVMap")
+        lo, hi = [], []
+        for i in range(n + 1):
+            a = a0 + (a1 - a0) * i / n
+            d = Vector((math.cos(a), math.sin(a), 0))
+            lo.append(bm.verts.new(c + d * r + Vector((0, 0, z0))))
+            hi.append(bm.verts.new(c + d * r + Vector((0, 0, z1))))
+        for i in range(n):
+            f = bm.faces.new((lo[i], lo[i + 1], hi[i + 1], hi[i]))
+            # (seen from outside the text runs with increasing angle)
+            for loop, cc in zip(f.loops, [(u0 + (u1 - u0) * i / n, v0), (u0 + (u1 - u0) * (i + 1) / n, v0), (u0 + (u1 - u0) * (i + 1) / n, v1), (u0 + (u1 - u0) * i / n, v1)]):
+                loop[uv].uv = cc
+        bm.normal_update()
+        for f in bm.faces:
+            out = (f.calc_center_median() - c)
+            out.z = 0
+            if f.normal.dot(out) < 0:
+                f.normal_flip()
+        self._emit(bm, mat)
+
+    def tube(self, mat, band, p0, p1, r_out, r_in, segs=12):
+        """A hollow pipe from p0 to p1: outside, inside and the two cut ends."""
+        p0 = Vector(p0)
+        p1 = Vector(p1)
+        axis = (p1 - p0).normalized()
+        side = axis.cross(Vector((0, 0, 1)))
+        if side.length < 1e-4:
+            side = Vector((1, 0, 0))
+        side.normalize()
+        up = side.cross(axis)
+        n = self._segs(segs)
+        bm = bmesh.new()
+        uv = bm.loops.layers.uv.new("UVMap")
+        v0, v1 = self._band(band)
+        length = (p1 - p0).length / self.sheet.tile
+
+        def ring(c, r):
+            return [bm.verts.new(c + (side * math.cos(2 * math.pi * i / n) + up * math.sin(2 * math.pi * i / n)) * r) for i in range(n)]
+
+        o0, o1, i0, i1 = ring(p0, r_out), ring(p1, r_out), ring(p0, r_in), ring(p1, r_in)
+        for i in range(n):
+            j = (i + 1) % n
+            ta, tb = v0 + i / n * (v1 - v0), v0 + (i + 1) / n * (v1 - v0)
+            for a, b, inward in ((o0, o1, False), (i0, i1, True)):
+                quad = (a[i], a[j], b[j], b[i])
+                coords = [(0, ta), (0, tb), (length, tb), (length, ta)]
+                if inward:
+                    quad = tuple(reversed(quad))
+                    coords = list(reversed(coords))
+                f = bm.faces.new(quad)
+                for loop, cc in zip(f.loops, coords):
+                    loop[uv].uv = cc
+            for oa, ia, flip in ((o0, i0, True), (o1, i1, False)):
+                quad = (oa[i], oa[j], ia[j], ia[i])
+                f = bm.faces.new(tuple(reversed(quad)) if flip else quad)
+                for loop in f.loops:
+                    loop[uv].uv = (0.005, v0 + 0.1 * (v1 - v0))
+        bm.normal_update()
+        self._emit(bm, mat)
+
+    def pillow(self, mat, band, centre, size, turn=0.0, seed=0, top_rect=None, div=(6, 4, 2), sag=0.45, M=None):
+        """
+        A filled sack: a subdivided box rounded into a pillow, flat where it rests. The top, if `top_rect`
+        is given, carries that print; the rest of it the band, mapped round it at real size.
+        """
+        rng = random.Random(seed)
+        nx, ny, nz = div if self.lod == 0 else (max(2, div[0] // 2), max(2, div[1] // 2), 1)
+        L, W, H = size
+        # the box surface as a grid per face, so every face has its own divisions
+        bm = bmesh.new()
+        uv = bm.loops.layers.uv.new("UVMap")
+        cache = {}
+
+        def vert(ix, iy, iz):
+            key = (ix, iy, iz)
+            if key not in cache:
+                x = ix / nx * 2 - 1
+                y = iy / ny * 2 - 1
+                z = iz / nz * 2 - 1
+                # pillow: the middle stands proud, the edges pinch in, the bottom is flat
+                bulge = (1 - sag * x ** 4) * (1 - sag * y ** 4)
+                zz = (z + 1) / 2 * bulge if z > -1 else 0.0
+                xx = x * (1 - 0.12 * abs(z) ** 2)
+                yy = y * (1 - 0.18 * abs(z) ** 2)
+                j = 0.012 * (rng.random() - 0.5)
+                cache[key] = bm.verts.new((xx * L / 2 + j, yy * W / 2 + j, zz * H + abs(j) * 0.5))
+            return cache[key]
+
+        faces = []
+        # top and bottom
+        for iz, flip in ((nz, False), (0, True)):
+            for ix in range(nx):
+                for iy in range(ny):
+                    q = [vert(ix, iy, iz), vert(ix + 1, iy, iz), vert(ix + 1, iy + 1, iz), vert(ix, iy + 1, iz)]
+                    faces.append(("top" if iz == nz else "bottom", q[::-1] if flip else q))
+        for iy, flip in ((0, False), (ny, True)):
+            for ix in range(nx):
+                for iz in range(nz):
+                    q = [vert(ix, iy, iz), vert(ix + 1, iy, iz), vert(ix + 1, iy, iz + 1), vert(ix, iy, iz + 1)]
+                    faces.append(("side", q[::-1] if flip else q))
+        for ix, flip in ((nx, False), (0, True)):
+            for iy in range(ny):
+                for iz in range(nz):
+                    q = [vert(ix, iy, iz), vert(ix, iy + 1, iz), vert(ix, iy + 1, iz + 1), vert(ix, iy, iz + 1)]
+                    faces.append(("end", q[::-1] if flip else q))
+        v0, v1 = self._band(band)
+        for kind, q in faces:
+            f = bm.faces.new(q)
+            for loop in f.loops:
+                co = loop.vert.co
+                if kind == "top" and top_rect:
+                    u0, w0, u1, w1 = top_rect
+                    loop[uv].uv = (u0 + (co.x / L + 0.5) * (u1 - u0), w0 + (co.y / W + 0.5) * (w1 - w0))
+                elif kind in ("side", "top", "bottom"):
+                    loop[uv].uv = ((co.x + L / 2) / self.sheet.tile, v0 + min(1, max(0, (co.z / H) * 0.5 + (0.5 if co.y > 0 else 0))) * (v1 - v0))
+                else:
+                    loop[uv].uv = ((co.y + W / 2) / self.sheet.tile + 0.5, v0 + min(1, max(0, co.z / H)) * (v1 - v0))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        T = Matrix.Translation(Vector(centre)) @ Matrix.Rotation(turn, 4, "Z")
+        if M is not None:
+            T = M @ T
+        bm.normal_update()
+        self._emit(bm, mat, T)
+
+    def mesh(self, mat, bm):
+        """Add a bmesh that already carries its UV layer named "UVMap"."""
+        self._emit(bm, mat)
+
+    def band_uv(self, band, along, across, span):
+        """A UV for a point `along` metres down a band and `across` / `span` of the way up it."""
+        v0, v1 = self._band(band)
+        return (along / self.sheet.tile, v0 + max(0.0, min(1.0, across / span)) * (v1 - v0))
 
     # -- finishing
 

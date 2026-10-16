@@ -54,6 +54,18 @@ const sphere = new THREE.Sphere();
 function ownAttribute<T extends THREE.BufferAttribute | THREE.InterleavedBufferAttribute>(attribute: T): T {
   const plain = attribute as THREE.BufferAttribute;
   if ((attribute as THREE.InterleavedBufferAttribute).isInterleavedBufferAttribute) return attribute.clone() as T;
+  if (plain.normalized && !(plain.array instanceof Float32Array)) {
+    // (P02f) packed by the asset build, which picks a format per mesh (UVs that tile past 1 stay
+    // floats, others become 16-bit): every layout is a render pipeline of its own, and the gate's 25
+    // new assets had added about 40. Unpacked here, every draw of a material has one layout. The
+    // values are exactly those the GPU would have read; only the vertex buffers grow.
+    const src = plain.array;
+    const scale = src instanceof Int16Array ? 1 / 32767 : src instanceof Uint16Array ? 1 / 65535 : src instanceof Int8Array ? 1 / 127 : src instanceof Uint8Array ? 1 / 255 : 1;
+    const signed = src instanceof Int16Array || src instanceof Int8Array;
+    const out = new Float32Array(src.length);
+    for (let i = 0; i < src.length; i++) out[i] = signed ? Math.max(src[i] * scale, -1) : src[i] * scale;
+    return new THREE.BufferAttribute(out, plain.itemSize, false) as unknown as T;
+  }
   const own = new THREE.BufferAttribute(plain.array, plain.itemSize, plain.normalized);
   own.gpuType = plain.gpuType;
   return own as T;
@@ -110,7 +122,7 @@ export function createInstanceSet(asset: LoadedAsset, placements: Placement[]): 
       mesh.frustumCulled = false;
       mesh.matrixAutoUpdate = false;
       mesh.receiveShadow = true;
-      mesh.castShadow = asset.castsShadow && !part.instanced.transparent;
+      mesh.castShadow = asset.castsShadow && !part.instanced.transparent && !part.instanced.userData.noShadow;
       const bucket = { mesh, level, baked, buffer, part: part.matrix };
       buckets.push(bucket);
       byLevel[level].push(bucket);

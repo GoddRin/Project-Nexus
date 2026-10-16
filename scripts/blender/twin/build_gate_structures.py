@@ -226,6 +226,7 @@ def booth(k):
     if lod < 2:
         k.plate(S, k.signs.rects["ppe"], (-1.08, 1.49, 1.30), (-0.70, 1.496, 1.68), "+y")
         k.plate(S, k.signs.rects["no-smoking"], (-0.66, 1.49, 1.30), (-0.28, 1.496, 1.68), "+y")
+        k.plate(S, k.signs.rects["cctv"], (-1.08, -1.496, 1.55), (-0.72, -1.49, 1.91), "-y")
     if lod == 0:
         k.box(T, "black", (1.25, -0.20, 1.115), (1.43, 0.06, 1.135), bevel=0.003)
         k.plate(S, k.signs.rects["logbook"], (1.25, -0.20, 1.13), (1.43, 0.06, 1.136), "+z")
@@ -263,8 +264,7 @@ def booth(k):
     if lod == 0:
         k.plate(S, k.signs.rects["clock"], (-1.14, -0.95, 1.95), (-1.134, -0.67, 2.23), "+x")
         k.plate(S, k.signs.rects["notice"], (-1.14, -0.55, 1.45), (-1.134, -0.13, 1.73), "+x")
-        k.box(T, "black", (0.70, 0.55, 1.065), (0.86, 0.75, 1.11), bevel=0.004)  # radio charger
-        k.cyl(T, "black", (0.78, 0.60, 1.11), (0.78, 0.60, 1.26), 0.016, segs=6)
+        # (the radio on its charger, the logbook and the rest of the desk are the dressing kit's: P02f)
         # wall fan on the back wall
         k.box(T, "black", (-1.14, 0.95, 2.02), (-1.08, 1.05, 2.12))
         k.cyl(T, "black", (-1.08, 1.0, 2.07), (-0.92, 1.0, 2.05), 0.05, segs=10)
@@ -342,14 +342,11 @@ def lamp_pole(k, x, y):
 
 
 def sandbags(k, cx, cy, rng):
-    """Two courses of bags round a post base."""
+    """Two courses of filled jute bags round a post base, each one a pillow slumped where it lies (P02f)."""
     course = [(-0.36, -0.42, 0), (0.12, -0.44, 6), (-0.44, 0.40, -8), (0.10, 0.44, 4), (0.46, 0.0, 92)]
-    for layer, (dz, shift) in enumerate(((0.0, 0.0), (0.105, 0.2))):
+    for layer, (dz, shift) in enumerate(((0.0, 0.0), (0.1, 0.2))):
         for i, (ox, oy, turn) in enumerate(course[: 5 - layer * 2]):
-            M = rot_z(math.radians(turn + rng.uniform(-10, 10)), about=(cx + ox, cy + oy, 0))
-            lo = (cx + ox - 0.24 + shift * 0.3, cy + oy - 0.13, dz)
-            hi = (cx + ox + 0.24 + shift * 0.3, cy + oy + 0.13, dz + 0.12)
-            k.box(T, "burlap", lo, hi, u=0, bevel=0.045, M=M, uoff=rng.random())
+            k.pillow(T, "burlap", (cx + ox + shift * 0.3, cy + oy, dz), (0.5, 0.3, 0.13), turn=math.radians(turn + rng.uniform(-10, 10)), seed=layer * 10 + i, div=(4, 3, 2), sag=0.4)
 
 
 def build_guardhouse():
@@ -365,6 +362,9 @@ def build_guardhouse():
         humps(k)
         sign_post(k, 2.35, -6.8, "stop-check", 0.9, 0.675, 1.95, face="-y")
         sign_post(k, ROAD_FAR + 0.45, -7.6, "speed-10", 0.6, 0.6, 2.0, face="-y")
+        # (P02f) visitors are sent to the booth; hard hats on past the barrier
+        sign_post(k, 1.75, -4.7, "report-here", 0.6, 0.4, 1.75, height=2.0, face="-y")
+        sign_post(k, ROAD_FAR + 0.7, -1.0, "hardhat-entry", 0.6, 0.4, 1.75, height=2.0, face="-y")
         mirror(k, ROAD_FAR + 0.55, 2.4)
         lamp_pole(k, 1.95, 2.75)
         if lod < 2:

@@ -73,6 +73,7 @@ SHIPPED = {
     "guard": {"idle", "idleShift", "walk", "talk", "barrier", "barrierDown", "waveThrough"} | LOCOMOTION,
     "engineer": {"idle", "idleShift", "talk", "talk2", "tablet", "listen", "point"},
     "labourer": {"idle", "idleShift", "restShovel", "shovel"},
+    "driver": {"drive"},  # (P02f: he only sits at the wheel; the runtime turns his head to the guard)
 }
 # Clips that move the man: their travel (metres forward) or turn (radians to his left) is taken out
 # of the hips and handed to the runtime as a curve, so the script that places him moves him exactly
@@ -81,7 +82,9 @@ ROOT = {"walkStart": "travel", "walkStop": "travel", "turnLeft": "turn", "turnRi
 # Clips played once (not looped): the baton settles from where it hangs instead of wrapping round
 ONCE = {"barrier", "barrierDown", "walkStart", "walkStop", "turnLeft", "turnRight", "turn180", "sitDown", "standUp", "pickUp",
         "reachUp", "tablet", "point", "waveThrough", "acknowledge", "wave"}
-PEOPLE = ("guard", "engineer", "labourer")
+PEOPLE = ("guard", "engineer", "labourer", "driver")
+# (P02f) clips to retarget when only some are wanted (the driver needs his sitting pose alone)
+ONLY_CLIPS = globals().get("ONLY_CLIPS")
 ALIGNED = ("Shoulder", "Arm", "ForeArm", "Hand")  # bones whose rest differs between a T-pose and an A-pose
 
 scene = bpy.context.scene
@@ -239,6 +242,8 @@ def retarget(who, src, action, clip):
 
 def stage_retarget(people):
     for key, clip in MIXAMO.items():
+        if ONLY_CLIPS and clip not in ONLY_CLIPS:
+            continue
         path = os.path.join(MIXAMO_DIR, key + ".fbx")
         if not os.path.exists(path):
             print("[clips] missing", path)
@@ -861,6 +866,53 @@ def stage_tests(people):
         hang_baton("guard")
 
 
+# ---- the driver (P02f) ----------------------------------------------------------------------------------
+# The pickup's steering wheel (veh.pickup.a, part `steering`): rim radius 0.172 m, its axis pointing
+# forwards and down at 24 degrees. Where the wheel sits against his body is stored on his LOD0
+# (`twin_wheel`, the rim's centre in his own frame, Y up), and the runtime seats him so the wheel
+# he holds is the pickup's.
+WHEEL_R = 0.172
+WHEEL_AXIS = Vector((0.0, -0.91, -0.414)).normalized()  # (his frame: he faces -Y)
+
+
+def wheel_centre(p):
+    """Where the rim's centre is for his seated pose: in front of his chest, a hand's reach down."""
+    l, r = p.head("LeftArm"), p.head("RightArm")
+    mid = (l + r) / 2
+    return mid + Vector((0.0, -0.43, -0.27))
+
+
+def author_driver(who):
+    centre = {}
+
+    def drive(p, t, f):
+        W = wheel_centre(p) if f == 0 or "W" not in centre else centre["W"]
+        centre.setdefault("W", W.copy())
+        n = -WHEEL_AXIS  # the wheel's face, towards him
+        right = Vector((1, 0, 0))
+        up = n.cross(right).normalized() * -1  # along the wheel's face, upwards
+        # small corrections to the wheel, as a driver at a crawl makes
+        steer = math.radians(4.0 * math.sin(t * 2 * math.pi) + 1.5 * math.sin(t * 6 * math.pi + 0.7))
+        for side, s in (("Left", 1), ("Right", -1)):
+            a = math.radians(60) * s + steer
+            radial = (right * math.sin(a) + up * math.cos(a)).normalized()
+            rim = W + radial * WHEEL_R
+            wrist = rim + n * 0.035 + radial * 0.035
+            p.reach(side, wrist, (s * 0.8, 0.25, -0.6))
+            fingers = (-n * 0.7 - radial * 0.7).normalized()
+            p.hand(side, fingers, -radial)
+        # sitting easy: a little slumped, head up to the road
+        p.turn_axis("Spine2", (-1, 0, 0), -3)
+        p.turn_axis("Head", (-1, 0, 0), 6 + 2 * math.sin(t * 2 * math.pi * 2))
+
+    author(who, "drive", 4 * FPS, "sit", drive, loop=True)
+    overlay_window(who, "drive", lambda p, k: (p.curl("Left", (48, 62, 44), thumb=(18, 24, 20)), p.curl("Right", (48, 62, 44), thumb=(18, 24, 20))), lambda t: 1.0)
+    rig = rig_of(who)
+    W = centre["W"]
+    rig["twin_wheel"] = [round(W.x, 4), round(W.z, 4), round(-W.y, 4)]
+    print(f"[clips] {who}: wheel at {rig['twin_wheel']} (Y up, his frame)")
+
+
 def stage_author_grips(people):
     """The hands that hold something keep their grip in the test poses too."""
     if "engineer" in people:
@@ -876,6 +928,8 @@ def stage_author(people):
     if "guard" in people:
         author_guard("guard")
         hang_baton("guard")
+    if "driver" in people:
+        author_driver("driver")
     if "labourer" in people:
         author_labourer("labourer")
         overlay_hands("labourer", {"Right": grip_shaft})
@@ -910,6 +964,8 @@ def stage_tracks(people):
                     lod0[key] = {k: list(v) for k, v in rig[key].items()}
                 elif key in lod0:
                     del lod0[key]
+            if "twin_wheel" in rig:  # (P02f: the driver's hands are on a wheel this far from his origin)
+                lod0["twin_wheel"] = list(rig["twin_wheel"])
         print(f"[clips] {who}: tracks {names}")
     scene.frame_set(0)
 

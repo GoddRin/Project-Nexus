@@ -111,6 +111,26 @@ PEOPLE = {
         "clothes": ["mindfront_knitted_sweater_01", "mindfront_male_trousers_1", "punkduck_riding_boots", "toigo_gloves_short"],
         "credits": "mpfb.makehuman,mpfb.mindfront-sweater,mpfb.mindfront-trousers,mpfb.punkduck-boots,mpfb.mrt-gloves,polyhaven.cotton_jersey,polyhaven.denim_fabric_05,mixamo.motion,twin.authored",
     },
+    # (P02f) the pickup's driver: a company driver in his forties, seated; seen through the cab's windows
+    "driver": {
+        "asset": "char.driver.a",
+        "stature": 1.69,
+        "macro": {"gender": 1.0, "age": 0.64, "muscle": 0.5, "weight": 0.62, "proportions": 0.5, "height": 0.5,
+                  "cupsize": 0.5, "firmness": 0.5, "race": {"asian": 0.85, "caucasian": 0.05, "african": 0.10}},
+        "targets": {
+            "head-square": 0.45, "head-fat-incr": 0.2, "nose-width1-incr": 0.45, "nose-width2-incr": 0.6, "nose-width3-incr": 0.5,
+            "nose-flaring-incr": 0.4, "nose-scale-depth-decr": 0.35, "nose-point-width-incr": 0.35, "mouth-scale-horiz-incr": 0.25,
+            "mouth-lowerlip-volume-incr": 0.4, "l-cheek-bones-incr": 0.35, "r-cheek-bones-incr": 0.4, "l-cheek-volume-incr": 0.3,
+            "r-cheek-volume-incr": 0.25, "chin-width-incr": 0.35, "chin-height-decr": 0.2, "neck-scale-horiz-incr": 0.3,
+            "l-eye-bag-incr": 0.35, "r-eye-bag-incr": 0.3, "eyebrows-trans-down": 0.2, "forehead-scale-vert-decr": 0.2,
+            "asym-jaw-2-l": 0.3, "asym-nose-3-r": 0.25, "asym-eye-1-l": 0.3, "asym-mouth-2-l": 0.25, "stomach-pregnant-incr": 0.15,
+        },
+        "skin": ("middleage_asian_male", (0.86, 0.66, 0.52)),
+        "hair": ("short02", (0.42, 0.42, 0.45)),
+        "brows": "eyebrow003",
+        "clothes": ["elvs_male_shirt_untucked_bd1", "punkduck_male_classic_jeans", "shoes04"],
+        "credits": "mpfb.makehuman,mpfb.elvaerwyn-shirt,mpfb.punkduck-jeans,polyhaven.stretch_poplin,polyhaven.denim_fabric_06,mixamo.motion,twin.authored",
+    },
 }
 
 
@@ -721,7 +741,7 @@ def skin_material(who):
 
 
 # stubble: (how much, how grey) a man has
-STUBBLE = {"guard": (0.6, 0.0), "engineer": (0.25, 0.0), "labourer": (0.75, 0.55)}
+STUBBLE = {"guard": (0.6, 0.0), "engineer": (0.25, 0.0), "labourer": (0.75, 0.55), "driver": (0.5, 0.15)}
 
 
 def face_detail(who):
@@ -1691,6 +1711,39 @@ def dress_engineer(who):
     remove_hidden_body(who, extra_cover=("hardhat", "vest"))
 
 
+def dress_driver(who):
+    """(P02f) The pickup's driver: a pale company shirt with sleeves rolled to the forearm, jeans, black shoes, a watch."""
+    shirt = obj_of(who, "elvs_male_shirt_untucked_bd1")
+    jeans = obj_of(who, "punkduck_male_classic_jeans")
+    shoes = obj_of(who, "shoes04")
+    retone(shirt.data.materials[0], (0.78, 0.8, 0.76), level=1.1, rough=0.82)
+    fabric(shirt.data.materials[0], shirt, "stretch_poplin", 0.29, strength=0.8, tone=0.3)
+    retone(jeans.data.materials[0], (0.42, 0.46, 0.55), level=0.55, keep=0.7, rough=0.88)
+    fabric(jeans.data.materials[0], jeans, "denim_fabric_06", 0.25, strength=1.0, tone=0.35)
+    sweat_and_dust(who, shirt, jeans, (0.78, 0.8, 0.76), dusty=0.15)
+    retone(shoes.data.materials[0], (0.05, 0.05, 0.055), level=1.0, rough=0.45)
+    # the company's mark on the left breast, and a wristwatch on the left wrist
+    chest = bone_head(who, "Spine2")
+    front_y = min(v.co.y for v in shirt.data.vertices if abs(v.co.z - chest.z) < 0.04 and v.co.x > 0.03)
+    decal(who, "logo", shirt, Vector((0.1, front_y, chest.z + 0.03)), (0.15, -1, 0.0), 0.06, 0.03, flat_material(f"{who}.logo.mat", (0.0, 0.48, 0.24), rough=0.6), nx=2, ny=2, lift=0.0025)
+    hf = hand_frame(who, "Left")
+    wrist = bone_head(who, "LeftHand")
+    fore = (wrist - bone_head(who, "LeftForeArm")).normalized()
+    bm = bmesh.new()
+    ring = []
+    side = fore.orthogonal().normalized()
+    up = fore.cross(side).normalized()
+    centre = wrist - fore * 0.035
+    for i in range(12):
+        a = 2 * math.pi * i / 12
+        ring.append(centre + (side * math.cos(a) + up * math.sin(a)) * 0.029)
+    for i in range(12):
+        tube(bm, ring[i], ring[(i + 1) % 12], 0.004, segs=4, caps=False)
+    box(bm, (-0.017, -0.017, -0.004), (0.017, 0.017, 0.004), M=frame(centre + hf["palm"] * -0.031, fore, side), bevel=0.002)
+    add_part(who, "watch", bm, flat_material(f"{who}.watch.mat", (0.08, 0.08, 0.09), rough=0.35, metal=0.4), weights={"LeftForeArm": 0.3, "LeftHand": 0.7})
+    remove_hidden_body(who)
+
+
 def dress_labourer(who):
     top = obj_of(who, "mindfront_knitted_sweater_01")
     trousers = obj_of(who, "mindfront_male_trousers_1")
@@ -1996,6 +2049,7 @@ DRAPE = {
     "guard": {"elvs_male_shirt_untucked_bd1": "top", "elvs_male_trouser": "bottom"},
     "engineer": {"elvs_male_shirt_untucked_bd1": "top", "punkduck_male_classic_jeans": "bottom"},  # (the vest is stiff: draped, its outside alone baked patchy normals)
     "labourer": {"mindfront_knitted_sweater_01": "top", "mindfront_male_trousers_1": "bottom", "cloth": "towel"},
+    "driver": {"elvs_male_shirt_untucked_bd1": "top", "punkduck_male_classic_jeans": "bottom"},
 }
 DRAPE_FRAMES = globals().get("DRAPE_FRAMES", 60)
 DRAPE_GROW = globals().get("DRAPE_GROW", (-0.025, -0.2))  # cloth this much larger than cut: everywhere, and at the joints
@@ -2209,7 +2263,7 @@ def stage_dress(who):
     skin_material(who)
     face_detail(who)
     keep_bare_hair(who)
-    {"guard": dress_guard, "engineer": dress_engineer, "labourer": dress_labourer}[who](who)
+    {"guard": dress_guard, "engineer": dress_engineer, "labourer": dress_labourer, "driver": dress_driver}[who](who)
     hair = obj_of(who, "hair")
     retone(hair.data.materials[0], PEOPLE[who]["hair"][1], level=0.085, rough=0.5)
     flatten_hair(who)
@@ -2228,7 +2282,7 @@ REDUCE = {
 }
 GRADE_GAMMA = 1.3  # applied to the baked colour (display values): above 1 deepens it
 GRADE_SATURATION = 1.18
-HAIR_DEPTH = {"guard": 0.34, "engineer": 0.26, "labourer": 0.5}
+HAIR_DEPTH = {"guard": 0.34, "engineer": 0.26, "labourer": 0.5, "driver": 0.3}
 HEAD_TRIS = 6600
 HEAD_SCALE = 2.0  # the head's texels against the rest of the man (was 1.7 in P02b)
 HANDS_TRIS = 2500

@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "cab-noon-g18.jpg",
+  "backend": "webgpu",
+  "fps": 34.9,
+  "p95": 67.9,
+  "calls": 182,
+  "tris": 792472,
+  "programs": 66,
+  "lights": 1,
+  "gpuMB": 65.1,
+  "heapMB": 217,
+  "lod": [
+   111,
+   124,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

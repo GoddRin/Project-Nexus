@@ -22,10 +22,12 @@ import numpy as np
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, os.path.join(os.path.dirname(bpy.data.filepath), "..", "..", "scripts", "blender", "twin"))
+import build_gate_dressing
 import gate_ground
 import model_kit
 
 importlib.reload(gate_ground)
+importlib.reload(build_gate_dressing)
 
 ZONE = "powerhouse.camp-gate"
 G = gate_ground.Ground()
@@ -92,6 +94,11 @@ rng = random.Random(4)
 for local in ((2.55, -2.6, 0), (2.5, -4.9, 0), (2.6, 2.7, 0), (9.25, -3.4, 0), (9.3, 3.9, 0)):
     place("prop.traffic-cone", in_set(local), turn=rng.uniform(0, 6.28), tilt=(rng.uniform(-0.03, 0.03), rng.uniform(-0.03, 0.03)))
 
+# ---- the dressing kit (P02f): props, fence, poles, culverts; plants keep clear of them --------------------
+
+taken = []  # (x, z, radius) of the larger plants and the props, so nothing grows through them
+DRESSING = build_gate_dressing.Layout(place, G, SET, YAW, taken, COLL).run()
+
 # ---- plants -------------------------------------------------------------------------------------------
 
 MASK = G.mask()  # rows along z, columns along x: road, mud, litter, water
@@ -120,8 +127,6 @@ def off_road(x, z, clearance):
     _, d = G.road_coords(np.array([x]), np.array([z]))
     return abs(float(d[0])) > clearance
 
-
-taken = []  # (x, z, radius) of the larger plants, so nothing grows through a trunk
 
 
 def free(x, z, radius):
@@ -177,6 +182,8 @@ print("grass", scatter("flora.grass.a", 430, lambda s, d, road, mud, litter, gra
 for local, scale in (((-1.75, -1.2, 0), 0.8), ((-1.8, 0.9, 0), 1.0), ((-0.9, -2.05, 0), 0.7), ((1.2, -2.2, 0), 0.6), ((-1.7, 2.1, 0), 0.9), ((2.2, 3.3, 0), 0.6), ((9.6, 0.4, 0), 0.8), ((9.7, -1.0, 0), 0.6), ((2.2, -7.2, 0), 0.7), ((9.7, -7.9, 0), 0.7), ((9.9, 2.8, 0), 0.7)):
     p = in_set(local)
     plant("flora.grass.a", p.x, -p.y, scale)
+
+DRESSING.finish()
 
 # ---- lamps --------------------------------------------------------------------------------------------
 

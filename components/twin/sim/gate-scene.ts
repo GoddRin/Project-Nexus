@@ -26,6 +26,7 @@ import { tierSettings } from "../engine/tiers";
 import { twinStore } from "../state/store";
 import { air } from "../world/air";
 import { lamps } from "../world/lamps";
+import { startSmallLife } from "../fx/small-life";
 import walkMeta from "../data/zones/powerhouse.camp-gate.walk.json";
 import { curvesFrom, planBeats, poseAt, walkSeconds as plannedWalk, type Beat, type Walker } from "./walk-plan";
 import { DOG as DOG_BODY, PERSON, Polyline, WalkMap, type WalkMeta } from "./walkmap";
@@ -45,6 +46,10 @@ const BOOM = "kit.boom-arm";
 const GUARD = "char.guard.a";
 const ENGINEER = "char.engineer.a";
 const LABOURER = "char.labourer.a";
+/** (P02f) The pickup's driver: seated at its wheel, he turns his head to the guard at his window. */
+const DRIVER = "char.driver.a";
+/** How far he turns his head to the guard, at most, and how fast (radians, radians a second). */
+const DRIVER_LOOK = { most: 1.15, rate: 2.2 };
 
 /** The pickup: metres a second on the approach, and how hard it speeds up and brakes. */
 const CRUISE = 4.2;
@@ -92,6 +97,17 @@ const turnTowards = (from: number, to: number, most: number) => {
   const d = Math.atan2(Math.sin(to - from), Math.cos(to - from));
   return from + Math.sign(d) * Math.min(Math.abs(d), most);
 };
+
+const spinAxis = new THREE.Vector3();
+const spinParent = new THREE.Quaternion();
+const spin = new THREE.Quaternion();
+/** Turn a bone about the world's up by `angle` radians, over the pose its clip gave it this frame. */
+function turnBone(bone: THREE.Bone | null, angle: number) {
+  if (!bone || Math.abs(angle) < 1e-4) return;
+  bone.parent?.getWorldQuaternion(spinParent);
+  spinAxis.set(0, 1, 0).applyQuaternion(spinParent.invert());
+  bone.quaternion.premultiply(spin.setFromAxisAngle(spinAxis, angle));
+}
 
 /** Where a dog's front and hind paws are from its middle, metres (its body follows the ground under both). */
 const DOG_HALF_LENGTH = 0.27;
@@ -147,7 +163,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
   const boothPoint = (a: number, b: number) => new THREE.Vector3(layout.booth.p[0], 0, layout.booth.p[2]).addScaledVector(across, a).addScaledVector(inward, b);
 
   const start = async () => {
-    const wanted = [PICKUP, DOG, GUARD, ENGINEER, LABOURER].filter((id) => ASSETS.has(id));
+    const wanted = [PICKUP, DRIVER, DOG, GUARD, ENGINEER, LABOURER].filter((id) => ASSETS.has(id));
     // The actors come after the zone they stand in (P02e): its ground, booth and trees are the first
     // view, and five files of people and vehicles downloading beside them held it back. Then the
     // nearest first, two at a time.
@@ -155,6 +171,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     if (stopped) return;
     const spotOf: Record<string, THREE.Vector3> = {
       [PICKUP]: onRoad(3, new THREE.Vector3()),
+      [DRIVER]: onRoad(3, new THREE.Vector3()),
       [DOG]: boothPoint(DOG_REST.across, DOG_REST.inward),
       [GUARD]: boothPoint(1.55, -1.3),
       [ENGINEER]: gate.clone().addScaledVector(inward, -7.5).addScaledVector(across, -4.0),
@@ -204,6 +221,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       return actor;
     };
     const pickup = await make(PICKUP);
+    const driver = pickup ? await make(DRIVER) : null;
     const dog = await make(DOG);
     const guard = await make(GUARD);
     const engineer = await make(ENGINEER);
@@ -219,6 +237,23 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const radius = wheel("wheel-fl")?.radius || 0.38;
     const nose = pickup ? pickup.model.entry.bounds.max[2] : 2.8;
     pickup?.object.rotation.set(0, 0, 0, "YXZ");
+
+    // the driver: seated so that the wheel his hands hold (his LOD0's `twin_wheel`, in his own frame)
+    // is the pickup's (its `steering` part's pivot); both face the pickup's +Z
+    const seat = new THREE.Vector3();
+    const driverHead: { head: THREE.Bone | null; neck: THREE.Bone | null; yaw: number } = { head: null, neck: null, yaw: 0 };
+    if (driver && pickup) {
+      const wheelAt = pickup.parts.get("steering")?.steer.position ?? new THREE.Vector3(0.38, 1.12, 0.92);
+      const held = (driver.data.twin_wheel as number[] | undefined) ?? [0, 1.1, 0.43];
+      seat.set(wheelAt.x - held[0], wheelAt.y - held[1], wheelAt.z - held[2]);
+      driver.object.traverse((node) => {
+        const bone = node as THREE.Bone;
+        if (!bone.isBone) return;
+        // (three takes the ':' out of Mixamo's names: mixamorig:Head is mixamorigHead)
+        if (/mixamorig:?Head$/.test(bone.name)) driverHead.head = bone;
+        if (/mixamorig:?Neck$/.test(bone.name)) driverHead.neck = bone;
+      });
+    }
 
     // headlamps: one real light for the pair, on the tiers with lights to spare. It is a light only
     // while it shines, and joins the scene with the lamps (world/lamps.ts), whose shaders are built for it
@@ -400,7 +435,27 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     let pitch = 0;
     let roll = 0;
     let t = 0;
-    status = { seconds: 0, length: loopSeconds, phase: "start", actors: [pickup, dog, guard, engineer, labourer].filter(Boolean).length, held };
+
+    // (P02f) dust, drips, moths and birds; the dust rises from the pickup's rear wheels
+    let pickupSpeed = 0;
+    const rearWheels = ["wheel-rl", "wheel-rr"].map((name) => wheel(name)).filter((w): w is NonNullable<typeof w> => !!w);
+    const dustAt = rearWheels.map(() => new THREE.Vector3());
+    undo.push(
+      startSmallLife({
+        scene: ctx.scene,
+        camera: ctx.camera,
+        renderer: ctx.renderer,
+        dust: () => {
+          if (!pickup || !pickup.object.visible || pickupSpeed <= 0) return null;
+          rearWheels.forEach((w, i) => {
+            w.steer.getWorldPosition(dustAt[i]);
+            dustAt[i].y = surfaceY(dustAt[i].x, dustAt[i].z);
+          });
+          return { points: dustAt, speed: pickupSpeed };
+        },
+      }),
+    );
+    status = { seconds: 0, length: loopSeconds, phase: "start", actors: [pickup, driver, dog, guard, engineer, labourer].filter(Boolean).length, held };
     dog?.play("lie", { fade: 0 });
 
     const stopLoop = loop.add("animation", (dt) => {
@@ -424,6 +479,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       if (pickup) {
         const { s, v } = rearAxleAt(t);
         pickup.object.visible = layers.vehicles && t < tGone + 0.5;
+        pickupSpeed = held || seekTo !== null ? 0 : v;
         onRoad(s, rear);
         onRoad(s + wheelbase, front);
         const heading = Math.atan2(front.x - rear.x, front.z - rear.z);
@@ -456,6 +512,24 @@ export function startGateScene(ctx: GateSceneContext): () => void {
         pickup.setGlow(lampsOn * 5 + (v < 0.2 || (t < tStop && t > tStop - CRUISE / ACCEL) ? 0.9 : 0));
         headlampsWanted = lampsOn > 0.5;
         pickup.update(dt, ctx.camera.position, k, tier.drawDistance);
+
+        if (driver) {
+          driver.object.visible = pickup.object.visible && layers.people;
+          driver.object.position.copy(seat).applyQuaternion(pickup.object.quaternion).add(pickup.object.position);
+          driver.object.quaternion.copy(pickup.object.quaternion);
+          driver.play("drive", { fade: 0, loop: true, phase: 0.2 });
+          driver.update(dt, ctx.camera.position, k, tier.drawDistance);
+          // he looks round to the guard while the guard is near his door, and back to the road
+          let want = 0;
+          if (guard && t > tDoor - 2.2 && t < tChecked + 0.8) {
+            const g = guard.object.position;
+            const local = ahead.set(g.x, 0, g.z).sub(driver.object.position).applyQuaternion(pickup.object.quaternion.clone().invert());
+            want = THREE.MathUtils.clamp(Math.atan2(local.x, local.z), -DRIVER_LOOK.most, DRIVER_LOOK.most);
+          }
+          driverHead.yaw = seekTo !== null || dt <= 0 ? want : turnTowards(driverHead.yaw, want, DRIVER_LOOK.rate * dt);
+          turnBone(driverHead.neck, driverHead.yaw * 0.4);
+          turnBone(driverHead.head, driverHead.yaw * 0.6);
+        }
       }
 
       // the dog

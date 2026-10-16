@@ -37,6 +37,7 @@
     "small-prop": { "tris": [1500, 400, null], "lod2Optional": 200, "texture": 512, "materials": 1, "lodDistances": [10, 30], "downloadMB": 0.3 },
     "interior-room": { "tris": [150000, null, null], "texture": 2048, "materials": 8, "lodDistances": [30, 30], "downloadMB": 6.0 },
     "ground-patch": { "tris": [60000, null, null], "texture": 512, "materials": 1, "lodDistances": [100000, 100000], "downloadMB": 0.5 },
+    "decal-set": { "tris": [20000, 6000, null], "texture": 1024, "materials": 1, "lodDistances": [35, 110], "downloadMB": 0.65 },
     "shell": { "tris": [8000, null, null], "texture": 1024, "materials": 2, "lodDistances": [100000, 100000], "downloadMB": 0.5 }
   }
 }

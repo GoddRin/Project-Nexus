@@ -1,0 +1,102 @@
+{
+  "note": [
+    "The site dressing kit (P02f): one trim sheet that every small prop of the kit shares (sacks, pallets, drums, chairs, hoses, pipe, umbrella, hard hat, desk things), one cut-out sheet for the fence, and one sheet of decals (ground storytelling and weathering). Read by scripts/twin/build-atlases.mjs, which paints them, and by scripts/blender/twin/model_kit.py and build_gate_dressing.py, which map faces onto them.",
+    "Trim bands as in gate.json. `prints` are rectangles [x, y, w, h] in pixels from the top-left of the sheet, drawn over the band named `print` (labels, a calendar, an open logbook).",
+    "A decal sheet has an alpha channel and is drawn blended over what is under it (materials named DECAL_..., engine/assets.ts). Its bands tile along U like a trim sheet's; its `rects` are single stamps."
+  ],
+  "trims": {
+    "trim-dressing": {
+      "size": 2048,
+      "tileM": 2.0,
+      "halfMaps": true,
+      "bands": [
+        { "name": "sack", "px": 160 },
+        { "name": "hessian", "px": 128 },
+        { "name": "pallet", "px": 160 },
+        { "name": "drum-steel", "px": 192 },
+        { "name": "plastic-blue", "px": 96 },
+        { "name": "plastic-white", "px": 80 },
+        { "name": "plastic-green", "px": 64 },
+        { "name": "plastic-yellow", "px": 64 },
+        { "name": "plastic-black", "px": 64 },
+        { "name": "rubber", "px": 64 },
+        { "name": "tyre", "px": 128 },
+        { "name": "cord", "px": 32 },
+        { "name": "galv", "px": 96 },
+        { "name": "rust", "px": 96 },
+        { "name": "concrete", "px": 160 },
+        { "name": "soil", "px": 32 },
+        { "name": "umbrella", "px": 64 },
+        { "name": "stainless", "px": 48 },
+        { "name": "hardhat", "px": 48 },
+        { "name": "print", "px": 272 }
+      ],
+      "prints": {
+        "calendar": [4, 1780, 176, 264],
+        "sack-rice": [188, 1780, 360, 200],
+        "sack-feed": [556, 1780, 360, 200],
+        "logbook-open": [924, 1780, 300, 200],
+        "bin-label": [1232, 1780, 220, 132],
+        "breaker-label": [1460, 1780, 150, 96],
+        "pallet-stamp": [1460, 1884, 150, 96],
+        "jerry-label": [1618, 1780, 140, 140],
+        "fan-badge": [1766, 1780, 120, 60],
+        "radio-face": [1766, 1848, 120, 120],
+        "slipper": [1894, 1780, 150, 260]
+      }
+    },
+    "trim-fence": {
+      "size": 1024,
+      "tileM": 2.0,
+      "halfMaps": true,
+      "cutout": true,
+      "bands": [
+        { "name": "chainlink", "px": 896 },
+        { "name": "barbed", "px": 64 },
+        { "name": "vine", "px": 64 }
+      ]
+    }
+  },
+  "decals": {
+    "decals-gate": {
+      "size": 2048,
+      "tileM": 4.0,
+      "bands": [
+        { "name": "tread", "px": 128 },
+        { "name": "gravel", "px": 256 },
+        { "name": "path", "px": 192 },
+        { "name": "drip", "px": 64 },
+        { "name": "smear", "px": 128 }
+      ],
+      "rects": {
+        "oil-a": [0, 768, 512, 512],
+        "oil-b": [512, 768, 384, 384],
+        "scrub": [896, 768, 640, 256],
+        "prints": [896, 1024, 640, 256],
+        "rust-a": [1536, 768, 128, 512],
+        "rust-b": [1664, 768, 128, 512],
+        "stain": [1792, 768, 256, 512],
+        "litter": [0, 1280, 768, 768],
+        "damp-ring": [768, 1280, 384, 384],
+        "moss": [1152, 1280, 384, 384],
+        "dust": [1536, 1280, 512, 384],
+        "pods": [768, 1664, 768, 384],
+        "splash": [1536, 1664, 512, 384],
+        "culvert-silt": [512, 1152, 384, 128]
+      }
+    }
+  },
+  "cards": {
+    "flora-camp": {
+      "size": 1024,
+      "rects": {
+        "croton": [0, 0, 512, 512],
+        "ixora": [512, 0, 512, 512],
+        "cogon": [0, 512, 512, 512],
+        "cogon-plume": [512, 512, 192, 512],
+        "croton-b": [704, 512, 320, 320],
+        "ixora-flower": [704, 832, 192, 192]
+      }
+    }
+  }
+}

@@ -326,8 +326,12 @@ class Ground:
         over = np.maximum(total, 1.0)
         road, mud, litter = road / over, mud / over, litter / over
 
-        # standing water: potholes, the ditch bottom, low spots of the shoulder
-        water = np.maximum(puddle, ditch * _smooth(0.45, 0.75, n1) * 0.8)
+        # standing water: potholes, the ditch bottom, low spots of the shoulder, and (P02f) the wheel
+        # ruts beyond the gate pad, in lengths where the ruts run deepest
+        rut = np.exp(-(((np.abs(d) - 0.92) / 0.17) ** 2)) * (1 - _smooth(2.6, 3.4, np.abs(d))) * (1 - near_gate)
+        along = _fbm(s * 1.0, d * 0.2 + 7.0, 2.5, 37, 3)
+        water = np.maximum(puddle, rut * _smooth(0.5, 0.66, along) * 0.75)
+        water = np.maximum(water, ditch * _smooth(0.45, 0.75, n1) * 0.8)
         water = np.maximum(water, shoulder * _smooth(0.62, 0.8, n1) * 0.5)
         return np.stack([road, mud, litter, np.clip(water, 0, 1)], axis=-1)
 

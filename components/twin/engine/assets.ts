@@ -13,7 +13,6 @@ import {
   dFdx,
   dFdy,
   dot,
-  float,
   log2,
   mat4,
   materialColor,
@@ -28,8 +27,8 @@ import {
   sin,
   transformNormal,
   transformNormalToView,
+  uniform,
   uv,
-  vec2,
   vec3,
   vec4,
 } from "three/tsl";
@@ -80,6 +79,8 @@ export type LoadedAsset = {
   textures: THREE.Texture[];
   /** Addresses of textures loaded beside the file (the ground's layers), released with the asset. */
   shared: string[];
+  /** Keys of the finished materials this asset shares with others (P02f). */
+  sharedMaterials: string[];
 };
 
 type Slot = { refs: number; promise: Promise<LoadedAsset>; loaded: LoadedAsset | null };
@@ -106,6 +107,7 @@ const WRAP: Record<number, THREE.Wrapping> = { 10497: THREE.RepeatWrapping, 3307
 /** Put a shared texture into the slot of `material` it came out of. */
 function useShared(material: THREE.MeshStandardMaterial, texture: THREE.Texture, spec: SharedTexture) {
   // (the build shares a texture only between slots that read it the same way, so these agree)
+  texture.userData.twinShared = true;
   texture.channel = spec.texCoord;
   texture.wrapS = WRAP[spec.wrapS] ?? THREE.RepeatWrapping;
   texture.wrapT = WRAP[spec.wrapT] ?? THREE.RepeatWrapping;
@@ -185,10 +187,21 @@ function instancedMaterial(material: THREE.Material, kind: AssetKind, entry: Ass
     for (const key in source) {
       if (key !== "uuid" && key !== "type") target[key] = source[key];
     }
+    const decal = source.name?.startsWith("DECAL_") === true;
+    if (decal) {
+      // (P02f) a decal lies a centimetre over the ground or a wall: drawn blended after what is under it,
+      // pulled towards the camera in depth so the two never fight, writing no depth of its own; it
+      // casts no shadow (it is see-through: engine/instances.ts) and the occlusion pass skips it
+      node.depthWrite = false;
+      node.polygonOffset = true;
+      node.polygonOffsetFactor = -2;
+      node.polygonOffsetUnits = -4;
+    }
     if (!source.isMeshBasicMaterial) {
       // rain: surfaces darken and take a sheen, the more the more they face the sky
+      // (a decal on the ground darkens with it as bare earth does: data/ground.json's road and mud)
       const wet = air.wetness.mul(normalWorld.y.max(0).mul(0.6).add(0.4));
-      node.colorNode = materialColor.mul(vec4(vec3(mix(1, kind === "flora" ? 0.86 : 0.7, wet)), 1));
+      node.colorNode = materialColor.mul(vec4(vec3(mix(1, kind === "flora" ? 0.86 : decal ? 0.52 : 0.7, wet)), 1));
       (node as THREE.MeshStandardNodeMaterial).roughnessNode = materialRoughness.mul(mix(1, kind === "flora" ? 0.92 : 0.5, wet));
       // lamp surfaces glow only while the lamps are lit
       if (source.name?.startsWith("EMIT_")) (node as THREE.MeshStandardNodeMaterial).emissiveNode = materialEmissive.mul(air.lamps);
@@ -202,7 +215,16 @@ function instancedMaterial(material: THREE.Material, kind: AssetKind, entry: Ass
     // two-sided glass in one pass, not back faces then front: three cannot build the two-pass kind
     // ahead of time (engine/precompile.ts), so it stalled the frame it first appeared in (P02e)
     if (node.transparent && node.side === THREE.DoubleSide) node.forceSinglePass = true;
-    if ((source.alphaTest ?? 0) > 0) {
+    if ((source.alphaTest ?? 0) > 0 && kind !== "flora") {
+      // (P02f) a built cut-out (chain link, barbed wire): thin wires that should average to a faint haze
+      // far off, as real chain link does. The scene is drawn without multisampling, so coverage cannot
+      // carry that haze and a cut-out's far mips (about 15% wire) either vanish or fill solid: it is
+      // blended instead, writing no depth, and so casts no shadow either (engine/instances.ts)
+      node.transparent = true;
+      node.alphaTest = 0;
+      node.depthWrite = false;
+      node.userData.noShadow = true;
+    } else if ((source.alphaTest ?? 0) > 0) {
       // cut-out leaves: with multisampling on, let the edge fade over the samples instead of stair-stepping;
       // and cut a little lower than the file says, because a scaled-down cut-out thins out and a far tree goes bare
       node.alphaToCoverage = true;
@@ -211,7 +233,8 @@ function instancedMaterial(material: THREE.Material, kind: AssetKind, entry: Ass
       const map = (source as { map?: THREE.Texture | null }).map;
       if (map?.isTexture) {
         const image = map.image as { width?: number; height?: number } | null;
-        const texels = uv().mul(vec2(image?.width ?? 1024, image?.height ?? 1024));
+        // (a uniform, not a constant: a constant in the code makes every sheet size a shader of its own, P02f)
+        const texels = uv().mul(uniform(new THREE.Vector2(image?.width ?? 1024, image?.height ?? 1024)));
         const level = log2(max(dot(dFdx(texels), dFdx(texels)), dot(dFdy(texels), dFdy(texels))).max(1)).mul(0.5);
         node.opacityNode = materialOpacity.mul(level.mul(0.42).add(1));
       }
@@ -234,11 +257,12 @@ function instancedMaterial(material: THREE.Material, kind: AssetKind, entry: Ass
     const gust = sin(t.mul(0.31).add(root.x.mul(0.05)).add(root.z.mul(0.03))).mul(0.5).add(0.5);
     const strength = air.windStrength.mul(mix(0.35, 1, gust));
     const sway = sin(t.mul(1.1).add(phase)).mul(0.6).add(sin(t.mul(2.3).add(phase.mul(1.7))).mul(0.4)).add(0.35);
-    const lean = sway.mul(weights.x).mul(strength).mul(float(0.045 * Math.pow(height, 0.7)));
+    // (the plant's size enters as uniforms: as constants they made each species a shader of its own, P02f)
+    const lean = sway.mul(weights.x).mul(strength).mul(uniform(0.045 * Math.pow(height, 0.7)));
     const flutter = sin(t.mul(7).add(placed.x.mul(3.1)).add(placed.z.mul(2.7)).add(placed.y.mul(1.9)))
       .mul(weights.y)
       .mul(strength)
-      .mul(float(Math.min(0.035, height * 0.03)));
+      .mul(uniform(Math.min(0.035, height * 0.03)));
     return placed.add(vec3(air.windDir.x.mul(lean), flutter, air.windDir.y.mul(lean)));
   })();
   return node;
@@ -258,6 +282,7 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
   const lods: LoadedAsset["lods"] = [null, null, null];
   const textures = new Set<THREE.Texture>();
   const instancedFor = new Map<THREE.Material, THREE.Material>();
+  const sharedMaterials: string[] = [];
 
   // the ground is drawn with the twin's blended material; its file carries only the mesh
   let ground: THREE.Material | null = null;
@@ -304,7 +329,17 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
       if (!mesh.isMesh) return;
       const material = ground ?? (mesh.material as THREE.Material);
       let instanced = instancedFor.get(material);
-      if (!instanced) instancedFor.set(material, (instanced = instancedMaterial(material, kind, entry, mesh.geometry.hasAttribute("_wind"))));
+      if (!instanced) {
+        const wind = mesh.geometry.hasAttribute("_wind");
+        // (P02f) materials alike in every respect, down to the very texture objects (shared sheets),
+        // are one material across assets, so the kit's 22 props on one sheet build one set of shaders
+        const key = ground || wind ? null : sharedMaterialKey(material, kind);
+        if (key) {
+          instanced = acquireSharedMaterial(key, () => instancedMaterial(material, kind, entry, false));
+          sharedMaterials.push(key);
+        } else instanced = instancedMaterial(material, kind, entry, wind);
+        instancedFor.set(material, instanced);
+      }
       parts.push({ geometry: mesh.geometry, material, instanced, matrix: mesh.matrixWorld.clone() });
       if (ground) return;
       for (const slot of TEXTURE_SLOTS) {
@@ -329,6 +364,7 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
     kind,
     castsShadow: kind === "built" || /^flora\.(acacia|banana)\./.test(entry.id),
     shared,
+    sharedMaterials,
     lods,
     levels: (lods[0] ? 1 : 0) | (lods[1] ? 2 : 0) | (lods[2] ? 4 : 0),
     centre: sphere.center,
@@ -338,7 +374,8 @@ async function load(entry: AssetEntry): Promise<LoadedAsset> {
 }
 
 function dispose(asset: LoadedAsset) {
-  const seen = new Set<unknown>();
+  // (a material shared between assets goes when its last user does, below)
+  const seen = new Set<unknown>(asset.sharedMaterials.map((key) => sharedMaterialCache.get(key)?.material));
   for (const parts of asset.lods) {
     for (const part of parts ?? []) {
       if (!seen.has(part.geometry)) part.geometry.dispose();
@@ -354,7 +391,60 @@ function dispose(asset: LoadedAsset) {
     (texture.image as { close?: () => void } | null)?.close?.();
   }
   for (const url of asset.shared) releaseTexture(url);
+  for (const key of asset.sharedMaterials) releaseSharedMaterial(key);
   bytesLoaded -= asset.entry.bytes;
+}
+
+// ---- finished materials shared between assets (P02f) -----------------------------------------------
+
+const sharedMaterialCache = new Map<string, { refs: number; material: THREE.Material }>();
+const materialIds = new WeakMap<object, number>();
+let nextMaterialId = 1;
+const idOf = (o: object) => {
+  let id = materialIds.get(o);
+  if (!id) materialIds.set(o, (id = nextMaterialId++));
+  return id;
+};
+
+/**
+ * A key that two assets' materials share only if they would draw the same: same kind, name, the
+ * settings that change a shader, and the same texture objects in every slot. Null when a texture
+ * is the asset's own (nothing to share).
+ */
+function sharedMaterialKey(material: THREE.Material, kind: AssetKind): string | null {
+  const m = material as unknown as Record<string, unknown>;
+  const parts: (string | number)[] = [kind, material.type, material.name, String(m.transparent), String(m.alphaTest), String(m.side), String(m.vertexColors)];
+  let any = false;
+  for (const slot of TEXTURE_SLOTS) {
+    const texture = m[slot] as THREE.Texture | null | undefined;
+    if (!texture?.isTexture) {
+      parts.push("-");
+      continue;
+    }
+    if (!(texture.userData as { twinShared?: boolean }).twinShared) return null;
+    any = true;
+    parts.push(idOf(texture));
+  }
+  for (const key of ["color", "emissive"] as const) {
+    const c = m[key] as THREE.Color | undefined;
+    if (c?.isColor) parts.push(c.getHexString());
+  }
+  for (const key of ["roughness", "metalness", "opacity", "emissiveIntensity"]) parts.push(String(m[key]));
+  return any ? parts.join("|") : null;
+}
+
+function acquireSharedMaterial(key: string, make: () => THREE.Material): THREE.Material {
+  let slot = sharedMaterialCache.get(key);
+  if (!slot) sharedMaterialCache.set(key, (slot = { refs: 0, material: make() }));
+  slot.refs++;
+  return slot.material;
+}
+
+function releaseSharedMaterial(key: string) {
+  const slot = sharedMaterialCache.get(key);
+  if (!slot || --slot.refs > 0) return;
+  sharedMaterialCache.delete(key);
+  slot.material.dispose();
 }
 
 // ---- textures loaded beside the files (KTX2), shared between assets ---------------------------------

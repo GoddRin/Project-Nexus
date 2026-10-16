@@ -549,8 +549,9 @@ def build_adopted():
     return out
 
 
-materials()
-print("acacia.a", build_tree("flora.acacia.a", ACACIA_LARGE, 5, {"per_twig": 15, "length": 0.72}, (40, 110)))
-print("acacia.b", build_tree("flora.acacia.b", ACACIA_YOUNG, 11, {"per_twig": 12, "length": 0.6}, (30, 90)))
-print("banana", build_banana())
-print(build_adopted())
+if __name__ != "build_gate_flora":  # (imported by build_gate_dressing.py for its helpers: build nothing)
+    materials()
+    print("acacia.a", build_tree("flora.acacia.a", ACACIA_LARGE, 5, {"per_twig": 15, "length": 0.72}, (40, 110)))
+    print("acacia.b", build_tree("flora.acacia.b", ACACIA_YOUNG, 11, {"per_twig": 12, "length": 0.6}, (30, 90)))
+    print("banana", build_banana())
+    print(build_adopted())

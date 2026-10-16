@@ -21,6 +21,7 @@ Download rules from the P02c texture trial: a 2K normal map in the high-quality 
 | Hero structure (per building) | 120k | 35k | 8k | trim sheets + 2K uniques | 6 | 60 m / 180 m | 4 MB | not measured |
 | Kit piece (wall, roof bay, column) | 2k | 500 | 100 | trim sheet | 1 | 30 m / 100 m | 0.3 MB | not measured |
 | Small prop | 1.5k | 400 | none (culled) | 512 or atlas | 1 | 10 m / 30 m (cull) | 0.3 MB | not measured |
+| Decal set (a zone's ground and wall marks, P02f) | 20k | 6k | none (culled at 110 m) | 1K decal sheet | 1 | 35 m / 110 m (cull) | 0.65 MB | measured with the kit in P02f |
 | Interior room (all contents) | 150k | not loaded | not loaded | atlases | 8 | loads inside 30 m | 6 MB | not measured |
 
 Animation: at most 4 bone influences per vertex; 65 bones or fewer for people (fingers on LOD0 only); clips baked at 30 fps and compressed.
