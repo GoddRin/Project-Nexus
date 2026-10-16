@@ -1,23 +1,23 @@
 [
  {
   "place": "gate-approach",
-  "name": "noon",
-  "time": "1215",
+  "name": "morning",
+  "time": "0926",
   "weather": "clear",
-  "file": "cab-noon-g18.jpg",
+  "file": "line-morning-g20.jpg",
   "backend": "webgpu",
-  "fps": 16.3,
-  "p95": 118.2,
-  "calls": 145,
-  "tris": 654641,
-  "programs": 60,
+  "fps": 43.1,
+  "p95": 61.1,
+  "calls": 94,
+  "tris": 246262,
+  "programs": 41,
   "lights": 1,
-  "gpuMB": 64.3,
-  "heapMB": 213,
+  "gpuMB": 28.2,
+  "heapMB": 195,
   "lod": [
-   111,
-   124,
-   0
+   28,
+   162,
+   9
   ],
   "zones": [
    {

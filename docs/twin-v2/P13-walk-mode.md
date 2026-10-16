@@ -343,6 +343,154 @@ More of what makes it feel like being a person in a real place. Needs are **alwa
 - [ ] Each event can be triggered from a debug list, plays through, and leaves the site in a consistent state.
 - [ ] Time-lapse capture of a pour produces a watchable clip.
 
+## P13l. Real conversations: talk with anyone, each with their own personality
+
+**Needs.** P13g (voices and the line system), P13i (mood and memory per person), P13j (friends, jobs), P09c (role behaviour).
+
+The owner asked (2026-10-15) to **talk and interact with any worker or staff member, each with a personality that fits their job**. P13g gives people short lines and a five-item menu; this sub-phase turns that into real conversation. It has two layers that share one personality model: an **authored layer** that always works, offline and free, on every page; and an **open-talk layer** where the owner types or speaks freely and the person answers in character, signed-in only.
+
+**Read first.** `components/atlas/ai/` and `lib/atlas-ai/` (the existing assistant: `service.ts`, which calls the provider cascade in `lib/ai/core/providerHarness.ts` with free models first; `localVoice.ts`, `piperVoice.worker.ts` and `localVoice.worker.ts`, which speak in the browser with Piper and Kokoro at no cost; `app/api/atlas-ai/transcribe` for speech to text; `useLipSync`, `visemes.ts`); `P13g` above; `P13i` "How people react"; `data/people.json`, `crew.json`, `stations.json`, `activities.json`.
+
+### 1. A personality for every person (`data/personas.json`, derived, never hand-written per crew member)
+
+Each person's personality is built from layers, so 473 workers need no hand-written cards:
+
+| Layer | What it holds | Where it comes from |
+| --- | --- | --- |
+| **Role archetype** | How their job shapes them: vocabulary, what they notice, what worries them, how formal they are, what they are proud of, their catchphrases | One card per role (about 40 roles): written once |
+| **Temperament** | Five sliders (talkative to quiet, warm to gruff, joker to serious, patient to quick-tempered, curious to set in their ways), plus humour style (teasing, deadpan, corny puns, none) | Seeded randomly per person within the role's range, so no two steelmen are the same |
+| **Background** | Home province and language (Ilocano, Ibanag, Tagalog, Cebuano, Kalinga…; Isabela crews speak Ilocano and Ibanag, so local workers drop Ilocano words), age band, family at home, years on projects, a hobby, a favourite food, a team they support | Generated for invented crew; **for named real staff only what the owner approves** (their role and the details in the R5 notes); nothing personal is invented about a real person |
+| **Live state** | Mood (from needs, heat, rain, fatigue, pay-day, how the work is going), what they are doing right now, who they are with, the time of day | The simulation (P09, P12d, P13i) every second |
+| **Relationship with you** | Familiarity, liking, trust, respect, fear, and memories of what you did (helped, lent, joked, bumped, punched, beat them at basketball) | P13i's memory model, extended |
+
+**Role archetypes (examples; write all of them):**
+
+| Role | Personality | Talks about | Sounds like |
+| --- | --- | --- | --- |
+| Labourer | Easy-going, teasing, quick to laugh, tired by afternoon | Pay-day, home, basketball, food, the heat, the foreman | "Boss, kape muna tayo." Ilocano asides |
+| Steelman / rebar | Proud of tidy ties, competitive about speed | Spacing, bar sizes, sore hands, who ties fastest | Counts under his breath |
+| Carpenter | Craftsman, a little particular, generous with tips | Formwork, plywood quality, his own tools he never lends | "Sukat muna bago putol." (Measure before you cut) |
+| Mason | Patient, steady, a storyteller | Mix, curing, old buildings back home | Slow, warm |
+| Heavy-equipment operator | Confident, a bit of a show-off, loves the machine | His unit's quirks, the road, fuel, near misses | Engine metaphors |
+| Tunnel miner | Superstitious, brave, dark humour, close-knit | The face, the ground "talking", old mine stories, the night | Lowers his voice in the tunnel |
+| Driver | Chatty, knows every rumour, always in a hurry | The road, landslides, town, who is visiting | Gossip first, then the news |
+| Foreman | Brisk, protective of his gang, under pressure | Targets, manpower, weather, the schedule | Short sentences, then a laugh |
+| Security guard | Formal, watchful, polite, bored at night | Rules, logbook, who came in, the night sounds | "Sir, ID po muna." |
+| Cook | Motherly or fatherly, bossy in the kitchen, knows everyone | Food, who is not eating, camp news | Feeds you before answering |
+| Site engineer | Practical, busy, explains well when asked | Today's pour, the drawings, a problem he is solving | Taglish with technical words |
+| Safety officer | Firm but friendly, sees every hazard | PPE, permits, near misses, heat stress | Corrects you mid-sentence |
+| Surveyor | Precise, outdoorsy, patient | Benchmarks, weather on the ridge, the walk up | Numbers and landmarks |
+| Geo mapper | Thoughtful, observant, loves the land | Maps, old trails, how the ground has changed | Quiet, exact |
+| Document controller | Orderly, dry humour, guards the archive | Revisions, transmittals, people who lose drawings | "Controlled copy po 'yan." |
+| AutoCAD operator | Focused, music in his ears, jokes when he looks up | Layers, revision clouds, the coffee run | Pauses to finish a line first |
+| Planning engineer | Driven, organised, encouraging | The schedule, look-ahead, how to catch up | Plans your day for you |
+| Timekeeper | Friendly, knows everyone's name, precise about hours | Attendance, overtime, cut-off, birthdays | Greets you by name |
+| HR officer | Warm, discreet, careful with words | Contracts, leave, welfare, families | Never gossips |
+| Admin / purchaser | Practical fixer | Supplies, deliveries, the van schedule | "Ako na bahala." (Leave it to me) |
+| IT support | Patient, tired of "have you restarted it", secretly loves the satellite dish | Signal, laptops, printers, the CCTV | Tech words, then a translation |
+| Mechanical superintendent | Veteran, calm, proud of machines | Turbines, alignment, past plants | Teaches by stories |
+| Project manager / head | Measured, sees the whole, short on time | Milestones, the owner's visit, morale | Asks you a question back |
+| Nurse | Kind, firm about health | Hydration, injuries, rest | Checks on you |
+| Barangay vendor, visitor, inspector, child | Their own small cards | | |
+
+### 2. The authored layer (always on, free, offline, public-safe)
+
+Conversation is assembled, not scripted line by line, so it never runs dry:
+
+1. **Topics.** Talking to someone opens a wheel of topics that fit them and the moment: **Work** (what are you doing, teach me, can I help, what's the problem), **The site** (news, who is who, where is…, what happened yesterday), **Them** (home, family, how long on the project, hobbies), **Small talk** (weather, food, basketball, music, jokes), **Gossip** (who is courting whom, who got scolded, the rumour of the week, harmless and invented-crew only), **Ask a favour** (lend a tool, a ride, a cigarette break cover, a recommendation to the foreman), **Invite** (eat, coffee, play, fish, the circle), **Night talk** (after dark: stories, the folklore, what they heard) and **Story** topics when P16 is running.
+2. **Answers** come from templates filled from live facts (their real activity, the real weather, the real date, the site's state, recent events, your relationship), written in Taglish with Ilocano seasoning by role and background, each line with a gesture clip, an expression and a voice clip.
+3. **Your tone matters:** each reply option has a tone (polite, friendly, joking, blunt, rude, flirt-free respectful). Tone and the other person's temperament decide how it lands: a joker loves a tease, a serious foreman does not; rudeness to a guard has consequences (P13i).
+4. **Barks** fill the world: unprompted remarks to you and to each other driven by events (a dropped tool, a near miss, rain starting, a blast warning, pay-day, a basket on the court, you arriving muddy).
+5. **People start conversations too:** a friend calls you over, the foreman asks for a hand, the cook insists you eat, a worker asks to borrow your phone light, a child at the lower gate asks your name.
+6. **They remember** (P13i): the next conversation opens with what happened last time ("Uy, ikaw 'yung nanalo sa amin kahapon!" — You're the one who beat us yesterday!).
+7. **Authoring tool:** dialogue snippets and topic rules in **inkjs** (free, MIT) or plain JSON with conditions; a validator checks every role has every topic in both languages.
+
+### 3. The open-talk layer (signed-in owner only; free models first)
+
+The owner can **type or speak anything** and the person answers in character, by voice, with lip-sync, gesture and a change in their relationship.
+
+1. **Input:** a text box, or push-to-talk through the browser's speech recognition or the app's existing transcribe route.
+2. **The prompt** is built per turn from the persona (archetype, temperament, background, live state, relationship, last few exchanges, and a short list of true facts they can know: their activity, the site's public state, the weather, recent events). The model answers in a small JSON shape: the line (Taglish), an emotion, a gesture, an optional action (follow you, give an item, start a task, walk away, call the guard) and a relationship change. The game validates the action before doing it.
+3. **The model** runs through the app's existing provider cascade, **free models first**; a paid model only if the owner turns it on later. Answers are cached for repeated questions; a daily cap prevents runaway use.
+4. **Voice:** spoken in the browser with the existing Piper or Kokoro voices (free), a voice chosen per person so they keep one voice; pre-recorded colleagues' voices are used for authored lines only.
+5. **Guard rails:**
+   - **Real colleagues are portrayed, not impersonated.** Their persona holds only the role and the owner-approved details; the model is told never to invent their private life, opinions on real people, or claims about real events; the conversation panel shows "AI portrayal".
+   - **No internal project data.** The persona's facts come only from public-safe data (physical progress, dates, the weather); costs, margins, KPIs, incidents and the monthly reviews never reach the prompt.
+   - Off on the public page and in presentation mode; the authored layer stays.
+   - If the model fails or is slow, the authored layer answers instantly; no conversation ever hangs.
+
+### 4. Things a conversation can lead to
+
+Ask to be taught (a skill gain in that trade); ask for work (a task for the day); borrow or lend; trade snacks; get directions with a walking companion; invite someone to eat, play, fish or the circle; ask for a photo together; patch up a quarrel with an apology and a merienda; recruit a friend to join you for a night walk; ask the cook for the recipe; ask an old miner for a story; ask the guard who came in today; hear a confession of homesickness and help (call home on your phone, a gift); set two friends up for a basketball rematch.
+
+**Deliver.** `data/personas.json` (role archetypes and the generator), the topic and template data in both languages with Ilocano seasoning, the conversation UI (topic wheel, tone choice, text and voice input), the open-talk service using the existing cascade, a validator, a review video of six conversations (labourer, tunnel miner, cook, guard, document controller, safety officer) and two open-talk sessions.
+
+**Pass when.**
+- [ ] Ten people of ten roles, asked the same three questions, answer in ten recognisably different ways that fit their job and temperament.
+- [ ] Every answer about work matches the person's real activity; no conversation reveals an internal figure (an automated check feeds the prompts a list of banned terms and figures and fails if any appear).
+- [ ] The authored layer works with the network cut; open talk falls back to it within one second when the model is slow.
+- [ ] A named colleague's open-talk persona contains only approved facts (checked against `people.json`), and the panel shows "AI portrayal".
+- [ ] Relationship changes from conversation show in later greetings and in P13i reactions.
+
+## P13m. Become anyone: play as any worker or staff member
+
+**Needs.** P13l, P13j, P09c, P16-0 for the career data.
+
+The owner asked (2026-10-15) for **more to do when playing as a certain character or personnel**, and for the whole game to be more immersive. This sub-phase lets the owner **step into any person on site** (pick from the people list, or walk up and choose "Take their place") and live their day with their tools, their place, their people and their problems. Their schedule, relationships and reputation come with them; the person they were becomes you until you leave.
+
+**What changes when you are someone:**
+
+- **Their kit and body:** their outfit and PPE, their build and walking style (the tunnel miner's crouch, the guard's slow patrol, the cook's quick steps), their tools in hand.
+- **Their place and day:** you wake in their bunk at their alarm, your phone holds their messages and schedule, your foreman or boss gives their tasks, their friends greet you, their rivals needle you.
+- **Their view:** a role lens on the world: the safety officer sees hazards outlined; the surveyor sees benchmarks and levels; the mechanical superintendent sees vibration and temperatures on machines; the timekeeper sees names over heads; the document controller sees which drawing revision each crew holds; the operator sees load and fuel; the cook sees who has not eaten.
+
+**Things to do, by role (each a short, repeatable activity with a skill that grows):**
+
+| Role | Activities |
+| --- | --- |
+| Labourer | Shovel and level gravel to a string line; carry and stack cement bags; clean formwork; mix by hand; carry water to the gang at noon |
+| Steelman | Tie rebar to the spacing on the drawing against the clock; cut and bend bars; place spacers; pass the engineer's inspection |
+| Carpenter | Measure, cut and nail a form; plumb it; strip forms the next day; build a bench for the camp |
+| Mason | Lay hollow blocks to a line; plaster; cure a slab in the heat |
+| Operator | Drive the excavator, roller or dump truck in the practice pit and then on easy real tasks; daily checks; refuel; dig a trench to depth with a spotter |
+| Driver | Run the crew van and the Kia truck on the access road: timing, mud, landslide detours, passengers who chat |
+| Tunnel miner | Mark the face, drill the round, charge (as a sequence, never instructions for explosives), retreat, scale, mesh and bolt; the gas check; listen to the rock |
+| Security guard | Check IDs and vehicles at the gate, the logbook, the night patrol with a torch, the radio check every hour, a visitor who argues |
+| Cook | Plan and cook for 300 against the clock (rice, ulam, merienda), shop list, feed latecomers, the fiesta lechon |
+| Site engineer | Inspect before a pour, sign the checklist, solve a clash between drawing and site, run the toolbox talk |
+| Safety officer | The 07:00 toolbox talk (choose the topic), spot hazards on a walk, issue permits, stop unsafe work politely, a rescue drill, heat-stress checks at noon |
+| Surveyor | Set up the total station, sight the prism, stake out points, check a level; the walk up the ridge at dawn |
+| Geo mapper | Fly the drone survey, process the map, compare before and after a storm, update the site map everyone uses |
+| Document controller | Receive, stamp, log and route transmittals; find a lost drawing; scan; hand out controlled copies; the archive after a flood |
+| AutoCAD operator | Turn a sketch into a drawing (a simple in-game drafting puzzle), add revision clouds, print and fold |
+| Planning engineer | Build the look-ahead from the progress, recover the schedule after rain, present at the month-end |
+| Timekeeper | Run the gate at shift change, match names to faces, chase missing time cards, close the cut-off before pay-day |
+| HR officer | Onboard a new hire (ID, PPE, briefing), handle a leave request, help a worker's family, the welfare visit |
+| Admin / purchaser | Order supplies, meet the delivery, check against the PO, arrange the van to town |
+| IT support | Fix the office printer, restore the internet after a storm, align the dish, reset the CCTV, explain Wi-Fi to the foreman |
+| Mechanical superintendent | Receive a turbine part, align a shaft, run a test, lead the first spin |
+| Nurse | Treat a cut, handle heat exhaustion, run the clinic, the blood-pressure line on Monday |
+| Project head | Walk the site with a visitor, chair the month-end, decide between two bad options in a crisis |
+
+**Immersion across the game (applies to every mode):**
+
+1. **No floating menus where the world can do it:** tasks come by radio, phone message or a shout; the map is your phone or the board in the office; status shows on your body (sweat, dirt, shaking hands), not bars, with a minimal HUD option.
+2. **Diegetic tools:** read a real-looking drawing on a clipboard, a permit on the wall, a logbook with handwriting, the whiteboard in the office.
+3. **Sound first:** footsteps by surface, breath, radio squelch, distant generators, the river, rain on the hat brim, the tunnel's pressure.
+4. **Consequences that persist:** what you build stays, what you break stays broken until fixed, people remember, the site's record shows your shift.
+5. **Time that matters:** being late to the toolbox talk is noticed; overtime is tiring; the last van leaves at 17:30.
+6. **Small human moments:** someone saves you a seat at lunch; a worker shows you a video of his child; the cook remembers you hate ampalaya.
+7. **Switch at will:** leave a person at any moment and they carry on their day; return later to find what they did.
+8. **A day recap:** at bedtime, a short journal page of the day lived as that person, with your photos.
+
+**Deliver.** The "Take their place" flow, role lenses for eight roles, the activity set for every role in the table (at least one activity each, then grown in later packs), and a review video of a full day as a labourer, as the safety officer and as the document controller.
+
+**Pass when.**
+- [ ] Taking anyone's place gives their outfit, tools, bunk, schedule, friends and messages; leaving returns them to their routine with no glitch.
+- [ ] Every role in the table has at least one complete activity; the eight lenses show the right information.
+- [ ] A full day as the safety officer and as the document controller runs end to end with their real places (the R5 office for staff).
+- [ ] The minimal-HUD option plays a full day with no bars on screen.
+
 ## Not in this plan (ideas for later)
 
 - Several visitors in the same site at once.

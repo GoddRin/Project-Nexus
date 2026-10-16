@@ -14,11 +14,12 @@ const DONE_MS = 2600;
 
 /** The page's sections, in order (each id is an element on the page) */
 const SECTIONS = [
+  { id: "trending", label: "Headlines" },
   { id: "today", label: "Today" },
   { id: "launchpad", label: "Launchpad" },
   { id: "newsroom", label: "Newsroom" },
-  { id: "portfolio", label: "Portfolio" },
   { id: "flagship", label: "Flagship" },
+  { id: "portfolio", label: "Portfolio" },
   { id: "legacy", label: "50 years" },
 ] as const;
 
@@ -123,8 +124,9 @@ export function HomeToolbar() {
   const text = done ? "Up to date" : busy ? "Refreshing" : "Refresh all";
 
   const chips = SECTIONS.filter((s) => present.includes(s.id));
+  // (a sticky bar rests inside the scrolling panel's padding, so it is pulled up by that padding to sit flush under the top bar)
   return (
-    <div ref={bar} className="sticky top-0 z-20 -mx-1 px-1 py-1">
+    <div ref={bar} className="sticky -top-3.5 z-20 -mx-1 px-1 py-1 sm:-top-5 md:-top-6">
       <div className="home-toolbar flex items-center gap-2 rounded-full p-1.5">
         <nav aria-label="Sections of this page" className="home-chip-row min-w-0 flex-1 gap-1" style={{ scrollPaddingInline: 0 }}>
           {chips.map((s) => {
@@ -137,7 +139,7 @@ export function HomeToolbar() {
                 aria-current={on ? "true" : undefined}
                 onClick={() => go(s.id)}
                 className={cn(
-                  "relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40",
+                  "relative rounded-full px-3.5 py-2 text-xs font-medium transition-colors sm:py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40",
                   on ? "text-white" : "text-text-secondary hover:text-text-primary"
                 )}
               >
@@ -153,14 +155,14 @@ export function HomeToolbar() {
           aria-disabled={busy}
           aria-label={text}
           className={cn(
-            "inline-flex shrink-0 items-center gap-2 rounded-full border bg-bg-panel px-3.5 py-1.5 text-xs font-medium text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40",
+            "inline-flex shrink-0 items-center gap-2 rounded-full border bg-bg-panel px-3 py-2 text-xs sm:px-3.5 sm:py-1.5 font-medium text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scic-green/40",
             done ? "border-scic-green/45" : "border-border-subtle hover:border-scic-green/50",
             busy && "cursor-default"
           )}
         >
           {done ? <Check className="h-3.5 w-3.5 text-scic-green-energy" aria-hidden /> : <RefreshCw className={cn("h-3.5 w-3.5", busy && "animate-spin motion-reduce:animate-none")} aria-hidden />}
           {/* (a fixed width, so the bar does not shift as the word changes) */}
-          <span aria-live="polite" className="min-w-[4.6rem] text-left max-sm:sr-only">
+          <span aria-live="polite" className="text-left max-sm:sr-only sm:min-w-[4.6rem]">
             {text}
           </span>
         </button>

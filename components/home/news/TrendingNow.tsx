@@ -20,10 +20,11 @@ const TABS: { key: NewsCategoryKey; label: string }[] = [
   { key: "BUSINESS", label: "Business" },
   { key: "WORLD", label: "World" },
 ];
-/** rows under the slideshow, and rows when a tab has no photographs */
 // visible rows before the list scrolls (the rest stay reachable by scrolling)
-const ROWS_WITH_REEL_HEIGHT = "max-h-[23rem]"; // about 5 rows under the photo reel
-const ROWS_PLAIN_HEIGHT = "max-h-[30rem]"; // about 6 rows
+// under the photo reel: about 5 rows; on a wide screen the list sits beside the reel and takes its height
+const ROWS_WITH_REEL_HEIGHT = "max-h-[23rem] lg:absolute lg:inset-0 lg:max-h-none";
+// with no photographs: about 6 rows, in two columns on a wide screen
+const ROWS_PLAIN_HEIGHT = "max-h-[30rem] lg:grid lg:grid-cols-2 lg:content-start lg:gap-x-4";
 /** a tab needs at least this many stories with photographs to run as a slideshow */
 const MIN_REEL = 3;
 
@@ -40,7 +41,9 @@ interface Row {
  * Headlines, in four tabs (the Philippines, energy and infrastructure, business, the world).
  *
  * Each tab opens on a slideshow of stories with the photograph their publisher attached
- * (BusinessWorld, GMA News, The Manila Times, Rappler), and lists the same stories beneath it:
+ * (BusinessWorld, GMA News, The Manila Times, Rappler), and lists the same stories beneath it
+ * (beside it on a wide screen, where the slideshow takes two thirds of the card; on a phone the
+ * slideshow runs the full width of the card):
  * the one on show is marked in the list, and pointing at a row (or reaching it with the
  * keyboard) brings its photograph up and holds it. When a tab has too few stories with
  * photographs, or the publishers cannot be reached, it lists the day's headlines from Google
@@ -130,26 +133,31 @@ export function TrendingNow({ initial }: { initial: Record<NewsCategoryKey, Tren
                 onClick={() => choose(t.key)}
                 onKeyDown={(e) => onKey(e, i)}
                 className={cn(
-                  "relative flex-1 whitespace-nowrap px-2 pb-2.5 pt-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scic-green/40",
+                  "relative flex-1 whitespace-nowrap px-2 pb-2.5 pt-1.5 text-xs font-medium sm:flex-none sm:px-4 sm:text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scic-green/40",
                   selected ? "text-text-primary" : "text-text-muted hover:text-text-secondary"
                 )}
               >
                 {t.label}
-                {selected && <motion.span layoutId={`${id}-underline`} transition={BRAND_SPRING} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-scic-green-energy" />}
+                {selected && <motion.span layoutId={`${id}-underline`} transition={BRAND_SPRING} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-scic-green-energy sm:inset-x-4" />}
               </button>
             );
           })}
         </div>
 
-        <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`} className="min-h-[400px]">
+        <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`} className="min-h-[400px] lg:min-h-0">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={tab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: BRAND_EASE }} className="pt-3">
-              {reel && <Newsreel stories={photos} index={onShow} onIndex={onIndex} held={held} now={now} label={`${label} stories`} />}
+            <motion.div key={tab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: BRAND_EASE }} className={cn("pt-3", reel && "lg:grid lg:grid-cols-12 lg:gap-4")}>
+              {reel && (
+                // (on a phone the photograph runs edge to edge of the card)
+                <div className="-mx-3 min-w-0 sm:mx-0 lg:col-span-7 xl:col-span-8">
+                  <Newsreel stories={photos} index={onShow} onIndex={onIndex} held={held} now={now} label={`${label} stories`} />
+                </div>
+              )}
+              <div className={cn("min-w-0", reel && "relative mt-1.5 lg:col-span-5 lg:mt-0 xl:col-span-4")}>
               <ol
                 ref={listRef}
                 className={cn(
                   "relative overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin] [scrollbar-color:var(--border-hairline)_transparent]",
-                  reel ? "mt-1.5" : "",
                   reel ? ROWS_WITH_REEL_HEIGHT : ROWS_PLAIN_HEIGHT
                 )}
                 onPointerLeave={() => setHeld(false)} onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setHeld(false)}>
@@ -208,6 +216,7 @@ export function TrendingNow({ initial }: { initial: Record<NewsCategoryKey, Tren
                 })}
                 {rows.length === 0 && <li className="px-3 py-10 text-center text-sm text-text-muted">No headlines are available for this section right now.</li>}
               </ol>
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>

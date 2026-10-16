@@ -77,7 +77,7 @@ export function Newsreel({ stories, index, onIndex, held = false, now, label }: 
   if (!story) return null;
   const step = (by: number) => onIndex((index + by + count) % count);
   const round =
-    "flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80";
+    "flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80";
   const missing = broken.has(story.id);
 
   return (
@@ -97,7 +97,7 @@ export function Newsreel({ stories, index, onIndex, held = false, now, label }: 
         else return;
         e.preventDefault();
       }}
-      className="group/reel relative aspect-[16/10] overflow-hidden rounded-xl bg-scic-navy-dark"
+      className="group/reel relative aspect-[4/3] overflow-hidden bg-scic-navy-dark sm:aspect-[16/9] sm:rounded-xl"
     >
       <AnimatePresence initial={false}>
         <motion.div key={story.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.9, ease: "easeInOut" }} className="absolute inset-0">
@@ -121,7 +121,7 @@ export function Newsreel({ stories, index, onIndex, held = false, now, label }: 
           )}
           <div className="home-newsreel-scrim absolute inset-0" aria-hidden />
 
-          <a href={story.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 flex flex-col justify-end p-3.5 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scic-green-energy">
+          <a href={story.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 flex flex-col justify-end p-4 pb-5 outline-none sm:p-5 sm:pb-6 lg:p-7 lg:pb-8 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scic-green-energy">
             <span className="flex items-center gap-2 text-white/85">
               <SourceBadge source={story.source} domain={story.sourceDomain || undefined} size={14} className="max-w-[65%] !text-white/85" />
               {now && story.publishedAt && (
@@ -130,8 +130,8 @@ export function Newsreel({ stories, index, onIndex, held = false, now, label }: 
                 </span>
               )}
             </span>
-            <span className="mt-1.5 line-clamp-3 font-display text-[1.05rem] font-bold leading-snug tracking-[-0.01em] text-white">{story.title}</span>
-            <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-white/80">
+            <span className="mt-1.5 line-clamp-3 max-w-3xl font-display text-[1.25rem] font-bold leading-[1.2] tracking-[-0.015em] text-white sm:text-2xl lg:mt-2 lg:text-[2rem] lg:leading-[1.15]">{story.title}</span>
+            <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-white/80 lg:text-sm">
               Read at {story.source} <ArrowUpRight className="h-3 w-3" aria-hidden />
             </span>
           </a>
@@ -154,11 +154,11 @@ export function Newsreel({ stories, index, onIndex, held = false, now, label }: 
               <ChevronRight className="h-4 w-4" aria-hidden />
             </button>
           </div>
-          <span className="absolute left-3 top-3 z-[2] rounded-full bg-black/45 px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums text-white/90 backdrop-blur-sm" aria-hidden>
+          <span className="absolute left-3 top-3.5 z-[2] rounded-full bg-black/45 px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums text-white/90 backdrop-blur-sm" aria-hidden>
             {index + 1} / {count}
           </span>
           {/* one segment per story; the one on show fills over its ten seconds */}
-          <div className="absolute inset-x-0 bottom-0 z-[2] flex gap-1 px-3 pb-1.5" aria-hidden>
+          <div className="absolute inset-x-0 bottom-0 z-[2] flex gap-1 px-4 pb-2 sm:px-5 lg:px-7 lg:pb-3" aria-hidden>
             {stories.map((s, i) => (
               <span key={s.id} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/25">
                 {i < index && <span className="block h-full w-full bg-white/70" />}

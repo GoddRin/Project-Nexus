@@ -143,7 +143,7 @@ export function FlagshipSpotlight({ slug, name, ongoing, facts, photos, progress
               </div>
             )}
             {targetCodDate && (
-              <div>
+              <div className="min-w-0 max-w-full">
                 <p className="home-eyebrow flex flex-wrap items-center gap-x-1.5 gap-y-1">
                   <CalendarClock className="h-3.5 w-3.5" aria-hidden />
                   <span>Target commercial operation</span>

@@ -76,7 +76,7 @@ export function ReportFilters({ showViewAllToggle }: ReportFiltersProps) {
  <div className="mb-6 flex flex-col gap-4 rounded-xl bg-black/[0.03] dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.06] p-4 ">
  <div className="flex flex-wrap items-center gap-4">
  {/* Status Filters */}
- <div className="flex items-center gap-1 rounded-lg bg-black/[0.03] dark:bg-white/[0.02] p-1 ring-1 ring-black/[0.05] dark:ring-white/[0.05]">
+ <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-lg [scrollbar-width:none] bg-black/[0.03] dark:bg-white/[0.02] p-1 ring-1 ring-black/[0.05] dark:ring-white/[0.05]">
  <button
  onClick={() => {
  setStatus("");

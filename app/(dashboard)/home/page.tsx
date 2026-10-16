@@ -11,7 +11,7 @@ import { Launchpad } from "@/components/home/launchpad/Launchpad";
 import { NewsroomSection, TrendingSection } from "@/components/home/NewsRow";
 import { FlagshipSection, LegacySection, PortfolioSection } from "@/components/home/PortfolioRow";
 import {
-  BriefSkeleton, HeroSkeleton, ListSkeleton, NewsroomSkeleton, PortfolioSkeleton, StatRowSkeleton, TickerSkeleton, WeatherSkeleton, WideCardSkeleton,
+  BriefSkeleton, HeadlinesSkeleton, HeroSkeleton, ListSkeleton, NewsroomSkeleton, PortfolioSkeleton, StatRowSkeleton, TickerSkeleton, WeatherSkeleton, WideCardSkeleton,
 } from "@/components/home/primitives/HomeSkeleton";
 import { getNewsViewer } from "@/lib/home/permissions";
 import { getTickerItems } from "@/lib/home/ticker";
@@ -40,7 +40,7 @@ export default async function NexusHomePage({ searchParams }: { searchParams: Pr
   // (?mockAlert=1..3 forces a wind-signal state in development only: see lib/home/devMocks.ts)
   const { mockAlert } = await searchParams;
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6 px-4 pb-24 pt-6 md:px-6 lg:pb-10">
+    <div className="mx-auto w-full max-w-7xl space-y-5 pb-2 sm:space-y-6 sm:px-4 sm:pt-6 md:px-6 lg:pb-10">
       <IntroOverlay />
       <SectionBoundary label="hero" className="min-h-[420px]">
         <Suspense fallback={<HeroSkeleton />}>
@@ -53,10 +53,17 @@ export default async function NexusHomePage({ searchParams }: { searchParams: Pr
         </Suspense>
       </SectionBoundary>
 
-      {/* Weather, the daily brief and the site's operations (5 + 4 + 3 on a wide screen) */}
       <HomeToolbar />
 
-      <div id="today" className="grid scroll-mt-24 gap-6 lg:grid-cols-12">
+      {/* The day's headlines lead the page: the photo reel beside the ranked list */}
+      <SectionBoundary label="headlines" className="min-h-[320px]">
+        <Suspense fallback={<HeadlinesSkeleton />}>
+          <TrendingSection />
+        </Suspense>
+      </SectionBoundary>
+
+      {/* Weather, the daily brief and the site's operations (5 + 4 + 3 on a wide screen) */}
+      <div id="today" className="grid scroll-mt-24 gap-5 sm:gap-6 lg:grid-cols-12">
         <div className="min-w-0 lg:col-span-7 xl:col-span-5">
           <SectionBoundary label="weather card" className="h-full min-h-[340px]">
             <Suspense fallback={<WeatherSkeleton />}>
@@ -84,25 +91,19 @@ export default async function NexusHomePage({ searchParams }: { searchParams: Pr
         <Launchpad />
       </SectionBoundary>
 
-      {/* The Newsroom beside the day's headlines */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="min-w-0 lg:col-span-8">
-          <SectionBoundary label="Newsroom" className="min-h-[320px]">
-            <Suspense fallback={<NewsroomSkeleton />}>
-              <NewsroomSection />
-            </Suspense>
-          </SectionBoundary>
-        </div>
-        <div className="min-w-0 lg:col-span-4">
-          <SectionBoundary label="headlines" className="h-full min-h-[320px]">
-            <Suspense fallback={<ListSkeleton rows={7} label="headlines" />}>
-              <TrendingSection />
-            </Suspense>
-          </SectionBoundary>
-        </div>
-      </div>
+      {/* The company's own news */}
+      <SectionBoundary label="Newsroom" className="min-h-[320px]">
+        <Suspense fallback={<NewsroomSkeleton />}>
+          <NewsroomSection />
+        </Suspense>
+      </SectionBoundary>
 
-      {/* The national portfolio, the flagship site and the 50-year timeline */}
+      {/* The flagship site, then the national portfolio it belongs to, then the 50-year timeline */}
+      <SectionBoundary label="flagship project" className="min-h-[320px]">
+        <Suspense fallback={<WideCardSkeleton height={520} label="flagship project" />}>
+          <FlagshipSection />
+        </Suspense>
+      </SectionBoundary>
       <SectionBoundary label="national portfolio" className="min-h-[320px]">
         <Suspense
           fallback={
@@ -113,11 +114,6 @@ export default async function NexusHomePage({ searchParams }: { searchParams: Pr
           }
         >
           <PortfolioSection />
-        </Suspense>
-      </SectionBoundary>
-      <SectionBoundary label="flagship project" className="min-h-[320px]">
-        <Suspense fallback={<WideCardSkeleton height={520} label="flagship project" />}>
-          <FlagshipSection />
         </Suspense>
       </SectionBoundary>
       <SectionBoundary label="company timeline">
