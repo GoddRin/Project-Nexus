@@ -596,6 +596,19 @@ def on_counterweight(along, inward, up, degrees):
     return Vector((-(x + BOOM["ahead"]), -(BOOM["stand"] - inward), BOOM["pivot_h"] + z))
 
 
+# Lowering (P02f, owner's review): he stands beside the arm, facing it, the arm's line 0.70 m in front
+# of him and the pivot 0.30 m to his left, 1.06 m above his feet (on the ground, not the apron step).
+BOOM_DOWN = {"pivot_h": 1.06, "left": 0.30, "front": 0.70}
+
+
+def on_arm(along, up, degrees):
+    """A point on the arm (metres along it from the pivot, up from its centre line) in his frame for lowering, the arm at `degrees`."""
+    r = math.radians(degrees)
+    x = BOOM_DOWN["left"] - (along * math.cos(r) - up * math.sin(r))
+    z = BOOM_DOWN["pivot_h"] + along * math.sin(r) + up * math.cos(r)
+    return Vector((x, -BOOM_DOWN["front"], z))
+
+
 GRAB = 40.0  # degrees up at which, lowering, he takes the hanging counterweight
 
 
@@ -605,7 +618,8 @@ def raise_contact(ts):
 
 
 def lower_contact(ts):
-    return smooth((ts - 0.6) / 0.8) * (1 - smooth((ts - 3.6) / 0.5))
+    # (hands on before the arm moves at 1.1 s, off once it rests at 3.3 s)
+    return smooth((ts - 0.3) / 0.7) * (1 - smooth((ts - 3.45) / 0.6))
 
 
 def author_guard(who):
@@ -632,37 +646,36 @@ def author_guard(who):
             p.hand(side, (0, -1, -0.15), -normal, amount=c)
 
     def lowering(p, t, f):
-        # with the arm up the counterweight hangs low at his front right: he bends, takes it by its
-        # two ends from below and lifts it back to his waist as the arm comes down, then lets go
+        # (owner's review: lifting the hanging counterweight from a crouch did not read as closing)
+        # He stands beside the arm, facing it, takes it in both hands as it stands up and pulls it
+        # down to his waist, leaning into it, then lets go as it settles on its rest.
         ts = t * BARRIER_SECONDS
         th = boom_angle(ts, True)
         c = lower_contact(ts)
-        hold = min(th, GRAB)  # (his hands wait where the block will be when it reaches them)
-        lift = 1.0 - hold / GRAB
-        p.crouch((0.26 * (1 - lift) + 0.03) * c, back=0.06 * (1 - lift) * c, tilt=6 * (1 - lift) * c)
-        p.turn_axis("Spine", (-1, 0, 0), -(14 - 9 * lift) * c)
-        p.turn_axis("Spine1", (-1, 0, 0), -(10 - 6 * lift) * c)
-        p.turn_axis("Spine2", (-1, 0, 0), -(5 - 3 * lift) * c)
-        p.turn_axis("Spine1", (0, 0, 1), -8 * (1 - lift) * c)  # (turned a little to his right, where it hangs)
-        p.turn_axis("Head", (-1, 0, 0), 14 * c)
-        r = math.radians(hold)
-        along_arm = Vector((-math.cos(r), 0, math.sin(r)))  # the arm's own direction, in his frame
-        for side, end, sign in (("Left", -0.975, 1), ("Right", -0.625, -1)):
-            grip = on_counterweight(end, 0.0, -0.07, hold)
-            palm = along_arm * sign  # (palms on the block's two ends, facing each other)
-            fingers = Vector((0, -0.55, -0.85))
-            fingers = (fingers - palm * fingers.dot(palm)).normalized()
-            wrist = grip - fingers * 0.07 - palm * 0.022
+        down = 1.0 - th / BOOM["up"]
+        p.crouch(0.05 * down * c, back=0.02 * down * c)
+        p.turn_axis("Spine", (-1, 0, 0), -(4 + 8 * down) * c)
+        p.turn_axis("Spine1", (-1, 0, 0), -(3 + 6 * down) * c)
+        p.turn_axis("Spine2", (-1, 0, 0), -(2 + 3 * down) * c)
+        p.turn_axis("Spine1", (0, 0, 1), -6 * c)  # (a little to his right, where his right hand pulls)
+        p.turn_axis("Head", (-1, 0, 0), (8 + 6 * down) * c)
+        r = math.radians(th)
+        top = Vector((math.sin(r), 0, math.cos(r)))  # the arm's top face, turned with it
+        for side, along in (("Left", 0.14), ("Right", 0.44)):
+            grip = on_arm(along, 0.045, th)
+            fingers = Vector((0, -1, 0))  # (over the arm, away from him)
+            fingers = (fingers - top * fingers.dot(top)).normalized()
+            wrist = grip - fingers * 0.06 + top * 0.03
             rest = p.head(f"{side}Hand").copy()
             s = 1 if side == "Left" else -1
-            p.reach(side, rest.lerp(wrist, c), (s * 0.85, 0.35, -0.4))
-            p.hand(side, fingers, palm, amount=c)
+            p.reach(side, rest.lerp(wrist, c), (s * 0.55, 0.35, -0.75))
+            p.hand(side, fingers, -top, amount=c)
 
     author(who, "barrier", int(BARRIER_SECONDS * FPS), "idle", raising, loop=False)
     author(who, "barrierDown", int(BARRIER_SECONDS * FPS), "idle", lowering, loop=False)
     # fingers: flat on the block's top raising; wrapped round its ends lowering
     overlay_window("guard", "barrier", lambda p, k: (p.curl("Left", (10 * k, 14 * k, 8 * k), thumb=(4 * k, 6 * k, 6 * k)), p.curl("Right", (10 * k, 14 * k, 8 * k), thumb=(4 * k, 6 * k, 6 * k))), lambda t: raise_contact(t * BARRIER_SECONDS))
-    overlay_window("guard", "barrierDown", lambda p, k: (p.curl("Left", (35 * k, 50 * k, 30 * k), thumb=(15 * k, 20 * k, 20 * k)), p.curl("Right", (35 * k, 50 * k, 30 * k), thumb=(15 * k, 20 * k, 20 * k))), lambda t: lower_contact(t * BARRIER_SECONDS))
+    overlay_window("guard", "barrierDown", lambda p, k: (p.curl("Left", (45 * k, 60 * k, 40 * k), thumb=(20 * k, 25 * k, 25 * k)), p.curl("Right", (45 * k, 60 * k, 40 * k), thumb=(20 * k, 25 * k, 25 * k))), lambda t: lower_contact(t * BARRIER_SECONDS))
 
 
 def hang_baton(who):

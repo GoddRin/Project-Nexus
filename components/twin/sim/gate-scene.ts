@@ -290,6 +290,11 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const pivot = boomPlace ? new THREE.Vector3(boomPlace.p[0], 0, boomPlace.p[2]) : boothPoint(2.6, 0);
     const tail = pivot.clone().addScaledVector(across, -0.75);
     const atBarrier = tail.clone().addScaledVector(inward, -0.62);
+    // (P02f) to lower it he stands beside the arm, facing it, its pivot 0.3 m to his left and the arm
+    // 0.7 m in front (the clip `barrierDown`, scripts/blender/twin/build_gate_people_clips.py BOOM_DOWN)
+    const besideArmWanted = pivot.clone().addScaledVector(across, 0.3).addScaledVector(inward, -0.7);
+    const besideArm = walk ? walk.nearestFree(besideArmWanted, PERSON) : besideArmWanted;
+    const armSide = besideArm.clone().addScaledVector(inward, 3);
     // a man's walk: turn to the way, set off, walk, stop, turn to face what is next (sim/walk-plan.ts),
     // on a route round the booth and whatever else is in the way (sim/walkmap.ts)
     const walkerOf = (actor: Actor | null): Walker => ({
@@ -307,9 +312,14 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const tBoomUp = tAtBarrier + BARRIER_CLIP.push;
     const tLeave = tBoomUp + BOOM_SECONDS + 0.9;
     const tGone = tLeave + travel(leaveTo - stopAt, 0).seconds;
-    const tBoomDown = tLeave + 6.5;
+    // he steps over to the arm once the pickup is through, and the arm comes down only when his hands
+    // are on it (a short step is mostly setting off and stopping: the planner's estimate of it can be
+    // near nothing, so it is never taken as less than those take)
+    const tToArm = tLeave + 4.0;
+    const toArm = Math.max(walkSeconds(atBarrier, besideArm, tail, armSide), atBarrier.distanceTo(besideArm) / WALK.speed + 3.2);
+    const tBoomDown = tToArm + toArm + 0.3 + BARRIER_CLIP.push;
     const tLowered = tBoomDown - BARRIER_CLIP.push + BARRIER_CLIP.seconds;
-    const tPost = tLowered + walkSeconds(atBarrier, post, tail, gateSide);
+    const tPost = tLowered + walkSeconds(besideArm, post, armSide, gateSide);
     const rearAxleAt = (t: number) => {
       if (t < tLeave) {
         const move = travel(stopAt - from, t - tGo);
@@ -347,8 +357,9 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       { until: tAtBarrier, clip: WALK.clip, to: atBarrier },
       { until: tAtBarrier + BARRIER_CLIP.seconds, clip: "barrier", once: true, face: tail },
       { until: tAtBarrier + BARRIER_CLIP.seconds + 3.4, clip: "waveThrough", once: true, face: gateSide },
-      { until: tBoomDown - BARRIER_CLIP.push, clip: "idleShift", face: gate.clone().addScaledVector(inward, 6) },
-      { until: tLowered, clip: guard?.model.clips.has("barrierDown") ? "barrierDown" : "barrier", once: true, face: tail },
+      { until: tToArm, clip: "idleShift", face: gate.clone().addScaledVector(inward, 6) },
+      { until: tBoomDown - BARRIER_CLIP.push, clip: WALK.clip, to: besideArm },
+      { until: tLowered, clip: guard?.model.clips.has("barrierDown") ? "barrierDown" : "barrier", once: true, face: armSide },
       { until: tPost, clip: WALK.clip, to: post },
       { until: Infinity, clip: "idle", face: gateSide },
     ];
