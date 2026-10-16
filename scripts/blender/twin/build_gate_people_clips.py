@@ -876,14 +876,21 @@ WHEEL_AXIS = Vector((0.0, -0.91, -0.414)).normalized()  # (his frame: he faces -
 
 
 def wheel_centre(p):
-    """Where the rim's centre is for his seated pose: in front of his chest, a hand's reach down."""
+    """
+    Where the rim's centre is for his seated pose: in front of his chest, a little below his
+    shoulders. The pickup's wheel is high (1.12 m in its frame) and its roof low: with the wheel
+    any lower against his body, seating him to it put his head through the roof (owner's review).
+    """
     l, r = p.head("LeftArm"), p.head("RightArm")
     mid = (l + r) / 2
-    return mid + Vector((0.0, -0.43, -0.27))
+    return mid + Vector((0.0, -0.46, -0.08))
 
 
 def author_driver(who):
     centre = {}
+    # (measured in his own frame: a rig left placed in the pickup for a review would offset the wheel)
+    rig_of(who).location = (0, 0, 0)
+    vl.update()
 
     def drive(p, t, f):
         W = wheel_centre(p) if f == 0 or "W" not in centre else centre["W"]
