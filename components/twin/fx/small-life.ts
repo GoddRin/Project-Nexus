@@ -10,7 +10,7 @@
  * No React here. `startSmallLife` returns the function that removes everything.
  */
 import * as THREE from "three/webgpu";
-import { attribute, float, cos, positionLocal, sin, time, uv, vec3 } from "three/tsl";
+import { attribute, float, cos, mat4, sin, time, uv, vec3, vec4 } from "three/tsl";
 import layout from "../data/sources/camp-gate-layout.json";
 import zone from "../data/zones/powerhouse.camp-gate.json";
 import { loop } from "../engine/loop";
@@ -57,6 +57,38 @@ function swarm(geometry: THREE.BufferGeometry, material: THREE.Material, count: 
     },
     commit() {
       mesh.instanceMatrix.needsUpdate = true;
+      fade.needsUpdate = true;
+    },
+  };
+}
+
+/** The birds' draw: a plain mesh drawn `count` times, each copy placed by its own matrix columns in its material (above). */
+function birdSwarm(geometry: THREE.BufferGeometry, material: THREE.Material, count: number) {
+  const g = new THREE.InstancedBufferGeometry().copy(geometry as THREE.InstancedBufferGeometry);
+  g.instanceCount = count;
+  const columns = new THREE.InstancedInterleavedBuffer(new Float32Array(count * 16), 16, 1);
+  columns.setUsage(THREE.DynamicDrawUsage);
+  for (let c = 0; c < 4; c++) g.setAttribute(`bird${c}`, new THREE.InterleavedBufferAttribute(columns, 4, c * 4));
+  const fade = new THREE.InstancedBufferAttribute(new Float32Array(count), 1);
+  fade.setUsage(THREE.DynamicDrawUsage);
+  g.setAttribute("fade", fade);
+  const mesh = new THREE.Mesh(g, material);
+  mesh.name = "fx:birds";
+  mesh.frustumCulled = false;
+  const m = new THREE.Matrix4();
+  const zero = new THREE.Matrix4().makeScale(0, 0, 0);
+  return {
+    mesh,
+    set(i: number, p: THREE.Vector3, q: THREE.Quaternion, s: THREE.Vector3, f: number) {
+      m.compose(p, q, s).toArray(columns.array as Float32Array, i * 16);
+      fade.setX(i, f);
+    },
+    hide(i: number) {
+      zero.toArray(columns.array as Float32Array, i * 16);
+      fade.setX(i, 0);
+    },
+    commit() {
+      columns.needsUpdate = true;
       fade.needsUpdate = true;
     },
   };
@@ -177,10 +209,17 @@ export function startSmallLife(ctx: SmallLifeContext): () => void {
     const angle = beat.mul(w);
     const c = cos(angle);
     const sn = sin(angle);
-    birdMaterial.positionNode = vec3(positionLocal.x.mul(c).sub(positionLocal.y.mul(sn)), positionLocal.x.mul(sn).add(positionLocal.y.mul(c)), positionLocal.z);
+    // (the wing beat is worked on the bird's own shape, then the bird is placed by its matrix here:
+    // three applies an InstancedMesh's matrices before positionNode, so turning the placed position
+    // swung the wing tips about the world's origin, hundreds of metres off, as long thin triangles:
+    // the owner's flickering black lines across the map)
+    const own = attribute("position", "vec3") as unknown as THREE.Node<"vec3">;
+    const flapped = vec3(own.x.mul(c).sub(own.y.mul(sn)), own.x.mul(sn).add(own.y.mul(c)), own.z);
+    const place = mat4(attribute("bird0", "vec4"), attribute("bird1", "vec4"), attribute("bird2", "vec4"), attribute("bird3", "vec4"));
+    birdMaterial.positionNode = place.mul(vec4(flapped, 1)).xyz;
   }
   const BIRDS = 5;
-  const birds = swarm(bird, birdMaterial, BIRDS, "fx:birds");
+  const birds = birdSwarm(bird, birdMaterial, BIRDS);
   const perches: THREE.Vector3[] = [];
   for (const place of zone.placements as { asset: string; p: number[]; s: number }[]) {
     if (place.asset !== "flora.acacia.a") continue;
@@ -204,7 +243,7 @@ export function startSmallLife(ctx: SmallLifeContext): () => void {
       one.mesh.removeFromParent();
       one.mesh.geometry.dispose();
       (one.mesh.material as THREE.Material).dispose();
-      one.mesh.dispose();
+      if ((one.mesh as THREE.InstancedMesh).isInstancedMesh) (one.mesh as THREE.InstancedMesh).dispose();
     }
   });
   // (built for every pass and both light sets before it is ever seen: engine/precompile.ts)
@@ -268,7 +307,10 @@ export function startSmallLife(ctx: SmallLifeContext): () => void {
       const [a, b] = eaves[Math.floor(Math.random() * eaves.length)];
       drop.at.copy(a).lerp(b, Math.random());
       drop.v = 0;
-      drop.floor = groundY(drop.at.x, drop.at.z);
+      // (owner's review: where the ground's height is not known yet the floor was not a number, the
+      // drop never landed and its streak, which lengthens with speed, grew hundreds of metres long)
+      const floor = groundY(drop.at.x, drop.at.z);
+      drop.floor = Number.isFinite(floor) && floor < drop.at.y ? floor : drop.at.y - 2.6;
       drop.alive = true;
     }
     if (rate === 0) dripClock = 0;
@@ -277,12 +319,12 @@ export function startSmallLife(ctx: SmallLifeContext): () => void {
       if (!drop.alive) return drips.hide(i);
       drop.v += 9.8 * dt;
       drop.at.y -= drop.v * dt;
-      if (drop.at.y < drop.floor) {
+      if (drop.at.y < drop.floor || drop.v > 8) {
         drop.alive = false;
         return drips.hide(i);
       }
       // a streak as long as the drop travels in a sixtieth of a second, turned about the vertical to face the eye
-      const len = 0.03 + drop.v * 0.016;
+      const len = Math.min(0.16, 0.03 + drop.v * 0.016);
       q.setFromAxisAngle(up, Math.atan2(camAt.x - drop.at.x, camAt.z - drop.at.z));
       drips.set(i, drop.at, q, s.set(0.007, len, 1), DRIP_OPACITY);
     });
