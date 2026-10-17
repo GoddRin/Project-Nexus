@@ -14,14 +14,17 @@ const PlantScene = dynamic(
   }
 );
 
-// Twin v2 (docs/twin-v2/). Loaded only for ?v=2, so v1 visitors never download it.
-const TwinApp = dynamic(() => import("@/components/twin/TwinApp"), { ssr: false });
+// Twin v2 (docs/twin-v2/) — Default 3D Digital Twin experience.
+const TwinApp = dynamic(() => import("@/components/twin/TwinApp"), {
+  ssr: false,
+  loading: () => <PlantSceneLoading />,
+});
 
 export const dynamicMode = "force-dynamic";
 
 /**
- * /digital-twin picks the twin from ?v=: "2" mounts Twin v2, anything else mounts v1 unchanged.
- * v1 stays the default until the cut-over in P15b.
+ * /digital-twin mounts Twin v2 by default.
+ * Passing ?v=1 mounts the legacy v1 scene.
  */
 export default function DigitalTwinPage({
   searchParams,
@@ -29,14 +32,14 @@ export default function DigitalTwinPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { v } = use(searchParams);
-  if (v === "2") {
-    return (
-      <div className="-m-3.5 sm:-m-5 md:-m-6 -mb-24 md:-mb-6 relative h-[calc(100vh-3.5rem)] overflow-hidden">
-        <TwinApp />
-      </div>
-    );
+  if (v === "1") {
+    return <DigitalTwinV1 />;
   }
-  return <DigitalTwinV1 />;
+  return (
+    <div className="-m-3.5 sm:-m-5 md:-m-6 -mb-24 md:-mb-6 relative h-[calc(100vh-3.5rem)] overflow-hidden">
+      <TwinApp />
+    </div>
+  );
 }
 
 function DigitalTwinV1() {
