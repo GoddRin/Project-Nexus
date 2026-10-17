@@ -59,6 +59,10 @@ const STOP_SHORT = 2.6;
 /** Seconds the guard spends at the driver's window. */
 const CHECK_SECONDS = 4.4;
 const BOOM_SECONDS = 2.2;
+// the guard's wave (clips waveOnLeft / waveOnRight, scripts/blender/twin/build_gate_people_clips.py
+// WAVE_SECONDS); his arm is up by 0.5 s and first swept toward the lane at 1.3 s, and the driver moves then
+const WAVE_SECONDS = 3.4;
+const WAVE_GO = 1.4;
 /** The people's walk: the speed the clip was recorded at, and the speed they walk at here (metres a second). */
 const WALK = { clip: "walk", made: 1.38, speed: 1.3 };
 /** The guard's `barrier` and `barrierDown` clips: seconds in all, and seconds into them at which the arm starts to move. */
@@ -310,7 +314,10 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const tChecked = Math.max(tDoor, tStop + 0.6) + CHECK_SECONDS;
     const tAtBarrier = tChecked + walkSeconds(door, atBarrier, cab, tail);
     const tBoomUp = tAtBarrier + BARRIER_CLIP.push;
-    const tLeave = tBoomUp + BOOM_SECONDS + 0.9;
+    // (owner's review) the driver waits for the guard's sign: the wave starts when the barrier clip ends,
+    // his arm is up and sweeping toward the lane by WAVE_GO into it, and the pickup pulls away then
+    const tWave = tAtBarrier + BARRIER_CLIP.seconds;
+    const tLeave = Math.max(tBoomUp + BOOM_SECONDS + 0.9, tWave + WAVE_GO);
     const tGone = tLeave + travel(leaveTo - stopAt, 0).seconds;
     // he steps over to the arm once the pickup is through, and the arm comes down only when his hands
     // are on it (a short step is mostly setting off and stopping: the planner's estimate of it can be
@@ -362,7 +369,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       { until: tChecked, clip: "talk", face: cab },
       { until: tAtBarrier, clip: WALK.clip, to: atBarrier },
       { until: tAtBarrier + BARRIER_CLIP.seconds, clip: "barrier", once: true, face: tail },
-      { until: tAtBarrier + BARRIER_CLIP.seconds + 3.4, clip: waveClip, once: true, face: cab },
+      { until: tWave + WAVE_SECONDS, clip: waveClip, once: true, face: cab },
       { until: tToArm, clip: "idleShift", face: gate.clone().addScaledVector(inward, 6) },
       { until: tBoomDown - BARRIER_CLIP.push, clip: WALK.clip, to: besideArm },
       { until: tLowered, clip: guard?.model.clips.has("barrierDown") ? "barrierDown" : "barrier", once: true, face: armSide },
@@ -486,7 +493,7 @@ export function startGateScene(ctx: GateSceneContext): () => void {
       const night = air.lamps.value;
       const tier = tierSettings();
       const k = lodScale(ctx.camera.fov, ctx.viewHeight(), tier.lodBias);
-      let phase = t < tGo ? "waiting" : t < tStop ? "pickup arriving" : t < tBoomUp ? "at the barrier" : t < tLeave ? "barrier rising" : t < tGone ? "pickup driving in" : "quiet";
+      let phase = t < tGo ? "waiting" : t < tStop ? "pickup arriving" : t < tBoomUp ? "at the barrier" : t < tBoomUp + BOOM_SECONDS ? "barrier rising" : t < tLeave ? "waiting for the wave" : t < tGone ? "pickup driving in" : "quiet";
 
       // the barrier
       const up = t < tBoomDown ? ease((t - tBoomUp) / BOOM_SECONDS) : 1 - ease((t - tBoomDown) / BOOM_SECONDS);
