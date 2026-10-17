@@ -28,6 +28,13 @@ while i < len(args):
         name, value = args[i].split("=", 1)
         extra[name] = ast.literal_eval(value)
     i += 1
+# the master scene's own scene, whichever was active when the file was saved (it was once saved with the
+# people's review scene active, and every script then worked on a scene without the rigs and crashed)
+main = bpy.data.scenes.get("Scene")
+if main is not None:
+    for window in bpy.context.window_manager.windows:
+        window.scene = main
+    print("[headless] scene", bpy.context.scene.name)
 here = os.path.dirname(os.path.abspath(__file__))
 path = script if os.path.isabs(script) else os.path.join(here, script)
 glb = {"__name__": "headless", "STAGES": stages, **extra}

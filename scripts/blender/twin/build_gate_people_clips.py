@@ -70,7 +70,7 @@ WALKERS = ("guard",)
 # What each man ships: the clips his part in the gate's loop plays, and his idles (sim/gate-scene.ts).
 # The rest stay in the master scene for the review sheets; P08's shared clip files bring them back.
 SHIPPED = {
-    "guard": {"idle", "idleShift", "walk", "talk", "barrier", "barrierDown", "waveThrough"} | LOCOMOTION,
+    "guard": {"idle", "idleShift", "walk", "talk", "barrier", "barrierDown", "waveOnLeft", "waveOnRight"} | LOCOMOTION,
     "engineer": {"idle", "idleShift", "talk", "talk2", "tablet", "listen", "point"},
     "labourer": {"idle", "idleShift", "restShovel", "shovel"},
     "driver": {"drive"},  # (P02f: he only sits at the wheel; the runtime turns his head to the guard)
@@ -81,7 +81,7 @@ SHIPPED = {
 ROOT = {"walkStart": "travel", "walkStop": "travel", "turnLeft": "turn", "turnRight": "turn", "turn180": "turn"}
 # Clips played once (not looped): the baton settles from where it hangs instead of wrapping round
 ONCE = {"barrier", "barrierDown", "walkStart", "walkStop", "turnLeft", "turnRight", "turn180", "sitDown", "standUp", "pickUp",
-        "reachUp", "tablet", "point", "waveThrough", "acknowledge", "wave"}
+        "reachUp", "tablet", "point", "waveThrough", "waveOnLeft", "waveOnRight", "acknowledge", "wave"}
 PEOPLE = ("guard", "engineer", "labourer", "driver")
 # (P02f) clips to retarget when only some are wanted (the driver needs his sitting pose alone)
 ONLY_CLIPS = globals().get("ONLY_CLIPS")
@@ -676,6 +676,59 @@ def author_guard(who):
     # fingers: flat on the block's top raising; wrapped round its ends lowering
     overlay_window("guard", "barrier", lambda p, k: (p.curl("Left", (10 * k, 14 * k, 8 * k), thumb=(4 * k, 6 * k, 6 * k)), p.curl("Right", (10 * k, 14 * k, 8 * k), thumb=(4 * k, 6 * k, 6 * k))), lambda t: raise_contact(t * BARRIER_SECONDS))
     overlay_window("guard", "barrierDown", lambda p, k: (p.curl("Left", (45 * k, 60 * k, 40 * k), thumb=(20 * k, 25 * k, 25 * k)), p.curl("Right", (45 * k, 60 * k, 40 * k), thumb=(20 * k, 25 * k, 25 * k))), lambda t: lower_contact(t * BARRIER_SECONDS))
+    for side in ("Left", "Right"):
+        author(who, f"waveOn{side}", int(WAVE_SECONDS * FPS), "idle", lambda p, t, f, side=side: wave_on(p, t, side), loop=False)
+        overlay_window("guard", f"waveOn{side}", lambda p, k, side=side: p.curl(side, (6 * k, 8 * k, 6 * k), thumb=(0, 4 * k, 4 * k)), lambda t: wave_raise(t * WAVE_SECONDS))
+
+
+# ---- waving a vehicle through (P02f, owner's review) ----------------------------------------------------
+# He faces the driver and sweeps the arm on the side the vehicle will pass him on, open hand leading,
+# from pointing at the driver round to the way through, twice, then lowers it. `waveOnLeft` uses his
+# left arm (the vehicle goes off to his left), `waveOnRight` his right; sim/gate-scene.ts picks one
+# from where the vehicle goes. (Mixamo's "present to the side", used before, points nowhere in particular.)
+WAVE_SECONDS = 3.4
+
+
+def wave_raise(ts):
+    """How far the arm is up: raised over the first half second, lowered over the last 0.7 s."""
+    return smooth(ts / 0.5) * (1 - smooth((ts - (WAVE_SECONDS - 0.7)) / 0.7))
+
+
+def wave_sweep(ts):
+    """0 pointing at the driver, 1 swept round to the way through: out, back part way, out again."""
+    if ts < 0.5:
+        return 0.0
+    if ts < 1.3:
+        return smooth((ts - 0.5) / 0.8)
+    if ts < 1.8:
+        return 1.0 - 0.6 * smooth((ts - 1.3) / 0.5)
+    if ts < 2.6:
+        return 0.4 + 0.6 * smooth((ts - 1.8) / 0.8)
+    return 1.0
+
+
+def wave_on(p, t, side):
+    ts = t * WAVE_SECONDS
+    up = wave_raise(ts)
+    k = wave_sweep(ts)
+    s = 1 if side == "Left" else -1  # (he faces -Y: his left is +X)
+    toward = Vector((s * 0.35, -1.0, -0.12)).normalized()  # at the driver, in front of him
+    through = Vector((s * 1.0, 0.45, -0.2)).normalized()  # round to the side, a little behind: the way through
+    d = toward.lerp(through, k).normalized()
+    # his body goes with the arm a little, and his eyes follow the hand
+    p.turn_axis("Spine1", (0, 0, 1), s * 9 * k * up)
+    p.turn_axis("Neck", (0, 0, 1), s * 12 * k * up)
+    p.turn_axis("Head", (0, 0, 1), s * 16 * k * up)
+    shoulder = p.head(f"{side}Arm")
+    rest = p.head(f"{side}Hand").copy()
+    wrist = shoulder + d * 0.56
+    p.reach(side, rest.lerp(wrist, up), (s * 0.2, 0.45, -1.0))
+    # open hand, fingers out along the arm and a little up, the palm leading the sweep
+    fingers = (d + Vector((0, 0, 0.18))).normalized()
+    lead = (through - toward)
+    palm = (lead - fingers * lead.dot(fingers)).normalized()
+    p.hand(side, fingers, palm, amount=up)
+
 
 
 def hang_baton(who):
@@ -1058,6 +1111,33 @@ def stage_review(people, only=None, shots=4):
 
 
 WHO = [w for w in (globals().get("WHO") or PEOPLE)]
+
+
+def include_rigs(people):
+    """
+    Put each man's collection in the view layer while his clips are made (a rig Blender does not
+    evaluate crashes it when a bone's pose is set: seen when the master scene was saved with LIB_char
+    excluded). Returns the layer collections switched, to put back afterwards.
+    """
+    wanted = {c.name for who in people for c in rig_of(who).users_collection}
+    switched = []
+
+    def walk(layer, chain):
+        for child in layer.children:
+            here = chain + [child]
+            if child.name in wanted:
+                for lc in here:
+                    if lc.exclude:
+                        lc.exclude = False
+                        switched.append(lc)
+            walk(child, here)
+
+    walk(vl.layer_collection, [])
+    vl.update()
+    return switched
+
+
+_switched = include_rigs(WHO)
 if "retarget" in STAGES:  # noqa: F821
     stage_retarget(WHO)
 if "author" in STAGES:  # noqa: F821
@@ -1068,3 +1148,5 @@ if "tracks" in STAGES:  # noqa: F821
     stage_tracks(WHO)
 if "review" in STAGES:  # noqa: F821
     stage_review(WHO, globals().get("ONLY"))
+for _lc in _switched:  # (left as the scene was saved)
+    _lc.exclude = True

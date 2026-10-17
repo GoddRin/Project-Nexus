@@ -350,13 +350,19 @@ export function startGateScene(ctx: GateSceneContext): () => void {
     const loopSeconds = Math.max(tGone + 5, tLying + 6, tPost + 4);
 
     // ---- the people's parts ---------------------------------------------------------------------------
+    // (owner's review) waving the pickup through: he faces the driver and sweeps the arm on the side the
+    // pickup will pass him on, round to the way through (clips waveOnLeft / waveOnRight)
+    const toDriver = cab.clone().sub(atBarrier).setY(0).normalize();
+    const hisLeft = new THREE.Vector3(toDriver.z, 0, -toDriver.x);
+    const waveSide = inward.dot(hisLeft) > 0 ? "waveOnLeft" : "waveOnRight";
+    const waveClip = guard?.model.clips.has(waveSide) ? waveSide : "waveThrough";
     const guardBeats: Beat[] = [
       { until: tOut, clip: "idle", face: gateSide },
       { until: tDoor, clip: WALK.clip, to: door },
       { until: tChecked, clip: "talk", face: cab },
       { until: tAtBarrier, clip: WALK.clip, to: atBarrier },
       { until: tAtBarrier + BARRIER_CLIP.seconds, clip: "barrier", once: true, face: tail },
-      { until: tAtBarrier + BARRIER_CLIP.seconds + 3.4, clip: "waveThrough", once: true, face: gateSide },
+      { until: tAtBarrier + BARRIER_CLIP.seconds + 3.4, clip: waveClip, once: true, face: cab },
       { until: tToArm, clip: "idleShift", face: gate.clone().addScaledVector(inward, 6) },
       { until: tBoomDown - BARRIER_CLIP.push, clip: WALK.clip, to: besideArm },
       { until: tLowered, clip: guard?.model.clips.has("barrierDown") ? "barrierDown" : "barrier", once: true, face: armSide },
