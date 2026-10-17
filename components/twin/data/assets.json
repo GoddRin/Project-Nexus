@@ -1,8 +1,8 @@
 [
  {
   "id": "char.driver.a",
-  "url": "/models/twin/characters/driver.a.glb?v=cc019eb16b",
-  "bytes": 1908096,
+  "url": "/models/twin/characters/driver.a.glb?v=0c7faf61a7",
+  "bytes": 1956728,
   "tris": [
    19454,
    5899,
@@ -75,8 +75,8 @@
  },
  {
   "id": "char.guard.a",
-  "url": "/models/twin/characters/guard.a.glb?v=d6489cebf3",
-  "bytes": 3117348,
+  "url": "/models/twin/characters/guard.a.glb?v=b323948fae",
+  "bytes": 3133052,
   "tris": [
    19441,
    5898,

@@ -73,7 +73,7 @@ SHIPPED = {
     "guard": {"idle", "idleShift", "walk", "talk", "barrier", "barrierDown", "waveOnLeft", "waveOnRight"} | LOCOMOTION,
     "engineer": {"idle", "idleShift", "talk", "talk2", "tablet", "listen", "point"},
     "labourer": {"idle", "idleShift", "restShovel", "shovel"},
-    "driver": {"drive"},  # (P02f: he only sits at the wheel; the runtime turns his head to the guard)
+    "driver": {"drive", "thanks"},  # (P02f: he sits at the wheel and thanks the guard; the runtime turns his head to him)
 }
 # Clips that move the man: their travel (metres forward) or turn (radians to his left) is taken out
 # of the hips and handed to the runtime as a curve, so the script that places him moves him exactly
@@ -81,7 +81,7 @@ SHIPPED = {
 ROOT = {"walkStart": "travel", "walkStop": "travel", "turnLeft": "turn", "turnRight": "turn", "turn180": "turn"}
 # Clips played once (not looped): the baton settles from where it hangs instead of wrapping round
 ONCE = {"barrier", "barrierDown", "walkStart", "walkStop", "turnLeft", "turnRight", "turn180", "sitDown", "standUp", "pickUp",
-        "reachUp", "tablet", "point", "waveThrough", "waveOnLeft", "waveOnRight", "acknowledge", "wave"}
+        "reachUp", "tablet", "point", "waveThrough", "waveOnLeft", "waveOnRight", "thanks", "acknowledge", "wave"}
 PEOPLE = ("guard", "engineer", "labourer", "driver")
 # (P02f) clips to retarget when only some are wanted (the driver needs his sitting pose alone)
 ONLY_CLIPS = globals().get("ONLY_CLIPS")
@@ -682,29 +682,34 @@ def author_guard(who):
 
 
 # ---- waving a vehicle through (P02f, owner's review) ----------------------------------------------------
-# He faces the driver and sweeps the arm on the side the vehicle will pass him on, open hand leading,
-# from pointing at the driver round to the way through, twice, then lowers it. `waveOnLeft` uses his
-# left arm (the vehicle goes off to his left), `waveOnRight` his right; sim/gate-scene.ts picks one
-# from where the vehicle goes. (Mixamo's "present to the side", used before, points nowhere in particular.)
-WAVE_SECONDS = 3.4
+# "This way, please": he faces the driver, brings the hand up in front of him palm up and open to the
+# driver, and sweeps it round to the lane on the side the vehicle will pass him on, where it stays,
+# palm still to the driver, while the vehicle rolls. As the hand arrives he looks back at the driver
+# and nods, then follows the vehicle with his eyes into the camp, and lowers the arm. `waveOnLeft`
+# uses his left arm (the vehicle goes off to his left), `waveOnRight` his right; sim/gate-scene.ts picks
+# one from where the vehicle goes and sends the pickup off as he nods (its WAVE_GO).
+WAVE_SECONDS = 5.0
 
 
 def wave_raise(ts):
-    """How far the arm is up: raised over the first half second, lowered over the last 0.7 s."""
-    return smooth(ts / 0.5) * (1 - smooth((ts - (WAVE_SECONDS - 0.7)) / 0.7))
+    """How far the arm is up: raised over the first half second, lowered over the last 0.8 s."""
+    return smooth(ts / 0.5) * (1 - smooth((ts - (WAVE_SECONDS - 0.8)) / 0.8))
 
 
 def wave_sweep(ts):
-    """0 pointing at the driver, 1 swept round to the way through: out, back part way, out again."""
-    if ts < 0.5:
-        return 0.0
-    if ts < 1.3:
-        return smooth((ts - 0.5) / 0.8)
-    if ts < 1.8:
-        return 1.0 - 0.6 * smooth((ts - 1.3) / 0.5)
-    if ts < 2.6:
-        return 0.4 + 0.6 * smooth((ts - 1.8) / 0.8)
-    return 1.0
+    """0 offered to the driver, 1 round at the lane; then a little further on, after the vehicle."""
+    return smooth((ts - 0.35) / 1.05) + 0.12 * smooth((ts - 1.6) / 2.4)
+
+
+def wave_gaze(ts):
+    """Where he looks, degrees round towards the lane: after the hand, back to the driver for the nod, then after the vehicle."""
+    if ts < 1.4:
+        return 14 * smooth((ts - 0.35) / 1.05)
+    if ts < 2.2:
+        return 14 - 10 * smooth((ts - 1.4) / 0.4)
+    if ts < 4.2:
+        return 4 + 26 * smooth((ts - 2.2) / 1.6)
+    return 30 - 20 * smooth((ts - 4.2) / 0.8)
 
 
 def wave_on(p, t, side):
@@ -712,21 +717,40 @@ def wave_on(p, t, side):
     up = wave_raise(ts)
     k = wave_sweep(ts)
     s = 1 if side == "Left" else -1  # (he faces -Y: his left is +X)
-    toward = Vector((s * 0.35, -1.0, -0.12)).normalized()  # at the driver, in front of him
-    through = Vector((s * 1.0, 0.45, -0.2)).normalized()  # round to the side, a little behind: the way through
+    # his chest opens a little with the arm; his eyes as wave_gaze
+    gaze = s * wave_gaze(ts)
+    p.turn_axis("Spine1", (0, 0, 1), s * 6 * min(k, 1.0) * up + gaze * 0.25)
+    p.turn_axis("Neck", (0, 0, 1), gaze * 0.3)
+    p.turn_axis("Head", (0, 0, 1), gaze * 0.45)
+    # the nod, as the hand arrives: about his head's own left-right axis
+    nod = 13 * window(ts, 1.45, 1.75, 1.8, 2.15)
+    yaw = math.radians(s * 6 * min(k, 1.0) * up + gaze)
+    p.turn_axis("Head", (math.cos(yaw), math.sin(yaw), 0), nod)
+    p.turn_axis("Spine2", (math.cos(yaw), math.sin(yaw), 0), nod * 0.2)
+    # the arm: a little bent, the hand at the height of his belt-buckle to his chest, offered in front of
+    # him to the driver and swept round to the lane, a little behind his shoulder line
+    toward = Vector((s * 0.5, -1.0, -0.42)).normalized()
+    through = Vector((s * 1.0, 0.3, -0.34)).normalized()
     d = toward.lerp(through, k).normalized()
-    # his body goes with the arm a little, and his eyes follow the hand
-    p.turn_axis("Spine1", (0, 0, 1), s * 9 * k * up)
-    p.turn_axis("Neck", (0, 0, 1), s * 12 * k * up)
-    p.turn_axis("Head", (0, 0, 1), s * 16 * k * up)
     shoulder = p.head(f"{side}Arm")
     rest = p.head(f"{side}Hand").copy()
-    wrist = shoulder + d * 0.56
-    p.reach(side, rest.lerp(wrist, up), (s * 0.2, 0.45, -1.0))
-    # open hand, fingers out along the arm and a little up, the palm leading the sweep
-    fingers = (d + Vector((0, 0, 0.18))).normalized()
-    lead = (through - toward)
-    palm = (lead - fingers * lead.dot(fingers)).normalized()
+    wrist = shoulder + d * 0.5
+    p.reach(side, rest.lerp(wrist, up), (s * 0.3, 0.3, -1.0))
+    # open hand, fingers out level along the sweep, the palm up and turned to the driver (in front of him)
+    fingers = Vector((d.x, d.y, d.z * 0.25)).normalized()
+    palm = Vector((0.0, -0.55, 1.0)).normalized()
+    # the forearm takes most of the turn of the palm, as a man's does (the rig has no twist bones: all
+    # of it at the wrist would wring the skin there)
+    fore = f"{side}ForeArm"
+    axis = (p.head(f"{side}Hand") - p.head(fore)).normalized()
+    now = p.palm(side)
+    now = now - axis * now.dot(axis)
+    want = palm - axis * palm.dot(axis)
+    if now.length > 1e-4 and want.length > 1e-4:
+        angle = now.angle(want)
+        if now.cross(want).dot(axis) < 0:
+            angle = -angle
+        p.turn(fore, Matrix.Rotation(angle * 0.65 * up, 3, axis))
     p.hand(side, fingers, palm, amount=up)
 
 
@@ -941,6 +965,9 @@ WHEEL_R = 0.172
 WHEEL_AXIS = Vector((0.0, -0.91, -0.414)).normalized()  # (his frame: he faces -Y)
 
 
+THANKS_SECONDS = 2.0
+
+
 def wheel_centre(p):
     """
     Where the rim's centre is for his seated pose: in front of his chest, a little below his
@@ -980,6 +1007,22 @@ def author_driver(who):
 
     author(who, "drive", 4 * FPS, "sit", drive, loop=True)
     overlay_window(who, "drive", lambda p, k: (p.curl("Left", (48, 62, 44), thumb=(18, 24, 20)), p.curl("Right", (48, 62, 44), thumb=(18, 24, 20))), lambda t: 1.0)
+
+    # (owner's review) thanks: as the guard waves him through he lifts his left hand off the wheel, open,
+    # palm out to the guard at his window and ahead, with a small nod, and takes the wheel again
+    def thanks(p, t, f):
+        ts = t * THANKS_SECONDS
+        drive(p, 0.0, 1)
+        k = window(ts, 0.0, 0.45, 1.3, 1.9)
+        shoulder = p.head("LeftArm")
+        held = p.head("LeftHand").copy()
+        lifted = shoulder + Vector((0.1, -0.3, 0.14))  # in front of his shoulder, by the window, hand at his face
+        p.reach("Left", held.lerp(lifted, k), (0.8, 0.3, -0.6))
+        p.hand("Left", Vector((0.15, -0.25, 1.0)).normalized(), Vector((0.55, -0.85, 0.0)).normalized(), amount=k)
+        p.turn_axis("Head", (1, 0, 0), 8 * window(ts, 0.3, 0.6, 0.9, 1.3))
+
+    author(who, "thanks", int(THANKS_SECONDS * FPS), "sit", thanks, loop=False)
+    overlay_window(who, "thanks", lambda p, k: (p.curl("Left", (48 - 44 * k, 62 - 56 * k, 44 - 40 * k), thumb=(18 - 18 * k, 24 - 20 * k, 20 - 16 * k)), p.curl("Right", (48, 62, 44), thumb=(18, 24, 20))), lambda t: window(t * THANKS_SECONDS, 0.0, 0.45, 1.3, 1.9))
     rig = rig_of(who)
     W = centre["W"]
     rig["twin_wheel"] = [round(W.x, 4), round(W.z, 4), round(-W.y, 4)]

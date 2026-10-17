@@ -59,10 +59,13 @@ const STOP_SHORT = 2.6;
 /** Seconds the guard spends at the driver's window. */
 const CHECK_SECONDS = 4.4;
 const BOOM_SECONDS = 2.2;
-// the guard's wave (clips waveOnLeft / waveOnRight, scripts/blender/twin/build_gate_people_clips.py
-// WAVE_SECONDS); his arm is up by 0.5 s and first swept toward the lane at 1.3 s, and the driver moves then
-const WAVE_SECONDS = 3.4;
-const WAVE_GO = 1.4;
+// the guard's "this way, please" (clips waveOnLeft / waveOnRight, scripts/blender/twin/build_gate_people_clips.py
+// WAVE_SECONDS): his open hand is round at the lane by 1.4 s and he nods to the driver, who sets off then
+// and lifts a hand to him (the driver's clip `thanks`, THANKS_SECONDS), from THANKS_AT into the wave
+const WAVE_SECONDS = 5.0;
+const WAVE_GO = 1.6;
+const THANKS_AT = 1.3;
+const THANKS_SECONDS = 2.0;
 /** The people's walk: the speed the clip was recorded at, and the speed they walk at here (metres a second). */
 const WALK = { clip: "walk", made: 1.38, speed: 1.3 };
 /** The guard's `barrier` and `barrierDown` clips: seconds in all, and seconds into them at which the arm starts to move. */
@@ -541,11 +544,18 @@ export function startGateScene(ctx: GateSceneContext): () => void {
           driver.object.visible = pickup.object.visible && layers.people;
           driver.object.position.copy(seat).applyQuaternion(pickup.object.quaternion).add(pickup.object.position);
           driver.object.quaternion.copy(pickup.object.quaternion);
-          driver.play("drive", { fade: 0, loop: true, phase: 0.2 });
+          // (owner's review) his hand up to the guard as he is waved through, played on the loop's time
+          const thanks = t - (tWave + THANKS_AT);
+          if (thanks >= 0 && thanks < THANKS_SECONDS && driver.model.clips.has("thanks")) {
+            driver.play("thanks", { fade: 0.25, loop: false, speed: 0 });
+            driver.setTime(thanks);
+          } else {
+            driver.play("drive", { fade: 0.3, loop: true, phase: 0.2 });
+          }
           driver.update(dt, ctx.camera.position, k, tier.drawDistance);
           // he looks round to the guard while the guard is near his door, and back to the road
           let want = 0;
-          if (guard && t > tDoor - 2.2 && t < tChecked + 0.8) {
+          if (guard && ((t > tDoor - 2.2 && t < tChecked + 0.8) || (t > tWave + THANKS_AT - 0.6 && t < tWave + THANKS_AT + THANKS_SECONDS))) {
             const g = guard.object.position;
             const local = ahead.set(g.x, 0, g.z).sub(driver.object.position).applyQuaternion(pickup.object.quaternion.clone().invert());
             want = THREE.MathUtils.clamp(Math.atan2(local.x, local.z), -DRIVER_LOOK.most, DRIVER_LOOK.most);
