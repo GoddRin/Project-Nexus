@@ -119,20 +119,35 @@ export interface AtlasAIWorkspaceProps {
   isSpeaking?: boolean;
   cancelSpeech?: () => void;
   speakNarration?: (text: string) => Promise<void>;
-  /** Viewport insets of the map row, so a docked workspace lines up with it instead of covering the header */
-  dockInsets?: { top: number; right: number; bottom: number; left: number };
+  /** Viewport and local insets of the map row, so a docked workspace lines up flush inside rowRef */
+  dockInsets?: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+    mapLeft?: number;
+    localTop?: number;
+    localRight?: number;
+    localMapLeft?: number;
+  };
   /** Collapse to the pill while something else owns the stage (guided tour) */
   forceMinimized?: boolean;
   /** Little room on the map (project panel open): the minimised pill shrinks to its name and buttons */
   compactPill?: boolean;
   /** Keep state but render nothing (the other right-hand tab is showing) */
   hidden?: boolean;
-  /** Reports how much room the docked panel takes on the right so the map can resize around it */
-  onDockInfo?: (info: { rightDockWidth: number; dock: AtlasDockPosition; expanded: boolean }) => void;
+  /** Reports how much room the docked panel takes so the map can resize around it */
+  onDockInfo?: (info: {
+    rightDockWidth: number;
+    leftDockWidth?: number;
+    bottomDockHeight?: number;
+    dock: AtlasDockPosition;
+    expanded: boolean;
+  }) => void;
 }
 
-// v2: the workspace docks to the right by default (v1 defaulted to a floating window over the map)
-const STORAGE_KEY = "scic_atlas_ai_layout_prefs_v2";
+// v3: sleek 410px right-docked workspace by default, flush with the map row
+const STORAGE_KEY = "scic_atlas_ai_layout_prefs_v3";
 
 export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
   isOpen,
@@ -181,16 +196,16 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
   const [dockPosition, setDockPosition] = useState<AtlasDockPosition>("RIGHT");
 
   // Floating coordinates & dimensions
-  const [floatingPos, setFloatingPos] = useState<{ x: number; y: number }>({ x: 100, y: 70 });
+  const [floatingPos, setFloatingPos] = useState<{ x: number; y: number }>({ x: 100, y: 120 });
   const [floatingSize, setFloatingSize] = useState<{ width: number; height: number }>({
-    width: 490,
-    height: 620,
+    width: 440,
+    height: 580,
   });
 
-  // Dock dimension adjustments
-  const [dockWidthRight, setDockWidthRight] = useState(520);
-  const [dockWidthLeft, setDockWidthLeft] = useState(520);
-  const [dockHeightBottom, setDockHeightBottom] = useState(380);
+  // Dock dimension adjustments (410px matches ProjectInspectionDrawer for a balanced layout)
+  const [dockWidthRight, setDockWidthRight] = useState(410);
+  const [dockWidthLeft, setDockWidthLeft] = useState(410);
+  const [dockHeightBottom, setDockHeightBottom] = useState(360);
 
   // Active interaction states
   const [isDragging, setIsDragging] = useState(false);
@@ -272,18 +287,18 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
           if (parsed.dockPosition) setDockPosition(parsed.dockPosition);
           if (parsed.mode) setMode(parsed.mode);
           if (typeof parsed.isMaximized === "boolean") setIsMaximized(parsed.isMaximized);
-          if (parsed.dockWidthRight) setDockWidthRight(Math.max(500, parsed.dockWidthRight));
-          if (parsed.dockWidthLeft) setDockWidthLeft(Math.max(500, parsed.dockWidthLeft));
+          if (parsed.dockWidthRight) setDockWidthRight(Math.max(380, parsed.dockWidthRight));
+          if (parsed.dockWidthLeft) setDockWidthLeft(Math.max(380, parsed.dockWidthLeft));
           if (parsed.dockHeightBottom) setDockHeightBottom(parsed.dockHeightBottom);
           if (parsed.floatingSize) {
             setFloatingSize({
-              width: Math.max(490, parsed.floatingSize.width),
-              height: Math.max(420, parsed.floatingSize.height),
+              width: Math.max(400, parsed.floatingSize.width),
+              height: Math.max(400, parsed.floatingSize.height),
             });
           }
           if (parsed.floatingPos) {
-            const safeX = Math.max(12, Math.min(window.innerWidth - (parsed.floatingSize?.width || 490) - 12, parsed.floatingPos.x));
-            const safeY = Math.max(56, Math.min(window.innerHeight - (parsed.floatingSize?.height || 620) - 12, parsed.floatingPos.y));
+            const safeX = Math.max(12, Math.min(window.innerWidth - (parsed.floatingSize?.width || 440) - 12, parsed.floatingPos.x));
+            const safeY = Math.max(120, Math.min(window.innerHeight - (parsed.floatingSize?.height || 580) - 16, parsed.floatingPos.y));
             setFloatingPos({ x: safeX, y: safeY });
           }
           return;
@@ -292,8 +307,8 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
     } catch {}
 
     setFloatingPos({
-      x: Math.max(20, window.innerWidth - 510),
-      y: 70,
+      x: Math.max(20, window.innerWidth - 460),
+      y: 120,
     });
   }, []);
 
@@ -324,12 +339,12 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
     setDockPosition("RIGHT");
     setMode("CHAT");
     setIsMaximized(false);
-    setDockWidthRight(480);
-    setDockWidthLeft(480);
-    setDockHeightBottom(380);
-    setFloatingSize({ width: 490, height: 620 });
-    const defaultX = Math.max(20, typeof window !== "undefined" ? window.innerWidth - 510 : 700);
-    setFloatingPos({ x: defaultX, y: 70 });
+    setDockWidthRight(410);
+    setDockWidthLeft(410);
+    setDockHeightBottom(360);
+    setFloatingSize({ width: 440, height: 580 });
+    const defaultX = Math.max(20, typeof window !== "undefined" ? window.innerWidth - 460 : 700);
+    setFloatingPos({ x: defaultX, y: 120 });
     setIsLayoutMenuOpen(false);
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -687,107 +702,145 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
   }, [forceMinimized]);
   const isMinimized = mode === "MINIMIZED" || (forceMinimized && !forceOverride);
 
-  // Tell the page how much of the right edge the docked panel occupies
+  // Tell the page how much of the edges the docked panel occupies so the map and bottom bar resize cleanly around it
   useEffect(() => {
     const desktop = typeof window !== "undefined" && window.innerWidth >= 768;
     // `expanded` deliberately ignores `hidden`: the page decides visibility from it, so it must not feed back
     const expanded = isOpen && !isMinimized && mode !== "COMPACT";
-    const docksRight = expanded && !hidden && desktop && !isMaximized && dockPosition === "RIGHT";
-    onDockInfo?.({ rightDockWidth: docksRight ? dockWidthRight : 0, dock: dockPosition, expanded });
-  }, [isOpen, hidden, isMinimized, mode, isMaximized, dockPosition, dockWidthRight, onDockInfo]);
+    const activeDock = expanded && !hidden && desktop && !isMaximized;
+    const docksRight = activeDock && dockPosition === "RIGHT";
+    const docksLeft = activeDock && dockPosition === "LEFT";
+    const docksBottom = activeDock && dockPosition === "BOTTOM";
+    const safeBottomH =
+      typeof window !== "undefined"
+        ? Math.min(dockHeightBottom, Math.max(240, Math.round(window.innerHeight * 0.44)))
+        : dockHeightBottom;
+    onDockInfo?.({
+      rightDockWidth: docksRight ? dockWidthRight : 0,
+      leftDockWidth: docksLeft ? dockWidthLeft : 0,
+      bottomDockHeight: docksBottom ? safeBottomH : 0,
+      dock: dockPosition,
+      expanded,
+    });
+  }, [isOpen, hidden, isMinimized, mode, isMaximized, dockPosition, dockWidthRight, dockWidthLeft, dockHeightBottom, onDockInfo]);
 
   if (!isOpen || hidden) return null;
 
-  const insetTop = dockInsets?.top ?? 56;
-  const insetRight = dockInsets?.right ?? 12;
-  const insetBottom = dockInsets?.bottom ?? 12;
-  const insetLeft = dockInsets?.left ?? 12;
+  const isMobileViewport = typeof window !== "undefined" && window.innerWidth < 768;
+  const mobileBottomClearance = isMobileViewport ? 72 : 14;
+  const insetTop = Math.max(56, dockInsets?.top ?? 56);
+  const insetRight = Math.max(12, dockInsets?.right ?? 12);
+  const insetBottom = Math.max(mobileBottomClearance, dockInsets?.bottom ?? mobileBottomClearance);
+  const insetLeft = Math.max(12, dockInsets?.left ?? 12);
+  const insetMapLeft = Math.max(insetLeft, dockInsets?.mapLeft ?? insetLeft);
+  const localTop = dockInsets?.localTop ?? 0;
+  const localRight = dockInsets?.localRight ?? 0;
+  const localMapLeft = dockInsets?.localMapLeft ?? Math.max(0, insetMapLeft - insetLeft);
 
   // ─── 10. Position & Styling Computations ───────────────────────────────────
   const getContainerStyle = (): React.CSSProperties => {
     if (typeof window === "undefined") return {};
+
+    // 1. Minimized floating HUD pill
+    if (isMinimized) {
+      if (window.innerWidth >= 768) {
+        return {
+          position: "absolute",
+          bottom: "10px",
+          right: `${localRight + 10}px`,
+          width: "auto",
+          height: "auto",
+          zIndex: ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE + 12,
+        };
+      }
+      return {
+        position: "fixed",
+        bottom: `${insetBottom + 8}px`,
+        right: "14px",
+        width: "auto",
+        height: "auto",
+        zIndex: ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE + 12,
+      };
+    }
+
     if (window.innerWidth < 768) {
       return {};
     }
 
-    // 1. Minimized floating HUD pill
-    if (isMinimized) {
+    // 2. Compact floating HUD card (inside rowRef on desktop)
+    if (mode === "COMPACT") {
+      const maxCompactH = Math.max(280, window.innerHeight - insetTop - insetBottom - 16);
       return {
-        position: "fixed",
-        // clear of the navigator's bottom-right stage
-        bottom: `${insetBottom + 8}px`,
-        right: `${insetRight + 214}px`,
-        width: "auto",
-        height: "auto",
+        position: "absolute",
+        bottom: "10px",
+        right: `${localRight + 10}px`,
+        width: "360px",
+        height: `${Math.min(440, maxCompactH)}px`,
         zIndex: ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE,
       };
     }
 
-    // 2. Compact floating HUD card
-    if (mode === "COMPACT") {
-      return {
-        position: "fixed",
-        bottom: "20px",
-        right: "20px",
-        width: "360px",
-        height: "440px",
-        zIndex: ATLAS_Z_INDEX.AI_WORKSPACE,
-      };
-    }
-
-    // 3. Fullscreen maximized
+    // 3. Fullscreen maximized (fills rowRef cleanly below AtlasHeader)
     if (isMaximized) {
       return {
-        position: "fixed",
-        top: `${insetTop}px`,
-        left: `${insetLeft}px`,
-        right: `${insetRight}px`,
-        bottom: `${insetBottom}px`,
+        position: "absolute",
+        top: "0px",
+        left: "0px",
+        right: "0px",
+        bottom: "0px",
         zIndex: ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE,
       };
     }
 
-    // 4. Docked Positions
+    // 4. Docked Positions (locked directly to rowRef via position: absolute so they never drift over AtlasHeader)
     if (dockPosition === "RIGHT") {
       return {
-        position: "fixed",
-        top: `${insetTop}px`,
-        right: `${insetRight}px`,
-        bottom: `${insetBottom}px`,
-        width: `${dockWidthRight}px`,
+        position: "absolute",
+        top: `${localTop}px`,
+        right: "0px",
+        bottom: "0px",
+        width: `${Math.min(dockWidthRight, window.innerWidth - insetLeft - insetRight - 260)}px`,
         zIndex: ATLAS_Z_INDEX.AI_WORKSPACE,
       };
     }
 
     if (dockPosition === "LEFT") {
       return {
-        position: "fixed",
-        top: `${insetTop}px`,
-        left: `${insetLeft}px`,
-        bottom: `${insetBottom}px`,
-        width: `${dockWidthLeft}px`,
+        position: "absolute",
+        top: "0px",
+        left: `${localMapLeft}px`,
+        bottom: "0px",
+        width: `${Math.min(dockWidthLeft, window.innerWidth - insetMapLeft - insetRight - 260)}px`,
         zIndex: ATLAS_Z_INDEX.AI_WORKSPACE,
       };
     }
 
     if (dockPosition === "BOTTOM") {
+      const safeBottomH = Math.min(dockHeightBottom, Math.max(240, Math.round(window.innerHeight * 0.44)));
       return {
-        position: "fixed",
-        bottom: `${insetBottom}px`,
-        left: `${insetLeft}px`,
-        right: `${insetRight}px`,
-        height: `${dockHeightBottom}px`,
-        zIndex: ATLAS_Z_INDEX.AI_WORKSPACE,
+        position: "absolute",
+        bottom: "0px",
+        left: `${localMapLeft}px`,
+        right: `${localRight}px`,
+        height: `${safeBottomH}px`,
+        zIndex: ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE,
       };
     }
 
-    // 5. Default Floating
+    // 5. Default Floating (clamped so it stays below AtlasHeader and above the bottom of the map row)
+    const safeTopBound = Math.max(116, insetTop);
+    const maxFloatingH = Math.max(320, window.innerHeight - safeTopBound - insetBottom);
+    const clampedH = Math.min(floatingSize.height, maxFloatingH);
+    const clampedW = Math.min(floatingSize.width, window.innerWidth - 24);
+    const clampedX = Math.max(12, Math.min(window.innerWidth - clampedW - 12, floatingPos.x));
+    const clampedY = Math.max(safeTopBound, Math.min(window.innerHeight - insetBottom - clampedH, floatingPos.y));
+
     return {
       position: "fixed",
-      left: `${floatingPos.x}px`,
-      top: `${floatingPos.y}px`,
-      width: `${floatingSize.width}px`,
-      height: `${floatingSize.height}px`,
+      left: `${clampedX}px`,
+      top: `${clampedY}px`,
+      width: `${clampedW}px`,
+      height: `${clampedH}px`,
       zIndex: isDragging ? ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE : ATLAS_Z_INDEX.AI_WORKSPACE,
     };
   };
@@ -802,8 +855,7 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
         aria-expanded={false}
         style={getContainerStyle()}
         className={cn(
-          "pointer-events-auto rounded-full border border-emerald-500/40 bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-black/60 px-3.5 py-1.5 flex items-center gap-3 transition-all",
-          dockPosition === "BOTTOM" && "w-max mx-auto bottom-4",
+          "pointer-events-auto rounded-full border border-emerald-500/40 bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-black/60 px-3 py-1.5 flex items-center gap-2.5 transition-all",
           isDragging && "opacity-90 ring-2 ring-emerald-500"
         )}
         onPointerDown={handleHeaderPointerDown}
@@ -816,7 +868,7 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
         </div>
 
         {!compactPill && (
-          <div className="text-[11px] font-mono text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 truncate max-w-[200px]">
+          <div className="hidden xl:block text-[11px] font-mono text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 truncate max-w-[140px]">
             {selectedProjectName ? selectedProjectName : activeRegion !== "ALL" ? activeRegion : `${totalProjectsCount} Projects`}
           </div>
         )}
@@ -1203,9 +1255,9 @@ export const AtlasAIWorkspace: React.FC<AtlasAIWorkspaceProps> = ({
         onPointerUp={activeResize ? stopResize : undefined}
         className={cn(
           "pointer-events-auto flex flex-col rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-2xl shadow-2xl shadow-black/15 dark:shadow-black/80 overflow-hidden transition-all duration-150 select-text",
-          // Mobile bottom-sheet layout (<768px)
-          "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:rounded-t-2xl max-md:rounded-b-none max-md:border-t max-md:border-slate-300 dark:max-md:border-white/15 max-md:bg-white/98 dark:max-md:bg-atlas-panel/98 max-md:backdrop-blur-3xl max-md:z-50",
-          typeof window !== "undefined" && window.innerWidth < 768 && (mobileSheetSnap === "half" ? "max-md:h-[52vh]" : "max-md:h-[88vh]"),
+          // Mobile bottom-sheet layout (<768px): sits cleanly above MobileBottomBar (3.75rem) so the bottom composer is never blocked
+          "max-md:fixed max-md:inset-x-0 max-md:bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] max-md:rounded-t-2xl max-md:rounded-b-none max-md:border-t max-md:border-slate-300 dark:max-md:border-white/15 max-md:bg-white/98 dark:max-md:bg-atlas-panel/98 max-md:backdrop-blur-3xl max-md:z-[60]",
+          typeof window !== "undefined" && window.innerWidth < 768 && (mobileSheetSnap === "half" ? "max-md:h-[48dvh]" : "max-md:h-[calc(100dvh-7.5rem)]"),
           isDragging && "opacity-95 shadow-cyan-500/10 ring-1 ring-cyan-500/30"
         )}
       >

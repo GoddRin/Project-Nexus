@@ -132,7 +132,7 @@ const heap = (page) =>
 const settled = (page) => page.waitForFunction(() => { const s = window.__TWIN__.streaming.stats(); return s.zonesLoading === 0 && s.tasksQueued === 0; }, null, { timeout: 300_000 });
 const usable = async (page) => {
   await page.waitForSelector("select[aria-label='Go to a place']", { timeout: 180_000 });
-  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__TWIN__ && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 60_000 });
 };
 /** Least-squares slope of heap samples, MB a minute. */
 function trend(samples) {

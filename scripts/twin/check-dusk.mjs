@@ -44,7 +44,7 @@ const errors = [];
 page.on("pageerror", (e) => errors.push(String(e).slice(0, 300)));
 page.on("console", (m) => m.type() === "error" && !/status of 401/.test(m.text()) && errors.push(m.text().slice(0, 300)));
 await page.goto(`${BASE}/digital-twin?v=2&debug=1&t=${hhmm(FROM)}&dynres=0&q=${TIER}&place=gate-approach${flag("force-webgl") ? "&force=webgl" : ""}${EXTRA}`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-await page.waitForFunction(() => window.__TWIN__?.lamps && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 180_000 });
+await page.waitForFunction(() => window.__TWIN__?.lamps && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 180_000 });
 // (before the zone streams in, so its lamps are made under the override)
 if (OVERRIDE) await page.evaluate((o) => window.__TWIN__.cost.override(JSON.parse(o)), OVERRIDE);
 await page.waitForFunction(() => { const s = window.__TWIN__.streaming.stats(); return s.zonesLoaded > 0 && s.zonesLoading === 0 && s.tasksQueued === 0; }, null, { timeout: 300_000 });

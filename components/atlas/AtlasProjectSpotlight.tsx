@@ -218,16 +218,19 @@ export function AtlasProjectSpotlight({
      TOP SECTION HEADER BAR (Clear Unambiguous Option Control)
      =================================================================== */
   const renderTopHeader = (
-    <div className="flex items-center justify-between px-0.5 pb-2">
-      <div className="flex items-center gap-2 min-w-0">
-        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 dark:text-amber-400 text-[10px] font-mono font-bold tracking-wider uppercase shrink-0">
-          <Sparkles className="h-3 w-3 text-amber-500 dark:text-amber-400 animate-pulse" />
-          <span>{safeIndex === spotlightIndexForToday(sorted.length) ? "Spotlight of the Day" : "Featured Spotlight"}</span>
+    <div className="flex items-center justify-between gap-1.5 px-0.5 pb-2 min-w-0">
+      <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+        <div
+          className="inline-flex items-center gap-1 h-6 px-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 dark:text-amber-400 text-[9.5px] font-mono font-bold tracking-wider uppercase shrink-0"
+          title={safeIndex === spotlightIndexForToday(sorted.length) ? "Spotlight of the Day" : "Featured Spotlight"}
+        >
+          <Sparkles className="h-3 w-3 text-amber-500 dark:text-amber-400 animate-pulse shrink-0" />
+          <span className="truncate">Spotlight</span>
         </div>
 
         {/* Presentation Carousel Navigation */}
         {sorted.length > 1 && (
-          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 rounded-full px-1.5 py-0.5 text-[10px] font-mono text-slate-600 dark:text-slate-300 shrink-0">
+          <div className="inline-flex items-center gap-0.5 h-6 bg-slate-100 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10 rounded-full px-1 text-[9.5px] font-mono text-slate-600 dark:text-slate-300 shrink-0">
             <button
               type="button"
               onClick={handlePrevProject}
@@ -237,8 +240,8 @@ export function AtlasProjectSpotlight({
             >
               <ChevronLeft className="h-3 w-3" />
             </button>
-            <span className="px-1 font-bold text-emerald-600 dark:text-emerald-400 select-none">
-              {safeIndex + 1} / {sorted.length}
+            <span className="px-1 font-bold text-emerald-600 dark:text-emerald-400 select-none whitespace-nowrap">
+              {safeIndex + 1}/{sorted.length}
             </span>
             <button
               type="button"
@@ -258,7 +261,7 @@ export function AtlasProjectSpotlight({
         type="button"
         onClick={toggleCollapse}
         className={cn(
-          "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-all cursor-pointer shadow-2xs group shrink-0",
+          "inline-flex items-center gap-1 h-6 px-2 rounded-lg text-[10px] font-mono font-semibold transition-all cursor-pointer shadow-2xs group shrink-0 whitespace-nowrap",
           isCollapsed
             ? "bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-600 dark:text-sky-300"
             : "bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -268,13 +271,13 @@ export function AtlasProjectSpotlight({
       >
         {isCollapsed ? (
           <>
-            <ChevronDown className="h-3.5 w-3.5 text-sky-500 dark:text-sky-300 transition-transform group-hover:translate-y-0.5" />
-            <span>Expand Card</span>
+            <ChevronDown className="h-3 w-3 text-sky-500 dark:text-sky-300 transition-transform group-hover:translate-y-0.5 shrink-0" />
+            <span>Expand</span>
           </>
         ) : (
           <>
-            <ChevronUp className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white transition-transform group-hover:-translate-y-0.5" />
-            <span>Collapse Card</span>
+            <ChevronUp className="h-3 w-3 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white transition-transform group-hover:-translate-y-0.5 shrink-0" />
+            <span>Collapse</span>
           </>
         )}
       </button>

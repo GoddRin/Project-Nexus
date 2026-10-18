@@ -12,7 +12,7 @@
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
-import { mix, positionLocal, smoothstep, uniform } from "three/tsl";
+import { exp, fog as fogOf, mix, positionLocal, positionView, smoothstep, uniform } from "three/tsl";
 import { CSMShadowNode } from "three/examples/jsm/csm/CSMShadowNode.js";
 import { SkyMesh } from "three/examples/jsm/objects/SkyMesh.js";
 import { getMoonIllumination, getMoonPosition, getPosition } from "suncalc";
@@ -169,8 +169,14 @@ export function SkyLight() {
     // a little light from the sky that needs no environment map (also what is left when a tier has none)
     const fill = new THREE.HemisphereLight(0xbfd8ff, 0x4a4034, 0.25);
     root.add(fill);
-    const fog = new THREE.Fog(0x9fb4c4, 60, 2600);
-    scene.fog = fog;
+    // haze: exponential with distance (aerial perspective), so the far ridges fade but stay (P03a: the
+    // terrain now runs 8 km out); `far` is where it has hidden 95% of what is behind it
+    const fog = { color: new THREE.Color(0x9fb4c4), near: 60, far: 17000 };
+    const fogColour = uniform(fog.color);
+    const fogNear = uniform(60);
+    const fogDensity = uniform(3 / 17000);
+    const fogNode = fogOf(fogColour, exp(positionView.length().sub(fogNear).max(0).mul(fogDensity).negate()).oneMinus());
+    scene.fogNode = fogNode;
 
     let csm: CSMShadowNode | null = null;
     let cascadesFor = "";
@@ -332,6 +338,8 @@ export function SkyLight() {
       fog.color.copy(horizon);
       fog.near = lerp(260, 45, now.rain);
       fog.far = now.fogFar * lerp(1, 0.7, 1 - day);
+      fogNear.value = fog.near;
+      fogDensity.value = 3 / fog.far;
       // (the environment map is made from the dimmed dome, so it goes dark with it by itself)
       scene.environmentIntensity = SKY * lerp(1, 1.15, now.cloud);
       // (the eye opens up at night: lamps then read as bright pools, as they do on site)
@@ -363,7 +371,7 @@ export function SkyLight() {
       stopLoop();
       stopTier();
       scene.remove(root);
-      if (scene.fog === fog) scene.fog = null;
+      if (scene.fogNode === fogNode) scene.fogNode = null;
       scene.environment = null;
       scene.background = hadBackground;
       envTarget?.dispose();

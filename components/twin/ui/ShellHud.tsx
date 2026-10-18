@@ -12,8 +12,10 @@ import type { RendererBackend } from "../engine/renderer";
 import { clock, formatClock } from "../sim/clock";
 import { TIERS, WEATHER_STATES, twinActions, useTwin, type Tier, type WeatherState } from "../state/store";
 
-const card = "pointer-events-auto rounded-xl border border-border-hairline bg-card/90 shadow-xl backdrop-blur-md dark:bg-[#0B1013]/80";
-const field = "h-8 rounded-lg border border-border-hairline bg-transparent px-2 text-xs text-text-primary outline-none focus-visible:border-scic-green";
+const card =
+  "pointer-events-auto rounded-xl border border-border-hairline bg-card/95 shadow-xl backdrop-blur-md dark:border-white/15 dark:bg-[#0B1013]/90";
+const field =
+  "h-8 cursor-pointer rounded-lg border border-border-hairline bg-bg-panel px-2.5 text-xs font-medium text-text-primary shadow-2xs outline-none transition-colors [color-scheme:light] hover:border-scic-green/50 hover:bg-bg-panel-raised focus-visible:border-scic-green focus-visible:ring-2 focus-visible:ring-scic-green/25 dark:border-white/15 dark:bg-[#131F1C] dark:[color-scheme:dark] dark:hover:border-scic-green/50 dark:hover:bg-[#1B2A26] [&_option]:bg-bg-panel [&_option]:text-text-primary dark:[&_option]:bg-[#0D1614] dark:[&_option]:text-[#F2F6F4]";
 
 export function ShellHud({ backend }: { backend: RendererBackend | null }) {
   const place = useTwin((s) => s.camera.place);
@@ -79,7 +81,9 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
           aria-pressed={live}
           title="Follow the real time on site (Asia/Manila)"
           className={`h-8 rounded-lg border px-2.5 text-xs font-medium transition-colors ${
-            live ? "border-scic-green/40 bg-scic-green/10 text-scic-green" : "border-border-hairline text-text-muted hover:text-text-primary"
+            live
+              ? "border-scic-green/40 bg-scic-green/10 text-scic-green"
+              : "border-border-hairline bg-bg-panel text-text-secondary hover:border-scic-green/50 hover:bg-bg-panel-raised hover:text-text-primary dark:border-white/15 dark:bg-[#131F1C] dark:hover:bg-[#1B2A26]"
           }`}
         >
           Live
@@ -122,12 +126,12 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
           ))}
         </select>
 
-        <Link href="/digital-twin" className="px-1 text-xs text-text-muted underline-offset-2 hover:text-text-primary hover:underline">
+        <Link href="/digital-twin" className="px-1 text-xs text-text-secondary underline-offset-2 hover:text-text-primary hover:underline">
           Current twin
         </Link>
       </div>
 
-      <p className={`${card} hidden self-start px-3 py-1.5 font-mono text-[10px] text-text-muted md:block`}>
+      <p className={`${card} hidden self-start px-3 py-1.5 font-mono text-[10px] text-text-secondary md:block`}>
         Drag: orbit · Right-drag: pan · Scroll: zoom to cursor · Double-click: focus · WASD / arrows: move · Q / E: down / up · Shift: faster · Esc: overview
       </p>
     </div>

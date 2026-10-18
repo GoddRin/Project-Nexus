@@ -9,7 +9,9 @@
  *   node scripts/twin/cost.mjs [label] [--only=people,trees,...] [--repeat=3] [--seconds=3]
  *       [--place=gate-approach] [--dsf=1] [--size=1440x900] [--force-webgl] [--browser=chrome]
  *
- * Groups: people, animals, vehicles, trees, plants, lights, shadows, occlusion, tiers.
+ * Groups: people, animals, vehicles, trees, plants, lights, shadows, occlusion, tiers; and (P03a) terrain,
+ * which hides the terrain's parts in turn (a negative step is what that part costs). `--pose=x,y,z,tx,ty,tz`
+ * looks from a point of its own instead of the place's camera (an overview).
  * Frame cap off; dynamic resolution off. Writes .cache/bench/twin2-cost-<label>.json and prints a table.
  */
 import fs from "node:fs";
@@ -29,6 +31,7 @@ const SECONDS = Number(arg("seconds", "4"));
 const DSF = Number(arg("dsf", "1"));
 const [VW, VH] = arg("size", "1440x900").split("x").map(Number);
 const FORCE = flag("force-webgl");
+const POSE = arg("pose", "").split(",").filter(Boolean).map(Number);
 const ONLY = arg("only", "people,animals,vehicles,trees,plants,lights,shadows,occlusion,tiers").split(",");
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -58,11 +61,12 @@ async function open(extra = "") {
   page.on("console", (m) => m.type() === "error" && !/status of 401/.test(m.text()) && errors.push(m.text().slice(0, 200)));
   const url = `${BASE}/digital-twin?v=2&debug=1&t=1200&dynres=0&q=medium&place=${PLACE}${FORCE ? "&force=webgl" : ""}${extra}`;
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  await page.waitForFunction(() => window.__TWIN__?.cost && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 180_000 });
+  await page.waitForFunction(() => window.__TWIN__?.cost && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 180_000 });
   await page.waitForFunction(() => { const s = window.__TWIN__.streaming.stats(); return s.zonesLoaded > 0 && s.zonesLoading === 0 && s.tasksQueued === 0; }, null, { timeout: 300_000 });
   await page.waitForFunction(() => window.__TWIN__.gate.status().actors >= 5, null, { timeout: 300_000 });
   // the loop held at a quiet moment: everyone in place, the pickup at the barrier
   await page.evaluate(() => { window.__TWIN__.gate.seek(14); window.__TWIN__.gate.hold(true); });
+  if (POSE.length === 6) await page.evaluate((p) => window.__TWIN__.rig.flyToPose([p[0], p[1], p[2]], [p[3], p[4], p[5]], 0), POSE);
   await sleep(4000);
   return { page, context, errors };
 }
@@ -196,6 +200,20 @@ if (ONLY.includes("lamps")) {
   // since P02e the lamps are out of the scene by day; this puts them back in, dark, as they were before,
   // so the step shows what taking them out saved
   await step(page, "lamps", "zone lamps held in, dark (as before P02e)", 0, () => page.evaluate(() => window.__TWIN__.lamps.force(true)), () => page.evaluate(() => window.__TWIN__.lamps.force(false)));
+}
+if (ONLY.includes("terrain")) {
+  const hide = (what) => () =>
+    page.evaluate((w) => {
+      const t = window.__TWIN__.terrain;
+      for (const o of t.root.children) if (w === "all" || (w === "far" && /^terrain:far/.test(o.name)) || (w === "near" && /^terrain:near/.test(o.name)) || (w === "civil" && !/^terrain:/.test(o.name))) o.visible = false;
+    }, what);
+  const show = () => page.evaluate(() => window.__TWIN__.terrain.root.children.forEach((o) => (o.visible = true)));
+  for (const what of ["all", "near", "far", "civil"]) await step(page, "terrain", `terrain: ${what} hidden`, 0, hide(what), show);
+  await step(page, "terrain", "rocks zone hidden", 0, () => page.evaluate(() => { const z = window.__TWIN__.scene.getObjectByName("zone:powerhouse.terrain"); if (z) z.visible = false; }), () => page.evaluate(() => { const z = window.__TWIN__.scene.getObjectByName("zone:powerhouse.terrain"); if (z) z.visible = true; }));
+  await step(page, "terrain", "haze off", 0, () => page.evaluate(() => { window.__savedFog = window.__TWIN__.scene.fogNode; window.__TWIN__.scene.fogNode = null; }), () => page.evaluate(() => { window.__TWIN__.scene.fogNode = window.__savedFog; }));
+  await step(page, "terrain", "near: plain grey material", 0, () => page.evaluate(() => window.__TWIN__.terrain.debug.plain(true)), () => page.evaluate(() => window.__TWIN__.terrain.debug.plain(false)));
+  await step(page, "terrain", "near: finest level 110 -> 40 m", 0, () => page.evaluate(() => window.__TWIN__.terrain.debug.ranges(40, 330)), () => page.evaluate(() => window.__TWIN__.terrain.debug.ranges(110, 330)));
+  await step(page, "terrain", "near: all at the coarsest level", 0, () => page.evaluate(() => window.__TWIN__.terrain.debug.ranges(-1, -1)), () => page.evaluate(() => window.__TWIN__.terrain.debug.ranges(110, 330)));
 }
 if (ONLY.includes("tiers")) {
   for (const tier of ["low", "high", "ultra"]) {

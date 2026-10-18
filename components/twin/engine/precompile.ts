@@ -86,6 +86,7 @@ function standInFor(set: LightSet, real: THREE.Scene): THREE.Scene {
   // what the build cache reads of a scene beside its lights
   scene.environment = real.environment;
   scene.fog = real.fog;
+  scene.fogNode = real.fogNode;
   return scene;
 }
 

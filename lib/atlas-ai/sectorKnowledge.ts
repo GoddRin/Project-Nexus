@@ -63,16 +63,19 @@ const SECTORS: Sector[] = [
     id: "hydro",
     label: "HYDROELECTRIC POWER",
     match: /\b(hydro|hydroelectric|hydropower|hepp|run[- ]of[- ]river|pumped storage|penstock|headrace|weir|powerhouse|turbine|surge (shaft|tank)|desander|forebay|tailrace)\b/i,
-    trackRecord: `- 70 MW Bakun AC Hydroelectric Power Plant, Ilocos Sur and Benguet. Client: Transfield Philippines, Inc. Subcontractor for civil and tunnel works. Completed April 2000. Tunnel excavation 3.4 m diameter x 10.5 km, desander chambers, underground penstock 2.1 m diameter x 1.5 km, switchyard.
+    trackRecord: `- Division Leadership: SCIC's Hydropower Projects Division is led by Director Renin T. Belo (Director for Operations & Director for Hydro Projects).
+- 11.3 MW Tumauini Hydroelectric Power Project (THEPP), Antagan Uno, Tumauini, Isabela (ongoing, SCIC-HEPP-01 / LUZ-21-009). Client: Philnew Hydro Power Corporation (PHPC). Resident Project Manager: Engr. Romeo Sese (with Deputy PM Nathaniel P. Principe and Project Control / Technical Engineering Head Engr. Noel G. Lavapie). Contract value: PHP 1,995,967,295.80; NTP April 12, 2022; target completion December 28, 2026.
+- 8.4 MW Maladugao River (Upper Cascade) Hydroelectric Power Project, Kalilangan, Bukidnon (ongoing, SCIC-HEPP-11). Client: Investco BHPI Inc. Contract signed October 11, 2022, led for SCIC by Director for Hydropower Projects Renin T. Belo and Deputy MD for Operations Fernando T. Delgado.
+- 70 MW Bakun AC Hydroelectric Power Plant, Ilocos Sur and Benguet. Client: Transfield Philippines, Inc. Subcontractor for civil and tunnel works. Completed April 2000. Tunnel excavation 3.4 m diameter x 10.5 km, desander chambers, underground penstock 2.1 m diameter x 1.5 km, switchyard.
 - CBK rehabilitation (client CBK Hydro Power Consortium, completed August 2004): 4 x 8 MW Caliraya (Laguna), subcontractor for civil works: dam face rehabilitation, new spillway, tunnel rehabilitation; 2 x 10 MW Botocan (Majayjay, Laguna): dam, reservoir, headrace tunnel 1.18 km, powerhouse; 2 x 150 MW Kalayaan (Laguna), subcontractor for civil and underground penstock works: inclined shaft, access tunnel, twin penstock gallery, bifurcation cavern.
 - Irisan 1 Hydroelectric Power Plant, Benguet. Client: Hedcor, Inc. Sole contractor. Completed January 2012.
 - 8 MW Cabulig Hydroelectric Power Plant, Claveria, Misamis Oriental. Client: Mindanao Energy Systems, Inc. Sole contractor. Completed December 2012. Concrete gravity dam 38 m high, headrace 3 m x 3 m x 6 km box culvert, powerhouse, substation.
 - 7 MW Bubunawan Hydroelectric Power Plant rehabilitation, Baungon, Bukidnon. Client: Bubunawan Power Company, Inc. Sole contractor. Completed October 2013.
 - 14 MW Sabangan Hydroelectric Power Plant, Sabangan, Mountain Province. Client: Hedcor Sabangan, Inc. / Aboitiz Power Corporation. Sole contractor. Completed May 2015. Access roads 12 km, weir intake, desander, underground penstock 1.5 m diameter x 700 m, headrace tunnel 3 m diameter x 3.1 km.
-- 8 MW Catuiran Hydroelectric Power Plant, Naujan, Oriental Mindoro. Client: Catuiran Hydro Power Corp. Sole contractor, engineering, procurement and construction. Completed December 2018. Intake dam, underground desander, headrace tunnel 3.2 m diameter x 3.2 km, surge shaft, penstock, powerhouse, switchyard, 69 kV transmission line.
+- 8 MW Catuiran Hydroelectric Power Plant, Naujan, Oriental Mindoro. Client: Catuiran Hydro Power Corp. / SCPC. Sole EPC contractor. Project Manager: Albert B. Mendoza (achieved 1 Million Safe Man-Hours in February 2016 and awarded the SCIC Medal for Heroism). Completed December 2018. Intake dam, underground desander, headrace tunnel 3.2 m diameter x 3.2 km, surge shaft, penstock, powerhouse, switchyard, 69 kV transmission line.
 - Manolo Fortich Hydroelectric Power Plant, Bukidnon. Client: Hedcor Bukidnon, Inc. / Aboitiz Power Corporation. Sole contractor. Completed December 2018. Weir, desander, headrace tunnel 4 m diameter x 6 km, surge tank, penstock, powerhouse, switchyard.
 - 1.2 MW Loboc Mini Hydroelectric Power Plant, Loboc, Bohol. Client: Sta. Clara Power Corporation. Penstock 2.1 m diameter x 260 m, intake, inflatable dam, powerhouse.
-- Hydro is the company's oldest speciality: its first major hydro project was Bakun (1996), and its subsidiary Sta. Clara Power Corporation operates the Amlan, Catuiran, Loboc 1 and Loboc 2 plants.`,
+- Hydro is the company's oldest speciality: its first major hydro project was Bakun (1996), and its subsidiary Sta. Clara Power Corporation operates the Amlan (0.9 MW), Catuiran (8.0 MW), Loboc 1 (1.2 MW) and Loboc 2 (1.2 MW) plants, and is developing Tumauini Lower Cascade (13.56 MW), Mangima (12.0 MW), Clarin (8.28 MW), Mat-i 1 (5.82 MW), Malitbog (4.44 MW), and Silo-o (4.44 MW).`,
     background: `- A hydro plant turns falling water into electricity: power is roughly 9.81 x flow (m3/s) x head (m) x efficiency, in kilowatts. More head or more flow means more power.
 - Run-of-river (most Philippine mid-size plants): a weir diverts part of the river through an intake and a desander (settles out sand that would erode the turbines), along a headrace (tunnel, canal or box culvert) to a forebay or surge shaft, then down a steel penstock to the powerhouse; the water returns to the river through the tailrace. Little or no storage, so output follows river flow.
 - Storage and pumped storage: a dam holds a reservoir; pumped storage (such as Kalayaan) pumps water uphill when power is cheap and generates when it is needed.
@@ -84,10 +87,10 @@ const SECTORS: Sector[] = [
     id: "wind",
     label: "WIND POWER",
     match: /\b(wind (farm|power|energy|turbine|project)|wind\b|wtg|turbine foundation)\b/i,
-    trackRecord: `- 54 MW San Lorenzo Wind Farm, San Lorenzo, Guimaras. Client: Trans-Asia Renewable Energy Corp. and Kanematsu Corporation. Sole contractor. Completed January 2015. Balance of plant: access roads, 27 turbine foundations, earthworks, anchor bolts for 27 wind turbine generators.
+    trackRecord: `- 160 MW Pagudpud Wind Farm (Balaoi and Caunayan, Pagudpud, Ilocos Norte): commissioned May 26, 2023 for ACEN / Bayog Wind Power Corp. SCIC's Project Manager was Engr. Ryan Flores. Powers approximately 124,000 homes, followed by the 70 MW Caparispisan 2 Wind Project.
+- 54 MW San Lorenzo Wind Farm, San Lorenzo, Guimaras. Client: Trans-Asia Renewable Energy Corp. and Kanematsu Corporation. Sole contractor. Completed January 2015. Balance of plant: access roads, 27 turbine foundations, earthworks, anchor bolts for 27 wind turbine generators.
 - 54 MW Pililla Wind Farm, Pililla, Rizal. Client: Gamesa Eolica S.L. Unipersonal Phils; owner: Alternergy Philippine Holdings Corp. Sole contractor. Completed August 2015. Balance of plant: access roads, 27 foundations, earthworks, anchor bolts.
-- 16 MW Puerto Galera Wind Energy Power, Mindoro. Client: Philippine Hybrid Energy Systems, Inc. Sole contractor. Completed September 2018. Earthworks, 8 foundations, laydown pads and hardstands, access roads, drainage.
-- 160 MW Pagudpud Wind Farm: commissioned May 2023.`,
+- 16 MW Puerto Galera Wind Energy Power, Mindoro. Client: Philippine Hybrid Energy Systems, Inc. Sole contractor. Completed September 2018. Earthworks, 8 foundations, laydown pads and hardstands, access roads, drainage.`,
     background: `- A wind farm is a set of wind turbine generators (WTGs), each a tower, nacelle and three blades, on a large reinforced-concrete foundation, connected by buried cables to a substation.
 - The contractor's "balance of plant" is the civil and electrical work around the turbines: access roads wide and gentle enough for blades 60 m or longer, crane hardstands, foundations with anchor-bolt cages, cable trenches, the substation and the transmission line.
 - A typical modern onshore turbine is 2 to 6 MW; a foundation takes several hundred cubic metres of concrete poured in one continuous pour.
@@ -98,9 +101,10 @@ const SECTORS: Sector[] = [
     id: "thermal-storage",
     label: "THERMAL POWER AND BATTERY STORAGE",
     match: /\b(thermal|coal|diesel|bunker|combined cycle|ccpp|gas[- ]fired|battery|bess|energy storage)\b/i,
-    trackRecord: `- 3 x 55 MW Balingasag Thermal Power Plant, Misamis Oriental. Client: Mitsubishi Corporation. Sole contractor. Completed April 2017. Site development, access roads, foundations, sheet and concrete piling, buildings, electrical and structural steel works.
+    trackRecord: `- Division Leadership: SCIC's Energy Projects Division is led by Director Luisito O. Traboco.
+- 3 x 55 MW Balingasag Thermal Power Plant, Misamis Oriental. Client: Mitsubishi Corporation. Sole contractor. Project Manager: Peter Alan D. Pineda (achieved 3.44M Safe Man-Hours in Nov 2015, 5M in Feb 2016, and 8M in 2017). Completed April 2017. Site development, access roads, foundations, sheet and concrete piling, buildings, electrical and structural steel works.
 - 7.5 MW Coron Bunker-Fired Power Plant, Coron, Palawan. Client: Calamian Islands Power Corporation. Completed August 2014.
-- 10 MW Masinloc Battery Energy Storage System, Masinloc, Zambales. Client: Masinloc Power Partners Co. Ltd. / AES Philippines. Completed November 2016. Balance of plant and battery storage core.
+- 10 MW Masinloc Battery Energy Storage System, Masinloc, Zambales (first grid-scale BESS in Southeast Asia). Client: Masinloc Power Partners Co. Ltd. / AES Philippines. Led for SCIC by SVP for Special Operations Division Nobukazu Kotake. Completed November 2016. Balance of plant and battery storage core.
 - Site development for the 1,000 MW Sta. Rita combined cycle power plant, Batangas (client First Philippine Balfour Beatty Inc., completed November 1999, 35 hectares).
 - Hill removal for the 375 MW coal-fired Pagbilao Unit 3, Quezon (client Team Energy Corporation, completed October 2014; 422,633 cubic metres excavated).`,
     background: `- A battery energy storage system (BESS) stores electricity in lithium-ion battery containers, with power conversion systems (inverters), transformers and controls. It is rated in MW (how fast it can deliver) and MWh (how long). It smooths solar and wind output and supplies grid ancillary services.
@@ -110,7 +114,8 @@ const SECTORS: Sector[] = [
     id: "grid",
     label: "TRANSMISSION LINES AND SUBSTATIONS",
     match: /\b(transmission( line)?|substation|switchyard|kv\b|500 ?kv|230 ?kv|69 ?kv|ehv|grid|ngcp|conductor|tower)\b/i,
-    trackRecord: `- 500 kV extra-high-voltage Mariveles to Balsik (Hermosa) Transmission Line, Bataan. Client: National Grid Corporation of the Philippines. Main civil works and installation of conductors. Completed April 2022.`,
+    trackRecord: `- Division Leadership: SCIC's Energy Projects Division is led by Director Luisito O. Traboco.
+- 500 kV extra-high-voltage Mariveles to Balsik (Hermosa) Transmission Line, Bataan. Client: National Grid Corporation of the Philippines. Main civil works and installation of conductors. Completed April 2022.`,
     background: `- Transmission lines carry bulk power at high voltage (69, 138, 230 or 500 kV in the Philippines) to cut losses; substations step the voltage up or down and switch circuits.
 - Line construction is tower foundations, steel lattice tower erection, then stringing the conductors and ground wire. Right-of-way acquisition is the usual schedule risk, along with access in mountain terrain and typhoon loading.`,
   },
@@ -118,7 +123,9 @@ const SECTORS: Sector[] = [
     id: "water",
     label: "WATER AND WASTEWATER",
     match: /\b(water (treatment|supply|plant|system)|wtp\b|stp\b|sewage|sewerage|wastewater|waste water|mld\b|reservoir|pumping station|bulk water|maynilad|manila water|pipeline)\b/i,
-    trackRecord: `- Rizal Province Water Supply Improvement Project, Phases 1 and 2, Cardona, Rizal. Client: Manila Water Company, Inc. Consortium member. Completed April 2019. Raw water intake, pump station, pipelines, water treatment plant, treated water reservoir.
+    trackRecord: `- Division Leadership: SCIC's Water Projects Division is led by Director Narciso M. Areglado.
+- Davao City Bulk Water Supply Project WTP (over 300 MLD, Tamugan River, Davao City). Client: Apo Agua Infrastructura, Inc. Contract signed November 17, 2022, led for SCIC by Director for Water Projects Narciso M. Areglado and Chairman & MD Nicandro G. Linao.
+- Rizal Province Water Supply Improvement Project, Phases 1 and 2, Cardona, Rizal. Client: Manila Water Company, Inc. Consortium member. Completed April 2019. Raw water intake, pump station, pipelines, water treatment plant, treated water reservoir.
 - 25 MLD Morong Water Treatment Plant, Morong, Bataan. Client: Morong Power and Water Corporation. Sole contractor.
 - 100 MLD Marikina North Sewage Treatment Plant, Marikina City. Client: Manila Water Company, Inc. Consortium member. Completed August 2017.
 - Bahay Toro Sewage Treatment Plant, Quezon City. Client: Maynilad Water Services, Inc. Sole contractor. Completed October 2016. 13,400 cubic metres a day average dry-weather flow.
@@ -135,7 +142,7 @@ const SECTORS: Sector[] = [
     match: /\b(tunnel|tunnelling|tunneling|underground|drill[- ]and[- ]blast|shotcrete|rock bolt|tbm|cavern|shaft)\b/i,
     trackRecord: `- Bakun AC hydro: tunnel 3.4 m diameter x 10.5 km and underground penstock 2.1 m diameter x 1.5 km (completed April 2000).
 - Manolo Fortich hydro: headrace tunnel 4 m diameter x 6 km (completed December 2018).
-- Catuiran hydro: headrace tunnel 3.2 m diameter x 3.2 km (completed December 2018).
+- Catuiran hydro: headrace tunnel 3.2 m diameter x 3.2 km, led by Project Manager Albert B. Mendoza (completed December 2018).
 - Sabangan hydro: headrace tunnel 3 m diameter x 3.1 km and underground penstock 1.5 m diameter x 700 m (completed May 2015).
 - Kalayaan: inclined shaft, access tunnel, twin penstock gallery and bifurcation cavern (completed August 2004).
 - Subic Freeport Expressway expansion: road bypass tunnel 12.3 m diameter x 110 m, with rock bolting, wire mesh, shotcrete, steel ribs and concrete lining. Client: NLEX Corporation. Sole contractor. Completed March 2021.`,
@@ -147,7 +154,9 @@ const SECTORS: Sector[] = [
     id: "roads",
     label: "ROADS, BRIDGES AND RAILWAYS",
     match: /\b(road|highway|expressway|bridge|viaduct|railway|rail|lrt|mrt|nscr|slex|nlex|sctex|sfex|toll)\b/i,
-    trackRecord: `- Subic Freeport Expressway (SFEX) Capacity Expansion, Hermosa, Bataan to the Subic Bay freeport. Client: NLEX Corporation. Sole general contractor. Completed March 2021. A 108 m tunnel, the 180 m Jadjad Bridge, the 23.7 m Argonaut Bridge, earthworks, roadworks, drainage.
+    trackRecord: `- Division Leadership: SCIC's Infrastructure Projects Division is led by Director Antonio S. Pascua.
+- Bohol PRDP Desamparados-Tabuan Farm-to-Market Road and Four Bridges (12.656 km, Calape to Antequera, Bohol, PHP 625M World Bank loan grant — largest PRDP project in PH history, groundbreaking January 23, 2025, led by Deputy MD Miguel Carlos L. Linao).
+- Subic Freeport Expressway (SFEX) Capacity Expansion, Hermosa, Bataan to the Subic Bay freeport. Client: NLEX Corporation. Sole general contractor. Completed March 2021. A 108 m tunnel, the 180 m Jadjad Bridge, the 23.7 m Argonaut Bridge, earthworks, roadworks, drainage.
 - Subic-Clark-Tarlac Expressway Package 1, Dinalupihan, Bataan. Client: Obayashi Corporation. Completed 2007. 1.2 million cubic metres of embankment over 8 km, 8 bridges, 2 underpasses, four-lane asphalt expressway.
 - Urgent Bridges Construction Project for Rural Development, Package III, Laguna and Batangas. Client: TOYO Construction Co., Ltd. Completed 2008. Six two-lane reinforced-concrete deck girder bridges.
 - Tipo Expressway, Olongapo City to Hermosa, Bataan. Client: Samsung Construction Co. Philippines Inc. 8.5 km expressway with bridge and tunnel.`,
@@ -168,7 +177,10 @@ const SECTORS: Sector[] = [
     id: "buildings",
     label: "BUILDINGS AND INDUSTRIAL FACILITIES",
     match: /\b(building|factory|warehouse|manufacturing|industrial (plant|facility)|flour mill|mall|city hall|office building|facility)\b/i,
-    trackRecord: `- Project Alviera, Porac, Pampanga, for Monde Nissin Corporation (sole contractor, completed July 2019): 9,000 sqm building and 4,000 sqm site development.
+    trackRecord: `- Division Leadership: SCIC's Buildings and Industrial Plants Group is led by Group Manager Norman Enriquez.
+- Maersk – LF Logistics South Luzon Mega Distribution Hub (10-hectare / 100,000+ sqm warehouse in Batino, Calamba, Laguna; groundbreaking November 9, 2022, led for SCIC by Group Manager Norman Enriquez and Chairman & MD Nicandro G. Linao).
+- PMFTC Batangas Factory Extension Project (First Philippine Industrial Park, Tanauan, Batangas; contract signed November 14, 2022, led for SCIC by Group Manager Norman Enriquez, Dir. Carlos P. Hadap, Dir. Antonio S. Pascua, and GM Pablo G. Mandrilla, Jr.).
+- Project Alviera, Porac, Pampanga, for Monde Nissin Corporation (sole contractor, completed July 2019): 9,000 sqm building and 4,000 sqm site development.
 - JTI Flex factory, Malvar, Batangas, for JTI International Manufacturing Corporation (sole contractor, completed September 2018).
 - Subic Bay Flour Mill, for Mabuhay Interflour Mill Inc. (sole contractor, completed February 2017): mill building and storage silos.
 - Monde Nissin office and automated warehouse, Sta. Rosa, Laguna (completed January 2016); Monde Nissin manufacturing plant, Davao City (completed December 2012).

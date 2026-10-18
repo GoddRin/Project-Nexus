@@ -44,5 +44,60 @@
    "size": 60,
    "key": "8df3da1885"
   }
+ },
+ "array": {
+  "cr": "/textures/twin/ground/ground-cr.ktx2?v=6d4c61a1f0",
+  "n": "/textures/twin/ground/ground-n.ktx2?v=46514c8576",
+  "layers": [
+   {
+    "id": "litter",
+    "sizeM": 2.3,
+    "rough": 0.9,
+    "credit": "polyhaven.forest_leaves_03"
+   },
+   {
+    "id": "grass",
+    "sizeM": 2,
+    "rough": 0.85,
+    "credit": "polyhaven.leafy_grass"
+   },
+   {
+    "id": "laterite",
+    "sizeM": 1.5,
+    "rough": 0.82,
+    "credit": "polyhaven.red_dirt_mud_01"
+   },
+   {
+    "id": "mud",
+    "sizeM": 2.25,
+    "rough": 0.6,
+    "credit": "polyhaven.muddy_tracks"
+   },
+   {
+    "id": "gravel",
+    "sizeM": 2,
+    "rough": 0.88,
+    "credit": "polyhaven.gravel_floor_02"
+   },
+   {
+    "id": "cobbles",
+    "sizeM": 2.16,
+    "rough": 0.7,
+    "credit": "polyhaven.ganges_river_pebbles"
+   },
+   {
+    "id": "bedrock",
+    "sizeM": 3.2,
+    "rough": 0.78,
+    "credit": "polyhaven.rock_face"
+   },
+   {
+    "id": "shotcrete",
+    "sizeM": 2.4,
+    "rough": 0.86,
+    "credit": "polyhaven.rough_concrete"
+   }
+  ],
+  "key": "a8da023fe0"
  }
 }

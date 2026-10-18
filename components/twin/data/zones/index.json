@@ -191,5 +191,34 @@
     ]
    }
   ]
+ },
+ {
+  "id": "powerhouse.terrain",
+  "location": "powerhouse",
+  "title": "Rocks on the river bars and the steep ground, guard stones on the road bends",
+  "bounds": {
+   "min": [
+    -512,
+    -80,
+    -512
+   ],
+   "max": [
+    512,
+    400,
+    512
+   ]
+  },
+  "streamIn": 300,
+  "streamOut": 450,
+  "shell": null,
+  "assets": [
+   "prop.guard-stone.a",
+   "prop.rock-boulder.a",
+   "prop.rock-boulder.b",
+   "prop.rock-stone.a",
+   "prop.rock-stone.b"
+  ],
+  "placements": 713,
+  "cameras": []
  }
 ]

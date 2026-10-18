@@ -127,6 +127,8 @@ Each structure defines which parts exist at which `StageId`. Changing `stage` in
 
 **Needs.** P05g; `midway` coordinates.
 
+**Read first.** `reference/INDEX.md` R6, the row and notes for the **pipe bridge (Tunnel 1 outlet, Tunnel 2 inlet)** (owner, 2026-10-16, with a Google Earth view): its coordinates, the approach road from Temfacil (about 50 m of climb in 400 m, tight zigzags up a forested gully) and the cut pad with a shed and workshop at the portal; and **R7** (the key plans and photographs of the pipe bridge, both portals and both tunnels: build from them). Use the drawing names.
+
 **Build.** Terrain for `midway`; Tunnel 1 outlet portal; the headrace pipe leaving the portal on supports; the pipe bridge with wing walls built in lifts, piers and a catwalk with handrails; Tunnel 2 inlet portal; the access road AR04 bench; a small temporary facility (workers' barracks at Tunnel 1, compressor and genset shed, batching for shotcrete). Stages: portal development, pipe fabrication at the laydown, lift-by-lift wing walls, pipe stringing.
 
 **Pass when.** Structure checklist; photographs side by side; the pipe line is continuous from portal to portal.

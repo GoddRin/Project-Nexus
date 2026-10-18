@@ -8,7 +8,7 @@
  */
 import { useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import type * as THREE from "three/webgpu";
+import * as THREE from "three/webgpu";
 import { clock } from "../sim/clock";
 import { gateScene } from "../sim/gate-scene";
 import { twinActions, twinStore } from "../state/store";
@@ -24,6 +24,8 @@ import { precompile } from "./precompile";
 import { applyOutput, backendOf, type RendererBackend } from "./renderer";
 import { startStreaming, streaming } from "./streaming";
 import { lamps } from "../world/lamps";
+import { terrainNow } from "../world/Terrain";
+import { terrainTimings } from "../world/terrain-tiles";
 import { createProbe, pixelRatioNow, rememberedTier, resolution, type Probe } from "./tiers";
 
 export type TwinStats = {
@@ -182,7 +184,10 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
         precompile.setPasses(current ? current.passes : () => [{ target: null, mrt: null, context: null, depth: 0, lighting: true }]);
       }
       // the loading screen stays up until the probe has chosen a tier
-      if (!probe && ++drawn === 2) onFirstFrame(backendOf(renderer));
+      if (!probe && ++drawn === 2) {
+        terrainTimings.firstFrame = Math.round(performance.now());
+        onFirstFrame(backendOf(renderer));
+      }
     });
 
     const hook = {
@@ -213,6 +218,12 @@ export function Engine({ onFirstFrame }: { onFirstFrame: (backend: RendererBacke
       gate: gateScene,
       cost: costProbe,
       lamps,
+      get terrain() {
+        return terrainNow.current;
+      },
+      /** three itself, for checks that build their own render targets (P03a). */
+      three: THREE,
+      terrainTimings,
     };
     const host = window as unknown as { __TWIN__?: unknown };
     if (isDebugUrl()) {

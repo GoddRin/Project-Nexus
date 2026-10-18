@@ -40,7 +40,7 @@ export default async function NexusHomePage({ searchParams }: { searchParams: Pr
   // (?mockAlert=1..3 forces a wind-signal state in development only: see lib/home/devMocks.ts)
   const { mockAlert } = await searchParams;
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-5 pb-2 sm:space-y-6 sm:px-4 sm:pt-6 md:px-6 lg:pb-10">
+    <div className="mx-auto w-full max-w-[1680px] space-y-5 pb-2 sm:space-y-6 lg:pb-10">
       <IntroOverlay />
       <SectionBoundary label="hero" className="min-h-[420px]">
         <Suspense fallback={<HeroSkeleton />}>

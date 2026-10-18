@@ -3,6 +3,7 @@ import { TopBar } from "@/components/shared/TopBar";
 import { MobileNavProvider } from "@/components/shared/MobileNavContext";
 import { MobileNavDrawer } from "@/components/shared/MobileNavDrawer";
 import { MobileBottomBar } from "@/components/shared/MobileBottomBar";
+import { WorkspaceSubNav } from "@/components/shared/WorkspaceSubNav";
 import { getCachedProject } from "@/lib/db/cachedQueries";
 import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
 
@@ -14,7 +15,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   let role = "EMPLOYEE";
-  let userName = "Site Admin";
+  let userName = "Visitor";
   let userEmail = "";
 
   try {
@@ -31,7 +32,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <MobileNavProvider>
+    <MobileNavProvider role={role}>
       <div className="flex h-screen overflow-hidden bg-transparent">
         {/* Desktop persistent left sidebar */}
         <Sidebar role={role} userName={userName} userEmail={userEmail} />
@@ -41,11 +42,12 @@ export default async function DashboardLayout({
 
         {/* Main content area */}
         <div className="flex flex-1 flex-col overflow-hidden min-w-0">
-          {/* Top bar */}
-          <TopBar />
+          {/* Top bar / Editorial Masthead */}
+          <TopBar role={role} userName={userName} userEmail={userEmail} />
 
           {/* Content — responsive padding on mobile, 100% original p-6 on desktop */}
           <main className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 pb-24 md:pb-6">
+            <WorkspaceSubNav role={role} className="mx-auto w-full max-w-[1680px]" />
             {children}
           </main>
         </div>

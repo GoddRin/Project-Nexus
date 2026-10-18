@@ -7,88 +7,25 @@ import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard,
-  House,
-  Box,
-  Ticket,
-  Package,
-  BookOpen,
-  FileText,
   ChevronDown,
   User,
-  ClipboardList,
-  ClipboardCheck,
-  TrendingUp,
-  Wrench,
   LogOut,
-  Shield,
-  ShieldAlert,
-  CloudLightning,
-  Server,
-  BarChart3,
-  MapPin,
-  Cpu,
-  Sparkles,
-  Globe,
-  Zap,
-  Settings,
-  Map,
   X,
+  Eye,
+  ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydroPowerLogo } from "./HydroPowerLogo";
 import { SafetyStreak } from "./SafetyStreak";
 import { useMobileNav } from "./MobileNavContext";
-
-const CORE_NAV_ITEMS = [
-  // Nexus Home is the front page; it is active on /home and anything under it (/home/news/...)
-  { label: "Home", href: "/home", icon: House },
-  { label: "Command Center", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Digital Twin", href: "/digital-twin", icon: Box },
-  { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
-  { label: "Site Map", href: "/dashboard/sitemap", icon: MapPin },
-  { label: "Progress", href: "/dashboard/progress", icon: TrendingUp },
-  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { label: "Project Intelligence", href: "/dashboard/intelligence", icon: Zap },
-  { label: "AI Assistant", href: "/dashboard/assistant", icon: Sparkles },
-];
-
-const ACCORDION_GROUPS = [
-  {
-    id: "operations",
-    title: "Operations",
-    items: [
-      { label: "Daily Reports", href: "/dashboard/reports", icon: ClipboardList },
-      { label: "Daily Safety Logs", href: "/dashboard/daily-logs", icon: ClipboardCheck },
-      { label: "Tickets", href: "/dashboard/tickets", icon: Ticket },
-      { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
-      { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
-      { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: Globe },
-      { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
-      { label: "Regional Map", href: "/dashboard/regional-map", icon: Map },
-      { label: "Incidents", href: "/dashboard/incidents", icon: ShieldAlert },
-    ],
-  },
-  {
-    id: "resources",
-    title: "Resources",
-    items: [
-      { label: "Inventory", href: "/dashboard/inventory", icon: Package },
-      { label: "Assets", href: "/dashboard/assets", icon: Package },
-      { label: "Equipment", href: "/dashboard/equipment", icon: Cpu },
-    ],
-  },
-  {
-    id: "admin",
-    title: "Information & Admin",
-    items: [
-      { label: "Documents", href: "/dashboard/documents", icon: FileText },
-      { label: "Knowledge Base", href: "/dashboard/knowledge-base", icon: BookOpen },
-      { label: "Visitors", href: "/dashboard/visitors", icon: Shield },
-      { label: "Network", href: "/dashboard/network", icon: Server },
-    ],
-  },
-];
+import {
+  VISITOR_PILLARS,
+  ADMIN_CORE_NAV_ITEMS,
+  ADMIN_ACCORDION_GROUPS,
+  isNavItemActive,
+  type NavItem,
+} from "./navigationConfig";
 
 interface MobileNavDrawerProps {
   userName?: string;
@@ -101,7 +38,8 @@ export function MobileNavDrawer({
   userEmail = "",
   role = "EMPLOYEE",
 }: MobileNavDrawerProps) {
-  const { isOpen, closeMobileNav } = useMobileNav();
+  const { isOpen, closeMobileNav, viewAsVisitor, toggleViewAsVisitor } =
+    useMobileNav();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { signOut } = useClerk();
@@ -112,6 +50,13 @@ export function MobileNavDrawer({
     admin: false,
   });
 
+  const isAdminUser = role === "ADMINISTRATOR";
+  const isVisitorMode = !isAdminUser || viewAsVisitor;
+
+  const navItems: NavItem[] = isVisitorMode
+    ? VISITOR_PILLARS
+    : ADMIN_CORE_NAV_ITEMS;
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -120,16 +65,7 @@ export function MobileNavDrawer({
     setExpandedGroups((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const isItemActive = (href: string) => {
-    return pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
-  };
-
-  const navItems = [
-    ...CORE_NAV_ITEMS,
-    ...(role === "ADMINISTRATOR"
-      ? [{ label: "Settings", href: "/dashboard/settings", icon: Settings }]
-      : []),
-  ];
+  const checkActive = (item: NavItem) => isNavItemActive(item, pathname);
 
   if (!mounted) return null;
 
@@ -184,11 +120,11 @@ export function MobileNavDrawer({
             </div>
 
             {/* Scrollable Navigation Body */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            <div className="flex-1 overflow-y-auto p-3 space-y-4 no-scrollbar">
               {/* Primary Navigation Items */}
               <nav className="space-y-1">
                 {navItems.map((item) => {
-                  const active = isItemActive(item.href);
+                  const active = checkActive(item);
                   const Icon = item.icon;
                   return (
                     <Link
@@ -202,75 +138,153 @@ export function MobileNavDrawer({
                           : "text-text-secondary hover:bg-muted/60 hover:text-text-primary"
                       )}
                     >
-                      <Icon className={cn("h-4 w-4 shrink-0", active ? "text-scic-green dark:text-emerald-400" : "text-text-muted")} />
-                      <span>{item.label}</span>
+                      <Icon
+                        className={cn(
+                          "h-4 w-4 shrink-0",
+                          active
+                            ? "text-scic-green dark:text-emerald-400"
+                            : "text-text-muted"
+                        )}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <span className="block truncate">{item.label}</span>
+                        {isVisitorMode && item.description && (
+                          <span className="block truncate text-[10px] font-normal text-text-muted">
+                            {item.description}
+                          </span>
+                        )}
+                      </div>
                     </Link>
                   );
                 })}
               </nav>
 
-              {/* Operations, Resources & Admin Accordion Groups */}
-              <div className="space-y-3 pt-2 border-t border-border-hairline">
-                {ACCORDION_GROUPS.map((group) => {
-                  const isExpanded = expandedGroups[group.id];
-                  const hasActiveChild = group.items.some((item) => isItemActive(item.href));
-
-                  return (
-                    <div key={group.id} className="space-y-1">
-                      <button
-                        onClick={() => toggleGroup(group.id)}
-                        className={cn(
-                          "flex w-full items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors min-h-[38px]",
-                          hasActiveChild ? "text-scic-green dark:text-emerald-400" : "text-text-muted hover:text-text-primary"
-                        )}
-                      >
-                        <span>{group.title}</span>
-                        <ChevronDown
-                          className={cn(
-                            "h-3.5 w-3.5 transition-transform duration-200 text-text-muted",
-                            isExpanded && "rotate-180"
-                          )}
-                        />
-                      </button>
-
-                      {isExpanded && (
-                        <div className="pl-2 space-y-0.5 animate-in slide-in-from-top-2 duration-150">
-                          {group.items.map((item) => {
-                            const active = isItemActive(item.href);
-                            const Icon = item.icon;
-
-                            return (
-                              <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={closeMobileNav}
-                                className={cn(
-                                  "flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all min-h-[40px]",
-                                  active
-                                    ? "bg-scic-green/15 text-scic-green dark:text-emerald-400 font-semibold border border-scic-green/30"
-                                    : "text-text-muted hover:bg-muted/60 hover:text-text-primary"
-                                )}
-                              >
-                                <Icon className={cn("h-3.5 w-3.5 shrink-0", active ? "text-scic-green dark:text-emerald-400" : "text-text-muted")} />
-                                <span className="truncate">{item.label}</span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      )}
+              {/* AI Assistant & Knowledge Hub Quick Access in Visitor Mode */}
+              {isVisitorMode && (
+                <div className="pt-2 border-t border-border-hairline">
+                  <Link
+                    href="/dashboard/assistant"
+                    onClick={closeMobileNav}
+                    className={cn(
+                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 min-h-[44px]",
+                      pathname.startsWith("/dashboard/assistant") ||
+                        pathname.startsWith("/dashboard/knowledge-base") ||
+                        pathname.startsWith("/dashboard/documents")
+                        ? "bg-scic-green/15 text-scic-green dark:text-emerald-400 font-semibold shadow-sm border border-scic-green/30"
+                        : "text-text-secondary hover:bg-muted/60 hover:text-text-primary"
+                    )}
+                  >
+                    <Sparkles className="h-4 w-4 shrink-0 text-scic-green dark:text-emerald-400" />
+                    <div className="min-w-0 flex-1">
+                      <span className="block truncate">AI Assistant</span>
+                      <span className="block truncate text-[10px] font-normal text-text-muted">
+                        Nexus AI Guide, Knowledge Base & Documents
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                  </Link>
+                </div>
+              )}
+
+              {/* Operations, Resources & Admin Accordion Groups (Only in Full Admin Mode) */}
+              {!isVisitorMode && (
+                <div className="space-y-3 pt-2 border-t border-border-hairline">
+                  {ADMIN_ACCORDION_GROUPS.map((group) => {
+                    const isExpanded = expandedGroups[group.id];
+                    const hasActiveChild = group.items.some((item) =>
+                      checkActive(item)
+                    );
+
+                    return (
+                      <div key={group.id} className="space-y-1">
+                        <button
+                          onClick={() => toggleGroup(group.id)}
+                          className={cn(
+                            "flex w-full items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors min-h-[38px]",
+                            hasActiveChild
+                              ? "text-scic-green dark:text-emerald-400"
+                              : "text-text-muted hover:text-text-primary"
+                          )}
+                        >
+                          <span>{group.title}</span>
+                          <ChevronDown
+                            className={cn(
+                              "h-3.5 w-3.5 transition-transform duration-200 text-text-muted",
+                              isExpanded && "rotate-180"
+                            )}
+                          />
+                        </button>
+
+                        {isExpanded && (
+                          <div className="pl-2 space-y-0.5 animate-in slide-in-from-top-2 duration-150">
+                            {group.items.map((item) => {
+                              const active = checkActive(item);
+                              const Icon = item.icon;
+
+                              return (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  onClick={closeMobileNav}
+                                  className={cn(
+                                    "flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all min-h-[40px]",
+                                    active
+                                      ? "bg-scic-green/15 text-scic-green dark:text-emerald-400 font-semibold border border-scic-green/30"
+                                      : "text-text-muted hover:bg-muted/60 hover:text-text-primary"
+                                  )}
+                                >
+                                  <Icon
+                                    className={cn(
+                                      "h-3.5 w-3.5 shrink-0",
+                                      active
+                                        ? "text-scic-green dark:text-emerald-400"
+                                        : "text-text-muted"
+                                    )}
+                                  />
+                                  <span className="truncate">{item.label}</span>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Site safety board: days since the last lost-time accident */}
               <div className="pt-2">
-                <SafetyStreak variant="drawer" />
+                <SafetyStreak variant={isVisitorMode ? "minimal" : "drawer"} />
               </div>
             </div>
 
-            {/* Drawer Footer: User Profile & Sign Out */}
-            <div className="border-t border-border-hairline p-3 bg-muted/30">
+            {/* Drawer Footer: Admin View Switch, User Profile & Sign Out */}
+            <div className="border-t border-border-hairline p-3 bg-muted/30 space-y-2">
+              {isAdminUser && (
+                <button
+                  type="button"
+                  onClick={toggleViewAsVisitor}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold border transition-colors",
+                    viewAsVisitor
+                      ? "bg-amber-500/12 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                      : "bg-scic-green/10 text-scic-green dark:text-emerald-400 border-scic-green/25"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    {viewAsVisitor ? (
+                      <Eye className="h-3.5 w-3.5" />
+                    ) : (
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                    )}
+                    <span>{viewAsVisitor ? "Visitor View" : "Admin View"}</span>
+                  </span>
+                  <span className="rounded bg-black/10 dark:bg-white/10 px-1.5 py-0.5 font-mono text-[9px] uppercase">
+                    Switch
+                  </span>
+                </button>
+              )}
+
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-muted border border-border-hairline">
@@ -281,7 +295,7 @@ export function MobileNavDrawer({
                       {userName}
                     </p>
                     <p className="truncate font-mono text-[10px] text-text-muted">
-                      {userEmail || role.toLowerCase()}
+                      {userEmail || (isVisitorMode ? "visitor" : role.toLowerCase())}
                     </p>
                   </div>
                 </div>

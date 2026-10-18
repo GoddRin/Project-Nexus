@@ -127,6 +127,65 @@ for (const patch of PATCHES) {
   };
 }
 
+// ---- the site-wide ground (P03a): every layer in two array textures, so a pixel reads only the two
+// layers it needs whatever their number (components/twin/world/terrain-material.ts):
+//   ground-cr.ktx2   colour (sRGB) with height in alpha, ETC1S
+//   ground-n.ktx2    normal, ETC1S in its normal mode (X in red, green and blue, Y in alpha)
+// Roughness and occlusion are not stored: each layer has a roughness, varied by its height.
+const ARRAY = [
+  { id: "litter", set: "forest_leaves_03", sizeM: 2.3, rough: 0.9 },
+  { id: "grass", set: "leafy_grass", sizeM: 2.0, rough: 0.85 },
+  { id: "laterite", set: "red_dirt_mud_01", sizeM: 1.5, rough: 0.82 },
+  { id: "mud", set: "muddy_tracks", sizeM: 2.25, rough: 0.6 },
+  { id: "gravel", set: "gravel_floor_02", sizeM: 2.0, rough: 0.88 },
+  { id: "cobbles", set: "ganges_river_pebbles", sizeM: 2.16, rough: 0.7 },
+  { id: "bedrock", set: "rock_face", sizeM: 3.2, rough: 0.78 },
+  { id: "shotcrete", set: "rough_concrete", sizeM: 2.4, rough: 0.86 },
+];
+{
+  const files = ARRAY.flatMap((layer) => ["diff", "nor_gl", "disp"].map((m) => path.join(SRC, layer.set, `${layer.set}_${m}_2k.jpg`)));
+  for (const f of files) if (!fs.existsSync(f)) throw new Error(`missing ${f}: run node scripts/twin/fetch-polyhaven.mjs 2k ${path.basename(path.dirname(f))}`);
+  const key = sha(...files.map((f) => fs.readFileSync(f)), String(SIZE), String(VERSION), "array-1");
+  const cr = path.join(OUT, "ground-cr.ktx2");
+  const nr = path.join(OUT, "ground-n.ktx2");
+  if (!(state.array?.key === key && fs.existsSync(cr) && fs.existsSync(nr))) {
+    const crPngs = [];
+    const nPngs = [];
+    for (const layer of ARRAY) {
+      const [diff, nor, disp] = [await raw(path.join(SRC, layer.set, `${layer.set}_diff_2k.jpg`), 3), await raw(path.join(SRC, layer.set, `${layer.set}_nor_gl_2k.jpg`), 3), await raw(path.join(SRC, layer.set, `${layer.set}_disp_2k.jpg`), 1)];
+      const a = Buffer.alloc(SIZE * SIZE * 4);
+      const b = Buffer.alloc(SIZE * SIZE * 4);
+      for (let i = 0; i < SIZE * SIZE; i++) {
+        a[i * 4] = diff[i * 3];
+        a[i * 4 + 1] = diff[i * 3 + 1];
+        a[i * 4 + 2] = diff[i * 3 + 2];
+        a[i * 4 + 3] = disp[i];
+        b[i * 4] = nor[i * 3];
+        b[i * 4 + 1] = nor[i * 3 + 1];
+        b[i * 4 + 2] = nor[i * 3 + 2];
+        b[i * 4 + 3] = 255;
+      }
+      const pa = path.join(tmp, `a-${layer.id}.png`);
+      const pb = path.join(tmp, `n-${layer.id}.png`);
+      await sharp(a, { raw: { width: SIZE, height: SIZE, channels: 4 } }).png().toFile(pa);
+      await sharp(b, { raw: { width: SIZE, height: SIZE, channels: 4 } }).png().toFile(pb);
+      crPngs.push(pa);
+      nPngs.push(pb);
+    }
+    const common = ["create", "--layers", String(ARRAY.length), "--generate-mipmap", "--encode", "basis-lz", "--qlevel", "200"];
+    execFileSync(ktxBin, [...common, "--format", "R8G8B8A8_SRGB", "--assign-tf", "srgb", ...crPngs, cr], { stdio: ["ignore", "ignore", "inherit"] });
+    execFileSync(ktxBin, [...common, "--format", "R8G8B8A8_UNORM", "--assign-tf", "linear", "--normal-mode", "--normalize", ...nPngs, nr], { stdio: ["ignore", "ignore", "inherit"] });
+    built++;
+    console.log(`built  ground arrays cr ${(fs.statSync(cr).size / 1024).toFixed(0)} KB  n ${(fs.statSync(nr).size / 1024).toFixed(0)} KB`);
+  }
+  manifest.array = {
+    cr: `/textures/twin/ground/ground-cr.ktx2?v=${sha(fs.readFileSync(cr))}`,
+    n: `/textures/twin/ground/ground-n.ktx2?v=${sha(fs.readFileSync(nr))}`,
+    layers: ARRAY.map(({ id, sizeM, rough, set }) => ({ id, sizeM, rough, credit: `polyhaven.${set}` })),
+    key,
+  };
+}
+
 fs.rmSync(tmp, { recursive: true, force: true });
 const text = JSON.stringify(manifest, null, 1) + "\n";
 if (!fs.existsSync(MANIFEST) || fs.readFileSync(MANIFEST, "utf8") !== text) fs.writeFileSync(MANIFEST, text);

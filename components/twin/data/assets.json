@@ -1089,6 +1089,36 @@
   ]
  },
  {
+  "id": "prop.guard-stone.a",
+  "url": "/models/twin/props/guard-stone.a.glb?v=21fa859cfc",
+  "bytes": 224624,
+  "tris": [
+   1200,
+   300,
+   80
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.171,
+    -0.066,
+    -0.308
+   ],
+   "max": [
+    0.171,
+    0.264,
+    0.307
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.namaqualand_boulder_06"
+  ]
+ },
+ {
   "id": "prop.hardhat-hung.a",
   "url": "/models/twin/props/hardhat-hung.a.glb?v=5fad321458",
   "bytes": 15272,
@@ -1301,6 +1331,126 @@
    "polyhaven.metal_plate_02",
    "polyhaven.concrete_wall_008",
    "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "prop.rock-boulder.a",
+  "url": "/models/twin/props/rock-boulder.a.glb?v=287311c0d1",
+  "bytes": 1004768,
+  "tris": [
+   2000,
+   500,
+   100
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.626,
+    -0.194,
+    -0.902
+   ],
+   "max": [
+    0.628,
+    0.788,
+    0.899
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.boulder_01"
+  ]
+ },
+ {
+  "id": "prop.rock-boulder.b",
+  "url": "/models/twin/props/rock-boulder.b.glb?v=7a89a787ee",
+  "bytes": 887256,
+  "tris": [
+   2000,
+   500,
+   100
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -1.195,
+    -0.356,
+    -1.189
+   ],
+   "max": [
+    1.197,
+    1.434,
+    1.179
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.namaqualand_boulder_04"
+  ]
+ },
+ {
+  "id": "prop.rock-stone.a",
+  "url": "/models/twin/props/rock-stone.a.glb?v=0b01b38a5d",
+  "bytes": 302200,
+  "tris": [
+   1500,
+   400,
+   100
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.248,
+    -0.096,
+    -0.448
+   ],
+   "max": [
+    0.248,
+    0.386,
+    0.446
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.namaqualand_boulder_06"
+  ]
+ },
+ {
+  "id": "prop.rock-stone.b",
+  "url": "/models/twin/props/rock-stone.b.glb?v=610e44a302",
+  "bytes": 759856,
+  "tris": [
+   1200,
+   300,
+   80
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.119,
+    -0.04,
+    -0.225
+   ],
+   "max": [
+    0.117,
+    0.161,
+    0.225
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.rock_07"
   ]
  },
  {

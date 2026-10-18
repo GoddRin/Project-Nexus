@@ -27,6 +27,20 @@ export function addPickable(mesh: THREE.Mesh, quick = false): () => void {
   };
 }
 
+/**
+ * Surfaces drawn on the graphics card from data (the terrain, P03a), which rays cannot test as
+ * meshes: each answers a ray with the distance to its first hit, or null.
+ */
+type Surface = (ray: THREE.Ray) => { distance: number; object: THREE.Object3D } | null;
+const surfaces: Surface[] = [];
+export function addPickSurface(fn: Surface): () => void {
+  surfaces.push(fn);
+  return () => {
+    const i = surfaces.indexOf(fn);
+    if (i >= 0) surfaces.splice(i, 1);
+  };
+}
+
 /** The nearest surface under a point of the canvas, given in client pixels. */
 export function pickAt(clientX: number, clientY: number, dom: HTMLElement, camera: THREE.Camera): THREE.Intersection | null {
   const rect = dom.getBoundingClientRect();
@@ -34,7 +48,13 @@ export function pickAt(clientX: number, clientY: number, dom: HTMLElement, camer
   ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
   raycaster.setFromCamera(ndc, camera);
   const hits = raycaster.intersectObjects(pickables, false);
-  return hits.length > 0 ? hits[0] : null;
+  let best: THREE.Intersection | null = hits.length > 0 ? hits[0] : null;
+  for (const surface of surfaces) {
+    const hit = surface(raycaster.ray);
+    if (hit && (!best || hit.distance < best.distance))
+      best = { distance: hit.distance, point: raycaster.ray.at(hit.distance, new THREE.Vector3()), object: hit.object } as THREE.Intersection;
+  }
+  return best;
 }
 
 type GroundFn = (x: number, z: number) => number;

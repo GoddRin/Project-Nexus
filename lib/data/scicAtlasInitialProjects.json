@@ -33,8 +33,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -57,7 +57,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.020Z",
-    "updatedAt": "2026-10-05T00:37:45.273Z"
+    "updatedAt": "2026-10-18T00:33:04.940Z"
   },
   {
     "id": "cmu6czvey0002m496fyfhuq3n",
@@ -93,8 +93,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -122,7 +122,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.314Z",
-    "updatedAt": "2026-10-05T01:20:56.891Z"
+    "updatedAt": "2026-10-18T00:33:05.009Z"
   },
   {
     "id": "cmus19c4i00088c96e8j78lpq",
@@ -157,11 +157,11 @@
       "/project-images/balingasag-thermal-3.jpg"
     ],
     "boundaryGeometry": null,
-    "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMName": "Peter Alan D. Pineda",
+    "leadPMRole": "Project Manager",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
-    "leadPMContact": null,
+    "leadPMContact": "bd@staclara.com.ph",
     "engineeringScope": [
       "Site development and access roads",
       "Foundations",
@@ -187,7 +187,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.354Z",
-    "updatedAt": "2026-10-05T00:37:44.821Z"
+    "updatedAt": "2026-10-18T00:33:05.087Z"
   },
   {
     "id": "cmu7yoxn5000eog96o6spwfk7",
@@ -219,8 +219,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -242,7 +242,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:43:33.713Z",
-    "updatedAt": "2026-10-05T00:37:43.831Z"
+    "updatedAt": "2026-10-18T00:33:05.148Z"
   },
   {
     "id": "cmu6czxo60012m496kiqnxlef",
@@ -274,8 +274,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -288,7 +288,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.238Z",
-    "updatedAt": "2026-10-05T01:20:59.453Z"
+    "updatedAt": "2026-10-18T00:33:05.223Z"
   },
   {
     "id": "cmus19ce1000d8c96vusedf7x",
@@ -322,8 +322,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -343,7 +343,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.697Z",
-    "updatedAt": "2026-10-05T00:37:45.342Z"
+    "updatedAt": "2026-10-18T00:33:05.289Z"
   },
   {
     "id": "cmu6czw94000fm496fawejbmr",
@@ -377,8 +377,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -404,7 +404,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.400Z",
-    "updatedAt": "2026-10-05T01:20:57.376Z"
+    "updatedAt": "2026-10-18T00:33:05.353Z"
   },
   {
     "id": "cmus19bpx00018c96oni4s718",
@@ -438,8 +438,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -465,7 +465,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.829Z",
-    "updatedAt": "2026-10-05T00:37:43.227Z"
+    "updatedAt": "2026-10-18T00:33:05.423Z"
   },
   {
     "id": "cmu7z82wk001ijo96b6vab6o4",
@@ -499,8 +499,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -527,7 +527,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.996Z",
-    "updatedAt": "2026-10-05T01:20:58.971Z"
+    "updatedAt": "2026-10-18T00:33:05.492Z"
   },
   {
     "id": "cmu6czxqq0013m496lrabj7gz",
@@ -559,8 +559,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -577,7 +577,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.330Z",
-    "updatedAt": "2026-10-05T00:37:43.390Z"
+    "updatedAt": "2026-10-18T00:33:05.561Z"
   },
   {
     "id": "cmu6czw6z000em496y3mfgqfk",
@@ -611,8 +611,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -638,7 +638,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.323Z",
-    "updatedAt": "2026-10-05T01:20:57.138Z"
+    "updatedAt": "2026-10-18T00:33:05.649Z"
   },
   {
     "id": "cmu6czx1z000sm496gy6r05jt",
@@ -673,11 +673,11 @@
       "/project-images/catuiran-hydro-3.jpg"
     ],
     "boundaryGeometry": null,
-    "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMName": "Albert B. Mendoza",
+    "leadPMRole": "Project Manager",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
-    "leadPMContact": null,
+    "leadPMContact": "bd@staclara.com.ph",
     "engineeringScope": [
       "Access road and bailey bridge",
       "Intake dam and underground twin-chamber desander",
@@ -704,7 +704,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.439Z",
-    "updatedAt": "2026-10-05T01:20:59.971Z"
+    "updatedAt": "2026-10-18T00:33:05.710Z"
   },
   {
     "id": "cmus19cql000j8c96b05wzwhp",
@@ -739,8 +739,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -758,7 +758,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.149Z",
-    "updatedAt": "2026-10-05T00:37:45.476Z"
+    "updatedAt": "2026-10-18T00:33:05.769Z"
   },
   {
     "id": "cmus19c6b00098c96r1eowfet",
@@ -794,8 +794,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -821,7 +821,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.419Z",
-    "updatedAt": "2026-10-05T00:37:44.901Z"
+    "updatedAt": "2026-10-18T00:33:05.833Z"
   },
   {
     "id": "cmu6czxhh000zm496o8b74rrt",
@@ -855,8 +855,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -877,7 +877,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.997Z",
-    "updatedAt": "2026-10-05T02:02:59.400Z"
+    "updatedAt": "2026-10-18T00:33:05.915Z"
   },
   {
     "id": "cmu6czy1j0018m496don3vk83",
@@ -911,8 +911,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua (Groundbreaking led by Deputy MD Miguel Carlos L. Linao)",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -937,7 +937,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.719Z",
-    "updatedAt": "2026-10-03T07:35:26.691Z"
+    "updatedAt": "2026-10-18T00:33:05.986Z"
   },
   {
     "id": "cmu7z82ke001cjo96usq2ehhc",
@@ -969,8 +969,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -985,7 +985,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.558Z",
-    "updatedAt": "2026-10-05T01:20:57.762Z"
+    "updatedAt": "2026-10-18T00:33:06.047Z"
   },
   {
     "id": "cmu7z82ol001ejo96wuyr7108",
@@ -1017,8 +1017,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1036,7 +1036,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.709Z",
-    "updatedAt": "2026-10-05T00:37:44.307Z"
+    "updatedAt": "2026-10-18T00:33:06.122Z"
   },
   {
     "id": "cmu7z82um001hjo9622gs3gcq",
@@ -1068,8 +1068,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1090,7 +1090,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.926Z",
-    "updatedAt": "2026-10-05T02:02:59.144Z"
+    "updatedAt": "2026-10-18T00:33:06.198Z"
   },
   {
     "id": "cmu6czx0b000rm496xecxcbmm",
@@ -1124,8 +1124,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1146,7 +1146,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.379Z",
-    "updatedAt": "2026-10-05T01:20:59.596Z"
+    "updatedAt": "2026-10-18T00:33:06.274Z"
   },
   {
     "id": "cmus19cae000b8c96c489i0cs",
@@ -1180,8 +1180,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1198,7 +1198,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.566Z",
-    "updatedAt": "2026-10-05T00:37:46.169Z"
+    "updatedAt": "2026-10-18T00:33:06.352Z"
   },
   {
     "id": "cmus19bs400028c96oo9jg606",
@@ -1232,8 +1232,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1259,7 +1259,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.908Z",
-    "updatedAt": "2026-10-05T00:37:43.451Z"
+    "updatedAt": "2026-10-18T00:33:06.414Z"
   },
   {
     "id": "cmu6czwsp000om4961fsevc3t",
@@ -1295,8 +1295,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1319,7 +1319,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.105Z",
-    "updatedAt": "2026-10-05T01:20:59.660Z"
+    "updatedAt": "2026-10-18T00:33:06.485Z"
   },
   {
     "id": "cmu7z82g5001ajo96xjhgz38d",
@@ -1353,8 +1353,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -1369,7 +1369,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.405Z",
-    "updatedAt": "2026-10-05T01:20:59.890Z"
+    "updatedAt": "2026-10-18T00:33:06.554Z"
   },
   {
     "id": "cmu6czwbh000gm4964a8rca4v",
@@ -1403,8 +1403,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1431,7 +1431,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.485Z",
-    "updatedAt": "2026-10-05T01:20:58.653Z"
+    "updatedAt": "2026-10-18T00:33:06.624Z"
   },
   {
     "id": "cmu6czxut0015m496svmbppv0",
@@ -1463,8 +1463,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1485,7 +1485,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.477Z",
-    "updatedAt": "2026-10-05T00:37:42.778Z"
+    "updatedAt": "2026-10-18T00:33:06.694Z"
   },
   {
     "id": "cmu6czygt001fm4969x7bquyj",
@@ -1519,8 +1519,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1541,7 +1541,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:30.269Z",
-    "updatedAt": "2026-10-05T01:20:56.796Z"
+    "updatedAt": "2026-10-18T00:33:06.760Z"
   },
   {
     "id": "cmu6czvyl000bm496qwy0ss3j",
@@ -1577,8 +1577,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1597,7 +1597,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.021Z",
-    "updatedAt": "2026-10-05T00:37:41.005Z"
+    "updatedAt": "2026-10-18T00:33:06.833Z"
   },
   {
     "id": "cmus19bn100008c96bsobk40v",
@@ -1631,8 +1631,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1653,7 +1653,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.725Z",
-    "updatedAt": "2026-10-05T00:37:42.627Z"
+    "updatedAt": "2026-10-18T00:33:06.900Z"
   },
   {
     "id": "cmu6czwy6000qm496o7syz29v",
@@ -1686,11 +1686,11 @@
       "/project-images/laoag-bongo-1.jpg"
     ],
     "boundaryGeometry": null,
-    "leadPMName": "Engr. Ramon Valenzuela",
-    "leadPMRole": "Flood Mitigation Specialist",
-    "leadPMDivision": "SCIC Water & Civil Division",
+    "leadPMName": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
-    "leadPMContact": "r.valenzuela@staclara.com.ph",
+    "leadPMContact": null,
     "engineeringScope": [
       "Preparatory works",
       "Earth dike works",
@@ -1712,7 +1712,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.302Z",
-    "updatedAt": "2026-10-05T01:20:57.531Z"
+    "updatedAt": "2026-10-18T00:33:06.972Z"
   },
   {
     "id": "cmu6czxwu0016m496snjoh39a",
@@ -1744,8 +1744,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1766,7 +1766,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.550Z",
-    "updatedAt": "2026-10-05T00:37:46.404Z"
+    "updatedAt": "2026-10-18T00:33:07.065Z"
   },
   {
     "id": "cmu6czx6i000um4968am2gukb",
@@ -1800,8 +1800,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1822,7 +1822,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.602Z",
-    "updatedAt": "2026-10-05T01:20:57.933Z"
+    "updatedAt": "2026-10-18T00:33:07.136Z"
   },
   {
     "id": "cmu6czvom0006m496rujhvx9i",
@@ -1856,8 +1856,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1872,7 +1872,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.662Z",
-    "updatedAt": "2026-10-05T01:20:58.276Z"
+    "updatedAt": "2026-10-18T00:33:07.213Z"
   },
   {
     "id": "cmu6czxjn0010m496oho8ni4k",
@@ -1905,11 +1905,11 @@
       "/project-images/maco-tmf-1.jpg"
     ],
     "boundaryGeometry": null,
-    "leadPMName": "Engr. Bernardo Reyes",
-    "leadPMRole": "Underground Mining & Tunnel Manager",
-    "leadPMDivision": "SCIC Mining & Specialized Tunneling",
+    "leadPMName": null,
+    "leadPMRole": "Deputy Managing Director for Operations: Fernando T. Delgado",
+    "leadPMDivision": "SCIC Operations & Underground Works Division (Deputy MD Fernando T. Delgado / Dir. Renin T. Belo)",
     "leadPMLicense": null,
-    "leadPMContact": "b.reyes@staclara.com.ph",
+    "leadPMContact": null,
     "engineeringScope": [
       "Dam raise, 8.0 m (elevation 655.00 to 663.00)",
       "Rockfill and earthfill embankment"
@@ -1923,7 +1923,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.075Z",
-    "updatedAt": "2026-10-05T01:20:57.999Z"
+    "updatedAt": "2026-10-18T00:33:07.289Z"
   },
   {
     "id": "cmu6czyci001dm496humy19k0",
@@ -1957,8 +1957,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Deputy Managing Director for Operations: Fernando T. Delgado",
+    "leadPMDivision": "SCIC Operations & Underground Works Division (Deputy MD Fernando T. Delgado / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -1979,7 +1979,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:30.114Z",
-    "updatedAt": "2026-10-05T01:20:56.990Z"
+    "updatedAt": "2026-10-18T00:33:07.366Z"
   },
   {
     "id": "cmu6czy69001am496tbxblctb",
@@ -2013,8 +2013,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager, Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2043,7 +2043,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.889Z",
-    "updatedAt": "2026-10-05T02:02:58.746Z"
+    "updatedAt": "2026-10-18T00:33:07.431Z"
   },
   {
     "id": "cmu6czw0l000cm496bqlhj9j5",
@@ -2077,8 +2077,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2097,7 +2097,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.093Z",
-    "updatedAt": "2026-10-05T01:54:14.848Z"
+    "updatedAt": "2026-10-18T00:33:07.514Z"
   },
   {
     "id": "cmu6czxdm000xm496e6yu9a56",
@@ -2123,7 +2123,7 @@
     "percentComplete": null,
     "projectStartDate": null,
     "projectEndDate": null,
-    "client": null,
+    "client": "Investco BHPI Inc.",
     "projectValue": null,
     "featuredImage": "/project-images/maladugao-hydro-1.jpg",
     "gallery": [
@@ -2131,8 +2131,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo (with Deputy MD for Operations Fernando T. Delgado)",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -2147,7 +2147,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.858Z",
-    "updatedAt": "2026-10-05T01:20:58.064Z"
+    "updatedAt": "2026-10-18T00:33:07.595Z"
   },
   {
     "id": "cmu7z830g001kjo96enhldv86",
@@ -2179,8 +2179,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2201,7 +2201,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:27.136Z",
-    "updatedAt": "2026-10-05T00:37:44.526Z"
+    "updatedAt": "2026-10-18T00:33:07.670Z"
   },
   {
     "id": "cmu7z82ye001jjo96xq2thqvn",
@@ -2233,8 +2233,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2251,7 +2251,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:27.062Z",
-    "updatedAt": "2026-10-05T01:20:58.135Z"
+    "updatedAt": "2026-10-18T00:33:07.747Z"
   },
   {
     "id": "cmu6czxav000wm496g59oe0xw",
@@ -2286,8 +2286,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2316,7 +2316,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.759Z",
-    "updatedAt": "2026-10-05T01:20:59.528Z"
+    "updatedAt": "2026-10-18T00:33:07.808Z"
   },
   {
     "id": "cmus19ci5000f8c96g83ffad2",
@@ -2352,8 +2352,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2379,7 +2379,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.845Z",
-    "updatedAt": "2026-10-05T00:37:45.129Z"
+    "updatedAt": "2026-10-18T00:33:07.884Z"
   },
   {
     "id": "cmus19ckm000g8c96os6pennu",
@@ -2414,8 +2414,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2439,7 +2439,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.934Z",
-    "updatedAt": "2026-10-05T00:37:45.194Z"
+    "updatedAt": "2026-10-18T00:33:07.954Z"
   },
   {
     "id": "cmu6czwm9000lm4967uubn1t4",
@@ -2473,8 +2473,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2494,7 +2494,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.873Z",
-    "updatedAt": "2026-10-05T01:54:14.692Z"
+    "updatedAt": "2026-10-18T00:33:08.036Z"
   },
   {
     "id": "cmu6czwjv000km496rwznyo5v",
@@ -2529,8 +2529,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2555,7 +2555,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.787Z",
-    "updatedAt": "2026-10-05T01:20:57.286Z"
+    "updatedAt": "2026-10-18T00:33:08.115Z"
   },
   {
     "id": "cmu6czwon000mm496bh0bonvz",
@@ -2591,8 +2591,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2617,7 +2617,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.960Z",
-    "updatedAt": "2026-10-05T01:54:14.381Z"
+    "updatedAt": "2026-10-18T00:33:08.187Z"
   },
   {
     "id": "cmus1mvmq0001r4962jatjsdt",
@@ -2652,8 +2652,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "SVP for Special Operations Division: Nobukazu Kotake",
+    "leadPMDivision": "SCIC Special Operations & Energy Projects Division (SVP Nobukazu Kotake / Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2677,7 +2677,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T07:01:20.162Z",
-    "updatedAt": "2026-10-05T00:37:46.089Z"
+    "updatedAt": "2026-10-18T00:33:08.267Z"
   },
   {
     "id": "cmus19cu7000l8c968xjgt3mi",
@@ -2712,8 +2712,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Deputy Managing Director for Operations: Fernando T. Delgado",
+    "leadPMDivision": "SCIC Operations & Underground Works Division (Deputy MD Fernando T. Delgado / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2732,7 +2732,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.279Z",
-    "updatedAt": "2026-10-05T00:37:45.629Z"
+    "updatedAt": "2026-10-18T00:33:08.333Z"
   },
   {
     "id": "cmus19cw1000m8c968qqf89kt",
@@ -2767,8 +2767,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Deputy Managing Director for Operations: Fernando T. Delgado",
+    "leadPMDivision": "SCIC Operations & Underground Works Division (Deputy MD Fernando T. Delgado / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2787,7 +2787,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.345Z",
-    "updatedAt": "2026-10-05T00:37:45.710Z"
+    "updatedAt": "2026-10-18T00:33:08.417Z"
   },
   {
     "id": "cmu6czxsh0014m496l18di2ru",
@@ -2819,8 +2819,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2837,7 +2837,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.393Z",
-    "updatedAt": "2026-10-05T00:37:42.231Z"
+    "updatedAt": "2026-10-18T00:33:08.483Z"
   },
   {
     "id": "cmu6czwqv000nm496cnxi94wl",
@@ -2871,8 +2871,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2894,7 +2894,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.039Z",
-    "updatedAt": "2026-10-05T01:20:58.790Z"
+    "updatedAt": "2026-10-18T00:33:08.547Z"
   },
   {
     "id": "cmus19cxz000n8c96itdo0k7s",
@@ -2928,8 +2928,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -2952,7 +2952,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.415Z",
-    "updatedAt": "2026-10-05T00:43:21.880Z"
+    "updatedAt": "2026-10-18T00:33:08.618Z"
   },
   {
     "id": "cmus19czx000o8c961y7ologj",
@@ -2984,8 +2984,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3008,7 +3008,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.485Z",
-    "updatedAt": "2026-10-05T00:43:21.812Z"
+    "updatedAt": "2026-10-18T00:33:08.691Z"
   },
   {
     "id": "cmu6czyab001cm496jos42tbn",
@@ -3042,8 +3042,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3070,7 +3070,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:30.035Z",
-    "updatedAt": "2026-10-03T07:35:26.343Z"
+    "updatedAt": "2026-10-18T00:33:08.775Z"
   },
   {
     "id": "cmus19c2j00078c96umyt3t4p",
@@ -3104,8 +3104,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3130,7 +3130,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.283Z",
-    "updatedAt": "2026-10-05T00:37:44.755Z"
+    "updatedAt": "2026-10-18T00:33:08.841Z"
   },
   {
     "id": "cmu6czvwn000am49610l9pqnw",
@@ -3166,8 +3166,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3185,7 +3185,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.951Z",
-    "updatedAt": "2026-10-05T00:37:40.864Z"
+    "updatedAt": "2026-10-18T00:33:08.911Z"
   },
   {
     "id": "cmu7z82m7001djo96rydccjwj",
@@ -3217,8 +3217,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -3237,7 +3237,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.623Z",
-    "updatedAt": "2026-10-05T02:02:59.008Z"
+    "updatedAt": "2026-10-18T00:33:08.971Z"
   },
   {
     "id": "cmu6czvm90005m49601rruv12",
@@ -3271,8 +3271,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3290,7 +3290,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.577Z",
-    "updatedAt": "2026-10-05T01:20:59.049Z"
+    "updatedAt": "2026-10-18T00:33:09.042Z"
   },
   {
     "id": "cmu6czwfu000im4964c0tfh02",
@@ -3324,8 +3324,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3350,7 +3350,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.642Z",
-    "updatedAt": "2026-10-05T01:20:58.584Z"
+    "updatedAt": "2026-10-18T00:33:09.103Z"
   },
   {
     "id": "cmu6czvjl0004m4968wt4k4en",
@@ -3383,11 +3383,11 @@
       "/project-images/scic-wind-farm-inauguration.jpg"
     ],
     "boundaryGeometry": null,
-    "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMName": "Engr. Ryan Flores",
+    "leadPMRole": "Project Manager",
+    "leadPMDivision": "SCIC Renewable Energy / Wind Power Projects (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
-    "leadPMContact": null,
+    "leadPMContact": "bd@staclara.com.ph",
     "engineeringScope": [
       "Civil works balance of plant (BOP)"
     ],
@@ -3413,7 +3413,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.481Z",
-    "updatedAt": "2026-10-05T00:37:40.453Z"
+    "updatedAt": "2026-10-18T00:33:09.194Z"
   },
   {
     "id": "cmus19bwh00048c96krllmzvo",
@@ -3447,8 +3447,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3475,7 +3475,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.065Z",
-    "updatedAt": "2026-10-05T00:37:44.598Z"
+    "updatedAt": "2026-10-18T00:33:09.259Z"
   },
   {
     "id": "cmu6czy86001bm496wxp02bh2",
@@ -3509,8 +3509,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager, Buildings & Industrial Plants: Norman Enriquez (with Dir. Carlos P. Hadap & Dir. Antonio S. Pascua)",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -3529,7 +3529,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.958Z",
-    "updatedAt": "2026-10-05T02:02:59.280Z"
+    "updatedAt": "2026-10-18T00:33:09.347Z"
   },
   {
     "id": "cmus19ccf000c8c9613p8x9ib",
@@ -3563,8 +3563,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3583,7 +3583,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.639Z",
-    "updatedAt": "2026-10-05T00:43:21.954Z"
+    "updatedAt": "2026-10-18T00:33:09.424Z"
   },
   {
     "id": "cmus19bu800038c96vle8cgbb",
@@ -3617,8 +3617,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3645,7 +3645,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:47.984Z",
-    "updatedAt": "2026-10-05T00:37:43.770Z"
+    "updatedAt": "2026-10-18T00:33:09.489Z"
   },
   {
     "id": "cmu7z82ig001bjo96xjb0tj36",
@@ -3677,8 +3677,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3698,7 +3698,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.488Z",
-    "updatedAt": "2026-10-05T00:37:46.617Z"
+    "updatedAt": "2026-10-18T00:33:09.559Z"
   },
   {
     "id": "cmus19cga000e8c960v8fkg7s",
@@ -3732,8 +3732,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3759,7 +3759,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.778Z",
-    "updatedAt": "2026-10-05T00:37:45.051Z"
+    "updatedAt": "2026-10-18T00:33:09.639Z"
   },
   {
     "id": "cmu6czx8p000vm4962cosp4r7",
@@ -3793,8 +3793,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3816,7 +3816,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.681Z",
-    "updatedAt": "2026-10-05T01:20:59.307Z"
+    "updatedAt": "2026-10-18T00:33:09.706Z"
   },
   {
     "id": "cmu6czxm70011m496avet6awi",
@@ -3850,8 +3850,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3873,7 +3873,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:29.167Z",
-    "updatedAt": "2026-10-05T01:20:57.843Z"
+    "updatedAt": "2026-10-18T00:33:09.779Z"
   },
   {
     "id": "cmus19d3g000q8c96qe1bhcso",
@@ -3907,8 +3907,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3930,7 +3930,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.612Z",
-    "updatedAt": "2026-10-05T00:37:45.934Z"
+    "updatedAt": "2026-10-18T00:33:09.864Z"
   },
   {
     "id": "cmus19d1k000p8c964z72bznr",
@@ -3964,8 +3964,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -3987,7 +3987,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.544Z",
-    "updatedAt": "2026-10-05T00:37:45.858Z"
+    "updatedAt": "2026-10-18T00:33:09.939Z"
   },
   {
     "id": "cmu6czvcn0001m496zujvgg79",
@@ -4022,8 +4022,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4051,7 +4051,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.231Z",
-    "updatedAt": "2026-10-05T01:20:59.134Z"
+    "updatedAt": "2026-10-18T00:33:10.007Z"
   },
   {
     "id": "cmus19by600058c96xuzl67rl",
@@ -4085,8 +4085,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4113,7 +4113,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.126Z",
-    "updatedAt": "2026-10-05T00:37:41.872Z"
+    "updatedAt": "2026-10-18T00:33:10.093Z"
   },
   {
     "id": "cmu6czxfs000ym4962x42xi79",
@@ -4147,8 +4147,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Hydropower Projects: Renin T. Belo",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4180,7 +4180,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.936Z",
-    "updatedAt": "2026-10-05T02:02:58.881Z"
+    "updatedAt": "2026-10-18T00:33:10.159Z"
   },
   {
     "id": "cmu6czwi7000jm4964il4b71n",
@@ -4214,8 +4214,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4234,7 +4234,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.727Z",
-    "updatedAt": "2026-10-05T01:20:58.438Z"
+    "updatedAt": "2026-10-18T00:33:10.220Z"
   },
   {
     "id": "cmu6czwdo000hm4967yrnjcwv",
@@ -4268,8 +4268,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4295,7 +4295,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.564Z",
-    "updatedAt": "2026-10-05T01:20:57.467Z"
+    "updatedAt": "2026-10-18T00:33:10.287Z"
   },
   {
     "id": "cmu7z82sm001gjo96z6li8xiu",
@@ -4327,8 +4327,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4347,7 +4347,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.854Z",
-    "updatedAt": "2026-10-05T00:37:43.076Z"
+    "updatedAt": "2026-10-18T00:33:10.348Z"
   },
   {
     "id": "cmu6czww3000pm4969a1m7klq",
@@ -4382,8 +4382,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4405,7 +4405,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:28.227Z",
-    "updatedAt": "2026-10-05T01:20:57.683Z"
+    "updatedAt": "2026-10-18T00:33:10.414Z"
   },
   {
     "id": "cmu6czvqk0007m4965vosqk8c",
@@ -4441,11 +4441,11 @@
       "/project-images/sfex-tunnel-4.jpg"
     ],
     "boundaryGeometry": null,
-    "leadPMName": "Engr. Carlito Perez",
-    "leadPMRole": "Senior Highway & Tunnel Superintendent",
-    "leadPMDivision": "SCIC Highway & Bridge Engineering",
+    "leadPMName": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
-    "leadPMContact": "c.perez@staclara.com.ph",
+    "leadPMContact": null,
     "engineeringScope": [
       "Road tunnel (108 m; bypass tunnel 12.3 m diameter x 110 m long per the tunnelling page)",
       "Tunnel excavation, rock bolting, wire mesh, shotcrete, steel ribs and concrete lining",
@@ -4472,7 +4472,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.732Z",
-    "updatedAt": "2026-10-05T00:37:46.544Z"
+    "updatedAt": "2026-10-18T00:33:10.473Z"
   },
   {
     "id": "cmu6czvsu0008m496n350u9x3",
@@ -4508,8 +4508,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4533,7 +4533,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:26.814Z",
-    "updatedAt": "2026-10-05T01:20:57.058Z"
+    "updatedAt": "2026-10-18T00:33:10.533Z"
   },
   {
     "id": "cmus1mvjq0000r496orcg90yj",
@@ -4565,8 +4565,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4586,7 +4586,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T07:01:20.055Z",
-    "updatedAt": "2026-10-03T07:02:09.347Z"
+    "updatedAt": "2026-10-18T00:33:10.594Z"
   },
   {
     "id": "cmus19c0j00068c968n05gpz6",
@@ -4622,8 +4622,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Overseen by SCIC Renewable Energy & Power Projects Division",
+    "leadPMDivision": "SCIC Renewable Energy & Power Projects Division (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4649,7 +4649,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.211Z",
-    "updatedAt": "2026-10-05T00:37:44.681Z"
+    "updatedAt": "2026-10-18T00:33:10.652Z"
   },
   {
     "id": "cmus19c84000a8c96ejoff2dn",
@@ -4684,8 +4684,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Energy Projects: Luisito O. Traboco",
+    "leadPMDivision": "SCIC Energy Projects Division (Dir. Luisito O. Traboco)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4704,7 +4704,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:48.484Z",
-    "updatedAt": "2026-10-05T00:37:44.968Z"
+    "updatedAt": "2026-10-18T00:33:10.717Z"
   },
   {
     "id": "cmqvwzn750000r8w1zidk116i",
@@ -4741,10 +4741,10 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": "Engr. Romeo Sese",
-    "leadPMRole": "Project Manager",
-    "leadPMDivision": null,
+    "leadPMRole": "Project Manager (Resident Project Manager)",
+    "leadPMDivision": "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
     "leadPMLicense": null,
-    "leadPMContact": null,
+    "leadPMContact": "bd@staclara.com.ph",
     "engineeringScope": [
       "Concrete gravity diversion weir & intake gatehouse structure",
       "Multi-chamber settling basin with automated scouring sluiceways",
@@ -4782,13 +4782,13 @@
       "generationOutput": "62.4 GWh / year"
     },
     "featured": true,
-    "targetCodDate": "2026-10-31T00:00:00.000Z",
+    "targetCodDate": "2027-04-09T00:00:00.000Z",
     "createdById": null,
     "updatedById": "cmr1cj51300003kw1ddxnxh05",
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-06-27T05:23:33.042Z",
-    "updatedAt": "2026-10-03T07:25:16.807Z"
+    "updatedAt": "2026-10-18T00:33:10.791Z"
   },
   {
     "id": "cmu6czw2y000dm496fq6djrye",
@@ -4822,8 +4822,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4841,7 +4841,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-18T02:48:27.178Z",
-    "updatedAt": "2026-10-05T01:54:14.542Z"
+    "updatedAt": "2026-10-18T00:33:10.864Z"
   },
   {
     "id": "cmu7z82qj001fjo963ynh1x41",
@@ -4873,8 +4873,8 @@
     "gallery": [],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Group Manager for Buildings & Industrial Plants: Norman Enriquez",
+    "leadPMDivision": "SCIC Buildings & Industrial Plants Group (GM Norman Enriquez)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [],
@@ -4887,7 +4887,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-09-19T05:58:26.779Z",
-    "updatedAt": "2026-10-05T01:20:58.718Z"
+    "updatedAt": "2026-10-18T00:33:10.937Z"
   },
   {
     "id": "cmus19csa000k8c96a2aknni8",
@@ -4921,8 +4921,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Infrastructure Projects: Antonio S. Pascua",
+    "leadPMDivision": "SCIC Infrastructure Projects Division (Dir. Antonio S. Pascua)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -4948,7 +4948,7 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.210Z",
-    "updatedAt": "2026-10-05T00:37:45.550Z"
+    "updatedAt": "2026-10-18T00:33:11.026Z"
   },
   {
     "id": "cmus19cop000i8c967495bu1r",
@@ -4982,8 +4982,8 @@
     ],
     "boundaryGeometry": null,
     "leadPMName": null,
-    "leadPMRole": null,
-    "leadPMDivision": null,
+    "leadPMRole": "Director for Water Projects: Narciso M. Areglado",
+    "leadPMDivision": "SCIC Water Projects Division (Dir. Narciso M. Areglado)",
     "leadPMLicense": null,
     "leadPMContact": null,
     "engineeringScope": [
@@ -5003,6 +5003,6 @@
     "deletedAt": null,
     "deletedById": null,
     "createdAt": "2026-10-03T06:50:49.081Z",
-    "updatedAt": "2026-10-05T00:37:45.408Z"
+    "updatedAt": "2026-10-18T00:33:11.131Z"
   }
 ]

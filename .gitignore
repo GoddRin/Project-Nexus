@@ -94,3 +94,6 @@ __pycache__/
 
 # Twin v2 review videos stay on the build machine (the stills are the record)
 /docs/twin-v2/review/**/*.webm
+
+# showcase video media
+/showcase/

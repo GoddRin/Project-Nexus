@@ -74,7 +74,7 @@ async function open(context, query = "") {
   });
   const t0 = Date.now();
   await page.goto(url(query), { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 120000 });
+  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 120000 });
   // (since P01c the loading screen stays up while the start-up probe picks a tier, on a first visit)
   await page.waitForSelector("select[aria-label='Go to a place']", { timeout: 120000 });
   return { page, errors, startMs: Date.now() - t0 };
@@ -205,7 +205,7 @@ const context = await browser.newContext({ viewport: VIEW });
     await sleep(900);
     const after = await page.evaluate(([x, y]) => ({ p: window.__TWIN__.pick(x, y), cam: window.__TWIN__.rig.pose().pos }), at);
     if (!before.p || !after.p) {
-      const why = await page.evaluate(() => ({ pose: window.__TWIN__.rig.pose(), flying: window.__TWIN__.rig.isFlying(), ground: !!window.__TWIN__.scene.getObjectByName("ground"), focus: document.activeElement?.tagName }));
+      const why = await page.evaluate(() => ({ pose: window.__TWIN__.rig.pose(), flying: window.__TWIN__.rig.isFlying(), ground: !!(window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), focus: document.activeElement?.tagName }));
       console.log("       nothing under the cursor:", JSON.stringify({ before, after, why }));
       before.p ??= [0, 0, 0];
       after.p ??= [1e6, 0, 0];
@@ -311,7 +311,7 @@ const context = await browser.newContext({ viewport: VIEW });
     });
     let rebuilt = false;
     try {
-      await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.renderer !== window.__oldRenderer && window.__TWIN__.loop.frames() > 0 && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 60000 });
+      await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.renderer !== window.__oldRenderer && window.__TWIN__.loop.frames() > 0 && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 60000 });
       rebuilt = true;
     } catch {}
     await sleep(1500);
@@ -332,7 +332,7 @@ const context = await browser.newContext({ viewport: VIEW });
   const dusk = await brightness(page);
   await shot(page, `shell-${LABEL}-1830-switchyard.jpg`);
   await page.reload({ waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 120000 });
+  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 120000 });
   await sleep(800);
   const s2 = await state(page);
   const okPose2 = await atPose(page, PLACES.switchyard);
@@ -341,7 +341,7 @@ const context = await browser.newContext({ viewport: VIEW });
 
   // v1's ?preset= key, and the time of day actually changing the light
   await page.goto(url("&preset=temfacil&t=0200"), { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 120000 });
+  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.loop.frames() > 10 && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 120000 });
   await sleep(1200);
   const night = await brightness(page);
   const q2 = new URL(page.url()).searchParams;

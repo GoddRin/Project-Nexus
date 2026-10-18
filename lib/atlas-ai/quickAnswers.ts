@@ -138,6 +138,124 @@ export async function tryQuickAnswer(query: string, history: Turn[], language?: 
   const q = (query || "").trim();
   if (!q || q.length > 160) return null;
 
+  // ── Project Manager / Senior Project Manager / Site Leadership questions ──────
+  const explicitPMTerm = /\b(project\s+managers?|senior\s+project\s+managers?|lead\s+project\s+managers?|lead\s+pm|pm|site\s+managers?|resident\s+(project\s+)?managers?|project\s+directors?)\b/i.test(q);
+  const pmQuestion =
+    (/\b(who\s+(is|was|are|were)|name\s+of|what\s+is\s+the\s+name\s+of|tell\s+me\s+the|do\s+we\s+have\s+a|list(\s+of)?)\b/i.test(q) && explicitPMTerm) ||
+    (explicitPMTerm && /\b(for|on|of|at|in|per\s+project)\b/i.test(q)) ||
+    /\bwho\s+(manages|managed|is\s+managing|is\s+in\s+charge\s+of)\b/i.test(q) ||
+    /\bsino\b[^?]*\b(project\s+manager|pm|manager)\b/i.test(q);
+
+  if (pmQuestion) {
+    const all = await ProjectAtlasService.getAllProjects({ limit: 500 });
+    const stopWords = new Set([
+      "who", "is", "was", "are", "were", "our", "the", "a", "an", "for", "on", "of", "at", "in",
+      "to", "and", "or", "per", "each", "every", "all", "what", "name", "tell", "me", "list",
+      "project", "projects", "manager", "managers", "senior", "lead", "pm", "pms", "site",
+      "resident", "director", "directors", "company", "scic", "sta", "clara", "international",
+      "corporation", "sino", "ang", "sa", "ng", "natin", "nyo", "hepp", "plant", "power",
+      "hydroelectric", "hydro", "wind", "farm", "thermal", "water", "treatment", "wtp", "stp",
+      "manages", "managed", "managing", "charge",
+    ]);
+
+    const extractCandidateTokens = (text: string) =>
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, " ")
+        .split(/\s+/)
+        .filter((t) => t.length >= 3 && !stopWords.has(t));
+
+    let tokens = extractCandidateTokens(q);
+    if (tokens.length === 0 && /\b(it|this|that|there|here|the\s+project)\b/i.test(q)) {
+      const prevUser = [...history].reverse().find((t) => t.role === "user")?.content ?? "";
+      tokens = extractCandidateTokens(prevUser);
+    }
+
+    // Check if the query targets a specific project
+    const scored =
+      tokens.length > 0
+        ? all
+            .map((p) => {
+              const hay = `${p.name} ${p.slug.replace(/-/g, " ")} ${p.projectCode || ""} ${p.municipality} ${p.province}`.toLowerCase();
+              const hits = tokens.filter((t) => hay.includes(t)).length;
+              return { p, hits };
+            })
+            .filter((x) => x.hits > 0)
+            .sort((a, b) => b.hits - a.hits)
+        : [];
+
+    if (scored.length > 0 && scored[0].hits >= 1) {
+      const target = scored[0].p;
+      if (target.slug === "tumauini-hepp") {
+        const written =
+          `The verified Project Manager (Resident Project Manager) for the **${target.name}** (${target.capacity || "11.3 MW"}, ${target.municipality}, ${target.province}) is **${target.leadPMName || "Engr. Romeo Sese"}**, under the **${target.leadPMDivision || "SCIC Hydropower Projects Division (Dir. Renin T. Belo)"}**.\n\n` +
+          `Key verified site leadership on the Tumauini project also includes **Nathaniel P. Principe** (Deputy Project Manager), **Engr. Noel G. Lavapie** (Project Control & Technical Engineering Head), **Zandre Villaver** (Mechanical Superintendent), **Marvin Sibal** (Safety Officer), and **May Ann Parallag** (Planning Engineer). [Source: Project Atlas Database & Tumauini Accomplishment Reports MAR-54 / WAR-235]`;
+        const say = `Our Project Manager on the Tumauini Hydroelectric Power Project is Engineer Romeo Sese, supported by Deputy Project Manager Nathaniel Principe and Project Control Head Engineer Noel Lavapie, under Hydropower Division Director Renin Belo.`;
+        const sayTl = `Ang Project Manager natin sa Tumauini Hydroelectric Power Project ay si Engineer Romeo Sese, kasama sina Deputy Project Manager Nathaniel Principe at Engineer Noel Lavapie sa ilalim ni Hydropower Division Director Renin Belo.`;
+        return {
+          answer: `${written}\n[[SAY: ${say}]]${language === "taglish" ? `\n[[SAY-TL: ${sayTl}]]` : ""}`,
+          scope: {},
+          filters: null,
+          highlight: [target.id],
+        };
+      }
+
+      if (target.leadPMName) {
+        const written =
+          `The verified **${target.leadPMRole || "Project Manager"}** for the **${target.name}** (${target.municipality}, ${target.province}) is **${target.leadPMName}**, under the **${target.leadPMDivision || "SCIC Operations Division"}**. [Source: Project Atlas Database & Sta. Clara Official Press Releases]`;
+        const say = `The verified Project Manager for ${target.name.replace(/\s*\([^)]*\)\s*/g, " ").trim()} is ${target.leadPMName}.`;
+        const sayTl = `Ang verified Project Manager para sa ${target.name.replace(/\s*\([^)]*\)\s*/g, " ").trim()} ay si ${target.leadPMName}.`;
+        return {
+          answer: `${written}\n[[SAY: ${say}]]${language === "taglish" ? `\n[[SAY-TL: ${sayTl}]]` : ""}`,
+          scope: {},
+          filters: null,
+          highlight: [target.id],
+        };
+      }
+
+      // Project exists, no individual site PM on public record, but has verified Division Director / Group Manager oversight
+      const divText = target.leadPMDivision || "SCIC Operations & Engineering Division (Deputy MD Fernando T. Delgado)";
+      const roleText = target.leadPMRole ? ` (${target.leadPMRole})` : "";
+      const written =
+        `The current Atlas record does not list an individually named site-level Resident Project Manager for **${target.name}** (${target.municipality}, ${target.province}). Under Sta. Clara International Corporation's verified organization structure, this project is overseen by the **${divText}**${roleText}. [Source: Project Atlas Database & Sta. Clara Company Profile]`;
+      const say = `The public records don't list an individual site Project Manager for ${target.name.replace(/\s*\([^)]*\)\s*/g, " ").trim()}. It falls under our ${divText.replace(/\s*\([^)]*\)\s*/g, "").trim()}${target.leadPMRole ? `, led by ${target.leadPMRole.replace(/^.*:\s*/, "")}` : ""}.`;
+      const sayTl = `Walang nakalista na individual site Project Manager sa public records para sa ${target.name.replace(/\s*\([^)]*\)\s*/g, " ").trim()}, pero ito ay nasa ilalim ng ${divText}.`;
+      return {
+        answer: `${written}\n[[SAY: ${say}]]${language === "taglish" ? `\n[[SAY-TL: ${sayTl}]]` : ""}`,
+        scope: {},
+        filters: null,
+        highlight: [target.id],
+      };
+    }
+
+    // General roster question ("who are our project managers per project?", "list our project managers")
+    const verifiedPMProjects = all.filter((p) => Boolean(p.leadPMName));
+    const written =
+      `Here are the **verified Project Managers and Project Execution Leaders** across Sta. Clara International Corporation (SCIC) from official project records and press releases:\n\n` +
+      `**Verified Individual Site Project Managers:**\n` +
+      `- **Tumauini Hydroelectric Power Project (11.3 MW, Isabela)**: **Engr. Romeo Sese** — *Project Manager (Resident Project Manager)*, with **Nathaniel P. Principe** (*Deputy PM*) and **Engr. Noel G. Lavapie** (*Project Control & Technical Engineering Head*)\n` +
+      `- **Pagudpud Wind Farm (160 MW Balaoi-Caunayan, Ilocos Norte)**: **Engr. Ryan Flores** — *Project Manager* (also SCIC QA/QC Manager)\n` +
+      `- **Catuiran Hydroelectric Power Plant (8 MW, Oriental Mindoro)**: **Albert B. Mendoza** — *Project Manager*\n` +
+      `- **Balingasag Thermal Power Plant (3 x 55 MW, Misamis Oriental)**: **Peter Alan D. Pineda** — *Project Manager*\n\n` +
+      `**Verified SCIC Division Directors & Group Managers Overseeing Project Sectors:**\n` +
+      `- **Hydropower Projects Division**: **Dir. Renin T. Belo** (*Director for Operations & Director for Hydro Projects* — also led the 8.4 MW Maladugao Upper Cascade HEPP contract)\n` +
+      `- **Energy Projects Division**: **Dir. Luisito O. Traboco** (*Director for Energy Projects*)\n` +
+      `- **Water Projects Division**: **Dir. Narciso M. Areglado** (*Director for Water Projects* — led the 300+ MLD Davao City Bulk Water Supply WTP contract)\n` +
+      `- **Infrastructure Projects Division**: **Dir. Antonio S. Pascua** (*Director for Infrastructure Projects*), with **Deputy MD Miguel Carlos L. Linao** leading the PHP 625M Bohol PRDP Road & 4 Bridges project\n` +
+      `- **Buildings & Industrial Plants Group**: **Norman Enriquez** (*Group Manager* — led the 10-hectare Maersk-LF Logistics Calamba Mega Hub and PMFTC Batangas Factory Extension)\n` +
+      `- **Special Operations Division**: **SVP Nobukazu Kotake** (led the 10 MW Masinloc Battery Energy Storage System)\n` +
+      `- **Operations, Project Control & PM Technical Support**: **Fernando T. Delgado** (*Deputy MD for Operations & Director for Project Control*), **John Rey Cahilig** (*Project Control Manager*), and **Antero Magallon, Jr.** (*Technical Support Services Manager – Project Management*)\n` +
+      `[Source: Project Atlas Database & Sta. Clara Company Profile]`;
+    const say = `We have four verified site Project Managers on record: Engineer Romeo Sese on the 11.3 megawatt Tumauini Hydro project, Engineer Ryan Flores on the 160 megawatt Pagudpud Wind Farm, Albert Mendoza on the 8 megawatt Catuiran Hydro plant, and Peter Alan Pineda on the Balingasag Thermal plant, along with our Division Directors shown on your screen.`;
+    const sayTl = `Apat ang verified site Project Managers sa ating records: sina Engineer Romeo Sese sa Tumauini Hydro, Engineer Ryan Flores sa Pagudpud Wind Farm, Albert Mendoza sa Catuiran Hydro, at Peter Alan Pineda sa Balingasag Thermal, kasama ang ating mga Division Directors na nasa screen.`;
+    return {
+      answer: `${written}\n[[SAY: ${say}]]${language === "taglish" ? `\n[[SAY-TL: ${sayTl}]]` : ""}`,
+      scope: {},
+      filters: null,
+      highlight: verifiedPMProjects.map((p) => p.id),
+    };
+  }
+
   // ── Capacity totals, lists of names, and the largest project ──────────────────
   const capacityQ = /\b(how many|total|combined|sum of|overall)\b[^?]*\b(megawatts?|mw|capacity|generating capacity)\b/i.test(q);
   const listQ =

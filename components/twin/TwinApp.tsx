@@ -10,6 +10,7 @@
  * streamed in around the camera.
  * P02a: the camp gate slice: real sun, sky and shadows by the clock, weather, lamps at night.
  * P02b: things that move at the gate (engine/actors.ts): a pickup, the camp dog, the barrier arm.
+ * P03a: the real terrain round the location and 8 km beyond, with roads and civil works (world/Terrain.tsx).
  */
 import { Profiler, memo, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -24,7 +25,7 @@ import { readUrlIntoStore, startUrlSync } from "./state/url";
 import { ShellHud } from "./ui/ShellHud";
 import { TwinErrorBoundary, TwinLoading, TwinMessage } from "./ui/TwinMessage";
 import { SkyLight } from "./world/SkyLight";
-import { TempWorld } from "./world/TempWorld";
+import { Terrain } from "./world/Terrain";
 
 /** How many times a lost device or context is rebuilt before the twin gives up and says so. */
 const MAX_REBUILDS = 3;
@@ -51,7 +52,7 @@ type TwinCanvasProps = {
  */
 const TwinCanvas = memo(function TwinCanvas({ onLost, onError, onFirstFrame }: TwinCanvasProps) {
   const [dpr] = useState(() => pixelRatioNow());
-  const [camera] = useState(() => new THREE.PerspectiveCamera(45, 1, 0.3, 6000));
+  const [camera] = useState(() => new THREE.PerspectiveCamera(45, 1, 0.3, 20000));
   const [scene] = useState(() => new THREE.Scene());
   const gl = useCallback(
     (props: { canvas: unknown }) =>
@@ -67,7 +68,7 @@ const TwinCanvas = memo(function TwinCanvas({ onLost, onError, onFirstFrame }: T
     <Canvas dpr={dpr} camera={camera} scene={scene} gl={gl} shadows>
       <Engine onFirstFrame={onFirstFrame} />
       <CameraRig />
-      <TempWorld />
+      <Terrain />
       <SkyLight />
       <ZoneStreamer />
       <GateSlice />

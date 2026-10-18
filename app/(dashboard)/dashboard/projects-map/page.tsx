@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ProjectsMapPage() {
   return (
-    <div className="w-full h-full pb-2">
+    <div className="-mx-2 sm:-mx-3.5 md:-mx-4">
       {/* Executive Geographic Intelligence Platform */}
       <ProjectsMapWrapper />
     </div>

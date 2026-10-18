@@ -54,7 +54,7 @@ async function open(context, query) {
   const t0 = Date.now();
   await page.goto(url(query), { waitUntil: "domcontentloaded" });
   await page.waitForSelector("select[aria-label='Go to a place']", { timeout: 180000 });
-  await page.waitForFunction(() => window.__TWIN__ && window.__TWIN__.scene.getObjectByName("ground"), null, { timeout: 60000 });
+  await page.waitForFunction(() => window.__TWIN__ && (window.__TWIN__.terrain || window.__TWIN__.scene.getObjectByName("ground")), null, { timeout: 60000 });
   return { page, readyMs: Date.now() - t0 };
 }
 const stats = (page) => page.evaluate(() => JSON.parse(JSON.stringify({ ...window.__TWIN__.stats(), assets: window.__TWIN__.assets.stats(), canvas: [window.__TWIN__.renderer.domElement.width, window.__TWIN__.renderer.domElement.height] })));

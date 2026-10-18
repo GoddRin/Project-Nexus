@@ -89,3 +89,94 @@ export function createV1TerrainSampler(mesh: V1TerrainMesh): TerrainSampler {
 
   return { gridSize, half, heights: ys, sampleY };
 }
+
+// ---- v2 terrain (P03a) ----------------------------------------------------------------------------
+
+/**
+ * A square grid of heights in a location's frame: `n` x `n` points, `spacing` metres apart, the
+ * first at (`min[0]`, `min[1]`), row by row along +x, rows counting along +z.
+ *
+ * The surface between the points is two triangles a cell, split along the diagonal from the
+ * cell's lowest (x, z) corner to its highest. The renderer draws exactly these triangles at its
+ * finest level (components/twin/world/terrain.ts), so `sampleHeightGrid` is the drawn surface.
+ */
+export type HeightGrid = { n: number; spacing: number; min: [number, number]; heights: Float32Array };
+
+export function sampleHeightGrid(g: HeightGrid, x: number, z: number): number {
+  const fx = Math.min(g.n - 1.000001, Math.max(0, (x - g.min[0]) / g.spacing));
+  const fz = Math.min(g.n - 1.000001, Math.max(0, (z - g.min[1]) / g.spacing));
+  const i = Math.floor(fx);
+  const j = Math.floor(fz);
+  const tx = fx - i;
+  const tz = fz - j;
+  const k = j * g.n + i;
+  const h00 = g.heights[k];
+  const h11 = g.heights[k + g.n + 1];
+  if (tx >= tz) {
+    const h10 = g.heights[k + 1];
+    return h00 + tx * (h10 - h00) + tz * (h11 - h10);
+  }
+  const h01 = g.heights[k + g.n];
+  return h00 + tz * (h01 - h00) + tx * (h11 - h01);
+}
+
+/**
+ * Heights as shipped: whole multiples of `scale` above `offset`, 16 bits each, each row stored as
+ * its first value and then the differences along it (which compress far better), little-endian.
+ * The file is this, gzipped.
+ */
+export function encodeHeights(heights: Float32Array, n: number, offset: number, scale: number): Uint8Array {
+  const out = new Uint16Array(n * n);
+  for (let j = 0; j < n; j++) {
+    let prev = 0;
+    for (let i = 0; i < n; i++) {
+      const q = Math.round((heights[j * n + i] - offset) / scale);
+      if (q < 0 || q > 65535) throw new Error(`height ${heights[j * n + i]} outside the range of offset ${offset}, scale ${scale}`);
+      out[j * n + i] = (q - prev) & 0xffff;
+      prev = q;
+    }
+  }
+  return new Uint8Array(out.buffer);
+}
+
+export function decodeHeights(bytes: Uint8Array, n: number, offset: number, scale: number): Float32Array {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const heights = new Float32Array(n * n);
+  for (let j = 0; j < n; j++) {
+    let q = 0;
+    for (let i = 0; i < n; i++) {
+      q = (q + view.getUint16((j * n + i) * 2, true)) & 0xffff;
+      heights[j * n + i] = offset + q * scale;
+    }
+  }
+  return heights;
+}
+
+/** What scripts/twin/build-terrain.mts writes for a location (components/twin/data/terrain/<location>.json). */
+export type TerrainManifest = {
+  location: string;
+  /** The detailed square round the location's origin. */
+  near: TerrainLayer;
+  /** The wide surroundings, drawn outside the near square. */
+  far: TerrainLayer;
+  /** RGBA over the near square, one texel a metre: gravel, laterite, shotcrete, river cobbles. */
+  mask: { url: string; size: number; min: [number, number]; texel: number };
+  /** Roads, drains and weep holes (one file, its meshes named by kind). */
+  civil: { url: string; bytes: number };
+  /** Squares where a ground patch asset is drawn instead of the terrain: [xMin, zMin, xMax, zMax]. */
+  holes: [number, number, number, number][];
+  /** Simplified walkable surface for the navigation build (P09). */
+  walkable: string;
+};
+
+export type TerrainLayer = {
+  url: string;
+  bytes: number;
+  n: number;
+  spacing: number;
+  min: [number, number];
+  offset: number;
+  scale: number;
+  /** Lowest and highest height, for bounds. */
+  range: [number, number];
+};
