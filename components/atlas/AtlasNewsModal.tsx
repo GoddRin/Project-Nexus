@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { X, Radio } from "lucide-react";
-import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
+import WeatherDeskEmblem from "@/components/weather/icons/WeatherDeskEmblem";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
 
 interface AtlasNewsModalProps {
@@ -40,7 +40,7 @@ export default function AtlasNewsModal({ isOpen, onClose }: AtlasNewsModalProps)
         <div className="sticky top-0 z-30 flex items-center justify-between px-5 py-3.5 bg-slate-50 dark:bg-atlas-sunken/95 backdrop-blur-xl border-b border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-2xl bg-black/60 border border-slate-300 dark:border-white/15 flex items-center justify-center">
-              <BroadcastSatelliteIcon size={24} animated={true} className="text-slate-900 dark:text-white" />
+              <WeatherDeskEmblem size={26} animated={true} className="text-slate-900 dark:text-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">

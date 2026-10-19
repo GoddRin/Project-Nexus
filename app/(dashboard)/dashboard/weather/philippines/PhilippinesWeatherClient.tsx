@@ -26,6 +26,7 @@ import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryW
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
 import ParStatusEmblem from "@/components/weather/icons/ParStatusEmblem";
+import TcwsKey from "@/components/weather/icons/TcwsKey";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -554,6 +555,7 @@ export default function PhilippinesWeatherClient({
               <p className="text-xs sm:text-sm text-text-muted mt-1 leading-relaxed">
                 No active tropical cyclones inside the Philippine Area of Responsibility (PAR). All TCWS wind signals are lifted. Tracking {regionalStorms.map(s => `${s.category === "Low Pressure Area" ? "Low Pressure Area" : `${s.category} ${s.name}`} (${s.distanceKm} km away)`).join(", ")} in the Northwest Pacific.
               </p>
+              <TcwsKey className="mt-2" />
               {pagasaSignals.tcName && (
                 <p className="mt-1.5 text-xs text-sky-300/90 font-medium">
                   🌧️ <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
