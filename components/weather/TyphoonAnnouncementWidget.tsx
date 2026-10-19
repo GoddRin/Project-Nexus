@@ -17,7 +17,7 @@ import {
   Info,
   X,
 } from "lucide-react";
-import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
+import WeatherDeskEmblem from "@/components/weather/icons/WeatherDeskEmblem";
 import { cn } from "@/lib/utils";
 import { PagasaSignalData } from "@/lib/weather/pagasa";
 import { RiverStation, DamStatus } from "@/lib/weather/riverbasin";
@@ -458,7 +458,7 @@ export default function TyphoonAnnouncementWidget({
                 title="Jump to Philippine Weather Broadcast Desk"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-red-700 dark:text-slate-200 hover:text-red-800 dark:hover:text-white bg-red-500/10 hover:bg-red-500/20 dark:bg-red-600/15 dark:hover:bg-red-600/25 border border-red-500/30 transition-all cursor-pointer group"
               >
-                <BroadcastSatelliteIcon size={14} animated={true} className="text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform" />
+                <WeatherDeskEmblem size={16} threatLevel="RED" animated={false} className="text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform" />
                 <span>Broadcast Desk</span>
               </a>
             </div>

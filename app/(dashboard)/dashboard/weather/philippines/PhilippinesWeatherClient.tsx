@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryWidget";
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
+import ParStatusEmblem from "@/components/weather/icons/ParStatusEmblem";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -538,8 +539,8 @@ export default function PhilippinesWeatherClient({
       {showRegionalNotice && (
         <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
           <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
-              <Compass className="h-5 w-5 sm:h-6 sm:w-6 text-sky-400" />
+            <div className="h-12 w-14 sm:h-14 sm:w-16 rounded-xl flex items-center justify-center shrink-0 border bg-slate-900/60 border-sky-500/40 shadow-inner">
+              <ParStatusEmblem status={regionalStorms.length > 0 ? "monitoring" : "clear"} size={40} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
