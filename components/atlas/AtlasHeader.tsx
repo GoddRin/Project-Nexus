@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import Link from "next/link";
 import { MapPin, Moon, Sun, Globe, Settings, ChevronDown, Check, Presentation } from "lucide-react";
-import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
+import WeatherDeskEmblem from "@/components/weather/icons/WeatherDeskEmblem";
 import { AtlasBaseStyle } from "./AtlasMapContext";
 import { cn } from "@/lib/utils";
 import { CountUp } from "@/components/shared/CountUp";
@@ -214,7 +214,7 @@ export function AtlasHeader({
             title="Philippine weather & satellite radar briefing"
             className={cn(actionBtn, "border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 group")}
           >
-            <BroadcastSatelliteIcon size={15} animated={true} className="group-hover:scale-110 transition-transform" />
+            <WeatherDeskEmblem size={17} threatLevel="RED" animated={false} className="group-hover:scale-110 transition-transform" />
             <span className="hidden xl:inline">Weather desk</span>
           </button>
         )}

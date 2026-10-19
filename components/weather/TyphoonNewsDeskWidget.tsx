@@ -26,7 +26,7 @@ import {
   NewsChannelId,
   StormThreatLevel,
 } from "@/lib/weather/news/tvNewsTypes";
-import BroadcastSatelliteIcon from "./icons/BroadcastSatelliteIcon";
+import WeatherDeskEmblem from "./icons/WeatherDeskEmblem";
 import { NetworkBadgeIcon } from "./icons/NetworkBadges";
 import YouTubeCleanPlayer from "./YouTubeCleanPlayer";
 import { cn } from "@/lib/utils";
@@ -220,8 +220,8 @@ export default function TyphoonNewsDeskWidget({
         <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
           {/* Orbital Doppler Radar Emblem */}
           <div className="relative flex items-center justify-center p-2 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 dark:from-slate-900 dark:to-black border border-slate-700 dark:border-white/15 shadow-inner">
-            <BroadcastSatelliteIcon
-              size={30}
+            <WeatherDeskEmblem
+              size={34}
               threatLevel={feed?.threatLevel}
               animated={true}
               className="text-white"
@@ -353,9 +353,10 @@ export default function TyphoonNewsDeskWidget({
           {selectedChannel !== "all" && displayedVideos.length === 0 ? (
             <div className="p-8 sm:p-12 text-center rounded-3xl bg-white/[0.02] border border-dashed border-white/15 flex flex-col items-center justify-center space-y-4">
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400">
-                <BroadcastSatelliteIcon
+                <WeatherDeskEmblem
                   size={40}
                   threatLevel={feed?.threatLevel}
+                  syncedNetworks={0}
                   animated={false}
                   className="text-cyan-400 opacity-80"
                 />
@@ -553,7 +554,7 @@ export default function TyphoonNewsDeskWidget({
             </div>
           ) : (
             <div className="p-10 text-center rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-dashed border-slate-200 dark:border-white/10">
-              <BroadcastSatelliteIcon size={36} threatLevel="NORMAL" className="mx-auto mb-3 opacity-60 text-cyan-500 dark:text-cyan-400" />
+              <WeatherDeskEmblem size={36} threatLevel="NORMAL" className="mx-auto mb-3 opacity-60 text-cyan-500 dark:text-cyan-400" />
               <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
                 {isLoading ? "Retrieving broadcast feeds from YouTube..." : "No recent broadcast matching this category."}
               </p>
