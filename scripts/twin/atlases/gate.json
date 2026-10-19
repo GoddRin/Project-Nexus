@@ -1,0 +1,61 @@
+{
+  "note": [
+    "Layout of the trim sheets and the sign sheet used by the camp gate (P02a). Read by scripts/twin/build-atlases.mjs, which paints them, and by scripts/blender/twin/model_kit.py, which maps faces onto them.",
+    "A trim band runs the full width of its sheet and tiles along U; `tileM` is the length in metres that one width of the sheet covers. Bands are listed top to bottom with their height in pixels.",
+    "A sign is a rectangle [x, y, w, h] in pixels from the top-left of its sheet."
+  ],
+  "trims": {
+    "trim-gate": {
+      "size": 2048,
+      "tileM": 6.0,
+      "bands": [
+        { "name": "panel", "px": 768 },
+        { "name": "roof", "px": 320 },
+        { "name": "concrete", "px": 192 },
+        { "name": "burlap", "px": 112 },
+        { "name": "wood", "px": 96 },
+        { "name": "green", "px": 96 },
+        { "name": "galv", "px": 64 },
+        { "name": "rust", "px": 64 },
+        { "name": "yellow", "px": 48 },
+        { "name": "black", "px": 48 },
+        { "name": "stripes", "px": 64 },
+        { "name": "hazard", "px": 80 },
+        { "name": "red", "px": 32 },
+        { "name": "chrome", "px": 32 },
+        { "name": "dark", "px": 32 }
+      ]
+    },
+    "trim-small": {
+      "size": 512,
+      "tileM": 2.0,
+      "bands": [
+        { "name": "stripes", "px": 128 },
+        { "name": "yellow", "px": 80 },
+        { "name": "black", "px": 64 },
+        { "name": "galv", "px": 80 },
+        { "name": "concrete", "px": 64 },
+        { "name": "cone", "px": 96 }
+      ]
+    }
+  },
+  "signs": {
+    "signs-gate": {
+      "size": 1024,
+      "rects": {
+        "stop-check": [0, 0, 512, 384],
+        "rules": [512, 0, 384, 512],
+        "wordmark": [0, 384, 512, 128],
+        "ppe": [0, 512, 256, 256],
+        "no-smoking": [256, 512, 256, 256],
+        "speed-10": [512, 512, 256, 256],
+        "logbook": [768, 512, 192, 128],
+        "notice": [768, 640, 192, 128],
+        "clock": [896, 0, 128, 128],
+        "hardhat-entry": [0, 768, 384, 256],
+        "report-here": [384, 768, 384, 256],
+        "cctv": [768, 768, 256, 256]
+      }
+    }
+  }
+}

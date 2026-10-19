@@ -1,0 +1,170 @@
+[
+ {
+  "id": "weir",
+  "location": "weir",
+  "zone": "weir.weir",
+  "title": "Overflow weir and spillway"
+ },
+ {
+  "id": "sluiceway",
+  "location": "weir",
+  "zone": "weir.sluiceway",
+  "title": "Sluiceway (4 gates)"
+ },
+ {
+  "id": "intake",
+  "location": "weir",
+  "zone": "weir.intake",
+  "title": "Intake (2 gates, trashracks)"
+ },
+ {
+  "id": "abutment",
+  "location": "weir",
+  "zone": "weir.abutment",
+  "title": "RCC left abutment"
+ },
+ {
+  "id": "weir-floodwall",
+  "location": "weir",
+  "zone": "weir.weir",
+  "title": "Weir flood wall"
+ },
+ {
+  "id": "cofferdam",
+  "location": "weir",
+  "zone": "weir.cofferdam",
+  "title": "River diversion and cofferdam (temporary)"
+ },
+ {
+  "id": "desander",
+  "location": "weir",
+  "zone": "weir.desander",
+  "title": "Desander"
+ },
+ {
+  "id": "tunnel1-inlet",
+  "location": "weir",
+  "zone": "weir.tunnel1-inlet",
+  "title": "Tunnel 1 inlet portal"
+ },
+ {
+  "id": "adit",
+  "location": "weir",
+  "zone": "weir.adit",
+  "title": "Tunnel 1 adit"
+ },
+ {
+  "id": "satellite-camp",
+  "location": "weir",
+  "zone": "weir.sat-barracks",
+  "title": "Satellite camp"
+ },
+ {
+  "id": "concrete-plant",
+  "location": "weir",
+  "zone": "weir.concrete-plant",
+  "title": "Volumetric concrete plant and crusher"
+ },
+ {
+  "id": "tunnel1",
+  "location": "tunnel1",
+  "zone": "tunnel1.inlet-drive",
+  "title": "Headrace Tunnel 1"
+ },
+ {
+  "id": "tunnel1-outlet",
+  "location": "midway",
+  "zone": "midway.tunnel1-outlet",
+  "title": "Tunnel 1 outlet portal"
+ },
+ {
+  "id": "pipe-bridge",
+  "location": "midway",
+  "zone": "midway.pipe-bridge",
+  "title": "Pipe bridge and headrace pipe"
+ },
+ {
+  "id": "tunnel2-inlet",
+  "location": "midway",
+  "zone": "midway.tunnel2-inlet",
+  "title": "Tunnel 2 inlet portal"
+ },
+ {
+  "id": "tunnel2",
+  "location": "tunnel2",
+  "zone": "tunnel2.drive",
+  "title": "Headrace Tunnel 2"
+ },
+ {
+  "id": "surge-tank",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "title": "Surge tank"
+ },
+ {
+  "id": "penstock",
+  "location": "powerhouse",
+  "zone": "powerhouse.penstock",
+  "title": "Penstock"
+ },
+ {
+  "id": "powerhouse",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "title": "Powerhouse"
+ },
+ {
+  "id": "control-room",
+  "location": "powerhouse",
+  "zone": "powerhouse.control-room",
+  "title": "Control room"
+ },
+ {
+  "id": "guardhouse",
+  "location": "powerhouse",
+  "zone": "powerhouse.guardhouse",
+  "title": "Guardhouse"
+ },
+ {
+  "id": "tailrace",
+  "location": "powerhouse",
+  "zone": "powerhouse.tailrace",
+  "title": "Tailrace"
+ },
+ {
+  "id": "switchyard",
+  "location": "powerhouse",
+  "zone": "powerhouse.switchyard",
+  "title": "Switchyard"
+ },
+ {
+  "id": "floodwall",
+  "location": "powerhouse",
+  "zone": "powerhouse.floodwall",
+  "title": "Powerhouse floodwall"
+ },
+ {
+  "id": "transmission-line",
+  "location": "powerhouse",
+  "zone": "powerhouse.switchyard",
+  "title": "Transmission line"
+ },
+ {
+  "id": "magazine",
+  "location": "powerhouse",
+  "zone": "powerhouse.magazine",
+  "title": "Explosives magazine"
+ },
+ {
+  "id": "main-camp",
+  "location": "powerhouse",
+  "zone": "powerhouse.camp-office",
+  "title": "Main camp"
+ },
+ {
+  "id": "access-roads",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "title": "Access roads AR01 to AR05"
+ }
+]

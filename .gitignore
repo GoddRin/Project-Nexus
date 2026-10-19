@@ -69,3 +69,31 @@ scripts/tmp-*.mjs
 
 # Raw Mixamo downloads: licence forbids redistributing the source files (only the baked animations in the GLB ship)
 /assets-src/mixamo/
+
+# Owner-supplied company reference documents for Twin v2 (never committed)
+/assets-src/twin/reference/
+
+# Twin v2 asset sources: Blender files and raw downloads stay local; small text sources are tracked
+/assets-src/twin/**/*.blend
+/assets-src/twin/**/*.blend[0-9]
+/assets-src/twin/downloads/
+/assets-src/twin/**/raw/
+/assets-src/twin/**/*.fbx
+/assets-src/twin/**/*.zip
+/assets-src/twin/**/*.exr
+/assets-src/twin/**/*.hdr
+# Raw Tripo AI exports: model files stay local (licence depends on the plan used); prompt.txt and licence notes are tracked
+/assets-src/twin/tripo/**/*.glb
+/assets-src/twin/tripo/**/*.obj
+/assets-src/twin/tripo/**/*.png
+/assets-src/twin/tripo/**/*.jpg
+
+# Twin v2: GLBs exported from Blender for the asset build (rebuilt from the .blend), and Python caches
+/assets-src/twin/export/
+__pycache__/
+
+# Twin v2 review videos stay on the build machine (the stills are the record)
+/docs/twin-v2/review/**/*.webm
+
+# showcase video media
+/showcase/

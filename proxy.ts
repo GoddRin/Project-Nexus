@@ -23,6 +23,10 @@ const isPublicRoute = createRouteMatcher([
   "/api/regional-map(.*)",
   "/api/atlas-ai(.*)",
   "/models/(.*)",
+  // Twin v2's texture decoder and loose textures (static files; the twin is public): the decoder's
+  // .wasm was redirected to sign-in, so no KTX2 texture could load for a signed-out visitor
+  "/vendor/twin/(.*)",
+  "/textures/twin/(.*)",
   // pre-generated voice clips (static files; the map is public, so its voice must be too)
   "/voice/(.*)",
   // GIS data the public map draws (river flow lines, boundaries): it was redirected to sign-in

@@ -1,0 +1,185 @@
+{
+ "note": "Whole-site head-count (473, August 2026 deck) by role group. The twin shows a share of this per location, set in P09b from the frame-time limits measured in P02c; the 35 named people in people.json are part of the total, not extra.",
+ "source": "MPR-53 manpower table, as summarised in docs/twin-v2/reference/INDEX.md",
+ "total": 473,
+ "categories": [
+  {
+   "category": "Management",
+   "headcount": 7
+  },
+  {
+   "category": "Staff",
+   "headcount": 45
+  },
+  {
+   "category": "Superintendents, supervisors and foremen",
+   "headcount": 19
+  },
+  {
+   "category": "Equipment staff",
+   "headcount": 17
+  },
+  {
+   "category": "Skilled",
+   "headcount": 252
+  },
+  {
+   "category": "Non-skilled",
+   "headcount": 45
+  },
+  {
+   "category": "Operators and drivers",
+   "headcount": 59
+  },
+  {
+   "category": "Security",
+   "headcount": 15
+  },
+  {
+   "category": "Subcontractor",
+   "headcount": 14
+  }
+ ],
+ "crew": [
+  {
+   "roleGroup": "management",
+   "count": 7,
+   "shift": "office"
+  },
+  {
+   "roleGroup": "engineer",
+   "count": 14,
+   "shift": "office"
+  },
+  {
+   "roleGroup": "office",
+   "count": 12,
+   "shift": "office"
+  },
+  {
+   "roleGroup": "qaqc",
+   "count": 6,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "surveyor",
+   "count": 4,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "safety",
+   "count": 5,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "geologist",
+   "count": 2,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "nurse",
+   "count": 2,
+   "shift": "office"
+  },
+  {
+   "roleGroup": "supervisor",
+   "count": 8,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "foreman",
+   "count": 9,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "foreman",
+   "count": 2,
+   "shift": "night"
+  },
+  {
+   "roleGroup": "warehouse",
+   "count": 5,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "electrician",
+   "count": 20,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "rigger",
+   "count": 20,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "welder",
+   "count": 18,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "tunnel-crew",
+   "count": 48,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "tunnel-crew",
+   "count": 32,
+   "shift": "night"
+  },
+  {
+   "roleGroup": "carpenter",
+   "count": 52,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "steelman",
+   "count": 48,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "mason",
+   "count": 40,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "labourer",
+   "count": 37,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "kitchen",
+   "count": 8,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "operator",
+   "count": 30,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "operator",
+   "count": 8,
+   "shift": "night"
+  },
+  {
+   "roleGroup": "driver",
+   "count": 17,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "driver",
+   "count": 4,
+   "shift": "night"
+  },
+  {
+   "roleGroup": "security",
+   "count": 8,
+   "shift": "day"
+  },
+  {
+   "roleGroup": "security",
+   "count": 7,
+   "shift": "night"
+  }
+ ]
+}

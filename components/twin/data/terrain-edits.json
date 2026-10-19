@@ -1,0 +1,92 @@
+{
+ "note": [
+  "Civil edits to the measured ground, per location, applied in this order by scripts/twin/build-terrain.mts (P03a). Location frame, metres, Y up; y = 0 is the location's origin elevation.",
+  "pad: a level bench. Inside `rect` [xMin, zMin, xMax, zMax] the ground is `level`; outside, it meets the hill with a cut (benched: faces of `faceGrade` rise per run (a face as steep as the hill behind it runs on up the hill, so cuts in this steep ground are steep: 2.5, about 68 degrees, as the site's laterite and rock cuts stand in the owner's photographs), `benchHeight` high, with `berm` metres of flat between) or a fill (`fillGrade`). `face` is the material of cut faces: shotcrete or laterite (bare soil, with rock where steep). Toe drains run along the foot of every cut face over 1 m.",
+  "patch: a finished ground asset (P02a); its own heights are used inside it and the hill is cut or filled to meet its edge.",
+  "channel: a cut with a level floor and steep sides.",
+  "road: a shelf road (cut faces 2.2 rise per run, 6 m benches) along `points` (x, z), its levels found from the ground with grades up to `maxGrade`, pinned where a point gives a third value (y). Concrete where the grade passes `concreteFrom`. `width` is the running surface.",
+  "streams: the river and gullies found from the elevation model (catchment of `minAreaKm2` or more), carved as a V with a cobble bed; `pin` sets the bed level at one point (the elevation model reads the forest canopy, so beds read high).",
+  "provisional: true marks an edit kept from v1's arrangement that a later phase replaces. skip: a reason; the edit is listed but not applied."
+ ],
+ "powerhouse": {
+  "streams": {
+   "minAreaKm2": 0.8,
+   "bankGrade": 0.9,
+   "reroutes": [
+    { "id": "river-round-the-yard", "points": [[97, -33], [88, -8], [72, 18], [50, 34], [24, 41], [2, 46], [-10, 51], [-17, 61]], "source": "The model's line (30 m data) runs diagonally through the yard. The storm drain plan (R3) has the floodwall on the river side south and south-west of the powerhouse and the tailraces discharging south to the river: the river is moved round the yard's south side, past the tailrace outlet" },
+    { "id": "west-gully-round-the-yard", "points": [[-39, -7], [-48, 8], [-54, 26], [-50, 42], [-36, 52], [-12, 52]], "source": "The gully from the west ran across the yard's south-west corner; moved outside the pad to join the river below the tailrace" }
+   ],
+   "pin": { "at": [-30, 92], "bed": -3.2, "source": "Tailrace outlet: the bed must sit below the turbine floor (EL 188.24, drawing R1) and the yard (EL 188.04); the floodwall and tailrace on the storm drain plan (R3) put the river just below the yard" }
+  },
+  "edits": [
+   {
+    "id": "powerhouse-yard",
+    "kind": "pad",
+    "rect": [-26, -18, 50, 20],
+    "level": 0,
+    "surface": "gravel",
+    "cut": { "face": "shotcrete", "faceGrade": 2.5, "benchHeight": 6, "berm": 2.5 },
+    "fillGrade": 0.667,
+    "source": "Yard level EL 188.04 (penstock plan, MPR-53 slide 65). Machine hall 31.5 m across the penstock axis with a 7.3 m annex and the switchyard on +x (R1, R3). The hill behind is cut in shotcreted benches (MPR-53 photos)"
+   },
+   {
+    "id": "tailrace",
+    "kind": "channel",
+    "rect": [-11, 18, 9, 42],
+    "level": -3.6,
+    "sideGrade": 3,
+    "surface": "cobbles",
+    "source": "Big and small tailraces join and discharge to the river through a flared outlet with riprap (R3). Floor level is this session's estimate between the lower pit (EL 183.54) and the river bed"
+   },
+   {
+    "id": "v1-camp-pad",
+    "kind": "pad",
+    "rect": [96, -130, 150, -98],
+    "level": 13,
+    "surface": "laterite",
+    "cut": { "face": "laterite", "faceGrade": 1.6, "benchHeight": 5, "berm": 2 },
+    "fillGrade": 0.667,
+    "provisional": true,
+    "skip": "On the real ground this corner of v1's pad sits 10 to 60 m below the hill and would need a benched cut 60 m deep; the real main camp is about 400 m away and P06 builds its bench. The gate's own patch is cut into the hill instead",
+    "source": "v1's Temfacil pad (terrainData.ts, cut to 13.0 m) behind the camp gate. The real main camp is about 400 m from the powerhouse (site-layout.json); P06 replaces this bench"
+   },
+   {
+    "id": "road-ar01",
+    "kind": "road",
+    "width": 6,
+    "maxGrade": 0.15,
+    "concreteFrom": 0.145,
+    "points": [[-493, -58], [-477, -33], [-460, -9], [-446, 19], [-438, 47], [-436, 73], [-424, 98], [-403, 109], [-381, 118], [-373, 135], [-380, 158], [-378, 179], [-356, 188], [-329, 182], [-303, 179], [-280, 184], [-256, 187], [-229, 181], [-199, 168], [-169, 153], [-140, 142], [-114, 134], [-92, 124], [-76, 108], [-66, 88], [-56, 66], [-50, 48], [-40, 32], [-28, 18, 0]],
+    "source": "AR01 as traced off the site development plan (site-layout.json, `ar01`, error 10 to 25 m). The last 150 m, traced along the river bed, are moved onto the north-west bank, 25 to 35 m from the river, to reach the yard's south-west corner across the west gully (a ford)"
+   },
+   {
+    "id": "road-camp-a",
+    "kind": "road",
+    "width": 6,
+    "maxGrade": 0.2,
+    "concreteFrom": 0.12,
+    "points": [[30, 14, 0], [44, 8], [52, -6], [57, -21], [63.92, -37.53, 12.73]],
+    "endTangent": [0.866, -0.5],
+    "source": "Yard to the camp gate. The traced powerhouse-to-camp line (site-layout.json) leaves the yard's north-east corner, but the gate is 12.7 m up: the ramp is wound out along the hill to keep it near 19 percent, concreted (as v1's ramp was)"
+   },
+   {
+    "id": "road-camp-b",
+    "kind": "road",
+    "width": 6,
+    "maxGrade": 0.15,
+    "concreteFrom": 0.145,
+    "points": [[114.87, -97.16, 13.01], [124, -106], [140, -108], [162, -108], [184, -116], [207, -104], [231, -95], [249, -86], [267, -84], [285, -74], [300, -70], [321, -70], [345, -69], [360, -64], [375, -56], [390, -54], [405, -60], [420, -76], [432, -90], [442, -99], [458, -104], [470, -120]],
+    "startTangent": [0.725, -0.689],
+    "source": "Gate to the main camp and on towards the weir: the traced line (site-layout.json `powerhouse-to-main-camp`, then `ar02`), joined to the gate slice's own road where it leaves the patch. The trace runs 0 to 16 m off the stream's line, in its bed in places: held on the north bank, about 20 m from the stream, crossing it by a ford where it turns north for the weir"
+   },
+   {
+    "id": "camp-gate",
+    "kind": "patch",
+    "asset": "ground.camp-gate",
+    "cut": { "face": "laterite", "faceGrade": 2.5, "benchHeight": 6, "berm": 1.5 },
+    "fillGrade": 0.667,
+    "source": "The P02a slice's ground (approved 2026-10-15), kept exactly; v1's ground under it was the camp pad's corner"
+   }
+  ]
+ }
+}

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import Link from "next/link";
-import { MapPin, Moon, Sun, Globe, Settings, ChevronDown, Check, Presentation } from "lucide-react";
+import { MapPin, Moon, Sun, Globe, Settings, ChevronDown, Check, Presentation, Sparkles } from "lucide-react";
 import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
 import { AtlasBaseStyle } from "./AtlasMapContext";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,9 @@ interface AtlasHeaderProps {
   onOpenNews?: () => void;
   /** Presentation / focus mode: hides the side panels and this header */
   onEnterFocusMode?: () => void;
+  /** Toggle the Atlas AI Workspace drawer */
+  isAiOpen?: boolean;
+  onToggleAi?: () => void;
   /** 0..1 while a guided tour runs: fills the "Renew Your Energy" line along the header */
   tourProgress?: number | null;
   className?: string;
@@ -69,6 +72,8 @@ export function AtlasHeader({
   onStyleChange,
   onOpenNews,
   onEnterFocusMode,
+  isAiOpen = false,
+  onToggleAi,
   tourProgress = null,
   className,
 }: AtlasHeaderProps) {
@@ -93,12 +98,12 @@ export function AtlasHeader({
   }, [styleMenuOpen]);
 
   const actionBtn =
-    "flex items-center gap-1.5 h-8 px-2.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer whitespace-nowrap";
+    "flex items-center gap-1.5 h-7.5 px-2.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer whitespace-nowrap";
 
   return (
     <header
       className={cn(
-        "relative flex items-center justify-between gap-4 h-12 px-3 rounded-xl bg-white dark:bg-atlas-panel border border-slate-200 dark:border-white/10 shadow-sm transition-colors shrink-0",
+        "relative flex items-center justify-between gap-3 h-11 px-3 rounded-xl bg-white dark:bg-atlas-panel border border-slate-200 dark:border-white/10 shadow-sm transition-colors shrink-0",
         className
       )}
     >
@@ -108,11 +113,11 @@ export function AtlasHeader({
         </div>
       )}
       {/* Brand: official Sta. Clara wordmark (green on light, reversed white on dark) */}
-      <div className="flex items-center gap-3 min-w-0">
-        <BrandLogo variant="wordmark" height={22} priority className="max-sm:hidden" />
-        <BrandLogo variant="mark" height={28} priority className="sm:hidden" />
-        <span className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-white/10" />
-        <h1 className="hidden sm:block text-[15px] font-semibold font-display text-slate-900 dark:text-white truncate">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <BrandLogo variant="wordmark" height={20} priority className="max-sm:hidden" />
+        <BrandLogo variant="mark" height={26} priority className="sm:hidden" />
+        <span className="hidden sm:block h-4 w-px bg-slate-200 dark:bg-white/10" />
+        <h1 className="hidden sm:block text-[14px] font-semibold font-display text-slate-900 dark:text-white truncate">
           Project Atlas
         </h1>
         <span
@@ -123,21 +128,21 @@ export function AtlasHeader({
       </div>
 
       {/* KPI strip: one line, values lead */}
-      <div className="hidden lg:flex items-center gap-4 xl:gap-5 font-mono min-w-0 overflow-hidden">
+      <div className="hidden lg:flex items-center gap-3.5 xl:gap-4 font-mono min-w-0 overflow-hidden">
         <Kpi
           value={totalProjects}
           label={typeof filteredOf === "number" ? `of ${filteredOf} in view` : "Projects"}
           tone={typeof filteredOf === "number" ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-white"}
         />
-        <span className="h-4 w-px bg-slate-200 dark:bg-white/10" />
+        <span className="h-3.5 w-px bg-slate-200 dark:bg-white/10" />
         <Kpi value={totalOngoing} label="Ongoing" tone="text-emerald-600 dark:text-emerald-400" />
-        <span className="h-4 w-px bg-slate-200 dark:bg-white/10" />
+        <span className="h-3.5 w-px bg-slate-200 dark:bg-white/10" />
         <Kpi value={renewableCapacityMw} prefix="~" suffix=" MW" decimals={renewableCapacityMw % 1 ? 1 : 0} label="Clean energy" tone="text-sky-600 dark:text-sky-400" />
-        <span className="hidden xl:block h-4 w-px bg-slate-200 dark:bg-white/10" />
+        <span className="hidden xl:block h-3.5 w-px bg-slate-200 dark:bg-white/10" />
         <div className="hidden xl:block">
           <Kpi value={tunnelLengthKm} prefix="~" suffix=" km" decimals={tunnelLengthKm % 1 ? 1 : 0} label="Tunneling" tone="text-pink-600 dark:text-pink-400" />
         </div>
-        <span className="hidden 2xl:block h-4 w-px bg-slate-200 dark:bg-white/10" />
+        <span className="hidden 2xl:block h-3.5 w-px bg-slate-200 dark:bg-white/10" />
         <div className="hidden 2xl:block">
           <Kpi value={waterCapacityMld} prefix="~" suffix=" MLD" label="Water" tone="text-cyan-600 dark:text-cyan-400" />
         </div>
@@ -145,7 +150,25 @@ export function AtlasHeader({
 
       {/* Actions */}
       <div className="flex items-center gap-1.5 shrink-0">
-        {/* Map style menu (was three always-visible buttons) */}
+        {onToggleAi && (
+          <button
+            type="button"
+            onClick={onToggleAi}
+            aria-pressed={isAiOpen}
+            title={isAiOpen ? "Hide Atlas AI Workspace" : "Open Atlas AI Workspace"}
+            className={cn(
+              actionBtn,
+              isAiOpen
+                ? "border-emerald-500/50 bg-emerald-600 text-white shadow-xs"
+                : "border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+            )}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Atlas AI</span>
+          </button>
+        )}
+
+        {/* Map style menu */}
         <div ref={menuRef} className="relative">
           <button
             type="button"
@@ -204,7 +227,7 @@ export function AtlasHeader({
           )}
         >
           <MapPin className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
-          <span className="hidden xl:inline">Local map</span>
+          <span className="hidden 2xl:inline">Local map</span>
         </Link>
 
         {onOpenNews && (
@@ -222,10 +245,10 @@ export function AtlasHeader({
         <Link
           href="/dashboard/projects-admin"
           title="Project Atlas administration"
-          className={cn(actionBtn, "border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400")}
+          className={cn(actionBtn, "border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-atlas-sunken text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10")}
         >
           <Settings className="h-3.5 w-3.5" />
-          <span className="hidden xl:inline">Administer</span>
+          <span className="hidden 2xl:inline">Admin</span>
         </Link>
 
         {onEnterFocusMode && (

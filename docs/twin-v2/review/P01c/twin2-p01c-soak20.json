@@ -1,0 +1,486 @@
+{
+ "when": "2026-10-10T03:29:51.398Z",
+ "base": "http://localhost:3100",
+ "runs": [
+  {
+   "label": "p01c-soak20",
+   "profile": "desktop",
+   "tier": "medium",
+   "backend": "webgpu",
+   "canvas": [
+    1184,
+    844
+   ],
+   "pixelRatio": 1,
+   "capped": false,
+   "forcedWebGL": false,
+   "testZone": true,
+   "coldMs": 3900,
+   "coldAllInMs": 23291,
+   "warmMs": 1575,
+   "warmAllInMs": 12363,
+   "firstViewBytes": 2241756,
+   "firstViewKinds": {
+    "twinModels": 654913,
+    "script": 1254718,
+    "other": 332125
+   },
+   "siteBytes": 15987380,
+   "overview": {
+    "fps": 237.375,
+    "p50": 3.7999999999992724,
+    "p95": 7.5,
+    "worst": 20.100000000000364,
+    "calls": 7,
+    "tris": 411543,
+    "programs": 17,
+    "lights": 1,
+    "textures": 18,
+    "geometries": 17,
+    "gpuMB": 32.483238220214844,
+    "zonesLoaded": 1,
+    "instances": 2500,
+    "lod": [
+     0,
+     0,
+     2462
+    ]
+   },
+   "flight": {
+    "fps": 280.2,
+    "places": [
+     {
+      "id": "overview",
+      "fps": 255.2,
+      "p95": 6.6,
+      "calls": 7,
+      "tris": 411543
+     },
+     {
+      "id": "turbine-hall",
+      "fps": 367.6,
+      "p95": 5.6,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "switchyard",
+      "fps": 402.4,
+      "p95": 4.2,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "tailrace-floodgate",
+      "fps": 321.2,
+      "p95": 5.4,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-tunnel",
+      "fps": 314.8,
+      "p95": 6.1,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-tunnel-face",
+      "fps": 332.4,
+      "p95": 5.6,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-tunnel-normals",
+      "fps": 417.2,
+      "p95": 4.5,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-tunnel-stations",
+      "fps": 422.8,
+      "p95": 4.7,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-worker-drill-closeup",
+      "fps": 368.8,
+      "p95": 10.3,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-worker-surveyor-closeup",
+      "fps": 300,
+      "p95": 9,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-worker-bolter-closeup",
+      "fps": 323.2,
+      "p95": 6.4,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "headrace-tunnel-materials",
+      "fps": 330,
+      "p95": 5.5,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "temfacil",
+      "fps": 302.8,
+      "p95": 6.2,
+      "calls": 7,
+      "tris": 415768
+     },
+     {
+      "id": "temfacil-guardhouse",
+      "fps": 185.2,
+      "p95": 10.4,
+      "calls": 8,
+      "tris": 204943
+     },
+     {
+      "id": "wildlife-storks",
+      "fps": 377.6,
+      "p95": 4.9,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "temfacil-patrol",
+      "fps": 354,
+      "p95": 4.5,
+      "calls": 4,
+      "tris": 18939
+     },
+     {
+      "id": "highland-horse",
+      "fps": 358,
+      "p95": 4.8,
+      "calls": 2,
+      "tris": 8193
+     },
+     {
+      "id": "temfacil-barracks",
+      "fps": 345.6,
+      "p95": 5.5,
+      "calls": 7,
+      "tris": 207608
+     },
+     {
+      "id": "temfacil-canteen",
+      "fps": 354,
+      "p95": 4.5,
+      "calls": 5,
+      "tris": 20488
+     },
+     {
+      "id": "temfacil-office",
+      "fps": 237.2,
+      "p95": 8.6,
+      "calls": 11,
+      "tris": 293428
+     },
+     {
+      "id": "temfacil-office-interior",
+      "fps": 190.8,
+      "p95": 9.2,
+      "calls": 9,
+      "tris": 183501
+     },
+     {
+      "id": "temfacil-office-zone1",
+      "fps": 174.8,
+      "p95": 10.2,
+      "calls": 9,
+      "tris": 183501
+     },
+     {
+      "id": "temfacil-office-zone2",
+      "fps": 188.8,
+      "p95": 9.8,
+      "calls": 6,
+      "tris": 166595
+     },
+     {
+      "id": "temfacil-office-zone3",
+      "fps": 137.2,
+      "p95": 12.1,
+      "calls": 7,
+      "tris": 227363
+     },
+     {
+      "id": "temfacil-office-zone4",
+      "fps": 149.6,
+      "p95": 9.9,
+      "calls": 6,
+      "tris": 198193
+     },
+     {
+      "id": "temfacil-office-zone4b",
+      "fps": 145.6,
+      "p95": 11.1,
+      "calls": 6,
+      "tris": 202954
+     },
+     {
+      "id": "temfacil-office-zone5a",
+      "fps": 155.2,
+      "p95": 13.1,
+      "calls": 8,
+      "tris": 288935
+     },
+     {
+      "id": "temfacil-office-zone5b",
+      "fps": 219.2,
+      "p95": 7.4,
+      "calls": 7,
+      "tris": 254860
+     },
+     {
+      "id": "temfacil-office-zone5c",
+      "fps": 217.6,
+      "p95": 6.8,
+      "calls": 7,
+      "tris": 239665
+     },
+     {
+      "id": "temfacil-office-zone5d",
+      "fps": 219.2,
+      "p95": 6.5,
+      "calls": 7,
+      "tris": 230329
+     },
+     {
+      "id": "temfacil-office-zone6",
+      "fps": 218.8,
+      "p95": 6.8,
+      "calls": 7,
+      "tris": 205051
+     }
+    ],
+    "frames": 21717,
+    "ms": 77500,
+    "maxCalls": 11,
+    "maxTris": 415768,
+    "maxPrograms": 17,
+    "p95": 13.10000000000582,
+    "worst": {
+     "id": "temfacil-office-zone3",
+     "fps": 137.2
+    }
+   },
+   "zones": [
+    {
+     "id": "powerhouse.pipeline-test",
+     "placements": 2500,
+     "fps": 215.4,
+     "p95": 5.8,
+     "calls": 9,
+     "tris": 353480,
+     "lod": [
+      0,
+      60,
+      1918
+     ],
+     "gpuMB": 32.5
+    }
+   ],
+   "heap": {
+    "samples": [
+     {
+      "t": 1,
+      "mb": 22.996323585510254
+     },
+     {
+      "t": 10112,
+      "mb": 22.764065742492676
+     },
+     {
+      "t": 88690,
+      "mb": 23.56460952758789
+     },
+     {
+      "t": 167420,
+      "mb": 23.69986343383789
+     },
+     {
+      "t": 245706,
+      "mb": 21.57490634918213
+     },
+     {
+      "t": 324022,
+      "mb": 21.62033176422119
+     },
+     {
+      "t": 402432,
+      "mb": 21.666665077209473
+     },
+     {
+      "t": 481060,
+      "mb": 21.747918128967285
+     },
+     {
+      "t": 559413,
+      "mb": 21.772114753723145
+     },
+     {
+      "t": 637651,
+      "mb": 21.823555946350098
+     },
+     {
+      "t": 715926,
+      "mb": 21.862248420715332
+     },
+     {
+      "t": 794227,
+      "mb": 21.877224922180176
+     },
+     {
+      "t": 872468,
+      "mb": 21.88432025909424
+     },
+     {
+      "t": 950743,
+      "mb": 21.90699863433838
+     },
+     {
+      "t": 1029112,
+      "mb": 21.921975135803223
+     },
+     {
+      "t": 1107420,
+      "mb": 21.961338996887207
+     },
+     {
+      "t": 1185623,
+      "mb": 21.975560188293457
+     },
+     {
+      "t": 1263815,
+      "mb": 21.98195743560791
+     },
+     {
+      "t": 1342001,
+      "mb": 22.248265266418457
+     },
+     {
+      "t": 1347670,
+      "mb": 22.257823944091797
+     }
+    ],
+    "mbPerMinute": -0.035,
+    "minutes": 22.46
+   },
+   "end": {
+    "fps": 207.73825017822153,
+    "ms": 4.8137499913573265,
+    "p95": 6,
+    "calls": 9,
+    "tris": 353480,
+    "programs": 17,
+    "textures": 18,
+    "geometries": 17,
+    "heapMB": 22.622665405273438,
+    "zonesLoaded": 1,
+    "agents": 0,
+    "gpuMB": 32.483238220214844,
+    "lights": 1,
+    "pixelRatio": 1,
+    "resolution": 1,
+    "streaming": {
+     "zonesLoaded": 1,
+     "zonesLoading": 0,
+     "instances": 2500,
+     "lod": [
+      0,
+      60,
+      1918
+     ],
+     "hidden": 522,
+     "draws": 7,
+     "tasksQueued": 0,
+     "longestTaskMs": 10.400000005960464,
+     "longestTaskKind": "pipeline"
+    }
+   },
+   "budget": [
+    {
+     "what": "Median frame rate, overview",
+     "got": "237.4 fps",
+     "want": "45 fps or better",
+     "pass": true
+    },
+    {
+     "what": "Frame rate over the fly-through",
+     "got": "280.2 fps (worst place temfacil-office-zone3: 137.2)",
+     "want": "45 fps or better",
+     "pass": true
+    },
+    {
+     "what": "p95 frame time, overview",
+     "got": "7.5 ms (frame cap off)",
+     "want": "33 ms or less",
+     "pass": true
+    },
+    {
+     "what": "Draw calls (most seen)",
+     "got": "11",
+     "want": "350 or fewer",
+     "pass": true
+    },
+    {
+     "what": "Triangles in view (most seen)",
+     "got": "415768",
+     "want": "700000 or fewer",
+     "pass": true
+    },
+    {
+     "what": "Shader programs / pipelines",
+     "got": "17",
+     "want": "40 or fewer",
+     "pass": true
+    },
+    {
+     "what": "Real-time lights (sun included)",
+     "got": "1",
+     "want": "9 or fewer",
+     "pass": true
+    },
+    {
+     "what": "First usable view (warm cache)",
+     "got": "1.57 s (everything in: 12.36 s)",
+     "want": "6 s or less",
+     "pass": true
+    },
+    {
+     "what": "Download to first view",
+     "got": "2.14 MB (twin assets 0.62, scripts 1.2)",
+     "want": "12 MB or less",
+     "pass": true
+    },
+    {
+     "what": "Download, whole site",
+     "got": "15.25 MB",
+     "want": "70 MB or less",
+     "pass": true
+    },
+    {
+     "what": "JS heap trend",
+     "got": "-0.04 MB a minute over 22.5 minutes (23, 23, 24, 24, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22 MB)",
+     "want": "no growth trend",
+     "pass": true
+    }
+   ],
+   "errors": []
+  }
+ ]
+}

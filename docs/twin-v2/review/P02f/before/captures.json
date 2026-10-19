@@ -1,0 +1,338 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-approach-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 38.3,
+  "p95": 76.3,
+  "calls": 83,
+  "tris": 637054,
+  "programs": 74,
+  "lights": 1,
+  "gpuMB": 63.9,
+  "heapMB": 193,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-approach-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 40.2,
+  "p95": 68.2,
+  "calls": 83,
+  "tris": 637054,
+  "programs": 74,
+  "lights": 1,
+  "gpuMB": 63.9,
+  "heapMB": 209,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-booth",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-booth-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 32.8,
+  "p95": 76.5,
+  "calls": 83,
+  "tris": 710522,
+  "programs": 72,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 205,
+  "lod": [
+   38,
+   152,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-booth",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-booth-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 30.4,
+  "p95": 84.5,
+  "calls": 98,
+  "tris": 843079,
+  "programs": 71,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 224,
+  "lod": [
+   38,
+   152,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-over",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-over-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 23.7,
+  "p95": 116.7,
+  "calls": 87,
+  "tris": 542136,
+  "programs": 72,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 204,
+  "lod": [
+   19,
+   222,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-over",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-over-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 33.1,
+  "p95": 91,
+  "calls": 87,
+  "tris": 542136,
+  "programs": 73,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 198,
+  "lod": [
+   19,
+   222,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-inside",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-inside-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 33.8,
+  "p95": 96.7,
+  "calls": 103,
+  "tris": 800887,
+  "programs": 72,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 179,
+  "lod": [
+   26,
+   140,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-inside",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-inside-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 34.3,
+  "p95": 90.2,
+  "calls": 103,
+  "tris": 800887,
+  "programs": 72,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 212,
+  "lod": [
+   26,
+   140,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-verge",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-verge-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 36.9,
+  "p95": 83.7,
+  "calls": 73,
+  "tris": 584097,
+  "programs": 72,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 198,
+  "lod": [
+   76,
+   30,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-verge",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-verge-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 37,
+  "p95": 80.9,
+  "calls": 89,
+  "tris": 711936,
+  "programs": 72,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 181,
+  "lod": [
+   76,
+   30,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-window",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-window-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 25.7,
+  "p95": 116.6,
+  "calls": 118,
+  "tris": 961957,
+  "programs": 71,
+  "lights": 1,
+  "gpuMB": 63.8,
+  "heapMB": 196,
+  "lod": [
+   59,
+   115,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-window",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-window-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 26.2,
+  "p95": 108.9,
+  "calls": 87,
+  "tris": 729988,
+  "programs": 68,
+  "lights": 1,
+  "gpuMB": 63.1,
+  "heapMB": 170,
+  "lod": [
+   59,
+   115,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

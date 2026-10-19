@@ -108,6 +108,16 @@ export function ListSkeleton({ rows = 5, label = "list", className }: { rows?: n
   );
 }
 
+/** Headlines: the photo reel beside the ranked list (stacked on a phone) */
+export function HeadlinesSkeleton() {
+  return (
+    <div role="status" aria-label="Loading headlines" className="grid gap-4 lg:grid-cols-12">
+      <Bar className="aspect-[4/3] w-full rounded-2xl sm:aspect-[16/9] lg:col-span-7 xl:col-span-8" />
+      <ListSkeleton rows={5} label="headlines" className="lg:col-span-5 xl:col-span-4" />
+    </div>
+  );
+}
+
 /** Newsroom: featured story beside a feed */
 export function NewsroomSkeleton() {
   return (

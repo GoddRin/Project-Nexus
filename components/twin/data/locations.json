@@ -1,0 +1,260 @@
+{
+ "note": [
+  "Grid: PRS92 / Philippines Zone III (EPSG:3123), the grid printed on the DED key plans. lat/lon are WGS84 (lib/twin/grid.ts).",
+  "yawToGridNorth: the bearing, clockwise from grid north in radians, of the local -Z axis. Local +X is 90 degrees clockwise from it.",
+  "errorM is the estimated error of the origin in the grid. The grid-to-WGS84 step adds about 10 m to lat/lon.",
+  "halfExtent for the powerhouse covers the surge tank, the Tunnel 2 outlet, the main camp (about 400 m away) and the mixing facility. P03a decides whether midway joins it.",
+  "anchors is an optional field added in P00a: named points of the location in the project grid.",
+  "v1 labels the powerhouse 17.0621 N, 121.8410 E. That is about 31 km from the site and is not used."
+ ],
+ "locations": [
+  {
+   "id": "weir",
+   "title": "Weir and intake",
+   "origin": {
+    "easting": 605938.8,
+    "northing": 1917902.1,
+    "elevation": 296,
+    "lat": 17.337479,
+    "lon": 121.99796,
+    "source": "Centre of the weir axis, scaled off the Tunnel 1 key plan (MPR-53 slide 36) from the two printed tunnel ends; the site development plan (MPR-18) puts it 11 m away",
+    "errorM": 15,
+    "elevationNote": "Y = 0 is EL 296.00 m, the Tunnel 1 inlet level printed on the inlet plan. The flood wall is at Elev. 303 (MPR-32). The river-bed level is not on any drawing seen."
+   },
+   "yawToGridNorth": 0,
+   "halfExtent": 400,
+   "underground": false,
+   "overview": {
+    "pos": [
+     140,
+     130,
+     170
+    ],
+    "target": [
+     20,
+     0,
+     40
+    ]
+   },
+   "waterOrder": 1,
+   "anchors": {
+    "weir-left-end": {
+     "easting": 605925.5,
+     "northing": 1917873.5
+    },
+    "weir-right-end": {
+     "easting": 605952.2,
+     "northing": 1917930.7
+    },
+    "tunnel1-inlet": {
+     "easting": 605981.4,
+     "northing": 1917792.2
+    },
+    "adit-portal": {
+     "easting": 606017.9,
+     "northing": 1917786.8
+    },
+    "satellite-camp": {
+     "easting": 606168.4,
+     "northing": 1917654.5
+    },
+    "mixing-facility": {
+     "easting": 606054.7,
+     "northing": 1917725
+    }
+   }
+  },
+  {
+   "id": "tunnel1",
+   "title": "Headrace Tunnel 1",
+   "origin": {
+    "easting": 605981.401,
+    "northing": 1917792.154,
+    "elevation": 296,
+    "lat": 17.336484,
+    "lon": 121.998356,
+    "source": "START OF TUNNEL 1, STA 0+000, printed on the Tunnel 1 key plan and the inlet plan (MPR-53 slide 36); marked 'to be verified' on the drawing",
+    "errorM": 5,
+    "elevationNote": "Y = 0 is EL 296.00 m, printed at the tunnel start. The inlet transition falls at 7.90% to EL 293.52 m over 31.4 m."
+   },
+   "yawToGridNorth": -2.13002,
+   "halfExtent": 60,
+   "underground": true,
+   "overview": {
+    "pos": [
+     0,
+     2.2,
+     12
+    ],
+    "target": [
+     0,
+     1.8,
+     -20
+    ]
+   },
+   "waterOrder": 2,
+   "anchors": {
+    "inlet-portal": {
+     "easting": 605981.4,
+     "northing": 1917792.2
+    },
+    "transition-end": {
+     "easting": 605960.8,
+     "northing": 1917768.4
+    },
+    "adit-portal": {
+     "easting": 606017.9,
+     "northing": 1917786.8
+    },
+    "outlet-portal": {
+     "easting": 603430.8,
+     "northing": 1916195.8
+    }
+   }
+  },
+  {
+   "id": "midway",
+   "title": "Pipe bridge and tunnel portals",
+   "origin": {
+    "easting": 603414.559,
+    "northing": 1916185.201,
+    "elevation": 275,
+    "lat": 17.322084,
+    "lon": 121.974134,
+    "source": "Midpoint of the pipe bridge: halfway between the printed Tunnel 1 end (MPR-53 slide 36) and Tunnel 2 inlet portal (slide 48), which are 38.8 m apart",
+    "errorM": 5,
+    "elevationNote": "Y = 0 is about EL 275 m, read from the contours at the Tunnel 2 inlet on its key plan (between the 270 and 280 lines). Good to about 5 m; no spot level is printed."
+   },
+   "yawToGridNorth": -2.14875,
+   "halfExtent": 200,
+   "underground": false,
+   "overview": {
+    "pos": [
+     70,
+     60,
+     90
+    ],
+    "target": [
+     0,
+     0,
+     0
+    ]
+   },
+   "waterOrder": 3,
+   "anchors": {
+    "tunnel1-outlet": {
+     "easting": 603430.8,
+     "northing": 1916195.8
+    },
+    "tunnel2-inlet": {
+     "easting": 603398.3,
+     "northing": 1916174.6
+    }
+   }
+  },
+  {
+   "id": "tunnel2",
+   "title": "Headrace Tunnel 2",
+   "origin": {
+    "easting": 603146.606,
+    "northing": 1915714.938,
+    "elevation": 271.465,
+    "lat": 17.317847,
+    "lon": 121.971591,
+    "source": "TUNNEL 2 OUTLET PORTAL, STA 0+535.00, printed on the Tunnel 2 key plan (MPR-53 slide 48); marked 'to be verified' on the drawing",
+    "errorM": 5,
+    "elevationNote": "Y = 0 is EL 271.465 m, the level printed beside the surge tank on the penstock plan (MPR-53 slide 65). The tunnel invert at the outlet is assumed to be at that level."
+   },
+   "yawToGridNorth": 0.16272,
+   "halfExtent": 60,
+   "underground": true,
+   "overview": {
+    "pos": [
+     0,
+     2.2,
+     12
+    ],
+    "target": [
+     0,
+     1.8,
+     -20
+    ]
+   },
+   "waterOrder": 4,
+   "anchors": {
+    "outlet-portal": {
+     "easting": 603146.6,
+     "northing": 1915714.9
+    },
+    "bend": {
+     "easting": 603169.9,
+     "northing": 1915856.7
+    },
+    "inlet-portal": {
+     "easting": 603398.3,
+     "northing": 1916174.6
+    }
+   }
+  },
+  {
+   "id": "powerhouse",
+   "title": "Powerhouse, surge tank and main camp",
+   "origin": {
+    "easting": 603188.416,
+    "northing": 1915549.345,
+    "elevation": 188.04,
+    "lat": 17.316349,
+    "lon": 121.971977,
+    "source": "Centre of the machine hall, scaled off the penstock plan (MPR-53 slide 65): 12.8 m past the printed point TB-04 along the penstock axis and 5.5 m towards the small unit",
+    "errorM": 5,
+    "elevationNote": "Y = 0 is EL 188.04 m, the yard level printed beside the switchyard on the penstock plan. The turbine floor is EL 188.24 m and the lower pit EL 183.54 m (drawing R1)."
+   },
+   "yawToGridNorth": -0.34459,
+   "halfExtent": 450,
+   "underground": false,
+   "overview": {
+    "pos": [
+     75,
+     120,
+     160
+    ],
+    "target": [
+     30,
+     8,
+     -25
+    ]
+   },
+   "waterOrder": 5,
+   "anchors": {
+    "tb-04": {
+     "easting": 603189.3,
+     "northing": 1915563.3
+    },
+    "bifurcation": {
+     "easting": 603183.5,
+     "northing": 1915579.4
+    },
+    "tb-02": {
+     "easting": 603151.8,
+     "northing": 1915667.7
+    },
+    "surge-tank": {
+     "easting": 603150.3,
+     "northing": 1915681.6
+    },
+    "tunnel2-outlet": {
+     "easting": 603146.6,
+     "northing": 1915714.9
+    },
+    "main-camp": {
+     "easting": 603502.3,
+     "northing": 1915807.9
+    },
+    "mixing-facility": {
+     "easting": 603400.4,
+     "northing": 1915678.7
+    }
+   }
+  }
+ ]
+}

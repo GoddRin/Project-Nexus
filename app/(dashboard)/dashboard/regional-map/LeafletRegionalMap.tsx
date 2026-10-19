@@ -621,7 +621,7 @@ export function LeafletRegionalMap({
 
   if (loading) {
     return (
-      <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+3rem)] -m-6 bg-bg-base overflow-hidden items-center justify-center backdrop-blur-md">
+      <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+1.75rem)] -m-3.5 sm:w-[calc(100%+2.5rem)] sm:-m-5 md:w-[calc(100%+3rem)] md:-m-6 bg-bg-base overflow-hidden items-center justify-center backdrop-blur-md">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-flow-teal border-t-transparent" />
           <span className="text-sm font-medium text-text-muted font-sans">
@@ -633,7 +633,7 @@ export function LeafletRegionalMap({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+3rem)] -m-6 bg-bg-base overflow-hidden isolate z-0 print-map-container">
+    <div className="flex flex-col h-[calc(100vh-64px)] w-[calc(100%+1.75rem)] -m-3.5 sm:w-[calc(100%+2.5rem)] sm:-m-5 md:w-[calc(100%+3rem)] md:-m-6 bg-bg-base overflow-hidden isolate z-0 print-map-container">
       {/* PAGE HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-slate-200/70 dark:border-white/[0.04] bg-bg-panel/50 relative z-20 print:hidden">
         <div>

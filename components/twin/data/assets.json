@@ -1,0 +1,1705 @@
+[
+ {
+  "id": "char.driver.a",
+  "url": "/models/twin/characters/driver.a.glb?v=0c7faf61a7",
+  "bytes": 1956728,
+  "tris": [
+   19454,
+   5899,
+   1446
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.546,
+    -0.003,
+    -0.138
+   ],
+   "max": [
+    0.546,
+    1.692,
+    0.351
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.elvaerwyn-shirt",
+   "mpfb.punkduck-jeans",
+   "polyhaven.stretch_poplin",
+   "polyhaven.denim_fabric_06",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "char.engineer.a",
+  "url": "/models/twin/characters/engineer.a.glb?v=09afff581a",
+  "bytes": 2875068,
+  "tris": [
+   19481,
+   5865,
+   1389
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.556,
+    -0.026,
+    -0.135
+   ],
+   "max": [
+    0.584,
+    1.754,
+    0.39
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.elvaerwyn-shirt",
+   "mpfb.punkduck-jeans",
+   "mpfb.mindfront-boots",
+   "polyhaven.stretch_poplin",
+   "polyhaven.denim_fabric_06",
+   "polyhaven.bi_stretch",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "char.guard.a",
+  "url": "/models/twin/characters/guard.a.glb?v=b323948fae",
+  "bytes": 3133052,
+  "tris": [
+   19441,
+   5898,
+   1438
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.545,
+    -0.003,
+    -0.115
+   ],
+   "max": [
+    0.545,
+    1.703,
+    0.352
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.elvaerwyn-shirt",
+   "mpfb.elvaerwyn-trouser",
+   "mpfb.mrt-cap",
+   "polyhaven.stretch_poplin",
+   "polyhaven.rough_linen",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "char.labourer.a",
+  "url": "/models/twin/characters/labourer.a.glb?v=b2f415c188",
+  "bytes": 2279548,
+  "tris": [
+   19026,
+   5898,
+   1441
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.858,
+    -0.032,
+    -0.583
+   ],
+   "max": [
+    0.514,
+    1.634,
+    0.573
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "mpfb.makehuman",
+   "mpfb.mindfront-sweater",
+   "mpfb.mindfront-trousers",
+   "mpfb.punkduck-boots",
+   "mpfb.mrt-gloves",
+   "polyhaven.cotton_jersey",
+   "polyhaven.denim_fabric_05",
+   "mixamo.motion",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "fauna.aspin.a",
+  "url": "/models/twin/fauna/aspin.a.glb?v=19821713c0",
+  "bytes": 1098860,
+  "tris": [
+   9999,
+   2999,
+   800
+  ],
+  "lodDistances": [
+   15,
+   50
+  ],
+  "bounds": {
+   "min": [
+    -0.111,
+    0,
+    -0.478
+   ],
+   "max": [
+    0.111,
+    0.601,
+    0.434
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "sketchfab.maxdesign-dog-animated"
+  ]
+ },
+ {
+  "id": "flora.acacia.a",
+  "url": "/models/twin/flora/acacia.a.glb?v=21643e74d1",
+  "bytes": 524832,
+  "tris": [
+   14989,
+   3296,
+   768
+  ],
+  "lodDistances": [
+   40,
+   110
+  ],
+  "bounds": {
+   "min": [
+    -8.297,
+    -0.122,
+    -9.461
+   ],
+   "max": [
+    9.034,
+    13.162,
+    8.589
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "polyhaven.jacaranda_tree",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "flora.acacia.b",
+  "url": "/models/twin/flora/acacia.b.glb?v=713bf953c8",
+  "bytes": 210916,
+  "tris": [
+   5196,
+   1210,
+   352
+  ],
+  "lodDistances": [
+   30,
+   90
+  ],
+  "bounds": {
+   "min": [
+    -2.757,
+    -0.1,
+    -3.589
+   ],
+   "max": [
+    3.09,
+    6.766,
+    2.843
+   ]
+  },
+  "materials": 2,
+  "credits": [
+   "polyhaven.jacaranda_tree",
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "flora.banana.a",
+  "url": "/models/twin/flora/banana.a.glb?v=228064a039",
+  "bytes": 169876,
+  "tris": [
+   816,
+   140,
+   0
+  ],
+  "lodDistances": [
+   22,
+   70
+  ],
+  "bounds": {
+   "min": [
+    -1.601,
+    -0.061,
+    -2.096
+   ],
+   "max": [
+    2.027,
+    5.727,
+    1.498
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "flora.broadleaf.a",
+  "url": "/models/twin/flora/broadleaf.a.glb?v=3919ec05e2",
+  "bytes": 221864,
+  "tris": [
+   999,
+   220,
+   0
+  ],
+  "lodDistances": [
+   15,
+   45
+  ],
+  "bounds": {
+   "min": [
+    -0.667,
+    0,
+    -0.76
+   ],
+   "max": [
+    0.744,
+    0.807,
+    0.501
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.calathea_orbifolia_01"
+  ]
+ },
+ {
+  "id": "flora.cogon.a",
+  "url": "/models/twin/flora/cogon.a.glb?v=baad641d61",
+  "bytes": 7104,
+  "tris": [
+   54,
+   20,
+   0
+  ],
+  "lodDistances": [
+   15,
+   45
+  ],
+  "bounds": {
+   "min": [
+    -0.427,
+    0,
+    -0.392
+   ],
+   "max": [
+    0.386,
+    1.317,
+    0.412
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "flora.croton.a",
+  "url": "/models/twin/flora/croton.a.glb?v=e45b747d15",
+  "bytes": 7540,
+  "tris": [
+   72,
+   20,
+   0
+  ],
+  "lodDistances": [
+   15,
+   45
+  ],
+  "bounds": {
+   "min": [
+    -0.307,
+    0,
+    -0.273
+   ],
+   "max": [
+    0.339,
+    0.736,
+    0.325
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "flora.fern.a",
+  "url": "/models/twin/flora/fern.a.glb?v=e4641eea8b",
+  "bytes": 176140,
+  "tris": [
+   900,
+   200,
+   0
+  ],
+  "lodDistances": [
+   15,
+   45
+  ],
+  "bounds": {
+   "min": [
+    -0.643,
+    0,
+    -0.582
+   ],
+   "max": [
+    0.644,
+    0.554,
+    0.582
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.fern_02"
+  ]
+ },
+ {
+  "id": "flora.grass.a",
+  "url": "/models/twin/flora/grass.a.glb?v=31da97f909",
+  "bytes": 379316,
+  "tris": [
+   700,
+   159,
+   0
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.381,
+    0,
+    -0.278
+   ],
+   "max": [
+    0.515,
+    0.741,
+    0.437
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.grass_medium_01"
+  ]
+ },
+ {
+  "id": "flora.ixora.a",
+  "url": "/models/twin/flora/ixora.a.glb?v=aff3f251da",
+  "bytes": 7716,
+  "tris": [
+   72,
+   24,
+   0
+  ],
+  "lodDistances": [
+   15,
+   45
+  ],
+  "bounds": {
+   "min": [
+    -0.322,
+    0,
+    -0.264
+   ],
+   "max": [
+    0.24,
+    0.684,
+    0.277
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "flora.shrub.a",
+  "url": "/models/twin/flora/shrub.a.glb?v=fc6e1994e6",
+  "bytes": 221756,
+  "tris": [
+   1199,
+   260,
+   0
+  ],
+  "lodDistances": [
+   18,
+   55
+  ],
+  "bounds": {
+   "min": [
+    -0.852,
+    0,
+    -0.865
+   ],
+   "max": [
+    0.855,
+    1.467,
+    0.867
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.shrub_02"
+  ]
+ },
+ {
+  "id": "ground.camp-gate",
+  "url": "/models/twin/ground/camp-gate.glb?v=587f6ba12e",
+  "bytes": 204456,
+  "tris": [
+   45000,
+   0,
+   0
+  ],
+  "lodDistances": [
+   100000,
+   100000
+  ],
+  "bounds": {
+   "min": [
+    -30,
+    0,
+    -30
+   ],
+   "max": [
+    30,
+    7.494,
+    30
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "kit.boom-arm",
+  "url": "/models/twin/kit/boom-arm.glb?v=d98c535f4e",
+  "bytes": 12240,
+  "tris": [
+   204,
+   48,
+   24
+  ],
+  "lodDistances": [
+   40,
+   140
+  ],
+  "bounds": {
+   "min": [
+    -0.98,
+    -0.75,
+    -0.12
+   ],
+   "max": [
+    6.74,
+    0.06,
+    0.12
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.rusty_metal_03",
+   "polyhaven.concrete_wall_008"
+  ]
+ },
+ {
+  "id": "kit.fence-frame.a",
+  "url": "/models/twin/kit/fence-frame.a.glb?v=638e5d5fa9",
+  "bytes": 12404,
+  "tris": [
+   144,
+   79,
+   66
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.14,
+    -0.08,
+    -0.284
+   ],
+   "max": [
+    2.5,
+    2.115,
+    0.14
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.concrete_wall_008",
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "kit.fence-mesh-vine.a",
+  "url": "/models/twin/kit/fence-mesh-vine.a.glb?v=78abd8bf53",
+  "bytes": 7660,
+  "tris": [
+   74,
+   20,
+   8
+  ],
+  "lodDistances": [
+   45,
+   120
+  ],
+  "bounds": {
+   "min": [
+    0,
+    -0.231,
+    0
+   ],
+   "max": [
+    2.5,
+    2.139,
+    0.306
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "kit.fence-mesh.a",
+  "url": "/models/twin/kit/fence-mesh.a.glb?v=44bd7a3202",
+  "bytes": 6680,
+  "tris": [
+   26,
+   14,
+   2
+  ],
+  "lodDistances": [
+   45,
+   120
+  ],
+  "bounds": {
+   "min": [
+    0,
+    0.07,
+    0
+   ],
+   "max": [
+    2.5,
+    2.139,
+    0.306
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "kit.fence-post.a",
+  "url": "/models/twin/kit/fence-post.a.glb?v=87cac0741b",
+  "bytes": 10060,
+  "tris": [
+   108,
+   53,
+   50
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.14,
+    -0.08,
+    -0.284
+   ],
+   "max": [
+    0.14,
+    2.115,
+    0.14
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.concrete_wall_008",
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "kit.gate-decals",
+  "url": "/models/twin/kit/gate-decals.glb?v=8595cb8922",
+  "bytes": 609876,
+  "tris": [
+   5176,
+   1338,
+   0
+  ],
+  "lodDistances": [
+   35,
+   110
+  ],
+  "bounds": {
+   "min": [
+    62.858,
+    11.271,
+    -101.793
+   ],
+   "max": [
+    121.428,
+    18.663,
+    -38.282
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.gravel_floor",
+   "polyhaven.forest_leaves_03",
+   "polyhaven.muddy_tracks"
+  ]
+ },
+ {
+  "id": "kit.gate-services",
+  "url": "/models/twin/kit/gate-services.glb?v=ebfbdad5ff",
+  "bytes": 35120,
+  "tris": [
+   1434,
+   368,
+   72
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    69.051,
+    12.6,
+    -92.449
+   ],
+   "max": [
+    95.137,
+    22.564,
+    -48.732
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored",
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "prop.calendar.a",
+  "url": "/models/twin/props/calendar.a.glb?v=4875d3737e",
+  "bytes": 5564,
+  "tris": [
+   44,
+   18,
+   0
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.152,
+    -0.47,
+    0
+   ],
+   "max": [
+    0.152,
+    0.005,
+    0.02
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.cctv.a",
+  "url": "/models/twin/props/cctv.a.glb?v=8de66d2e66",
+  "bytes": 15896,
+  "tris": [
+   276,
+   128,
+   80
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    0,
+    -0.201,
+    -0.045
+   ],
+   "max": [
+    0.275,
+    0.108,
+    0.045
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.cement-bag",
+  "url": "/models/twin/props/cement-bag.glb?v=bc118eed55",
+  "bytes": 209612,
+  "tris": [
+   844,
+   400,
+   150
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.229,
+    0.001,
+    -0.348
+   ],
+   "max": [
+    0.234,
+    0.181,
+    0.351
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.cement_bag"
+  ]
+ },
+ {
+  "id": "prop.chair-monobloc.a",
+  "url": "/models/twin/props/chair-monobloc.a.glb?v=91575efc28",
+  "bytes": 24464,
+  "tris": [
+   536,
+   216,
+   168
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.274,
+    -0.005,
+    -0.297
+   ],
+   "max": [
+    0.274,
+    0.806,
+    0.279
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.culvert-end.a",
+  "url": "/models/twin/props/culvert-end.a.glb?v=1903861f65",
+  "bytes": 12356,
+  "tris": [
+   260,
+   80,
+   20
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.85,
+    -0.15,
+    -0.15
+   ],
+   "max": [
+    0.85,
+    0.62,
+    0.618
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.concrete_wall_008"
+  ]
+ },
+ {
+  "id": "prop.desk-things.a",
+  "url": "/models/twin/props/desk-things.a.glb?v=1d7c570caf",
+  "bytes": 16652,
+  "tris": [
+   514,
+   198,
+   0
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.36,
+    -0.031,
+    -0.11
+   ],
+   "max": [
+    0.338,
+    0.33,
+    0.241
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.drum-bin.a",
+  "url": "/models/twin/props/drum-bin.a.glb?v=997df94896",
+  "bytes": 19128,
+  "tris": [
+   548,
+   210,
+   48
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.302,
+    0,
+    -0.302
+   ],
+   "max": [
+    0.302,
+    0.9,
+    0.302
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.blue_metal_plate",
+   "polyhaven.metal_plate_02"
+  ]
+ },
+ {
+  "id": "prop.drum-blue",
+  "url": "/models/twin/props/drum-blue.glb?v=cff9426770",
+  "bytes": 269272,
+  "tris": [
+   1473,
+   400,
+   150
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.317,
+    0,
+    -0.319
+   ],
+   "max": [
+    0.317,
+    0.93,
+    0.319
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.barrel_03"
+  ]
+ },
+ {
+  "id": "prop.drum-planter.a",
+  "url": "/models/twin/props/drum-planter.a.glb?v=3b616e71a2",
+  "bytes": 12212,
+  "tris": [
+   198,
+   99,
+   66
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.296,
+    0,
+    -0.292
+   ],
+   "max": [
+    0.296,
+    0.426,
+    0.292
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.blue_metal_plate",
+   "polyhaven.metal_plate_02"
+  ]
+ },
+ {
+  "id": "prop.drum-red",
+  "url": "/models/twin/props/drum-red.glb?v=7b012fc219",
+  "bytes": 291880,
+  "tris": [
+   1498,
+   399,
+   150
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.282,
+    -0.007,
+    -0.282
+   ],
+   "max": [
+    0.282,
+    0.873,
+    0.282
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.Barrel_01"
+  ]
+ },
+ {
+  "id": "prop.fan-desk.a",
+  "url": "/models/twin/props/fan-desk.a.glb?v=5bc8d5aefc",
+  "bytes": 23928,
+  "tris": [
+   950,
+   312,
+   0
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.153,
+    0,
+    -0.114
+   ],
+   "max": [
+    0.153,
+    0.422,
+    0.09
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.fan-stand.a",
+  "url": "/models/twin/props/fan-stand.a.glb?v=19afa549e3",
+  "bytes": 27208,
+  "tris": [
+   1016,
+   348,
+   0
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.223,
+    0,
+    -0.21
+   ],
+   "max": [
+    0.223,
+    1.242,
+    0.21
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.guard-stone.a",
+  "url": "/models/twin/props/guard-stone.a.glb?v=21fa859cfc",
+  "bytes": 224624,
+  "tris": [
+   1200,
+   300,
+   80
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.171,
+    -0.066,
+    -0.308
+   ],
+   "max": [
+    0.171,
+    0.264,
+    0.307
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.namaqualand_boulder_06"
+  ]
+ },
+ {
+  "id": "prop.hardhat-hung.a",
+  "url": "/models/twin/props/hardhat-hung.a.glb?v=5fad321458",
+  "bytes": 15272,
+  "tris": [
+   412,
+   166,
+   90
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.165,
+    -0.248,
+    0
+   ],
+   "max": [
+    0.165,
+    0.138,
+    0.171
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.jerrycan",
+  "url": "/models/twin/props/jerrycan.glb?v=e109c4c374",
+  "bytes": 322288,
+  "tris": [
+   1499,
+   399,
+   195
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.17,
+    0,
+    -0.089
+   ],
+   "max": [
+    0.18,
+    0.455,
+    0.083
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.metal_jerrycan"
+  ]
+ },
+ {
+  "id": "prop.jerrycan.a",
+  "url": "/models/twin/props/jerrycan.a.glb?v=442626a308",
+  "bytes": 13396,
+  "tris": [
+   294,
+   92,
+   12
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.175,
+    0,
+    -0.083
+   ],
+   "max": [
+    0.183,
+    0.476,
+    0.083
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.pallet.a",
+  "url": "/models/twin/props/pallet.a.glb?v=9d7643560d",
+  "bytes": 22400,
+  "tris": [
+   530,
+   144,
+   108
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.602,
+    0,
+    -0.5
+   ],
+   "max": [
+    0.601,
+    0.144,
+    0.501
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.wood_planks_grey"
+  ]
+ },
+ {
+  "id": "prop.pipe-offcuts.a",
+  "url": "/models/twin/props/pipe-offcuts.a.glb?v=aa4331f4aa",
+  "bytes": 11388,
+  "tris": [
+   240,
+   120,
+   30
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.602,
+    0.001,
+    -0.23
+   ],
+   "max": [
+    0.703,
+    0.117,
+    0.15
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "prop.propane-tank",
+  "url": "/models/twin/props/propane-tank.glb?v=2ace7df391",
+  "bytes": 370656,
+  "tris": [
+   1475,
+   375,
+   175
+  ],
+  "lodDistances": [
+   12,
+   40
+  ],
+  "bounds": {
+   "min": [
+    -0.169,
+    0,
+    -0.169
+   ],
+   "max": [
+    0.169,
+    0.554,
+    0.169
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.propane_tank"
+  ]
+ },
+ {
+  "id": "prop.rice-sacks.a",
+  "url": "/models/twin/props/rice-sacks.a.glb?v=f441fabb45",
+  "bytes": 19100,
+  "tris": [
+   528,
+   132,
+   88
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.401,
+    0,
+    -0.491
+   ],
+   "max": [
+    0.438,
+    0.297,
+    0.506
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.hessian_230",
+   "polyhaven.wood_planks_grey",
+   "polyhaven.blue_metal_plate",
+   "polyhaven.metal_plate_02",
+   "polyhaven.concrete_wall_008",
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "prop.rock-boulder.a",
+  "url": "/models/twin/props/rock-boulder.a.glb?v=287311c0d1",
+  "bytes": 1004768,
+  "tris": [
+   2000,
+   500,
+   100
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.626,
+    -0.194,
+    -0.902
+   ],
+   "max": [
+    0.628,
+    0.788,
+    0.899
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.boulder_01"
+  ]
+ },
+ {
+  "id": "prop.rock-boulder.b",
+  "url": "/models/twin/props/rock-boulder.b.glb?v=7a89a787ee",
+  "bytes": 887256,
+  "tris": [
+   2000,
+   500,
+   100
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -1.195,
+    -0.356,
+    -1.189
+   ],
+   "max": [
+    1.197,
+    1.434,
+    1.179
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.namaqualand_boulder_04"
+  ]
+ },
+ {
+  "id": "prop.rock-stone.a",
+  "url": "/models/twin/props/rock-stone.a.glb?v=0b01b38a5d",
+  "bytes": 302200,
+  "tris": [
+   1500,
+   400,
+   100
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.248,
+    -0.096,
+    -0.448
+   ],
+   "max": [
+    0.248,
+    0.386,
+    0.446
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.namaqualand_boulder_06"
+  ]
+ },
+ {
+  "id": "prop.rock-stone.b",
+  "url": "/models/twin/props/rock-stone.b.glb?v=610e44a302",
+  "bytes": 759856,
+  "tris": [
+   1200,
+   300,
+   80
+  ],
+  "lodDistances": [
+   30,
+   100
+  ],
+  "bounds": {
+   "min": [
+    -0.119,
+    -0.04,
+    -0.225
+   ],
+   "max": [
+    0.117,
+    0.161,
+    0.225
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.rock_07"
+  ]
+ },
+ {
+  "id": "prop.slippers.a",
+  "url": "/models/twin/props/slippers.a.glb?v=b77cd22b30",
+  "bytes": 10004,
+  "tris": [
+   224,
+   80,
+   0
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.05,
+    0,
+    -0.168
+   ],
+   "max": [
+    0.2,
+    0.051,
+    0.131
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.standpipe.a",
+  "url": "/models/twin/props/standpipe.a.glb?v=ebf7a9dd89",
+  "bytes": 42084,
+  "tris": [
+   1002,
+   290,
+   74
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.12,
+    0,
+    -0.317
+   ],
+   "max": [
+    0.771,
+    0.75,
+    0.12
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.concrete_wall_008",
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "prop.traffic-cone",
+  "url": "/models/twin/props/traffic-cone.glb?v=7f3289f318",
+  "bytes": 8584,
+  "tris": [
+   98,
+   42,
+   30
+  ],
+  "lodDistances": [
+   12,
+   45
+  ],
+  "bounds": {
+   "min": [
+    -0.18,
+    0,
+    -0.18
+   ],
+   "max": [
+    0.18,
+    0.72,
+    0.18
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.tyre-planter.a",
+  "url": "/models/twin/props/tyre-planter.a.glb?v=8b3bf2cdb8",
+  "bytes": 11628,
+  "tris": [
+   414,
+   65,
+   0
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.37,
+    0,
+    -0.364
+   ],
+   "max": [
+    0.37,
+    0.18,
+    0.364
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "prop.umbrella-hung.a",
+  "url": "/models/twin/props/umbrella-hung.a.glb?v=57624963a9",
+  "bytes": 18200,
+  "tris": [
+   344,
+   216,
+   188
+  ],
+  "lodDistances": [
+   10,
+   30
+  ],
+  "bounds": {
+   "min": [
+    -0.045,
+    -0.86,
+    0
+   ],
+   "max": [
+    0.045,
+    0.003,
+    0.092
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "twin.authored"
+  ]
+ },
+ {
+  "id": "struct.guardhouse",
+  "url": "/models/twin/structures/guardhouse.glb?v=c0df03cba8",
+  "bytes": 4241452,
+  "tris": [
+   4776,
+   1642,
+   738
+  ],
+  "lodDistances": [
+   60,
+   180
+  ],
+  "bounds": {
+   "min": [
+    -1.947,
+    -0.1,
+    -4.4
+   ],
+   "max": [
+    9.9,
+    5.74,
+    7.642
+   ]
+  },
+  "materials": 5,
+  "credits": [
+   "polyhaven.painted_plaster_wall",
+   "polyhaven.corrugated_iron",
+   "polyhaven.rusty_corrugated_iron",
+   "polyhaven.concrete_wall_008",
+   "polyhaven.rusty_metal_02",
+   "polyhaven.rusty_metal_03",
+   "scic.wordmark"
+  ]
+ },
+ {
+  "id": "struct.power-pole.a",
+  "url": "/models/twin/structures/power-pole.a.glb?v=c873f1cd99",
+  "bytes": 17828,
+  "tris": [
+   500,
+   176,
+   20
+  ],
+  "lodDistances": [
+   60,
+   160
+  ],
+  "bounds": {
+   "min": [
+    -0.9,
+    -0.6,
+    -0.23
+   ],
+   "max": [
+    0.9,
+    9.02,
+    0.23
+   ]
+  },
+  "materials": 1,
+  "credits": [
+   "polyhaven.concrete_wall_008",
+   "polyhaven.rusty_metal_02"
+  ]
+ },
+ {
+  "id": "veh.pickup.a",
+  "url": "/models/twin/vehicles/pickup.a.glb?v=239467f5e5",
+  "bytes": 1106764,
+  "tris": [
+   24347,
+   7999,
+   1999
+  ],
+  "lodDistances": [
+   20,
+   70
+  ],
+  "bounds": {
+   "min": [
+    -1.002,
+    0,
+    -2.543
+   ],
+   "max": [
+    1.002,
+    1.657,
+    2.815
+   ]
+  },
+  "materials": 3,
+  "credits": [
+   "sketchfab.zhabotinsky-lightbody-90-md-pickup",
+   "scic.wordmark"
+  ]
+ }
+]

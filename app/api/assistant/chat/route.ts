@@ -4,6 +4,7 @@ import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
 import { searchChunks, SearchResultChunk } from "@/lib/rag/search";
 import { generateAnswer, Citation, contextualizeQuery } from "@/lib/rag/generate";
 import { Prisma } from "@prisma/client";
+import { canReadSafetyReports, canReadSiteReports } from "@/lib/viber/access";
 
 async function resolveCitations(citations: Citation[]) {
   const resolved = [];
@@ -77,7 +78,10 @@ export async function POST(request: NextRequest) {
     // 3. Search database for relevant chunks with strict relevance filtering
     let filteredChunks: SearchResultChunk[] = [];
     try {
-      const chunks = await searchChunks(effectiveQuery, projectId, 5);
+      const chunks = await searchChunks(effectiveQuery, projectId, 5, {
+        siteReports: canReadSiteReports(member.role),
+        restricted: canReadSafetyReports(member.role),
+      });
       // Strict threshold: only chunks with high semantic similarity (>= 0.68) are injected
       filteredChunks = chunks.filter((c) => c.similarity >= 0.68);
     } catch (searchError) {

@@ -1,0 +1,471 @@
+[
+ {
+  "date": "2022-04-12",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "structure": "access-roads",
+  "title": "Contract start",
+  "source": "MPR-53 slide 6"
+ },
+ {
+  "date": "2022-09",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "structure": "access-roads",
+  "stage": "excavation",
+  "title": "AR01 piloting to the powerhouse, Sta. 1+360 to 1+470",
+  "source": "MPR-06 slide 5"
+ },
+ {
+  "date": "2022-12",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "structure": "access-roads",
+  "stage": "excavation",
+  "title": "AR02 to the weir and tunnel inlet: cut to slope and piloting, Sta. 0+000 to 0+400",
+  "source": "MPR-09 slide 6"
+ },
+ {
+  "date": "2023-01",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "structure": "access-roads",
+  "title": "Landslide clearing and widening on AR01",
+  "source": "MPR-10 slide 6"
+ },
+ {
+  "date": "2023-03",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "structure": "access-roads",
+  "stage": "excavation",
+  "title": "AR03 and AR04 to the surge tank and tunnel outlet: piloting and excavation",
+  "source": "MPR-12 slide 11"
+ },
+ {
+  "date": "2023-07",
+  "location": "midway",
+  "zone": "midway.tunnel1-outlet",
+  "structure": "tunnel1-outlet",
+  "stage": "cleared",
+  "title": "Tunnel 1 outlet portal preparation",
+  "source": "MPR-16 slide 6"
+ },
+ {
+  "date": "2023-08",
+  "location": "powerhouse",
+  "zone": "powerhouse.camp-office",
+  "structure": "main-camp",
+  "stage": "formwork",
+  "title": "Workers' barracks and warehouse under construction at the main camp",
+  "source": "MPR-17 slide 4"
+ },
+ {
+  "date": "2023-10",
+  "location": "powerhouse",
+  "zone": "powerhouse.camp-office",
+  "structure": "main-camp",
+  "title": "Site clinic under construction",
+  "source": "MPR-19 slide 4"
+ },
+ {
+  "date": "2023-10",
+  "location": "powerhouse",
+  "zone": "powerhouse.access-road",
+  "structure": "access-roads",
+  "stage": "cleared",
+  "title": "AR05 clearing and grubbing",
+  "source": "MPR-19 slide 13"
+ },
+ {
+  "date": "2023-12",
+  "location": "powerhouse",
+  "zone": "powerhouse.magazine",
+  "structure": "magazine",
+  "stage": "cleared",
+  "title": "Magazine area developed",
+  "source": "MPR-21 slide 4"
+ },
+ {
+  "date": "2024-02",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "excavation",
+  "title": "Surge tank common excavation (Elev. 274)",
+  "source": "MPR-23 slide 16"
+ },
+ {
+  "date": "2024-03",
+  "location": "tunnel1",
+  "zone": "tunnel1.inlet-drive",
+  "structure": "tunnel1",
+  "stage": "excavation",
+  "title": "Tunnel 1 underground excavation under way from the outlet",
+  "source": "MPR-24 slide 4"
+ },
+ {
+  "date": "2024-03",
+  "location": "tunnel2",
+  "zone": "tunnel2.drive",
+  "structure": "tunnel2",
+  "stage": "cleared",
+  "title": "Tunnel 2 outlet portal stabilisation",
+  "source": "MPR-24 slide 6"
+ },
+ {
+  "date": "2024-03",
+  "location": "weir",
+  "zone": "weir.cofferdam",
+  "structure": "cofferdam",
+  "stage": "excavation",
+  "title": "River diversion at the weir",
+  "source": "MPR-24 slide 10"
+ },
+ {
+  "date": "2024-04",
+  "location": "weir",
+  "zone": "weir.desander",
+  "structure": "desander",
+  "stage": "excavation",
+  "title": "Tunnel 1 inlet portal and desander excavation",
+  "source": "MPR-25 slide 5"
+ },
+ {
+  "date": "2024-05",
+  "location": "weir",
+  "zone": "weir.cofferdam",
+  "structure": "cofferdam",
+  "stage": "finished",
+  "title": "Weir area earthmoving and cofferdam",
+  "source": "MPR-26 slide 9"
+ },
+ {
+  "date": "2024-05",
+  "location": "powerhouse",
+  "zone": "powerhouse.camp-office",
+  "structure": "main-camp",
+  "title": "Site office under construction",
+  "source": "MPR-26 slide 2"
+ },
+ {
+  "date": "2024-08",
+  "location": "powerhouse",
+  "zone": "powerhouse.penstock",
+  "structure": "penstock",
+  "stage": "excavation",
+  "title": "Penstock excavation and lean concrete",
+  "source": "MPR-29 slide 14"
+ },
+ {
+  "date": "2024-08",
+  "location": "powerhouse",
+  "zone": "powerhouse.magazine",
+  "structure": "magazine",
+  "title": "Additional magazine and police accommodation site development",
+  "source": "MPR-29 slide 4"
+ },
+ {
+  "date": "2024-09",
+  "location": "powerhouse",
+  "zone": "powerhouse.camp-office",
+  "structure": "main-camp",
+  "title": "Motor pool and staff house extension",
+  "source": "MPR-30 slide 2"
+ },
+ {
+  "date": "2024-10",
+  "location": "powerhouse",
+  "zone": "powerhouse.camp-office",
+  "structure": "main-camp",
+  "stage": "finished",
+  "title": "Canteen area in use; motor pool and fabrication area ongoing",
+  "source": "MPR-31 slide 10"
+ },
+ {
+  "date": "2024-11",
+  "location": "weir",
+  "zone": "weir.weir",
+  "structure": "weir-floodwall",
+  "stage": "formwork",
+  "title": "Flood wall under construction at the weir after typhoon damage",
+  "source": "MPR-32 slide 17"
+ },
+ {
+  "date": "2024-11",
+  "location": "powerhouse",
+  "zone": "powerhouse.penstock",
+  "structure": "penstock",
+  "stage": "poured",
+  "title": "Saddle No. 1 concreted",
+  "source": "MPR-32 slide 8"
+ },
+ {
+  "date": "2024-12",
+  "location": "weir",
+  "zone": "weir.cofferdam",
+  "structure": "cofferdam",
+  "title": "River diversion and cofferdam restored after the typhoons",
+  "source": "MPR-33 slide 4"
+ },
+ {
+  "date": "2025-01",
+  "location": "weir",
+  "zone": "weir.adit",
+  "structure": "adit",
+  "stage": "excavation",
+  "title": "Adit portal development at the weir",
+  "source": "MPR-34 slide 4"
+ },
+ {
+  "date": "2025-02",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "excavation",
+  "title": "Surge tank excavation for the foundation",
+  "source": "MPR-35 slide 22"
+ },
+ {
+  "date": "2025-03",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "rebar",
+  "title": "Surge tank rebar works",
+  "source": "MPR-36 slide 19"
+ },
+ {
+  "date": "2025-04",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "poured",
+  "title": "Surge tank rebar and first concrete",
+  "source": "MPR-37 slide 26"
+ },
+ {
+  "date": "2025-04",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "stage": "excavation",
+  "title": "Excavation and dewatering at the powerhouse",
+  "source": "MPR-37 slide 29"
+ },
+ {
+  "date": "2025-06",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "stage": "poured",
+  "title": "Concrete pouring at the powerhouse substructure",
+  "source": "MPR-39 slide 23"
+ },
+ {
+  "date": "2025-06",
+  "location": "weir",
+  "zone": "weir.weir",
+  "structure": "weir",
+  "stage": "poured",
+  "title": "Spillway segments 1 and 2 concreted",
+  "source": "MPR-39 slide 6"
+ },
+ {
+  "date": "2025-06",
+  "location": "weir",
+  "zone": "weir.concrete-plant",
+  "structure": "concrete-plant",
+  "stage": "finished",
+  "title": "Volumetric concrete plant at the weir",
+  "source": "MPR-39 slide 19"
+ },
+ {
+  "date": "2025-06",
+  "location": "powerhouse",
+  "zone": "powerhouse.penstock",
+  "structure": "penstock",
+  "stage": "poured",
+  "title": "Saddles No. 8 to 11 concreted",
+  "source": "MPR-39 slide 41"
+ },
+ {
+  "date": "2025-08",
+  "location": "midway",
+  "zone": "midway.pipe-bridge",
+  "structure": "pipe-bridge",
+  "stage": "formwork",
+  "title": "Conveyance pipe and pipe bridge works",
+  "source": "MPR-41 slide 34"
+ },
+ {
+  "date": "2025-09",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "stage": "rebar",
+  "title": "Raft footing rebar at the small turbine (Elev. 187.17); control room backfilled",
+  "source": "MPR-42 slide 40"
+ },
+ {
+  "date": "2025-10",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "stage": "poured",
+  "title": "Raft footing at the small turbine completed to Elev. 188.24",
+  "source": "MPR-43 slide 50"
+ },
+ {
+  "date": "2025-10",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "stage": "formwork",
+  "title": "Structural steel and roofing works begin",
+  "source": "MPR-43 slide 48"
+ },
+ {
+  "date": "2025-10",
+  "location": "powerhouse",
+  "zone": "powerhouse.control-room",
+  "structure": "control-room",
+  "stage": "formwork",
+  "title": "Control room and guardhouse under construction",
+  "source": "MPR-43 slide 19"
+ },
+ {
+  "date": "2025-10",
+  "location": "tunnel1",
+  "zone": "tunnel1.inlet-drive",
+  "structure": "tunnel1",
+  "stage": "poured",
+  "title": "Tunnel 1 concrete invert begins",
+  "source": "MPR-43 slide 26"
+ },
+ {
+  "date": "2025-11",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "poured",
+  "title": "Surge tank shell poured from Elev. 275.265 to 277.765",
+  "source": "MPR-44 slide 42"
+ },
+ {
+  "date": "2026-05",
+  "location": "weir",
+  "zone": "weir.sluiceway",
+  "structure": "sluiceway",
+  "stage": "formwork",
+  "title": "Stoplog guide frame erected at the sluiceway",
+  "source": "MPR-50 slide 22"
+ },
+ {
+  "date": "2026-05",
+  "location": "powerhouse",
+  "zone": "powerhouse.switchyard",
+  "structure": "transmission-line",
+  "stage": "excavation",
+  "title": "Transmission line works begin to be reported",
+  "source": "MPR-50 slide 111"
+ },
+ {
+  "date": "2026-07-04",
+  "location": "tunnel1",
+  "zone": "tunnel1.inlet-drive",
+  "structure": "tunnel1",
+  "stage": "excavation",
+  "title": "Tunnel 1 breakthrough",
+  "source": "MPR-51 slide 57"
+ },
+ {
+  "date": "2026-08-20",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "poured",
+  "title": "Surge tank lift 14 poured",
+  "source": "MPR-53 slide 60"
+ },
+ {
+  "date": "2026-08-29",
+  "location": "weir",
+  "zone": "weir.intake",
+  "structure": "intake",
+  "stage": "poured",
+  "title": "Intake slab, last lift poured",
+  "source": "MPR-53 slide 14"
+ },
+ {
+  "date": "2026-09-04",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "poured",
+  "title": "Surge tank lift 15 poured",
+  "source": "MPR-53 slide 62"
+ },
+ {
+  "date": "2026-09-07",
+  "location": "weir",
+  "zone": "weir.intake",
+  "structure": "intake",
+  "stage": "formwork",
+  "title": "Trashrack guide frames installed at the intake",
+  "source": "MPR-53 slide 16"
+ },
+ {
+  "date": "2026-09-07",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "stage": "finished",
+  "title": "Steel hand railings installed in the powerhouse",
+  "source": "MPR-53 slide 74"
+ },
+ {
+  "date": "2026-09-09",
+  "location": "weir",
+  "zone": "weir.desander",
+  "structure": "desander",
+  "stage": "poured",
+  "title": "Desander segment 9 outlet platform poured",
+  "source": "MPR-53 slide 31"
+ },
+ {
+  "date": "2026-09-12",
+  "location": "tunnel2",
+  "zone": "tunnel2.drive",
+  "structure": "tunnel2",
+  "stage": "excavation",
+  "title": "Tunnel 2 drill and blast with steel rib support at the outlet drive, Sta. 0+278.10",
+  "source": "MPR-53 slide 51"
+ },
+ {
+  "date": "2026-09-12",
+  "location": "midway",
+  "zone": "midway.pipe-bridge",
+  "structure": "pipe-bridge",
+  "stage": "poured",
+  "title": "Pipe bridge right wingwall, third lift poured",
+  "source": "MPR-53 slide 56"
+ },
+ {
+  "date": "2026-09-14",
+  "location": "powerhouse",
+  "zone": "powerhouse.surge-tank",
+  "structure": "surge-tank",
+  "stage": "formwork",
+  "title": "Surge tank lift 16 rebar and formwork",
+  "source": "MPR-53 slide 63"
+ },
+ {
+  "date": "2026-12-28",
+  "location": "powerhouse",
+  "zone": "powerhouse.powerhouse",
+  "structure": "powerhouse",
+  "title": "Revised contract completion date",
+  "source": "MPR-53 slide 6"
+ }
+]

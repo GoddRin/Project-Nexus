@@ -1,0 +1,246 @@
+/**
+ * P01a renderer spike: everything that is the same for both render paths (docs/twin-v2/P01-foundation.md).
+ * Throwaway. Deleted at the end of P01a; a copy is kept in docs/twin-v2/review/P01a/spike-src/.
+ */
+import * as THREE from "three";
+import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { createV1TerrainSampler, type TerrainSampler } from "@/lib/twin/terrain";
+
+export type SpikeOptions = {
+  props: number; // instances per prop mesh (6 meshes)
+  chars: number;
+  lights: number;
+  shadows: boolean;
+  ao: boolean;
+  bloom: boolean;
+  shadowMap: number;
+  depthOnlyAo: boolean; // AO rebuilds normals from depth instead of drawing a normal buffer
+};
+
+export function readOptions(): SpikeOptions {
+  const q = new URLSearchParams(window.location.search);
+  const num = (k: string, d: number) => (q.has(k) ? Number(q.get(k)) : d);
+  const on = (k: string) => q.get(k) !== "0";
+  return {
+    props: num("props", 500),
+    chars: num("chars", 60),
+    lights: num("lights", 8),
+    shadows: on("shadows"),
+    ao: on("ao"),
+    bloom: on("bloom"),
+    shadowMap: num("sm", 2048),
+    depthOnlyAo: q.get("gbuf") === "depth",
+  };
+}
+
+export const SUN_DIR = new THREE.Vector3(-0.62, -0.5, -0.6).normalize(); // direction the light travels
+const CLOSE = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("cam") === "close";
+export const CAMERA_POS: [number, number, number] = CLOSE ? [9.5, 2.6, 4.5] : [78, 34, 62];
+export const CAMERA_TARGET: [number, number, number] = CLOSE ? [2, 1.1, -5] : [6, 1, -4];
+export const SHADOW_FAR = 400;
+export const BLOOM = { strength: 0.3, radius: 0.4, threshold: 0.9 };
+export const PROP_FILES = ["drum-steel", "drum-plastic", "cement-bag", "road-barrier", "jerrycan", "crate"];
+export const GROUND_LAYERS = ["gravel", "dirt", "forest", "rock"];
+const BASE = "/models/twin/_spike";
+
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const smooth = (a: number, b: number, x: number) => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+
+export type GroundTextures = { diff: THREE.Texture[]; nor: THREE.Texture[]; rough: THREE.Texture[] };
+
+export type SpikeAssets = {
+  sampler: TerrainSampler;
+  terrain: THREE.BufferGeometry; // attributes: position, normal, uv (world xz / 3 m), layerW (vec4)
+  ground: GroundTextures;
+  props: { name: string; geometry: THREE.BufferGeometry; material: THREE.MeshStandardMaterial; matrices: THREE.InstancedBufferAttribute["array"] }[];
+  character: GLTF;
+  loadMs: number;
+};
+
+export async function loadAssets(opts: SpikeOptions): Promise<SpikeAssets> {
+  const t0 = performance.now();
+  const gltf = new GLTFLoader();
+  gltf.setMeshoptDecoder(MeshoptDecoder);
+  const tex = new THREE.TextureLoader();
+
+  const loadTex = async (url: string, srgb: boolean) => {
+    const t = await tex.loadAsync(url);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = 4;
+    t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    return t;
+  };
+
+  const [mesh, character, propGltfs, diff, nor, rough] = await Promise.all([
+    fetch("/data/gis-terrain-mesh.json").then((r) => r.json()),
+    gltf.loadAsync("/models/characters/scic_atlas_navigator_pro.web.glb"),
+    Promise.all(PROP_FILES.map((f) => gltf.loadAsync(`${BASE}/${f}.glb`))),
+    Promise.all(GROUND_LAYERS.map((l) => loadTex(`${BASE}/ground/${l}_diff.jpg`, true))),
+    Promise.all(GROUND_LAYERS.map((l) => loadTex(`${BASE}/ground/${l}_nor.jpg`, false))),
+    Promise.all(GROUND_LAYERS.map((l) => loadTex(`${BASE}/ground/${l}_rough.jpg`, false))),
+  ]);
+
+  // --- terrain: the real v1 mesh with v1's flattened yard and pad, plus per-vertex layer weights
+  const sampler = createV1TerrainSampler(mesh);
+  const src: number[] = mesh.positions;
+  const n = src.length / 3;
+  const pos = new Float32Array(src.length);
+  const uv = new Float32Array(n * 2);
+  for (let i = 0; i < n; i++) {
+    const x = src[i * 3];
+    const z = src[i * 3 + 2];
+    pos[i * 3] = x;
+    pos[i * 3 + 1] = sampler.sampleY(x, z);
+    pos[i * 3 + 2] = z;
+    uv[i * 2] = x / 3;
+    uv[i * 2 + 1] = z / 3;
+  }
+  const terrain = new THREE.BufferGeometry();
+  terrain.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  terrain.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  terrain.setIndex(mesh.indices);
+  terrain.computeVertexNormals();
+  const nrm = terrain.getAttribute("normal");
+  const noise = mulberry32(7);
+  const layerW = new Float32Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    const y = pos[i * 3 + 1];
+    const slope = 1 - nrm.getY(i);
+    const flat = slope < 0.004 && (Math.abs(y - 0.05) < 0.2 || Math.abs(y - 13) < 0.2);
+    const rock = smooth(0.1, 0.3, slope);
+    const gravel = flat ? 1 : 0;
+    const forest = (1 - rock) * (1 - gravel) * smooth(0.25, 0.75, noise() * 0.5 + smooth(2, 30, y) * 0.5 + 0.1);
+    const dirt = Math.max(0, 1 - rock - gravel - forest);
+    const sum = gravel + dirt + forest + rock || 1;
+    layerW.set([gravel / sum, dirt / sum, forest / sum, rock / sum], i * 4);
+  }
+  terrain.setAttribute("layerW", new THREE.BufferAttribute(layerW, 4));
+
+  // --- props: one geometry and material each, scattered with a fixed seed inside 120 m of the yard
+  const rnd = mulberry32(20261009);
+  const m4 = new THREE.Matrix4();
+  const q = new THREE.Quaternion();
+  const up = new THREE.Vector3(0, 1, 0);
+  const one = new THREE.Vector3(1, 1, 1);
+  const p = new THREE.Vector3();
+  const props = propGltfs.map((g, i) => {
+    let found: THREE.Mesh | null = null;
+    g.scene.updateMatrixWorld(true);
+    g.scene.traverse((o) => {
+      if (!found && (o as THREE.Mesh).isMesh) found = o as THREE.Mesh;
+    });
+    const m = found as unknown as THREE.Mesh;
+    const geometry = m.geometry.clone().applyMatrix4(m.matrixWorld);
+    const material = m.material as THREE.MeshStandardMaterial;
+    // (the crate's lattice is an opacity map: cut it out instead of blending it)
+    if (material.transparent) {
+      material.transparent = false;
+      material.alphaTest = 0.5;
+      material.depthWrite = true;
+    }
+    const matrices = new Float32Array(opts.props * 16);
+    for (let k = 0; k < opts.props; k++) {
+      const r = 118 * Math.sqrt(rnd());
+      const a = rnd() * Math.PI * 2;
+      const x = Math.max(-175, Math.min(175, 8 + Math.cos(a) * r));
+      const z = Math.max(-175, Math.min(175, -6 + Math.sin(a) * r));
+      p.set(x, sampler.sampleY(x, z), z);
+      q.setFromAxisAngle(up, rnd() * Math.PI * 2);
+      m4.compose(p, q, one).toArray(matrices, k * 16);
+    }
+    return { name: PROP_FILES[i], geometry, material, matrices };
+  });
+
+  return { sampler, terrain, ground: { diff, nor, rough }, props, character, loadMs: performance.now() - t0 };
+}
+
+/** The walking crowd: clones of the navigator on the yard, 4.5 m apart, each at its own point of the walk clip. */
+export function buildCrowd(assets: SpikeAssets, count: number) {
+  const group = new THREE.Group();
+  const mixers: THREE.AnimationMixer[] = [];
+  const walk = assets.character.animations.find((c) => c.name === "walk") ?? assets.character.animations[0];
+  const box = new THREE.Box3().setFromObject(assets.character.scene);
+  const height = box.max.y - box.min.y;
+  const scale = 1.7 / height;
+  const rnd = mulberry32(99);
+  const cols = 10;
+  for (let i = 0; i < count; i++) {
+    const c = SkeletonUtils.clone(assets.character.scene);
+    const x = -22 + (i % cols) * 4.5 + (rnd() - 0.5);
+    const z = -20 + Math.floor(i / cols) * 4.5 + (rnd() - 0.5);
+    c.position.set(x, assets.sampler.sampleY(x, z) - box.min.y * scale, z);
+    c.rotation.y = rnd() * Math.PI * 2;
+    c.scale.setScalar(scale);
+    c.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
+    });
+    const mixer = new THREE.AnimationMixer(c);
+    const action = mixer.clipAction(walk);
+    action.play();
+    action.time = rnd() * walk.duration;
+    mixers.push(mixer);
+    group.add(c);
+  }
+  return { group, mixers, sourceHeight: height, clip: walk.name };
+}
+
+export function buildPointLights(count: number) {
+  const group = new THREE.Group();
+  for (let i = 0; i < count; i++) {
+    const a = (i / Math.max(1, count)) * Math.PI * 2;
+    const l = new THREE.PointLight(i % 2 ? 0xffd9a0 : 0xdfeaff, 120, 45, 2);
+    l.position.set(8 + Math.cos(a) * 30, 6.5, -4 + Math.sin(a) * 18);
+    group.add(l);
+  }
+  return group;
+}
+
+export type SpikeStats = {
+  path: "webgl" | "webgpu";
+  backend: string;
+  ready: boolean;
+  error?: string;
+  canvas?: [number, number];
+  timings: { loadMs?: number; compileMs?: number; firstRenderMs?: number; navToFirstFrameMs?: number };
+  scene?: { meshes: number; skinned: number; instanced: number; lights: number; charHeight: number; clip: string };
+  checks: Record<string, string | boolean | number>;
+  info: () => Record<string, number | undefined>;
+};
+
+declare global {
+  interface Window {
+    __SPIKE__?: SpikeStats;
+  }
+}
+
+export function countScene(scene: THREE.Object3D) {
+  let meshes = 0;
+  let skinned = 0;
+  let instanced = 0;
+  let lights = 0;
+  scene.traverse((o) => {
+    if ((o as THREE.Mesh).isMesh) meshes++;
+    if ((o as THREE.SkinnedMesh).isSkinnedMesh) skinned++;
+    if ((o as THREE.InstancedMesh).isInstancedMesh) instanced++;
+    if ((o as THREE.Light).isLight) lights++;
+  });
+  return { meshes, skinned, instanced, lights };
+}

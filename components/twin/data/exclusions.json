@@ -1,0 +1,48 @@
+{
+ "note": "Where v1 plants no trees (ForestVegetation.tsx lines 30 to 43 and 247 to 264), powerhouse location frame. A tree is dropped when it is inside a rectangle or closer to it than `clearance` metres.",
+ "rects": [
+  {
+   "id": "powerhouse-yard",
+   "xMin": -16,
+   "xMax": 39,
+   "zMin": -14,
+   "zMax": 17,
+   "clearance": 6
+  },
+  {
+   "id": "penstock-corridor",
+   "xMin": -14,
+   "xMax": 2,
+   "zMin": -34,
+   "zMax": -8,
+   "clearance": 5
+  },
+  {
+   "id": "main-camp",
+   "xMin": 65,
+   "xMax": 180,
+   "zMin": -165,
+   "zMax": -45,
+   "clearance": 6
+  },
+  {
+   "id": "tailrace",
+   "xMin": -16,
+   "xMax": 16,
+   "zMin": 4,
+   "zMax": 48,
+   "clearance": 4.5
+  }
+ ],
+ "river": {
+  "xMin": -145,
+  "xMax": 155,
+  "centreZ": "42 + 9 * sin(((x + 130) / 270) * PI * 2.2)",
+  "clearance": 18
+ },
+ "road": {
+  "route": "powerhouse.access-road.centre",
+  "clearance": 7.5
+ },
+ "sceneHalf": 175
+}

@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-approach-noon-uncapped-low.jpg",
+  "backend": "webgpu",
+  "fps": 63,
+  "p95": 17.2,
+  "calls": 43,
+  "tris": 225577,
+  "programs": 37,
+  "lights": 3,
+  "gpuMB": 38.2,
+  "heapMB": 92,
+  "lod": [
+   10,
+   126,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

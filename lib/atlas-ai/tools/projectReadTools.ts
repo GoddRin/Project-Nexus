@@ -60,8 +60,8 @@ function toPublicProjectDTO(p: SCICProject): PublicProjectDTO {
     featuredImage: p.imageUrl || null,
     gallery: p.galleryImages || [],
     leadPMName: p.leadPM?.name || null,
-    leadPMRole: p.leadPM?.role || null,
-    leadPMDivision: p.leadPM?.division || null,
+    leadPMRole: p.leadPM?.role || p.leadPMRole || null,
+    leadPMDivision: p.leadPM?.division || p.leadPMDivision || null,
     leadPMLicense: p.leadPM?.licenseNumber || null,
     leadPMContact: p.leadPM?.contactEmail || null,
     engineeringScope: p.engineeringScope || [],
@@ -103,6 +103,10 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
     coordinates: { lat: number; lng: number };
     capacity?: string;
     client?: string;
+    leadPMName?: string | null;
+    leadPMRole?: string | null;
+    leadPMDivision?: string | null;
+    leadPMContact?: string | null;
   }>;
   count: number;
   source: AtlasAISource;
@@ -163,6 +167,29 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
       search: criteria.query,
       limit: 100,
     });
+    // If multi-word query (e.g. "Tumauini project", "Pagudpud wind project") missed exact substring match in DB,
+    // match distinctive tokens against the full DB project list before falling back to static catalog
+    if (liveProjects.length === 0 && criteria.query?.trim()) {
+      const stopWords = new Set(["hepp", "project", "projects", "power", "plant", "plants", "hydro", "hydroelectric", "mhp", "thepp", "scic", "dam", "substation", "farm", "wind", "site", "facility"]);
+      const tokens = criteria.query
+        .toLowerCase()
+        .split(/[\s\-_,]+/)
+        .filter((t) => t.length >= 3 && !stopWords.has(t));
+      if (tokens.length > 0) {
+        const allDb = await ProjectAtlasService.getAllProjects({
+          category: normalizedCat,
+          status: normalizedStatus,
+          islandGroup: criteria.islandGroup as any,
+          region: criteria.region,
+          province: criteria.province,
+          limit: 100,
+        });
+        liveProjects = allDb.filter((p) => {
+          const hay = `${p.name} ${p.slug} ${p.projectCode || ""} ${p.municipality} ${p.province} ${p.client || ""} ${p.leadPMName || ""}`.toLowerCase();
+          return tokens.every((tok) => hay.includes(tok));
+        });
+      }
+    }
   } catch (err) {
     console.warn("[searchProjects] Service lookup error, falling back to memory catalog:", err);
   }
@@ -173,7 +200,7 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
 
   // Fallback to static verified SCIC catalog if DB returned empty
   if (liveProjects.length === 0) {
-    let list = [...SCIC_PROJECTS].filter((p) => kindOk(p.name));
+    let list = [...INITIAL_ATLAS_PROJECTS].filter((p) => kindOk(p.name));
     if (criteria.islandGroup && criteria.islandGroup !== "ALL") {
       list = list.filter((p) => p.islandGroup?.toUpperCase() === criteria.islandGroup?.toUpperCase());
     }
@@ -204,7 +231,8 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
         p.municipality.toLowerCase().includes(q) ||
         p.province.toLowerCase().includes(q) ||
         p.region.toLowerCase().includes(q) ||
-        (p.client && p.client.toLowerCase().includes(q))
+        (p.client && p.client.toLowerCase().includes(q)) ||
+        (p.leadPM?.name && p.leadPM.name.toLowerCase().includes(q))
       ));
     }
     const mapped = list.slice(0, limit).map((p) => ({
@@ -220,6 +248,10 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
       coordinates: p.coordinates,
       capacity: p.metrics?.capacity,
       client: p.client,
+      leadPMName: p.leadPM?.name || null,
+      leadPMRole: p.leadPM?.role || p.leadPMRole || null,
+      leadPMDivision: p.leadPM?.division || p.leadPMDivision || null,
+      leadPMContact: p.leadPM?.contactEmail || null,
     }));
     return {
       results: mapped,
@@ -251,6 +283,10 @@ export async function searchProjects(criteria: SearchProjectsCriteria): Promise<
     coordinates: { lat: p.latitude, lng: p.longitude },
     capacity: p.capacity || undefined,
     client: p.client || undefined,
+    leadPMName: p.leadPMName || null,
+    leadPMRole: p.leadPMRole || null,
+    leadPMDivision: p.leadPMDivision || null,
+    leadPMContact: p.leadPMContact || null,
   }));
 
   return {
@@ -278,13 +314,37 @@ export async function getProject(args: { projectId: string }): Promise<{
     if (!liveProj) {
       liveProj = await ProjectAtlasService.getProjectBySlug(query);
     }
+    // If not matched by exact ID or slug (e.g. LLM passed "Tumauini", "Tumauini project", "SCIC-HEPP-01", or "scic-thepp-isabela"),
+    // search all live DB projects using resilient name/code/token matching first!
+    if (!liveProj) {
+      const allLive = await ProjectAtlasService.getAllProjects({ limit: 200 });
+      const cleanQ = query.replace(/^scic-/, "").trim();
+      liveProj =
+        allLive.find((p) => p.projectCode?.toLowerCase() === query || p.projectCode?.toLowerCase().replace(/^scic-/, "") === cleanQ) ||
+        allLive.find((p) => p.name.toLowerCase() === query || p.name.toLowerCase().includes(query)) ||
+        null;
+
+      if (!liveProj) {
+        const matchedInitial = findProjectInDataset(INITIAL_ATLAS_PROJECTS, args.projectId) || findProjectInDataset(ALL_PROJECTS, args.projectId);
+        if (matchedInitial) {
+          liveProj =
+            allLive.find(
+              (p) =>
+                p.id === matchedInitial.id ||
+                p.slug === matchedInitial.slug ||
+                (p.projectCode && matchedInitial.code && p.projectCode.toLowerCase() === matchedInitial.code.toLowerCase()) ||
+                p.name.toLowerCase() === matchedInitial.name.toLowerCase()
+            ) || null;
+        }
+      }
+    }
   } catch (err) {
     console.warn("[getProject] Service lookup error:", err);
   }
 
   // Catalog fallback if not found in database table
   if (!liveProj) {
-    const catalogProj = findProjectInDataset(ALL_PROJECTS, args.projectId);
+    const catalogProj = findProjectInDataset(INITIAL_ATLAS_PROJECTS, args.projectId) || findProjectInDataset(ALL_PROJECTS, args.projectId);
     if (catalogProj) {
       liveProj = toPublicProjectDTO(catalogProj);
     }
@@ -850,19 +910,51 @@ export const ATLAS_KNOWLEDGE_DOCUMENTS: AtlasKnowledgeDocument[] = [
     id: "scic-corp-overview",
     title: "Sta. Clara International Corporation Corporate Profile",
     section: "Executive Engineering Capabilities & History",
-    content: "Sta. Clara International Corporation (SCIC) is a premier full-service engineering, procurement, and construction (EPC) contractor in the Philippines. Founded in 1976, SCIC specializes in clean renewable energy (run-of-river hydropower, wind, and solar), complex underground tunneling, major transportation arterial expressways, large-scale water treatment & transmission, and heavy industrial facilities.",
-    source: "SCIC Corporate Engineering Dossier",
-    date: "2026-Q1",
+    content: "Sta. Clara International Corporation (SCIC) is a premier full-service engineering, procurement, and construction (EPC) contractor in the Philippines with a PCAB Quadruple A ('AAAA') Platinum license in General Building and General Engineering and ISO 9001:2015, ISO 14001:2015, and ISO 45001:2018 Integrated Management System certifications. Founded in 1976 by Chairman & Managing Director Nicandro G. Linao (originally as Sta. Clara Trading and Construction Company and incorporated with the SEC in 1990), SCIC celebrates its 50th Golden Jubilee in September 2026. Head office: Highway 54 Plaza, 986 EDSA, Wack-Wack, Mandaluyong City 1550.",
+    source: "SCIC Corporate Engineering Dossier & Official Website",
+    date: "2026-10",
+  },
+  {
+    id: "scic-project-managers-and-site-leadership",
+    title: "SCIC Verified Project Managers, Site Leadership & Division Oversight",
+    section: "Project Management & Execution Leadership Roster",
+    content: "Verified Site Project Managers from SCIC official press releases and internal accomplishment reports: (1) Tumauini Hydroelectric Power Project (THEPP, 11.3 MW, Antagan Uno, Tumauini, Isabela, internal code LUZ-21-009, SCIC-HEPP-01): Resident Project Manager is Engr. Romeo Sese, with Deputy Project Manager Nathaniel P. Principe, Project Control & Technical Engineering Head Engr. Noel G. Lavapie, Mechanical Superintendent Zandre Villaver, Safety Officer Marvin Sibal, Planning Engineer May Ann Parallag, HR Officer Rovigail Joy Abellar, Timekeeper Angelo Sarmiento, AutoCAD Operator Elbert Figuracion, Surveyor Johnny Farong-Ey, Geological Mapper Amor Floresca Jr., and Document Controller Jayson Aggabao (Contract Amount: PHP 1,995,967,295.80; NTP: April 12, 2022; Revised Completion: December 28, 2026). (2) Pagudpud Wind Farm (160 MW Balaoi-Caunayan, Pagudpud, Ilocos Norte, SCIC-WIND-01): Project Manager is Engr. Ryan Flores (also SCIC QA/QC Manager), commissioned May 26, 2023. (3) Catuiran Hydroelectric Power Plant (8 MW, Naujan, Oriental Mindoro, SCIC-HEPP-08): Project Manager is Albert B. Mendoza (achieved 1M Safe Man-Hours in Feb 2016 and awarded the SCIC Medal for Heroism for rescuing 29 individuals during Typhoon Nona). (4) Balingasag Thermal Power Plant (3 x 55 MW, Misamis Oriental, SCIC-PWR-03): Project Manager is Peter Alan D. Pineda (achieved 3.44M Safe Man-Hours in Nov 2015, 5M in Feb 2016, and 8M in 2017 for client Mitsubishi Corporation). Verified Division Directors & Group Managers leading major contracts: Hydropower Projects Division is led by Dir. Renin T. Belo (also Director for Operations, who led the 8.4 MW Maladugao Upper Cascade HEPP contract with Investco BHPI Inc. alongside Deputy MD for Operations Fernando T. Delgado); Energy Projects Division is led by Dir. Luisito O. Traboco; Water Projects Division is led by Dir. Narciso M. Areglado (who led the Davao City Bulk Water Supply Project WTP contract with Apo Agua); Infrastructure Projects Division is led by Dir. Antonio S. Pascua (with Deputy MD Miguel Carlos L. Linao leading the PHP 625M Bohol PRDP Desamparados-Tabuan Road & 4 Bridges groundbreaking); Buildings & Industrial Plants Group is led by Group Manager Norman Enriquez (who led the Maersk-LF Logistics 10-hectare Calamba Mega Hub and the PMFTC Batangas Factory Extension in Tanauan alongside Dir. Carlos P. Hadap and GM Pablo G. Mandrilla, Jr.); Special Operations Division was led by SVP Nobukazu Kotake on the 10 MW Masinloc Battery Energy Storage System (first grid-scale BESS in Southeast Asia).",
+    source: "SCIC Official Press Releases & MAR-54 / WAR-235 Project Accomplishment Reports",
+    date: "2026-10",
+  },
+  {
+    id: "scic-organization-chart-and-management-roster",
+    title: "SCIC Official Organization Chart, Board of Directors & Management Team",
+    section: "Corporate Governance & Department Heads",
+    content: "Board of Directors: Nicandro G. Linao (Chairman), Irma L. Linao, Oscar L. Batol, Miguel Carlos L. Linao, Asisclo T. Gonzaga, Luis Y. Benitez, Jr., and Marianito D. Roque. Executive Officers & Division Directors: Nicandro G. Linao (Chairman & Managing Director), Miguel Carlos L. Linao (Deputy Managing Director for International Business & Administration, and Integrated Management Representative), Fernando T. Delgado (Deputy Managing Director for Operations & Engineering, and Director for Project Control), Redentor Dela Torre (Director for Finance / CFO), Marie Kristine Diaz-Acoymo (Director for Finance & Administration), Atty. Roland G. Rosales (Chief Legal Counsel), Renin T. Belo (Director for Operations & Director for Hydro Projects), Luisito O. Traboco (Director for Energy Projects), Antonio S. Pascua (Director for Infrastructure Projects), Narciso M. Areglado (Director for Water Projects), Carlos P. Hadap (Director for Engineering & Business Development), Norman Enriquez (Group Manager for Buildings & Industrial Plants). Key Department & Functional Managers: Antero Magallon, Jr. (Technical Support Services Manager - Project Management), Angel Tiamsim (Quantity Surveying Manager), January Mañalac (Sr. Commercial & Contracts Manager), John Rey Cahilig (Project Control Manager), Thelma G. Mendoza (QESH Group Manager), Larry Payba (Environment, Safety & Health Manager), Ryan Flores (QA/QC Manager & Pagudpud Wind PM), Juanillo Abonal (Group Manager for Tendering), Pablo G. Mandrilla, Jr. (Group Manager for Business Development & Marketing), Ronaldo S. Lacsamana (Business Development Manager), Alberto Luis Linao (I.T. Manager), Ronel Cecilia (HR Manager), Rosario F. Arce (HR Overseas Group Manager), Gerardo Malate (Administration Manager), Alejandro Antonio (Security Manager), Reynalyn O. Caudilla (Supply Chain Group Manager), Nikki Quimlat (Warehouse Manager - North), Ericson Arcilla (Warehouse Manager - South), Gelyn Josep (Accounting Manager), Oliver J. Brazas (Finance Manager), Mary Ann Josefina Santos (Treasury Manager), and Michael Vergara (Plants, Equipment & Transport Division [PETD] Group Manager).",
+    source: "SCIC Official Organization Chart & Management Team Page (staclara.com.ph)",
+    date: "2026-10",
+  },
+  {
+    id: "scic-history-awards-cadet-program-and-equipment",
+    title: "SCIC Corporate History, Awards, Cadet Engineer Program, Fleet & International Offices",
+    section: "History, Fleet Capabilities & Overseas Operations",
+    content: "Corporate Timeline: 1976 founded as Sta. Clara Trading and Construction Company; 1990 SEC incorporation as Sta. Clara International Corporation; 1995 PCAB 'AAA' license; 1996 first major hydropower tunnel project (70 MW Bakun AC Hydro with 9.6-10.5 km tunnel); 2004 incorporated subsidiary Sta. Clara Power Corporation (SCPC) and expanded to the Middle East; 2015 launched the SCIC Cadet Engineer Program (CEP - 'Bridge the Gap, Steel the Future', a 9-month rotational training program for licensed Civil, Electrical, Mechanical, and Mining Engineers); 2016 established Sta. Clara Oman LLC and invested PHP 350M in 60+ heavy/underground machines including two Ardeo Solutions DH-RCM Microtunnel Boring Machines (MTBM) and Putzmeister Robotic Nozzle Manipulators; 2017 upgraded to PCAB Quadruple A ('AAAA') Platinum license and named CIAP Pillar of the Construction Industry; Dec 2022 awarded the DTI Exporters' Night Service Excellence Award for the Construction Services Sector; 2023 adopted corporate tagline 'Renew Your Energy'; Sep 2026 celebrates 50th Golden Jubilee. Equipment Fleet (managed by PETD from Carmona Equipment Yard, Cavite): Crawler/rough-terrain/tower cranes up to 200T, Sandvik/Atlas Copco/Aramine tunneling jumbo drills and LHDs, Rasa DH-RCM 1800 pipe jacking & MTBM systems, Liebherr/Mait/Sany bored piling rigs, and Elkon/Eurotec batching plants. Overseas Offices: Sta. Clara International Co. W.L.L. (Barwa Tower 2, Al Sadd, Doha, Qatar), Sta. Clara Oman LLC (Ghubrah, Muscat, Oman), and Sta. Clara International Corporation (PNG) Ltd. (East New Britain Province, Papua New Guinea).",
+    source: "SCIC Official News Archive, Equipment Page & Overseas Portals",
+    date: "2026-10",
+  },
+  {
+    id: "scpc-hydropower-operating-and-development-portfolio",
+    title: "Sta. Clara Power Corporation (SCPC) Operating & Development Portfolio",
+    section: "Subsidiary Renewable Energy Assets",
+    content: "Sta. Clara Power Corporation (SCPC), established in 2004 and headquartered at 2F Highway 54 Plaza, 986 Stanford St. cor. EDSA, Mandaluyong City ((+632) 234-9733, info@staclarapower.com), develops, owns, and operates renewable energy power plants. Operating Hydropower Plants (4 plants, 11.3 MW total): (1) 1.2 MW Loboc 1 HEPP (Brgy. Gotozon, Loboc, Bohol, operating since July 2005); (2) 0.9 MW Amlan HEPP (Amlan, Negros Oriental, operating since 2009); (3) 8.0 MW Catuiran HEPP (Naujan, Oriental Mindoro, operating since December 2018); and (4) 1.2 MW Loboc 2 HEPP (Loboc, Bohol, operating since December 2019). Hydropower Projects Under Development (6 plants, 48.54 MW total): (1) 13.56 MW Tumauini (Lower Cascade) HEPP in Tumauini, Isabela (est. 29,244 tCO2/yr reduction); (2) 12.0 MW Mangima HEPP in Manolo Fortich, Bukidnon (est. 40,463 tCO2/yr reduction); (3) 8.28 MW Clarin HEPP in Clarin, Misamis Occidental (est. 19,474 tCO2/yr reduction); (4) 5.82 MW Mat-i 1 HEPP in Claveria, Misamis Oriental (est. 14,622 tCO2/yr reduction); (5) 4.44 MW Malitbog HEPP in Malitbog, Bukidnon (est. 13,473 tCO2/yr reduction); and (6) 4.44 MW Silo-o HEPP in Malitbog, Bukidnon (est. 13,274 tCO2/yr reduction).",
+    source: "Sta. Clara Power Corporation Official Website (staclarapower.com.ph)",
+    date: "2026-10",
   },
   {
     id: "thepp-engineering-dossier",
     projectId: "scic-thepp-isabela",
     projectName: "Tumauini Hydroelectric Power Project (THEPP)",
-    title: "Tumauini HEPP 11.3 MW Engineering & Hydrology Dossier",
+    title: "Tumauini HEPP 11.3 MW Engineering, Hydrology & Site Management Dossier",
     section: "Hydraulic Run-of-River Concession & Civil Works",
-    content: "Tumauini HEPP is an 11.3 MW run-of-river hydroelectric power generation facility located in Barangay Antagan Uno, Tumauini, Isabela. Developed by Philnew Hydro Power Corporation (PHPC) with SCIC as turnkey EPC contractor. It harnesses the Pinacanauan de Tumauini River basin through a 3.4 km subterranean headrace tunnel, a high-velocity sediment desanding basin, and dual horizontal Francis turbines with an annual energy yield of 48.6 GWh. Commercial Operation Date (COD) is slated for Q4 2026.",
-    source: "THEPP EPC Concession Technical Specifications",
-    date: "2026-03",
+    content: "Tumauini HEPP is an 11.3 MW run-of-river hydroelectric power generation facility located in Barangay Antagan Uno, Tumauini, Isabela (internal SCIC project code LUZ-21-009, Atlas code SCIC-HEPP-01). Developed by Philnew Hydro Power Corporation (PHPC) with Engineering and Development Corporation of the Philippines (EDCOP) as Owner's Engineer and SCIC as turnkey EPC contractor (Contract Amount: PHP 1,995,967,295.80; Civil Works: PHP 1,522,954,809.39). Resident Project Manager is Engr. Romeo Sese, supported by Deputy Project Manager Nathaniel P. Principe, Project Control / Technical Engineering Head Engr. Noel G. Lavapie, Mechanical Superintendent Zandre Villaver, Safety Officer Marvin Sibal, and Planning Engineer May Ann Parallag, under SCIC Hydropower Projects Division Director Renin T. Belo. Notice to Proceed (NTP) started April 12, 2022, with revised completion slated for December 28, 2026 (86.19% overall weighted progress and 534 site personnel as of Weekly Report No. 235, October 9, 2026).",
+    source: "THEPP EPC Concession Technical Specifications & MAR-54 / WAR-235",
+    date: "2026-10",
   },
   {
     id: "sabangan-hepp-spec",
@@ -870,7 +962,7 @@ export const ATLAS_KNOWLEDGE_DOCUMENTS: AtlasKnowledgeDocument[] = [
     projectName: "Sabangan Hydroelectric Power Plant",
     title: "Sabangan 14.0 MW Hydroelectric Plant Commissioning Record",
     section: "High-Altitude Cordillera Hydraulic Works",
-    content: "Sabangan HEPP is a 14.0 MW run-of-river hydroelectric facility located along the Chico River basin in Namatec, Sabangan, Mountain Province. Client is Hedcor Sabangan (AboitizPower). Built in extreme mountain topography, SCIC delivered a 12 km rugged access road, high-velocity intake weir, 3.1 km rock-hewn tunnel, and riverside powerhouse with Pelton turbines. Commissioned in May 2015.",
+    content: "Sabangan HEPP is a 14.0 MW run-of-river hydroelectric facility located along the Chico River basin in Namatec, Sabangan, Mountain Province. Client is Hedcor Sabangan (AboitizPower). Built in extreme mountain topography, SCIC delivered a 12 km rugged access road, high-velocity intake weir, 3.1 km rock-hewn tunnel, and riverside powerhouse with Pelton turbines. Commissioned in May 2015 under SCIC's Hydropower Projects Division.",
     source: "AboitizPower / SCIC Commissioning Certificate",
     date: "2015-05",
   },
@@ -880,8 +972,8 @@ export const ATLAS_KNOWLEDGE_DOCUMENTS: AtlasKnowledgeDocument[] = [
     projectName: "Davao City Bulk Water Supply Project",
     title: "Davao City Bulk Water Water Treatment Plant & Transmission",
     section: "Water Utilities & Potable Transmission Scope",
-    content: "The Davao City Bulk Water Supply Project is one of the largest private bulk water initiatives in Southeast Asia, providing over 300 MLD of potable water to Davao City Water District (DCWD). SCIC executed civil works, treatment plant structures, sedimentation basins, clearwater storage reservoirs, and high-pressure transmission main tie-ins.",
-    source: "Apo Agua / JV Technical Documentation",
+    content: "The Davao City Bulk Water Supply Project is one of the largest private bulk water initiatives in Southeast Asia, providing over 300 MLD of potable water to Davao City Water District (DCWD) via the Tamugan River using a Water-Energy Nexus design with an integrated hydro plant. Contract signed November 17, 2022 between Apo Agua Infrastructura, Inc. (President Anna Victoria M. Lu, Project Director Howard Clark, PM Rodolfo Laguna) and SCIC (Chairman & MD Nicandro G. Linao and Director for Water Projects Narciso M. Areglado).",
+    source: "Apo Agua / SCIC Official Contract Signing Press Release",
     date: "2024-01",
   },
   {
@@ -912,22 +1004,39 @@ export async function searchAtlasKnowledge(args: {
   source: AtlasAISource;
 }> {
   const q = args.query.toLowerCase().trim();
-  const limit = args.limit || 3;
+  const limit = args.limit || 4;
 
   let docs = [...ATLAS_KNOWLEDGE_DOCUMENTS];
 
   if (args.projectId) {
     const pId = args.projectId.toLowerCase();
-    docs = docs.filter((d) => d.projectId?.toLowerCase() === pId);
+    const filteredByProj = docs.filter((d) => d.projectId?.toLowerCase() === pId || d.content.toLowerCase().includes(pId));
+    if (filteredByProj.length > 0) docs = filteredByProj;
   }
 
   if (q) {
-    docs = docs.filter((d) => (
+    const exactMatches = docs.filter((d) => (
       d.title.toLowerCase().includes(q) ||
       d.section.toLowerCase().includes(q) ||
       d.content.toLowerCase().includes(q) ||
       (d.projectName && d.projectName.toLowerCase().includes(q))
     ));
+    if (exactMatches.length > 0) {
+      docs = exactMatches;
+    } else {
+      const tokens = q.split(/[\s\-_,?]+/).filter((t) => t.length >= 3);
+      if (tokens.length > 0) {
+        const scored = docs
+          .map((d) => {
+            const hay = `${d.title} ${d.section} ${d.content} ${d.projectName || ""}`.toLowerCase();
+            const hits = tokens.filter((t) => hay.includes(t)).length;
+            return { d, hits };
+          })
+          .filter((x) => x.hits > 0)
+          .sort((a, b) => b.hits - a.hits);
+        docs = scored.map((x) => x.d);
+      }
+    }
   }
 
   const results = docs.slice(0, limit);
@@ -980,7 +1089,7 @@ export async function compareProjects(args: {
   // 1. Resolve explicit IDs
   if (args.projectIds && args.projectIds.length > 0) {
     for (const rawId of args.projectIds) {
-      const match = findProjectInDataset(ALL_PROJECTS, rawId);
+      const match = findProjectInDataset(INITIAL_ATLAS_PROJECTS, rawId) || findProjectInDataset(ALL_PROJECTS, rawId);
       if (match && !targetProjects.some((tp) => tp.id === match.id)) {
         targetProjects.push(match);
       }
@@ -989,13 +1098,13 @@ export async function compareProjects(args: {
 
   // 2. Resolve queryA and queryB
   if (args.queryA) {
-    const matchA = findProjectInDataset(ALL_PROJECTS, args.queryA);
+    const matchA = findProjectInDataset(INITIAL_ATLAS_PROJECTS, args.queryA) || findProjectInDataset(ALL_PROJECTS, args.queryA);
     if (matchA && !targetProjects.some((tp) => tp.id === matchA.id)) {
       targetProjects.push(matchA);
     }
   }
   if (args.queryB) {
-    const matchB = findProjectInDataset(ALL_PROJECTS, args.queryB);
+    const matchB = findProjectInDataset(INITIAL_ATLAS_PROJECTS, args.queryB) || findProjectInDataset(ALL_PROJECTS, args.queryB);
     if (matchB && !targetProjects.some((tp) => tp.id === matchB.id)) {
       targetProjects.push(matchB);
     }
@@ -1003,7 +1112,7 @@ export async function compareProjects(args: {
 
   // 3. Resolve multi-project category or regional comparison
   if (targetProjects.length < 2 && (args.category || args.region || args.islandGroup)) {
-    let pool = [...ALL_PROJECTS];
+    let pool = [...INITIAL_ATLAS_PROJECTS];
     if (args.islandGroup && args.islandGroup !== "ALL") {
       pool = pool.filter((p) => p.islandGroup?.toUpperCase() === args.islandGroup?.toUpperCase());
     }
@@ -1025,9 +1134,9 @@ export async function compareProjects(args: {
 
   // Fallback defaults if still less than 2
   if (targetProjects.length === 0) {
-    targetProjects.push(SCIC_PROJECTS[0], SCIC_PROJECTS[1]);
+    targetProjects.push(INITIAL_ATLAS_PROJECTS[0] || SCIC_PROJECTS[0], INITIAL_ATLAS_PROJECTS[1] || SCIC_PROJECTS[1]);
   } else if (targetProjects.length === 1) {
-    const second = SCIC_PROJECTS.find((p) => p.id !== targetProjects[0].id) || SCIC_PROJECTS[1];
+    const second = INITIAL_ATLAS_PROJECTS.find((p) => p.id !== targetProjects[0].id) || SCIC_PROJECTS[1];
     targetProjects.push(second);
   }
 
@@ -1066,6 +1175,16 @@ export async function compareProjects(args: {
       key: "client",
       label: "Client / Owner",
       extract: (p) => p.client || null,
+    },
+    {
+      key: "leadPM",
+      label: "Project Manager / Lead",
+      extract: (p) => p.leadPM?.name || p.leadPMRole || null,
+    },
+    {
+      key: "leadPMDivision",
+      label: "Managing SCIC Division",
+      extract: (p) => p.leadPM?.division || p.leadPMDivision || null,
     },
     {
       key: "capacity",

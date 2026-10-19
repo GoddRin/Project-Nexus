@@ -1,0 +1,58 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-approach-noon-people-g31.jpg",
+  "backend": "webgpu",
+  "fps": 44.6,
+  "p95": 35.3,
+  "calls": 110,
+  "tris": 734469,
+  "programs": 119,
+  "lights": 4,
+  "gpuMB": 87.8,
+  "heapMB": 189,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "night",
+  "time": "2100",
+  "weather": "clear",
+  "file": "gate-approach-night-people-g31.jpg",
+  "backend": "webgpu",
+  "fps": 39.1,
+  "p95": 38.1,
+  "calls": 194,
+  "tris": 1297668,
+  "programs": 119,
+  "lights": 4,
+  "gpuMB": 92.2,
+  "heapMB": 191,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

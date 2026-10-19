@@ -45,8 +45,11 @@ export interface HeroChipsProps {
  * where that figure lives. A chip without real data behind it is not shown.
  * Weather and the signal refresh on their own; faster while a signal is up.
  */
+import { useMobileNav } from "@/components/shared/MobileNavContext";
+
 export function HeroChips({ weather: initial, activeProjects, flagship }: HeroChipsProps) {
   const row = useRef<HTMLDivElement>(null);
+  const { isVisitorMode } = useMobileNav();
   usePauseOffscreen(row);
   const signalUp = !!initial?.alert;
   const { data: weather } = useLiveFeed<WeatherGlance | null>(
@@ -98,7 +101,7 @@ export function HeroChips({ weather: initial, activeProjects, flagship }: HeroCh
       )}
       {!pagasa && streak && (
         <Chip
-          href="/dashboard/incidents"
+          href={isVisitorMode ? "/dashboard" : "/dashboard/incidents"}
           icon={<HardHat className="h-6 w-6 text-scic-green dark:text-scic-green-bright" aria-hidden />}
           label="Site safety"
           value={

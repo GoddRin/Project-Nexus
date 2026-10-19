@@ -26,18 +26,18 @@ export function AtlasMapLegend({ className }: AtlasMapLegendProps) {
       {/* Header Toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+        className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
         aria-label={isOpen ? "Collapse GIS map legend" : "Expand GIS map legend"}
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-          <Layers className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>GIS Legend</span>
+        <div className="flex items-center gap-1.5 text-[10.5px] font-mono font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+          <Layers className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+          <span>Legend</span>
         </div>
         {isOpen ? (
-          <ChevronDown className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+          <ChevronDown className="h-3 w-3 text-slate-500 dark:text-slate-400" />
         ) : (
-          <ChevronUp className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+          <ChevronUp className="h-3 w-3 text-slate-500 dark:text-slate-400" />
         )}
       </button>
 

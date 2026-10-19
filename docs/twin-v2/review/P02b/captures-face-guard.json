@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "face-guard-noon-face-guard-g03.jpg",
+  "backend": "webgpu",
+  "fps": 22,
+  "p95": 53,
+  "calls": 104,
+  "tris": 522497,
+  "programs": 116,
+  "lights": 4,
+  "gpuMB": 88.1,
+  "heapMB": 188,
+  "lod": [
+   25,
+   193,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

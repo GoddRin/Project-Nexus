@@ -157,7 +157,7 @@ function LogCard({ log, isToday }: { log: DailyLog; isToday: boolean }) {
             <p className="text-xs text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
               <MapPin size={11} /> Zone Headcount Breakdown
             </p>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
               <ZoneBadge zone="Tunnels" count={log.zoneTunnels} />
               <ZoneBadge zone="Weir" count={log.zoneWeir} />
               <ZoneBadge zone="Temfacil" count={log.zoneTemfacil} />

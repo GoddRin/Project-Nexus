@@ -1,0 +1,1015 @@
+[
+ {
+  "id": "PM_ROMEO_SESE",
+  "name": "Engr. Romeo Sese",
+  "nickname": "PM Romy",
+  "role": "Resident Project Manager (In-Charge of Whole Tumauini HEPP)",
+  "roleGroup": "management",
+  "department": "MANAGEMENT",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.mustache",
+   "glasses": true,
+   "height": 1.65,
+   "outfit": "outfit.management.a",
+   "hardhat": "white",
+   "vest": "teal",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.pm-romeo-sese",
+  "verified": {}
+ },
+ {
+  "id": "DEPUTY_NATHANIEL_PRINCIPE",
+  "name": "Nathaniel P. Principe",
+  "nickname": "Deputy Nath",
+  "role": "Deputy Project Manager",
+  "roleGroup": "management",
+  "department": "MANAGEMENT",
+  "photo": "/images/personnel/deputy_nathaniel_principe.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.management.a",
+   "hardhat": "white",
+   "vest": "teal",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office.home.deputy-nathaniel-principe",
+  "verified": {}
+ },
+ {
+  "id": "ENGR_NOEL_LAVAPIE",
+  "name": "Engr. Noel G. Lavapie",
+  "nickname": "Engr. Noel",
+  "role": "Lead Technical & Project Engineering Head",
+  "roleGroup": "engineer",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/engr_noel_lavapie_real.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "glasses": true,
+   "height": 1.65,
+   "outfit": "outfit.engineer.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.engr-noel-lavapie",
+  "verified": {}
+ },
+ {
+  "id": "ENGR_ELGINE_MANGCUPANG",
+  "name": "Engr. Elgine Mangcupang",
+  "nickname": "Engr. Elgine",
+  "role": "QA/QC Engineering Head",
+  "roleGroup": "qaqc",
+  "department": "QA_QC",
+  "shift": "day",
+  "look": {
+   "body": "char.body.f00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.ponytail",
+   "hairColor": "#1a1410",
+   "glasses": true,
+   "height": 1.55,
+   "outfit": "outfit.qaqc.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-qaqc.home.engr-elgine-mangcupang",
+  "verified": {}
+ },
+ {
+  "id": "QC_JAIRUZ_BATAC",
+  "name": "Engr. Jairuz O. Batac",
+  "nickname": "Engr. Jairuz",
+  "role": "QC Engineer II - Tunnel & Geotechnical",
+  "roleGroup": "qaqc",
+  "department": "QA_QC",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.qaqc.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.surge-tank.home.qc-jairuz-batac",
+  "verified": {}
+ },
+ {
+  "id": "QC_JIMMY_AQUINO",
+  "name": "Engr. Jimmy M. Aquino",
+  "nickname": "Engr. Jimmy",
+  "role": "QC Engineer - Civil Structures",
+  "roleGroup": "qaqc",
+  "department": "QA_QC",
+  "photo": "/images/personnel/qc_jimmy_aquino.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.qaqc.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.tailrace.home.qc-jimmy-aquino",
+  "verified": {}
+ },
+ {
+  "id": "QC_JHON_JAYME",
+  "name": "Jhon Charles C. Jayme",
+  "nickname": "Engr. Charles",
+  "role": "Jr. QA/QC Engineer",
+  "roleGroup": "qaqc",
+  "department": "QA_QC",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.qaqc.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-qaqc.home.qc-jhon-jayme",
+  "verified": {}
+ },
+ {
+  "id": "PLANNING_MAY_PARALLAG",
+  "name": "Engr. May Ann A. Parallag",
+  "nickname": "Engr. May Ann",
+  "role": "Jr. Planning Engineer",
+  "roleGroup": "engineer",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/planning_may_parallag.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.f00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.55,
+   "outfit": "outfit.engineer.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.planning-may-parallag",
+  "verified": {}
+ },
+ {
+  "id": "QS_JOHN_RICK_HERNAEZ",
+  "name": "John Rick Hernaez",
+  "nickname": "Sir John Rick",
+  "role": "Quantity Surveyor (QS)",
+  "roleGroup": "engineer",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/qs_john_rick_hernaez.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.engineer.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.qs-john-rick-hernaez",
+  "verified": {}
+ },
+ {
+  "id": "QS_CRISTINE_ALMAZAN",
+  "name": "Christine Joy Almazan",
+  "nickname": "Ma'am Christine",
+  "role": "Junior Quantity Surveyor (Junior QS)",
+  "roleGroup": "engineer",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/qs_cristine_almazan.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.f00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.ponytail",
+   "hairColor": "#1a1410",
+   "height": 1.55,
+   "outfit": "outfit.engineer.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.qs-cristine-almazan",
+  "verified": {}
+ },
+ {
+  "id": "SURVEYOR_JOHNNY_FARONGEY",
+  "name": "Johnny P. Farong-ey",
+  "nickname": "Chief Johnny",
+  "role": "Surveyor III (Lead Geodetic Surveyor)",
+  "roleGroup": "surveyor",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/surveyor_johnny_farongey.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.surveyor.a",
+   "hardhat": "yellow",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.penstock.home.surveyor-johnny-farongey",
+  "verified": {}
+ },
+ {
+  "id": "GEO_AMOR_FLORESCA",
+  "name": "Amor Floresca",
+  "role": "Geomapper (Geological Mapper & Engineering Geologist)",
+  "roleGroup": "geologist",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/geo_amor_floresca.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.geologist.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.penstock.home.geo-amor-floresca",
+  "verified": {}
+ },
+ {
+  "id": "PCO_JONJON_BUCSIT",
+  "name": "Jon-Jon Bucsit",
+  "role": "Pollution Control Officer (PCO)",
+  "roleGroup": "safety",
+  "department": "SAFETY",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.safety.a",
+   "hardhat": "white",
+   "vest": "green",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.pco-jonjon-bucsit",
+  "verified": {}
+ },
+ {
+  "id": "DOC_JAYSON_AGGABAO",
+  "name": "Jayson Z. Aggabao",
+  "nickname": "Sir Jayson",
+  "role": "Document Controller",
+  "roleGroup": "office",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/doc_jayson_aggabao.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.stubble",
+   "glasses": true,
+   "height": 1.65,
+   "outfit": "outfit.office.a",
+   "hardhat": "white",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.doc-jayson-aggabao",
+  "verified": {}
+ },
+ {
+  "id": "CAD_ELBERT_FIGURACION",
+  "name": "Elbert Figuracion",
+  "nickname": "Sir Elbert",
+  "role": "AutoCAD Operator",
+  "roleGroup": "office",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/cad_elbert_figuracion.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "glasses": true,
+   "height": 1.65,
+   "outfit": "outfit.office.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.cad-elbert-figuracion",
+  "verified": {}
+ },
+ {
+  "id": "CIVIL_JAIME_CANO",
+  "name": "Jaime B. Caño Jr.",
+  "nickname": "Foreman Caño",
+  "role": "Supervisor III - Civil Works",
+  "roleGroup": "supervisor",
+  "department": "CIVIL",
+  "photo": "/images/personnel/civil_jaime_cano.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.supervisor.a",
+   "hardhat": "green",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.powerhouse.home.civil-jaime-cano",
+  "verified": {}
+ },
+ {
+  "id": "CIVIL_HENRY_ESTRADA",
+  "name": "Henry V. Estrada",
+  "nickname": "Sir Henry",
+  "role": "Supervisor III - Civil Works & 4S",
+  "roleGroup": "supervisor",
+  "department": "CIVIL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.mustache",
+   "height": 1.65,
+   "outfit": "outfit.supervisor.a",
+   "hardhat": "green",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.tailrace.home.civil-henry-estrada",
+  "verified": {}
+ },
+ {
+  "id": "TUNNEL_RICHARD_PINASEN",
+  "name": "Richard A. Pinasen",
+  "nickname": "Foreman Richard",
+  "role": "Foreman III - Head Tunneling & Underground Works",
+  "roleGroup": "foreman",
+  "department": "CIVIL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.8,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.foreman.a",
+   "hardhat": "green",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "tunnel2.drive.home.tunnel-richard-pinasen",
+  "verified": {}
+ },
+ {
+  "id": "TUNNEL_RUDY_MARCOS",
+  "name": "Rudy C. Marcos",
+  "nickname": "Foreman Rudy",
+  "role": "Foreman III - Underground Tunneling Excavation",
+  "roleGroup": "foreman",
+  "department": "CIVIL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.mustache",
+   "height": 1.65,
+   "outfit": "outfit.foreman.a",
+   "hardhat": "green",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "tunnel2.drive.home.tunnel-rudy-marcos",
+  "verified": {}
+ },
+ {
+  "id": "FOREMAN_ANTHONY_ROSALES",
+  "name": "Anthony B. Rosales",
+  "nickname": "Foreman Anthony",
+  "role": "Foreman III - Civil Structures",
+  "roleGroup": "foreman",
+  "department": "CIVIL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.foreman.a",
+   "hardhat": "green",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.penstock.home.foreman-anthony-rosales",
+  "verified": {}
+ },
+ {
+  "id": "WORKER_BENJAMIN_FOMEGAS",
+  "name": "Benjamin C. Fomeg-as",
+  "nickname": "Benjo",
+  "role": "Tunnel Worker III (Lead Jumbo Drill & Rock Support Specialist)",
+  "roleGroup": "tunnel-crew",
+  "department": "CIVIL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.8,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.stubble",
+   "height": 1.65,
+   "outfit": "outfit.tunnel-crew.a",
+   "hardhat": "green",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "tunnel2.drive.home.worker-benjamin-fomegas",
+  "verified": {}
+ },
+ {
+  "id": "ESH_ALFREDO_ARIZ",
+  "name": "Alfredo T. Ariz",
+  "nickname": "Sir Ariz",
+  "role": "Environmental, Safety & Health (ESH) Head",
+  "roleGroup": "safety",
+  "department": "SAFETY",
+  "photo": "/images/personnel/esh_alfredo_ariz.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.mustache",
+   "height": 1.65,
+   "outfit": "outfit.safety.a",
+   "hardhat": "white",
+   "vest": "yellow",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.esh-alfredo-ariz",
+  "verified": {}
+ },
+ {
+  "id": "NURSE_RUSSELLE_ALCANTARA",
+  "name": "Russelle P. Alcantara, RN",
+  "nickname": "Nurse Russelle",
+  "role": "Project Nurse",
+  "roleGroup": "nurse",
+  "department": "MEDICAL",
+  "photo": "/images/personnel/nurse_russelle_alcantara.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.f00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.ponytail",
+   "hairColor": "#1a1410",
+   "height": 1.55,
+   "outfit": "outfit.nurse.a",
+   "hardhat": "white",
+   "vest": "red",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-clinic.home.nurse-russelle-alcantara",
+  "verified": {}
+ },
+ {
+  "id": "SEC_RONALD_MALTO",
+  "name": "Ronald D. Malto",
+  "nickname": "Officer Ronald",
+  "role": "Security Officer",
+  "roleGroup": "security",
+  "department": "SAFETY",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.security.a",
+   "hardhat": "white",
+   "vest": "navy",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-gate.home.sec-ronald-malto",
+  "verified": {}
+ },
+ {
+  "id": "HR_ROVIGAIL_ABELLAR",
+  "name": "Rovigail Joy G. Abellar",
+  "role": "HR Officer",
+  "roleGroup": "office",
+  "department": "HR",
+  "photo": "/images/personnel/hr_rovigail_abellar.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.f00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.ponytail",
+   "hairColor": "#1a1410",
+   "height": 1.55,
+   "outfit": "outfit.office.a",
+   "hardhat": "white",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.hr-rovigail-abellar",
+  "verified": {}
+ },
+ {
+  "id": "HR_JOSHUA_ADMIN",
+  "name": "Joshua",
+  "role": "Admin Officer",
+  "roleGroup": "office",
+  "department": "ADMINISTRATION",
+  "photo": "/images/personnel/hr_joshua_admin.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.office.a",
+   "hardhat": "white",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.hr-joshua-admin",
+  "verified": {}
+ },
+ {
+  "id": "HR_RANDY_GAMBOA",
+  "name": "Randy Gamboa",
+  "role": "Admin Assistant",
+  "roleGroup": "office",
+  "department": "ADMINISTRATION",
+  "photo": "/images/personnel/hr_randy_gamboa_real.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.goatee",
+   "glasses": true,
+   "height": 1.65,
+   "outfit": "outfit.office.a",
+   "hardhat": "white",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.hr-randy-gamboa",
+  "verified": {}
+ },
+ {
+  "id": "IT_MARC_SALVA",
+  "name": "Harrold Salva",
+  "nickname": "Harrold",
+  "role": "IT Support Specialist",
+  "roleGroup": "office",
+  "department": "IT_SYSTEMS",
+  "photo": "/images/personnel/it_marc_salva.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.25,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "glasses": true,
+   "height": 1.65,
+   "outfit": "outfit.office.a",
+   "hardhat": "blue",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.it-marc-salva",
+  "verified": {}
+ },
+ {
+  "id": "EQUIP_HOWELL_SAMSON",
+  "name": "Howell Gene E. Samson",
+  "nickname": "Sir Howell",
+  "role": "Supervisor - Heavy Equipment & Fleet",
+  "roleGroup": "supervisor",
+  "department": "LOGISTICS",
+  "photo": "/images/personnel/equip_howell_samson.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.supervisor.a",
+   "hardhat": "yellow",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-motorpool.home.equip-howell-samson",
+  "verified": {}
+ },
+ {
+  "id": "WAREHOUSE_VINCENT_ANDALLO",
+  "name": "Vincent Dickenson Andallo",
+  "nickname": "Sir Vincent",
+  "role": "Warehouse Area Lead",
+  "roleGroup": "warehouse",
+  "department": "LOGISTICS",
+  "photo": "/images/personnel/warehouse_vincent_andallo.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.goatee",
+   "height": 1.65,
+   "outfit": "outfit.warehouse.a",
+   "hardhat": "blue",
+   "vest": "yellow",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-warehouse.home.warehouse-vincent-andallo",
+  "verified": {}
+ },
+ {
+  "id": "MECH_ANDREW_SILVA",
+  "name": "Andrew Silva",
+  "nickname": "Sir Andrew",
+  "role": "Mechanical Supervisor",
+  "roleGroup": "supervisor",
+  "department": "ENGINEERING",
+  "photo": "/images/personnel/mech_andrew_silva.jpg",
+  "shift": "office",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.supervisor.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.camp-office-interior.home.mech-andrew-silva",
+  "verified": {}
+ },
+ {
+  "id": "SUPT_EUGENIO_HANOPOL",
+  "name": "Eugenio D. Hanopol",
+  "nickname": "Supt. Eugene",
+  "role": "Superintendent I - Mechanical",
+  "roleGroup": "management",
+  "department": "ELECTRICAL",
+  "photo": "/images/personnel/mech_eugenio_hanopol.jpg",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.mustache",
+   "height": 1.65,
+   "outfit": "outfit.management.a",
+   "hardhat": "white",
+   "vest": "orange",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.turbine-hall.home.supt-eugenio-hanopol",
+  "verified": {}
+ },
+ {
+  "id": "SUPT_EDUARDO_DEFRANCIA",
+  "name": "Eduardo G. De Francia",
+  "nickname": "Supt. Ed",
+  "role": "Electrical Superintendent",
+  "roleGroup": "management",
+  "department": "ELECTRICAL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "facialHair": "facial.mustache",
+   "height": 1.65,
+   "outfit": "outfit.management.a",
+   "hardhat": "white",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.switchyard.home.supt-eduardo-defrancia",
+  "verified": {}
+ },
+ {
+  "id": "ELEC_JOSUE_ABELLERA",
+  "name": "Josue A. Abellera",
+  "nickname": "Sir Josue",
+  "role": "Supervisor III - Electrical Works",
+  "roleGroup": "supervisor",
+  "department": "ELECTRICAL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.62,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.supervisor.a",
+   "hardhat": "blue",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.powerhouse.home.elec-josue-abellera",
+  "verified": {}
+ },
+ {
+  "id": "FOREMAN_WARLITO_DEFRANCIA",
+  "name": "Warlito D. De Francia",
+  "nickname": "Foreman Warlito",
+  "role": "Foreman I - Electrical",
+  "roleGroup": "foreman",
+  "department": "ELECTRICAL",
+  "shift": "day",
+  "look": {
+   "body": "char.body.m00",
+   "skin": 0.45,
+   "face": {},
+   "hair": "hair.short",
+   "hairColor": "#1a1410",
+   "height": 1.65,
+   "outfit": "outfit.foreman.a",
+   "hardhat": "blue",
+   "vest": "blue",
+   "wear": {
+    "dust": 0,
+    "sweat": 0,
+    "mud": 0
+   },
+   "props": []
+  },
+  "home": "powerhouse.control-room.home.foreman-warlito-defrancia",
+  "verified": {}
+ }
+]

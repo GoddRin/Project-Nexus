@@ -11,15 +11,28 @@ import {
   QuickAccessWidget,
   OnSiteWidget,
 } from "@/components/dashboard/DashboardWidgets";
-import { Zap, ShieldCheck, HardHat, Waves, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
+import { RoleAwareDashboardContent } from "@/components/dashboard/VisitorOverviewBento";
+import { Zap, ShieldCheck, HardHat, Waves } from "lucide-react";
 import { SafetyStreakFigure } from "@/components/shared/SafetyStreak";
+import { getCachedProject } from "@/lib/db/cachedQueries";
+import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
 
 export const dynamic = "force-dynamic";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  let role = "EMPLOYEE";
+  try {
+    const project = await getCachedProject("tumauini-hepp");
+    if (project) {
+      const { member } = await getOrCreateUser(project.id);
+      if (member?.role) role = member.role;
+    }
+  } catch {
+    // Safe fallback
+  }
+
   return (
-    <div className="relative space-y-6">
+    <div className="relative mx-auto w-full max-w-[1680px] space-y-6">
       {/* Flow Line behind page header */}
       <FlowLine className="h-20 -mt-4 opacity-40 pointer-events-none" />
 
@@ -37,9 +50,15 @@ export default function DashboardPage() {
             <Zap className="h-4 sm:h-5 w-4 sm:h-5 text-scic-blue dark:text-scic-cyan" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Target Capacity</p>
-            <p className="font-display text-base sm:text-lg font-bold text-text-primary">11.3 MW</p>
-            <p className="text-[10px] text-scic-blue dark:text-scic-cyan font-medium truncate">Clean Run-of-River</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">
+              Target Capacity
+            </p>
+            <p className="font-display text-base sm:text-lg font-bold text-text-primary">
+              11.3 MW
+            </p>
+            <p className="text-[10px] text-scic-blue dark:text-scic-cyan font-medium truncate">
+              Clean Run-of-River
+            </p>
           </div>
         </div>
 
@@ -48,7 +67,9 @@ export default function DashboardPage() {
             <ShieldCheck className="h-4 sm:h-5 w-4 sm:h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Site Safety</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">
+              Site Safety
+            </p>
             <SafetyStreakFigure
               valueClassName="font-display text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400"
               captionClassName="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium truncate"
@@ -61,9 +82,15 @@ export default function DashboardPage() {
             <Waves className="h-4 sm:h-5 w-4 sm:h-5 text-scic-cyan" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Hydrology Status</p>
-            <p className="font-display text-base sm:text-lg font-bold text-text-primary truncate">Normal Head</p>
-            <p className="text-[10px] text-text-muted font-medium truncate">Pinacanauan River</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">
+              Hydrology Status
+            </p>
+            <p className="font-display text-base sm:text-lg font-bold text-text-primary truncate">
+              Normal Head
+            </p>
+            <p className="text-[10px] text-text-muted font-medium truncate">
+              Pinacanauan River
+            </p>
           </div>
         </div>
 
@@ -72,51 +99,36 @@ export default function DashboardPage() {
             <HardHat className="h-4 sm:h-5 w-4 sm:h-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">Contractor</p>
-            <p className="font-display text-base sm:text-lg font-bold text-text-primary truncate">SCIC AAAA</p>
-            <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium truncate">General Engineering</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted truncate">
+              Contractor
+            </p>
+            <p className="font-display text-base sm:text-lg font-bold text-text-primary truncate">
+              SCIC AAAA
+            </p>
+            <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium truncate">
+              General Engineering
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Primary Widget Grid */}
-      <div className="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div className="md:col-span-2">
+      {/* Role-Aware Primary Widget Grid:
+          - In Visitor Mode: Shows Project Completion + Live Weather + 6-card Editorial Explorer Directory
+          - In Admin Mode: Shows Full Operational Widgets (Tickets, On-Site Crew, Activity Stream, Bulletins, Quick Launcher) */}
+      <RoleAwareDashboardContent
+        role={role}
+        completionWidget={
           <Suspense fallback={<ProjectCompletionSkeleton delay={0.08} />}>
             <ProjectCompletionWidget delay={0.08} />
           </Suspense>
-        </div>
-
-        <div className="col-span-1">
-          <OpenTicketsWidget delay={0.16} />
-        </div>
-
-        <div className="col-span-1">
-          <OnSiteWidget delay={0.20} />
-        </div>
-
-        <div className="col-span-1">
-          <WeatherWidget delay={0.24} />
-        </div>
-
-        <div className="col-span-1 md:col-span-2 lg:col-span-1">
-          <RecentActivityWidget delay={0.4} />
-        </div>
-
-        <div className="col-span-1 md:col-span-2 lg:col-span-3">
-          <AnnouncementsWidget delay={0.32} />
-        </div>
-
-        <div className="col-span-1 md:col-span-2 lg:col-span-3">
-          <QuickAccessWidget delay={0.48} />
-        </div>
-
-        <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-2">
-          <Link href="/dashboard/analytics" className="inline-flex items-center gap-2 text-xs font-bold text-scic-blue dark:text-scic-cyan hover:underline transition-colors">
-            Comprehensive Project Telemetry & Advanced S-Curve Analytics <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </div>
+        }
+        weatherWidget={<WeatherWidget delay={0.16} />}
+        adminTicketsWidget={<OpenTicketsWidget delay={0.16} />}
+        adminOnSiteWidget={<OnSiteWidget delay={0.2} />}
+        adminActivityWidget={<RecentActivityWidget delay={0.4} />}
+        adminAnnouncementsWidget={<AnnouncementsWidget delay={0.32} />}
+        adminQuickAccessWidget={<QuickAccessWidget delay={0.48} />}
+      />
     </div>
   );
 }

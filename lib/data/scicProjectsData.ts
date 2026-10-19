@@ -49,6 +49,8 @@ export interface SCICProject {
   };
   client: string;
   leadPM?: ProjectManagerInfo;
+  leadPMRole?: string;
+  leadPMDivision?: string;
   description: string;
   engineeringScope: string[];
   keyMilestones: {
@@ -188,6 +190,13 @@ export const SCIC_PROJECTS: SCICProject[] = [
       workforcePeak: 420,
     },
     client: "Philnew Hydro Power Corp. (PHPC)",
+    leadPM: {
+      name: "Engr. Romeo Sese",
+      role: "Project Manager (Resident Project Manager)",
+      division: "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
+      contactEmail: "bd@staclara.com.ph",
+      avatarUrl: "/logo.png",
+    },
     description:
       "A flagship run-of-river hydroelectric development harnessing the high volumetric discharge of the Tumauini River. Featuring a reinforced concrete diversion weir, automated desilting basin, high-pressure penstock, and an advanced dual-turbine powerhouse feeding clean green energy directly into the Luzon grid. EPC design by EDCOP.",
     engineeringScope: [
@@ -353,6 +362,13 @@ export const SCIC_PROJECTS: SCICProject[] = [
       workforcePeak: 850,
     },
     client: "ACEN Corporation / North Luzon Renewables (Ayala Group)",
+    leadPM: {
+      name: "Engr. Ryan Flores",
+      role: "Project Manager",
+      division: "SCIC Renewable Energy / Wind Power Projects (Dir. Luisito O. Traboco / Dir. Renin T. Belo)",
+      contactEmail: "bd@staclara.com.ph",
+      avatarUrl: "/logo.png",
+    },
     description:
       "Civil Balance of Plant (BOP) execution for the largest wind farm in the Philippines, generating 160 MW of zero-carbon electricity. SCIC delivered 32 reinforced monolithic wind turbine foundations, heavy-lift crane installation pads, and 28 kilometers of rugged ridge access roads. Officially inaugurated by national leadership in May 2023.",
     engineeringScope: [
@@ -1432,6 +1448,13 @@ export const SCIC_PROJECTS: SCICProject[] = [
       safeManHours: "1,000,000+ Safe Hours",
     },
     client: "Sta. Clara Power Corporation / Catuiran Hydro",
+    leadPM: {
+      name: "Albert B. Mendoza",
+      role: "Project Manager",
+      division: "SCIC Hydropower Projects Division (Dir. Renin T. Belo)",
+      contactEmail: "bd@staclara.com.ph",
+      avatarUrl: "/logo.png",
+    },
     description:
       "A landmark off-grid renewable energy investment delivering clean, reliable baseload electricity to Oriental Mindoro. SCIC served as sole EPC contractor, delivering an intake weir, 4km canal, tunnel, desander, and modern powerhouse. Won recognition for achieving 1 Million Safe Man-Hours. Completed December 2018.",
     engineeringScope: [
@@ -1621,7 +1644,7 @@ export const SCIC_PROJECTS: SCICProject[] = [
       safeManHours: "780,000 Safe Hours",
       workforcePeak: 310,
     },
-    client: "Bukidnon Power / Maladugao Hydro Corp.",
+    client: "Investco BHPI Inc.",
     description:
       "A high-efficiency run-of-river cascading hydro plant under active construction in Kalilangan, Bukidnon. Contract signed late 2022; will feed green baseload power directly into the Mindanao transmission grid.",
     engineeringScope: [

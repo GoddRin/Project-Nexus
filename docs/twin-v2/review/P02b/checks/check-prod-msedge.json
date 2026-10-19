@@ -1,0 +1,164 @@
+{
+ "label": "prod-msedge",
+ "base": "http://localhost:3100",
+ "browser": "msedge",
+ "forcedWebGL": false,
+ "when": "2026-10-14T00:11:44.200Z",
+ "info": {
+  "backend": "webgpu",
+  "canvas": [
+   1184,
+   844
+  ],
+  "stats": {
+   "fps": 16.043969986291664,
+   "ms": 62.328712959100706,
+   "p95": 120.19999694824219,
+   "calls": 5,
+   "tris": 11373,
+   "programs": 11,
+   "textures": 15,
+   "geometries": 16,
+   "heapMB": 189.63593578338623,
+   "zonesLoaded": 0,
+   "agents": 1,
+   "gpuMB": 50.83947563171387,
+   "lights": 3,
+   "pixelRatio": 1,
+   "resolution": 1,
+   "streaming": {
+    "zonesLoaded": 0,
+    "zonesLoading": 1,
+    "instances": 0,
+    "lod": [
+     0,
+     0,
+     0
+    ],
+    "hidden": 0,
+    "draws": 0,
+    "tasksQueued": 40,
+    "longestTaskMs": 0,
+    "longestTaskKind": ""
+   }
+  },
+  "hud": true
+ },
+ "results": [
+  {
+   "name": "starts and draws",
+   "pass": true,
+   "detail": "backend webgpu, canvas 1184x844, ready in 10269 ms, mean brightness 124, console errors 0"
+  },
+  {
+   "name": "stats() reports",
+   "pass": true,
+   "detail": "fps 16.0, ms 62.3, p95 120.2, calls 5, tris 11373, pipelines 11, textures 15, geometries 16, heap 190 MB"
+  },
+  {
+   "name": "fly-to cancelled by drag",
+   "pass": true,
+   "detail": "flying before true, after false; moved 3.02 m in the next 0.6 s; 217 m short of the place; place=null"
+  },
+  {
+   "name": "fly-to cancelled by wheel",
+   "pass": true,
+   "detail": "flying before true, after false; moved 5.18 m in the next 0.6 s; 168 m short of the place; place=null"
+  },
+  {
+   "name": "fly-to cancelled by key",
+   "pass": true,
+   "detail": "flying before true, after false; moved 0.88 m in the next 0.6 s; 214 m short of the place; place=null"
+  },
+  {
+   "name": "Escape to overview: at a place",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: in the middle of a fly-to",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: with a selection and a follow target",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: after free movement",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "Escape to overview: with focus in the places list",
+   "pass": true,
+   "detail": "at the overview, selection and following cleared"
+  },
+  {
+   "name": "wheel zooms towards the cursor point",
+   "pass": true,
+   "detail": "distance to the point 219.2 m to 120.8 m; the point under the cursor moved 0.00 m"
+  },
+  {
+   "name": "double-click focuses the clicked point",
+   "pass": true,
+   "detail": "orbit centre 0.00 m from the clicked point"
+  },
+  {
+   "name": "WASD / arrows move, Q and E lower and raise, Shift is faster",
+   "pass": true,
+   "detail": "ahead [-6.1,0,-24.9], right [27.6,0,-6.7], E [0,21.3,0], Q [0,-21.3,0]; with Shift 62.4 m against 25.6 m"
+  },
+  {
+   "name": "camera cannot go below the terrain",
+   "pass": true,
+   "detail": "asked for Y = -40 over the camp pad (ground 13.0 m): camera at Y = 14.39; after holding Q, Y = 14.39"
+  },
+  {
+   "name": "no React re-render per frame (5 s of orbiting)",
+   "pass": null,
+   "detail": "not measured in this build: 290 frames drawn"
+  },
+  {
+   "name": "store changes reach the URL",
+   "pass": true,
+   "detail": "after fly-to: ?debug=1&t=1200&v=2&place=switchyard; after wheel and Live: ?debug=1&v=2; after select and 06:05: ?debug=1&v=2&sel=facility%3Apowerhouse&t=0605"
+  },
+  {
+   "name": "lost device: renderer rebuilt, view kept",
+   "pass": true,
+   "detail": "new renderer drawing, mean brightness 31, camera where it was"
+  },
+  {
+   "name": "?place= and ?t= restore the view and the time",
+   "pass": true,
+   "detail": "camera at the switchyard view on load true and after reload true; clock manual at 1110 minutes; URL ?v=2&debug=1&place=switchyard&t=1830"
+  },
+  {
+   "name": "?preset= maps to ?place=; night is darker than noon and not black",
+   "pass": false,
+   "detail": "URL ?v=2&debug=1&t=0200&place=temfacil; mean brightness 12:00 124, 18:30 18, 02:00 34"
+  },
+  {
+   "name": "fly-to cancelled by touch",
+   "pass": true,
+   "detail": "flying before true, after false; moved 0.00 m in the next 0.6 s"
+  },
+  {
+   "name": "upright screen: overview stands further back",
+   "pass": true,
+   "detail": "camera 342 m from the site centre against 221 m on a wide screen"
+  },
+  {
+   "name": "reduced motion: fly-to and Escape are cuts",
+   "pass": true,
+   "detail": "at the place one frame later true; back at the overview one frame after Escape true"
+  },
+  {
+   "name": "10 loads, none black or empty",
+   "pass": true,
+   "detail": "0 dark or without terrain, 0 with a second renderer or camera rig started, 0 console errors; ready in 3956 to 7040 ms, median 4646 ms"
+  }
+ ]
+}

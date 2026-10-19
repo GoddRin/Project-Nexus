@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import dynamic from "next/dynamic";
 import { PlantSceneLoading } from "@/components/digital-twin/PlantSceneLoading";
 import { Box, ShieldCheck, Video } from "lucide-react";
@@ -13,9 +14,35 @@ const PlantScene = dynamic(
   }
 );
 
+// Twin v2 (docs/twin-v2/) — Default 3D Digital Twin experience.
+const TwinApp = dynamic(() => import("@/components/twin/TwinApp"), {
+  ssr: false,
+  loading: () => <PlantSceneLoading />,
+});
+
 export const dynamicMode = "force-dynamic";
 
-export default function DigitalTwinPage() {
+/**
+ * /digital-twin mounts Twin v2 by default.
+ * Passing ?v=1 mounts the legacy v1 scene.
+ */
+export default function DigitalTwinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { v } = use(searchParams);
+  if (v === "1") {
+    return <DigitalTwinV1 />;
+  }
+  return (
+    <div className="-m-3.5 sm:-m-5 md:-m-6 -mb-24 md:-mb-6 relative h-[calc(100vh-3.5rem)] overflow-hidden">
+      <TwinApp />
+    </div>
+  );
+}
+
+function DigitalTwinV1() {
   return (
     <div className="-m-3.5 sm:-m-5 md:-m-6 -mb-24 md:-mb-6 flex h-[calc(100vh-3.5rem)] flex-col relative overflow-hidden bg-[var(--bg-base,#0B1013)] text-text-primary">
       {/* Floating Control Room HUD Header */}

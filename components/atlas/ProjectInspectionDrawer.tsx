@@ -339,13 +339,13 @@ export function ProjectInspectionDrawer({
           transition={BRAND_SPRING}
           className={cn(
             "flex flex-col text-slate-800 dark:text-slate-100 shadow-2xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-xl border border-slate-200 dark:border-white/10",
-            // Mobile: Bottom sheet with peek vs expanded mode (Directives 29–32)
-            "fixed inset-x-0 bottom-0 z-50 md:absolute md:inset-auto",
+            // Mobile: Bottom sheet with peek vs expanded mode, sitting cleanly above MobileBottomBar
+            "fixed inset-x-0 max-md:bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] z-50 md:absolute md:inset-auto",
             isMobileExpanded
-              ? "h-[94vh] max-h-[94vh] rounded-t-2xl border-t border-slate-300 dark:border-white/15"
-              : "h-[54vh] max-h-[54vh] rounded-t-2xl border-t border-slate-300 dark:border-white/15 md:h-auto",
-            // Desktop: Floating side panel docked on the right side of the map (Directives 27 & 28)
-            "md:top-3 md:right-3 md:bottom-3 md:w-[380px] lg:w-[410px] xl:w-[430px] md:max-h-[calc(100%-1.5rem)] md:rounded-xl md:z-30",
+              ? "h-[82dvh] max-h-[82dvh] rounded-t-2xl border-t border-slate-300 dark:border-white/15 md:h-auto"
+              : "h-[48dvh] max-h-[48dvh] rounded-t-2xl border-t border-slate-300 dark:border-white/15 md:h-auto",
+            // Desktop: Clean right-docked panel beside the map canvas (never covering map controls)
+            "md:top-0 md:right-0 md:bottom-0 md:w-[328px] lg:w-[340px] xl:w-[352px] 2xl:w-[380px] md:max-h-full md:rounded-xl md:z-30",
             className
           )}
         >
@@ -381,29 +381,29 @@ export function ProjectInspectionDrawer({
           </div>
 
           {/* Desktop Control Bar */}
-          <div className="hidden md:flex items-center justify-between px-4 py-2.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/70 shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-scic-blue dark:bg-cyan-400 shadow-[0_0_8px_#0284C7] dark:shadow-[0_0_8px_#00E5FF]" />
-              <span className="text-[11px] font-mono tracking-wider font-bold uppercase text-scic-blue dark:text-cyan-400">
+          <div className="hidden md:flex items-center justify-between gap-2 px-3 py-2 border-b border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/70 shrink-0">
+            <div className="flex items-center gap-2 min-w-0 shrink-0">
+              <span className="h-2 w-2 rounded-full bg-scic-blue dark:bg-cyan-400 shadow-[0_0_8px_#0284C7] dark:shadow-[0_0_8px_#00E5FF] shrink-0" />
+              <span className="text-[11px] font-mono tracking-wider font-bold uppercase text-scic-blue dark:text-cyan-400 whitespace-nowrap">
                 PROJECT INTELLIGENCE
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               {(() => {
                 const v = verificationOf(project);
                 return (
                   <span
                     title={VERIFICATION_LABEL[v].hint}
                     className={cn(
-                      "inline-flex items-center gap-1 h-6 px-2 rounded-full border text-[10px] font-medium",
+                      "inline-flex items-center gap-1 h-6 px-2 rounded-full border text-[10px] font-medium whitespace-nowrap shrink-0",
                       v === "verified" && "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
                       v === "unconfirmed" && "border-amber-500/35 bg-amber-500/10 text-amber-700 dark:text-amber-300",
                       v === "listed" && "border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300"
                     )}
                   >
-                    {v === "verified" ? <BadgeCheck className="h-3 w-3" /> : <CircleHelp className="h-3 w-3" />}
-                    {VERIFICATION_LABEL[v].label}
+                    {v === "verified" ? <BadgeCheck className="h-3 w-3 shrink-0" /> : <CircleHelp className="h-3 w-3 shrink-0" />}
+                    <span>{VERIFICATION_LABEL[v].label}</span>
                   </span>
                 );
               })()}
@@ -413,7 +413,7 @@ export function ProjectInspectionDrawer({
                   onClick={onToggleCompare}
                   aria-pressed={isCompared}
                   className={cn(
-                    "p-1.5 rounded-lg border transition-colors cursor-pointer",
+                    "inline-flex items-center justify-center h-6 w-6 rounded-lg border transition-colors cursor-pointer shrink-0",
                     isCompared
                       ? "border-[#007B3E]/50 bg-[#007B3E]/15 text-[#007B3E] dark:text-emerald-300"
                       : "border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 dark:text-slate-300"
@@ -430,7 +430,7 @@ export function ProjectInspectionDrawer({
                   onClick={onToggleStar}
                   aria-pressed={isStarred}
                   className={cn(
-                    "p-1.5 rounded-lg border transition-colors cursor-pointer",
+                    "inline-flex items-center justify-center h-6 w-6 rounded-lg border transition-colors cursor-pointer shrink-0",
                     isStarred
                       ? "border-amber-400/50 bg-amber-400/15 text-amber-500"
                       : "border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 dark:text-slate-300"
@@ -441,14 +441,14 @@ export function ProjectInspectionDrawer({
                   <Star className={cn("h-3.5 w-3.5 transition-transform", isStarred && "fill-current scale-110")} />
                 </button>
               )}
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
-              aria-label="Close intelligence panel (Esc)"
-              title="Close panel (Esc)"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
+              <button
+                onClick={onClose}
+                className="inline-flex items-center justify-center h-6 w-6 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                aria-label="Close intelligence panel (Esc)"
+                title="Close panel (Esc)"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           </div>
 
@@ -474,7 +474,7 @@ export function ProjectInspectionDrawer({
           )}
 
           {/* Scrollable Intelligence Body (Directive 32: independent scroll container) */}
-          <div className="flex-1 overflow-y-auto overscroll-contain scic-scrollbar p-4 md:p-5 space-y-5">
+          <div className="flex-1 overflow-y-auto overscroll-contain scic-scrollbar p-3.5 space-y-4">
             {/* ============================================================
                 SECTION 1: PRIMARY IDENTITY HIERARCHY (Directive 6)
                 1. Project Name
@@ -486,14 +486,15 @@ export function ProjectInspectionDrawer({
                 7. Short Overview
                 ============================================================ */}
             <div className="space-y-2.5">
-              {/* Top Code Badge & Canonical Category Badge */}
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 text-[10px] font-mono font-bold text-scic-blue dark:text-sky-400">
+              {/* Top Code Badge, Canonical Category Badge & Status Badge (Single Aligned Row) */}
+              <div className="flex items-center justify-between gap-1.5 min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                  <span className="inline-flex items-center h-5 px-2 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 text-[10px] font-mono font-bold text-scic-blue dark:text-sky-400 whitespace-nowrap shrink-0">
                     {project.code}
                   </span>
                   <span
-                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-semibold tracking-wide uppercase border"
+                    title={catConfig.label}
+                    className="inline-flex items-center gap-1.5 h-5 px-2 rounded-md text-[10px] font-mono font-semibold tracking-wide uppercase border whitespace-nowrap truncate min-w-0"
                     style={{
                       backgroundColor: `${catConfig.color}18`,
                       borderColor: `${catConfig.color}40`,
@@ -510,41 +511,47 @@ export function ProjectInspectionDrawer({
                         dangerouslySetInnerHTML={{ __html: catConfig.svgInnerPath }}
                       />
                     </span>
-                    <span>{catConfig.label}</span>
+                    <span className="truncate">{catConfig.shortLabel}</span>
                   </span>
                 </div>
 
                 {/* Status Badge (Canonical Phase 2 status with restrained pulse) */}
                 <span
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold tracking-wide uppercase border",
+                    "inline-flex items-center gap-1.5 h-5 px-2 rounded-md text-[10px] font-mono font-bold tracking-wide uppercase border whitespace-nowrap shrink-0",
                     status.bgClass,
                     status.textClass,
                     status.borderClass
                   )}
                 >
                   {status.hasPulse ? (
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
                   ) : (
-                    <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70 shrink-0" />
                   )}
                   <span>{status.label}</span>
                 </span>
               </div>
 
               {/* Project Title */}
-              <h2 className="text-base md:text-lg font-bold font-sans tracking-tight text-slate-900 dark:text-white leading-snug">
+              <h2 className="text-base md:text-[17px] font-bold font-sans tracking-tight text-slate-900 dark:text-white leading-snug">
                 {project.name}
               </h2>
 
               {/* Primary Location */}
-              <div className="flex items-start gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-sans">
-                <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="leading-tight">
-                  {project.barangay ? `${project.barangay}, ` : ""}
-                  {project.municipality}, {project.province} &bull;{" "}
-                  <span className="text-slate-600 dark:text-slate-300 font-mono text-[11px]">{project.region}</span>
-                </span>
+              <div className="flex items-center justify-between gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-sans min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span className="leading-tight truncate">
+                    {project.barangay ? `${project.barangay}, ` : ""}
+                    {project.municipality}, {project.province}
+                  </span>
+                </div>
+                {project.region && (
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-mono text-[10px] whitespace-nowrap shrink-0">
+                    {project.region}
+                  </span>
+                )}
               </div>
 
               {/* Featured Project Image (Directives 10 & 11) */}
@@ -709,28 +716,28 @@ export function ProjectInspectionDrawer({
                 {/* 1. Center Action */}
                 <button
                   onClick={handleCenterOnProject}
-                  className="flex flex-col items-center justify-center p-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs"
+                  className="flex flex-col items-center justify-center px-1.5 py-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs min-w-0"
                   title="Re-center map camera on project coordinates"
                 >
-                  <Crosshair className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400 mb-1 group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-mono">Center</span>
+                  <Crosshair className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400 mb-1 group-hover:scale-110 transition-transform shrink-0" />
+                  <span className="text-[9.5px] font-mono whitespace-nowrap truncate max-w-full">Center</span>
                 </button>
 
                 {/* 2. Site View Action (Zoom in) */}
                 <button
                   onClick={handleSiteView}
-                  className="flex flex-col items-center justify-center p-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs"
+                  className="flex flex-col items-center justify-center px-1.5 py-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs min-w-0"
                   title="Zoom into project site level"
                 >
-                  <ZoomIn className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mb-1 group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-mono">Site View</span>
+                  <ZoomIn className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mb-1 group-hover:scale-110 transition-transform shrink-0" />
+                  <span className="text-[9.5px] font-mono whitespace-nowrap truncate max-w-full">Site View</span>
                 </button>
 
                 {/* 3. Satellite Action (Toggle) */}
                 <button
                   onClick={handleToggleSatellite}
                   className={cn(
-                    "flex flex-col items-center justify-center p-2 rounded-lg border transition-colors cursor-pointer text-center group shadow-2xs",
+                    "flex flex-col items-center justify-center px-1.5 py-2 rounded-lg border transition-colors cursor-pointer text-center group shadow-2xs min-w-0",
                     mapStyle === "SATELLITE"
                       ? "bg-scic-blue/20 border-scic-blue text-scic-blue dark:text-white font-bold"
                       : "bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white"
@@ -741,8 +748,8 @@ export function ProjectInspectionDrawer({
                       : "Toggle High-Resolution Satellite View"
                   }
                 >
-                  <Satellite className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 mb-1 group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-mono">
+                  <Satellite className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 mb-1 group-hover:scale-110 transition-transform shrink-0" />
+                  <span className="text-[9.5px] font-mono whitespace-nowrap truncate max-w-full">
                     {mapStyle === "SATELLITE" ? "Standard" : "Satellite"}
                   </span>
                 </button>
@@ -750,16 +757,16 @@ export function ProjectInspectionDrawer({
                 {/* 4. Copy Coordinates Action */}
                 <button
                   onClick={handleCopyCoords}
-                  className="flex flex-col items-center justify-center p-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs"
+                  className="flex flex-col items-center justify-center px-1.5 py-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group shadow-2xs min-w-0"
                   title="Copy WGS84 Latitude, Longitude"
                 >
                   {copiedCoords ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mb-1" />
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mb-1 shrink-0" />
                   ) : (
-                    <Copy className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 mb-1 group-hover:scale-110 transition-transform" />
+                    <Copy className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 mb-1 group-hover:scale-110 transition-transform shrink-0" />
                   )}
-                  <span className="text-[10px] font-mono">
-                    {copiedCoords ? "Copied" : "Copy Lat/Lng"}
+                  <span className="text-[9.5px] font-mono whitespace-nowrap truncate max-w-full">
+                    {copiedCoords ? "Copied" : "Copy Coords"}
                   </span>
                 </button>
 
@@ -768,11 +775,11 @@ export function ProjectInspectionDrawer({
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center justify-center p-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group col-span-2 sm:col-span-1 shadow-2xs"
+                  className="flex flex-col items-center justify-center px-1.5 py-2 rounded-lg bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition-colors cursor-pointer text-center group col-span-2 sm:col-span-1 shadow-2xs min-w-0"
                   title="Open external Google Maps directions for this site"
                 >
-                  <ExternalLink className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 mb-1 group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-mono">Open in Maps</span>
+                  <ExternalLink className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 mb-1 group-hover:scale-110 transition-transform shrink-0" />
+                  <span className="text-[9.5px] font-mono whitespace-nowrap truncate max-w-full">Open Maps</span>
                 </a>
               </div>
 
@@ -818,80 +825,95 @@ export function ProjectInspectionDrawer({
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   {project.metrics.capacity && (
-                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs flex flex-col justify-between min-w-0">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Capacity / Rating
                       </span>
-                      <span className="text-sm font-bold font-mono text-scic-blue dark:text-cyan-400 mt-0.5 block truncate">
+                      <span
+                        title={project.metrics.capacity}
+                        className="text-sm font-bold font-mono text-scic-blue dark:text-cyan-400 mt-1 block truncate"
+                      >
                         {project.metrics.capacity}
                       </span>
                     </div>
                   )}
 
                   {project.metrics.contractValue && (
-                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs flex flex-col justify-between min-w-0">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Investment Scope
                       </span>
-                      <span className="text-sm font-bold font-mono text-amber-600 dark:text-amber-400 mt-0.5 block truncate">
+                      <span
+                        title={project.metrics.contractValue}
+                        className="text-sm font-bold font-mono text-amber-600 dark:text-amber-400 mt-1 block truncate"
+                      >
                         {project.metrics.contractValue}
                       </span>
                     </div>
                   )}
 
                   {project.metrics.generationOutput && (
-                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs flex flex-col justify-between min-w-0">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Annual Output
                       </span>
-                      <span className="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block truncate">
+                      <span
+                        title={project.metrics.generationOutput}
+                        className="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1 block truncate"
+                      >
                         {project.metrics.generationOutput}
                       </span>
                     </div>
                   )}
 
                   {project.metrics.tunnelLength && (
-                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs flex flex-col justify-between min-w-0">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Tunnel Alignment
                       </span>
-                      <span className="text-sm font-bold font-mono text-rose-600 dark:text-rose-400 mt-0.5 block truncate">
+                      <span
+                        title={project.metrics.tunnelLength}
+                        className="text-sm font-bold font-mono text-rose-600 dark:text-rose-400 mt-1 block truncate"
+                      >
                         {project.metrics.tunnelLength}
                       </span>
                     </div>
                   )}
 
                   {project.metrics.roadLength && (
-                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs flex flex-col justify-between min-w-0">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Corridor Length
                       </span>
-                      <span className="text-sm font-bold font-mono text-sky-600 dark:text-sky-400 mt-0.5 block truncate">
+                      <span
+                        title={project.metrics.roadLength}
+                        className="text-sm font-bold font-mono text-sky-600 dark:text-sky-400 mt-1 block truncate"
+                      >
                         {project.metrics.roadLength}
                       </span>
                     </div>
                   )}
 
                   {project.metrics.workforcePeak && (
-                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-2.5 shadow-2xs flex flex-col justify-between min-w-0">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
                         Peak Workforce
                       </span>
-                      <span className="text-sm font-bold font-mono text-indigo-600 dark:text-indigo-300 mt-0.5 block truncate">
+                      <span className="text-sm font-bold font-mono text-indigo-600 dark:text-indigo-300 mt-1 block truncate">
                         {project.metrics.workforcePeak.toLocaleString()} Personnel
                       </span>
                     </div>
                   )}
 
                   {project.metrics.safeManHours && (
-                    <div className="col-span-2 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-2.5 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div className="col-span-2 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-2.5 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
                         <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                        <div>
+                        <div className="min-w-0">
                           <span className="text-[9px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block">
                             Safety Milestone Record
                           </span>
-                          <span className="text-xs font-bold font-mono text-emerald-900 dark:text-white">
+                          <span className="text-xs font-bold font-mono text-emerald-900 dark:text-white block truncate">
                             {project.metrics.safeManHours}
                           </span>
                         </div>
@@ -912,53 +934,53 @@ export function ProjectInspectionDrawer({
             {/* ============================================================
                 SECTION 4: TECHNICAL PROJECT LEDGER (Directives 22–26)
                 ============================================================ */}
-            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/60 p-3 space-y-3">
+            <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-atlas-sunken/60 p-3 space-y-2.5">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-1.5">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <Table className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400" />
-                  Technical Specification Ledger
+                  <Table className="h-3.5 w-3.5 text-scic-blue dark:text-cyan-400 shrink-0" />
+                  <span>Technical Specification Ledger</span>
                 </span>
-                <span className="text-[9px] font-mono text-slate-400">WGS84 Datum</span>
+                <span className="text-[9px] font-mono text-slate-400 shrink-0">WGS84 Datum</span>
               </div>
 
-              <div className="space-y-1.5 text-xs font-mono">
+              <div className="divide-y divide-slate-200/60 dark:divide-white/5 text-[11px] font-mono">
                 {/* Coordinates */}
-                <div className="flex items-center justify-between py-1 border-b border-slate-200/60 dark:border-white/5">
-                  <span className="text-slate-500 dark:text-slate-400">Coordinates (Lat, Lng)</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                <div className="grid grid-cols-[auto_1fr] items-baseline gap-3 py-1.5">
+                  <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">Coordinates</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold text-right truncate">
                     {project.coordinates.lat.toFixed(6)}, {project.coordinates.lng.toFixed(6)}
                   </span>
                 </div>
 
                 {/* Region & Island */}
-                <div className="flex items-center justify-between py-1 border-b border-slate-200/60 dark:border-white/5">
-                  <span className="text-slate-500 dark:text-slate-400">Island / Administrative Region</span>
-                  <span className="text-slate-800 dark:text-slate-200 font-sans text-right truncate max-w-[210px]">
+                <div className="grid grid-cols-[auto_1fr] items-baseline gap-3 py-1.5">
+                  <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">Island / Region</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-sans text-right truncate" title={`${project.islandGroup} • ${project.region}`}>
                     {project.islandGroup} &bull; {project.region}
                   </span>
                 </div>
 
                 {/* Province & Municipality */}
-                <div className="flex items-center justify-between py-1 border-b border-slate-200/60 dark:border-white/5">
-                  <span className="text-slate-500 dark:text-slate-400">Jurisdiction</span>
-                  <span className="text-slate-800 dark:text-slate-200 font-sans text-right truncate max-w-[210px]">
+                <div className="grid grid-cols-[auto_1fr] items-baseline gap-3 py-1.5">
+                  <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">Jurisdiction</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-sans text-right truncate" title={`${project.municipality}, ${project.province}`}>
                     {project.municipality}, {project.province}
                   </span>
                 </div>
 
                 {/* Barangay (Only if present) */}
                 {project.barangay && (
-                  <div className="flex items-center justify-between py-1 border-b border-slate-200/60 dark:border-white/5">
-                    <span className="text-slate-500 dark:text-slate-400">Barangay</span>
-                    <span className="text-slate-800 dark:text-slate-200 font-sans text-right">{project.barangay}</span>
+                  <div className="grid grid-cols-[auto_1fr] items-baseline gap-3 py-1.5">
+                    <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">Barangay</span>
+                    <span className="text-slate-800 dark:text-slate-200 font-sans text-right truncate">{project.barangay}</span>
                   </div>
                 )}
 
                 {/* Client / Owner Entity (Only if present) */}
                 {project.client && (
-                  <div className="flex items-center justify-between py-1 border-b border-slate-200/60 dark:border-white/5">
-                    <span className="text-slate-500 dark:text-slate-400">Contracting Client</span>
-                    <span className="text-slate-800 dark:text-slate-200 font-sans text-right font-medium truncate max-w-[210px]">
+                  <div className="grid grid-cols-[auto_1fr] items-baseline gap-3 py-1.5">
+                    <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">Client</span>
+                    <span className="text-slate-800 dark:text-slate-200 font-sans text-right font-medium truncate" title={project.client}>
                       {project.client}
                     </span>
                   </div>
@@ -966,9 +988,9 @@ export function ProjectInspectionDrawer({
 
                 {/* Timeline / Target COD (Only if present) */}
                 {(project.targetCodDate || project.completionYear) && (
-                  <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-500 dark:text-slate-400">Timeline / Completion Target</span>
-                    <span className="text-amber-600 dark:text-amber-400 text-right font-medium">
+                  <div className="grid grid-cols-[auto_1fr] items-baseline gap-3 py-1.5">
+                    <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">Target / Completion</span>
+                    <span className="text-amber-600 dark:text-amber-400 text-right font-medium truncate">
                       {project.targetCodDate
                         ? (() => {
                             const d = new Date(project.targetCodDate);

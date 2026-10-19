@@ -18,10 +18,18 @@ export interface SearchResultChunk {
  * Searches the indexed document chunks for the given query using pgvector cosine similarity.
  * Returns the top K results.
  */
+export interface SearchAccess {
+  /** May the caller see SITE_REPORT chunks (field-chat digests)? Default false. */
+  siteReports?: boolean;
+  /** May the caller see chunks marked restricted (injury / safety-event lines)? Default false. */
+  restricted?: boolean;
+}
+
 export async function searchChunks(
   query: string,
   projectId: string,
-  topK: number = 5
+  topK: number = 5,
+  access: SearchAccess = {}
 ): Promise<SearchResultChunk[]> {
   try {
     const queryEmbedding = await embedText(query);
@@ -34,11 +42,15 @@ export async function searchChunks(
               1 - ("embedding" <=> $1::vector) as similarity
        FROM "DocumentChunk"
        WHERE "projectId" = $2
+         AND ($4::boolean OR "sourceType" <> 'SITE_REPORT')
+         AND ($5::boolean OR "restricted" = false)
        ORDER BY "embedding" <=> $1::vector
        LIMIT $3`,
       vectorString,
       projectId,
-      topK
+      topK,
+      access.siteReports === true,
+      access.restricted === true
     );
 
     return results || [];

@@ -67,6 +67,17 @@ const nextConfig = {
         headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
       },
       {
+        // Twin v2 textures outside GLBs: the address carries ?v=<hash of the file>, like the models
+        source: "/textures/twin/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }],
+      },
+      {
+        // Twin v2 texture decoder, copied from three.js on install (scripts/twin/sync-vendor.mjs):
+        // it changes only when three.js is upgraded, so it is checked again daily
+        source: "/vendor/twin/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=2592000" }],
+      },
+      {
         source: "/project-images/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
       },
