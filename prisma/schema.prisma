@@ -68,6 +68,7 @@ model Project {
   documents           Document[]
   accomplishmentReports AccomplishmentReport[]
   dailyLogs           DailyLog[]
+  siteReports         SiteReport[]
   milestones          Milestone[]
   progressSnapshots   ProgressSnapshot[]
   maintenanceSchedules MaintenanceSchedule[]
@@ -771,6 +772,7 @@ model DocumentChunk {
   chunkIndex  Int      // position of this chunk within the source
   content     String   // the actual text content of this chunk
   embedding   Unsupported("vector(768)")?  // pgvector column, 768 dims for Gemini
+  restricted  Boolean  @default(false) // true = only SAFETY / PM / admin roles may retrieve it (e.g. injury reports)
   createdAt   DateTime @default(now())
   @@index([projectId, sourceType])
 }
@@ -779,6 +781,7 @@ enum ChunkSourceType {
   DOCUMENT
   KNOWLEDGE_ARTICLE
   EQUIPMENT_SPEC
+  SITE_REPORT
 }
 
 model AssistantConversation {
@@ -960,4 +963,24 @@ model NewsPost {
   @@index([pinned])
   @@index([category])
   @@index([deletedAt])
+}
+
+// ============================================================
+// Site report digests: redacted, structured daily reports from the field chat
+// ============================================================
+
+model SiteReport {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reportDate DateTime @db.Date // Asia/Manila calendar day the reports describe
+  hasSafety  Boolean  @default(false)
+  items      Json     // ReportItem[]: category, area, summary, equipment, quantity, status
+  text       String   // redacted digest text that is embedded and cited; contains no names or numbers, no safety events
+  safetyText String?  // injury / safety-event lines of the day; readable only by SAFETY / PM / admin roles
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([projectId, reportDate])
+  @@index([projectId, reportDate])
 }

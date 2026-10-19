@@ -190,3 +190,28 @@ export async function indexEquipmentSpec(equipmentId: string, projectId: string)
     console.error(`[RAG Indexer] Error indexing Equipment Spec ${equipmentId}:`, error);
   }
 }
+
+/**
+ * Indexes one redacted site-report digest (a day of field-chat reports). The text has already been
+ * through lib/viber/redact, so it holds no names or phone numbers. Injury and safety-event lines are indexed
+ * separately with restricted = true, so only SAFETY / PM / admin roles can retrieve them.
+ */
+export async function indexSiteReport(reportId: string, projectId: string, reportDate: string, text: string, restricted: boolean) {
+  try {
+    const chunks = chunkText(text, 350, 40);
+    await deleteChunks(reportId); // an empty text (no safety lines today) just clears any earlier chunks
+    for (let index = 0; index < chunks.length; index++) {
+      const content = chunks[index];
+      const embedding = await embedText(content);
+      const vectorString = `[${embedding.join(",")}]`;
+      const chunkId = crypto.randomUUID();
+      await prisma.$executeRaw`
+        INSERT INTO "DocumentChunk" ("id", "projectId", "sourceType", "sourceId", "sourceName", "chunkIndex", "content", "embedding", "restricted", "createdAt")
+        VALUES (${chunkId}, ${projectId}, ${ChunkSourceType.SITE_REPORT}::"ChunkSourceType", ${reportId}, ${`Site report ${reportDate}`}, ${index}, ${content}, ${vectorString}::vector, ${restricted}, NOW())
+      `;
+    }
+  } catch (error) {
+    console.error(`[RAG Indexer] Error indexing site report ${reportId}:`, error);
+    throw error;
+  }
+}

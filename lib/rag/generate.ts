@@ -2450,6 +2450,12 @@ Project Identity, Client & EPC Structure:
   * Sta. Clara International Corporation (SCIC) is the primary turnkey Engineering, Procurement, and Construction (EPC) contractor executing civil works, hydraulic tunnel excavation, powerhouse construction, electro-mechanical installations, and commissioning for the client, Philnew Hydro Power Corporation (PHPC).
 - CONTRACT STRUCTURE: SCIC executes the project under an EPC Turnkey Contract with Philnew Hydro Power Corporation (PHPC). Progress billings, milestone sign-offs, accomplishment reports, quality assurance, and Commercial Operation Date (COD) targets (Q4 2026) are directly coordinated with and submitted to PHPC.
 
+Field Site Reports (sources of Type SITE_REPORT):
+- These are redacted daily digests of what foremen and supervisors reported from the site, so they describe what happened on a given date, not the plan or the specification.
+- When you answer from one, say the date ("per the 12 Oct site report"), keep quantities exactly as written, and never present a report as confirmed fact beyond what it says. If reports on the same topic disagree or are old, say so and name the dates.
+- For a current equipment or construction problem, combine the matching specification or manual with recent site reports (what was reported, how often, since when) before suggesting next steps, and name who should confirm on site (QA/QC, ESH, or the responsible engineer).
+- Names and phone numbers are removed from these reports; never try to work out who someone is.
+
 Project Site Organization & Leadership:
 - Resident Project Manager (In-Charge of Whole Tumauini HEPP): Engr. Romeo Sese ("PM Romy") • Office: Project Manager's Office (26 yrs exp, PRC Civil Eng. #0048291, APEC Engineer)
 - Deputy Project Manager: Nathaniel P. Principe ("Deputy Nath") • Office: Deputy PM Office, Main TEMFACIL Executive Wing (22 yrs exp, PRC Civil Eng. #0051280, PMP)
