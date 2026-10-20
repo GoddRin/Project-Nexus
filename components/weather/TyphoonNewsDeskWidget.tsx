@@ -44,6 +44,14 @@ const CHANNELS: { id: NewsChannelId; label: string; network: string; color: stri
   { id: "all", label: "All Bulletins", network: "Unified Chronological Feed", color: "from-indigo-600 to-purple-600" },
 ];
 
+const EMBLEM_RING: Record<StormThreatLevel, string> = {
+  RED: "rgba(239, 68, 68, 0.65)",
+  ORANGE: "rgba(245, 158, 11, 0.55)",
+  YELLOW: "rgba(234, 179, 8, 0.45)",
+  FAIR_DISTANT: "rgba(14, 165, 233, 0.4)",
+  NORMAL: "rgba(16, 185, 129, 0.35)",
+};
+
 export default function TyphoonNewsDeskWidget({
   className,
   defaultForceExpand,
@@ -99,8 +107,26 @@ export default function TyphoonNewsDeskWidget({
 
       // Set or update active video without interrupting ongoing user playback
       setActiveVideo((prev) => {
-        if (!prev) return data.featuredVideo || data.latestBulletins[0] || null;
-        if (force && !isBackground) return data.featuredVideo || data.latestBulletins[0] || null;
+        // Guarantee DOST-PAGASA's latest official video when on the default PAGASA tab
+        const pagasaBest =
+          (data.featuredVideo?.channelId === "pagasa" ? data.featuredVideo : null) ||
+          data.channels.pagasa?.[0] ||
+          data.featuredVideo ||
+          data.latestBulletins[0] ||
+          null;
+
+        const channelVideos =
+          selectedChannel === "all"
+            ? data.latestBulletins
+            : data.channels[selectedChannel as Exclude<NewsChannelId, "all">] || [];
+
+        const targetVideo =
+          selectedChannel === "pagasa"
+            ? pagasaBest
+            : channelVideos[0] || data.featuredVideo || data.latestBulletins[0] || null;
+
+        if (!prev) return targetVideo;
+        if (force && !isBackground) return targetVideo;
         return prev;
       });
     } catch (err) {
@@ -218,10 +244,15 @@ export default function TyphoonNewsDeskWidget({
         className="px-4 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between gap-3 cursor-pointer select-none border-b border-slate-200/80 dark:border-white/10 hover:bg-slate-50/80 dark:hover:bg-white/[0.03] transition-colors relative group"
       >
         <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
-          {/* Orbital Doppler Radar Emblem */}
-          <div className="relative flex items-center justify-center p-2 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 dark:from-slate-900 dark:to-black border border-slate-700 dark:border-white/15 shadow-inner">
+          {/* Cyclone command tile: eye + hairline rim dynamically react to live threat level */}
+          <div
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#12283f] to-[#050c16] transition-all duration-500"
+            style={{
+              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 0 1px ${EMBLEM_RING[feed?.threatLevel ?? "NORMAL"]}, 0 8px 18px -8px rgba(0,0,0,0.7)`,
+            }}
+          >
             <BroadcastSatelliteIcon
-              size={30}
+              size={28}
               threatLevel={feed?.threatLevel}
               animated={true}
               className="text-white"

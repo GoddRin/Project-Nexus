@@ -12,12 +12,11 @@ import {
   Download,
   ChevronDown,
   ChevronUp,
-  Compass,
-  Radio,
   Info,
   X,
 } from "lucide-react";
 import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
+import { CycloneGlyph } from "@/components/weather/icons/CycloneGlyph";
 import { cn } from "@/lib/utils";
 import { PagasaSignalData } from "@/lib/weather/pagasa";
 import { RiverStation, DamStatus } from "@/lib/weather/riverbasin";
@@ -267,11 +266,30 @@ export default function TyphoonAnnouncementWidget({
                 : "bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
             )}
           >
-            {announcement.threatLevel === "RED" || announcement.threatLevel === "ORANGE" ? (
-              <ShieldAlert className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            ) : (
-              <Radio className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            )}
+            <CycloneGlyph
+              size={18}
+              eyeColor={
+                announcement.threatLevel === "RED"
+                  ? "#EF4444"
+                  : announcement.threatLevel === "ORANGE"
+                  ? "#F59E0B"
+                  : announcement.threatLevel === "FAIR_DISTANT"
+                  ? "#0EA5E9"
+                  : "#10B981"
+              }
+              spin={announcement.threatLevel === "RED" || announcement.threatLevel === "ORANGE"}
+              pulse={announcement.threatLevel === "RED" || announcement.threatLevel === "ORANGE"}
+              isSevere={announcement.threatLevel === "RED"}
+              className={
+                announcement.threatLevel === "RED"
+                  ? "text-red-400"
+                  : announcement.threatLevel === "ORANGE"
+                  ? "text-amber-400"
+                  : announcement.threatLevel === "FAIR_DISTANT"
+                  ? "text-sky-400"
+                  : "text-emerald-400"
+              }
+            />
           </div>
 
           <div className="min-w-0">
