@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import type { PagasaSignalData } from "@/lib/weather/pagasa";
 import dynamic from "next/dynamic";
 import { 
@@ -27,6 +26,7 @@ import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryW
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
 import { CycloneIcon, CycloneGlyph } from "@/components/weather/icons/CycloneGlyph";
+import { TcwsSignalPlate } from "@/components/weather/icons/TcwsSignalPlate";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -483,17 +483,11 @@ export default function PhilippinesWeatherClient({
               : "bg-flow-teal/10 border border-flow-teal/30 shadow-[0_4px_24px_rgba(31,182,166,0.1)]"
         )}>
           <div className="flex items-center gap-4">
-            <div className="relative flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl overflow-hidden shadow-2xl border border-amber-500/50 bg-black/90">
-              <Image
-                src="/images/weather/dost_pagasa_tcws_seal.jpg"
-                alt="DOST-PAGASA Tropical Cyclone Wind Signal Command Seal"
-                width={56}
-                height={56}
-                className="h-full w-full object-cover"
-                priority
-              />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 pointer-events-none" />
-            </div>
+            <TcwsSignalPlate
+              signalNumber={signalNumber || (isSignalHoisted ? 1 : 0)}
+              size={48}
+              isSevere={signalNumber >= 3 || (siteAlertStorm?.category?.toLowerCase().includes("super") ?? false)}
+            />
             <div>
               <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
                 {isSignalHoisted ? `PAGASA TROPICAL CYCLONE WIND SIGNAL (TCWS #${signalNumber})` : "ACTIVE SITE ALERT (PAR)"}
