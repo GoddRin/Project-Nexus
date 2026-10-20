@@ -9,6 +9,7 @@ interface BroadcastSatelliteIconProps {
   size?: number;
   threatLevel?: StormThreatLevel;
   animated?: boolean;
+  showReticle?: boolean;
 }
 
 const THREAT_PALETTE: Record<StormThreatLevel, { eye: string; glow: string }> = {
@@ -33,6 +34,7 @@ export default function BroadcastSatelliteIcon({
   size = 24,
   threatLevel = "NORMAL",
   animated = true,
+  showReticle,
 }: BroadcastSatelliteIconProps) {
   const tone = THREAT_PALETTE[threatLevel] ?? THREAT_PALETTE.NORMAL;
   const isParActive = threatLevel === "RED" || threatLevel === "ORANGE";
@@ -48,6 +50,7 @@ export default function BroadcastSatelliteIcon({
       spin={animated && isParActive}
       pulse={animated && isElevated}
       isSevere={isSevere}
+      showReticle={showReticle ?? size >= 20}
     />
   );
 }

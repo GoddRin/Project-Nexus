@@ -246,9 +246,21 @@ export default function TyphoonNewsDeskWidget({
         <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
           {/* Cyclone command tile: eye + hairline rim dynamically react to live threat level */}
           <div
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#12283f] to-[#050c16] transition-all duration-500"
+            className={cn(
+              "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] transition-all duration-500",
+              feed?.threatLevel === "RED"
+                ? "bg-gradient-to-br from-[#2b080c] to-[#0a0204]"
+                : feed?.threatLevel === "ORANGE"
+                ? "bg-gradient-to-br from-[#2b1805] to-[#0d0701]"
+                : "bg-gradient-to-br from-[#12283f] to-[#050c16]"
+            )}
             style={{
-              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 0 1px ${EMBLEM_RING[feed?.threatLevel ?? "NORMAL"]}, 0 8px 18px -8px rgba(0,0,0,0.7)`,
+              boxShadow:
+                feed?.threatLevel === "RED"
+                  ? "inset 0 1px 0 rgba(255,255,255,0.25), inset 0 0 0 1.5px rgba(239,68,68,0.7), 0 0 20px -2px rgba(239,68,68,0.45), 0 8px 18px -8px rgba(0,0,0,0.7)"
+                  : feed?.threatLevel === "ORANGE"
+                  ? "inset 0 1px 0 rgba(255,255,255,0.2), inset 0 0 0 1.5px rgba(245,158,11,0.7), 0 0 16px -2px rgba(245,158,11,0.35), 0 8px 18px -8px rgba(0,0,0,0.7)"
+                  : `inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 0 1px ${EMBLEM_RING[feed?.threatLevel ?? "NORMAL"]}, 0 8px 18px -8px rgba(0,0,0,0.7)`,
             }}
           >
             <BroadcastSatelliteIcon
@@ -263,6 +275,13 @@ export default function TyphoonNewsDeskWidget({
             <h2 className="text-sm sm:text-base font-bold font-display uppercase tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               <span>Philippine Weather Broadcast Desk</span>
             </h2>
+
+            {feed?.activeStormName && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-mono font-bold bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 animate-pulse shrink-0">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                <span>TC {feed.activeStormName} IN PAR</span>
+              </span>
+            )}
 
             <span
               className={cn(

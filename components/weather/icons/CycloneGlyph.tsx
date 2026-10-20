@@ -27,6 +27,8 @@ interface CycloneGlyphProps {
   pulse?: boolean;
   /** When true (e.g. Super Typhoon / TCWS #1+ inside PAR), renders a concentric eyewall radar boundary */
   isSevere?: boolean;
+  /** When true, renders cardinal geodetic compass reticle ticks (N, E, S, W) */
+  showReticle?: boolean;
   title?: string;
 }
 
@@ -43,6 +45,7 @@ export function CycloneGlyph({
   spin = false,
   pulse = false,
   isSevere = false,
+  showReticle = false,
   title,
 }: CycloneGlyphProps) {
   return (
@@ -59,19 +62,43 @@ export function CycloneGlyph({
     >
       {title ? <title>{title}</title> : null}
 
+      {/* Geodetic Cardinal Compass Reticle (N, E, S, W) */}
+      {showReticle && (
+        <g stroke="currentColor" strokeOpacity="0.3" strokeWidth="0.8" strokeLinecap="round">
+          <line x1="12" y1="0.6" x2="12" y2="2.2" />
+          <line x1="12" y1="21.8" x2="12" y2="23.4" />
+          <line x1="0.6" y1="12" x2="2.2" y2="12" />
+          <line x1="21.8" y1="12" x2="23.4" y2="12" />
+          <circle cx="12" cy="12" r="11" stroke="currentColor" strokeOpacity="0.12" fill="none" />
+        </g>
+      )}
+
       {/* Severe / Super Typhoon Eyewall Radar Boundary Ring */}
       {isSevere && (
-        <circle
-          cx="12"
-          cy="12"
-          r="10.8"
-          stroke={eyeColor}
-          strokeWidth="0.8"
-          strokeOpacity="0.35"
-          strokeDasharray="2.5 3"
-          className="animate-spin motion-reduce:animate-none"
-          style={{ ...VIEW_BOX_ORIGIN, animationDuration: "35s" }}
-        />
+        <g>
+          <circle
+            cx="12"
+            cy="12"
+            r="10.8"
+            stroke={eyeColor}
+            strokeWidth="0.8"
+            strokeOpacity="0.45"
+            strokeDasharray="2.5 3"
+            className="animate-spin motion-reduce:animate-none"
+            style={{ ...VIEW_BOX_ORIGIN, animationDuration: "25s" }}
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="8.5"
+            stroke={eyeColor}
+            strokeWidth="0.6"
+            strokeOpacity="0.3"
+            strokeDasharray="1.5 2.5"
+            className="animate-spin motion-reduce:animate-none"
+            style={{ ...VIEW_BOX_ORIGIN, animationDuration: "18s", animationDirection: "reverse" }}
+          />
+        </g>
       )}
 
       {/* Cyclonic Vortex Arms */}
@@ -79,7 +106,7 @@ export function CycloneGlyph({
         className={cn(spin && "animate-spin motion-reduce:animate-none")}
         style={{
           ...VIEW_BOX_ORIGIN,
-          animationDuration: spin ? "10s" : undefined,
+          animationDuration: spin ? (isSevere ? "7s" : "11s") : undefined,
         }}
       >
         {CYCLONE_ARM_PATHS.map((d, i) => (
@@ -92,32 +119,40 @@ export function CycloneGlyph({
         <circle
           cx="12"
           cy="12"
-          r={3.4}
+          r={3.6}
           stroke={eyeColor}
           strokeWidth="0.9"
-          strokeOpacity="0.8"
+          strokeOpacity="0.85"
           className="animate-ping motion-reduce:animate-none"
           style={{ ...VIEW_BOX_ORIGIN, animationDuration: "2.2s" }}
         />
       )}
 
-      {/* Core Eye Beacon */}
+      {/* Solid Eyewall Core */}
       <circle
         cx="12"
         cy="12"
-        r={2.2}
+        r={1.8}
         fill={eyeColor}
-        style={glow ? { filter: `drop-shadow(0 0 3.5px ${glow})` } : undefined}
+        style={{
+          filter: glow ? `drop-shadow(0 0 4px ${glow})` : undefined,
+        }}
       />
     </svg>
   );
 }
 
 /**
- * Standard nav icon component conforming to Lucide/React icon interface ({ className })
+ * Drop-in icon replacement for Lucide icon slots in navigation pillars and tabs.
  */
 export function CycloneIcon({ className }: { className?: string }) {
-  return <CycloneGlyph className={className} size={undefined} />;
+  return (
+    <CycloneGlyph
+      size={16}
+      className={cn("shrink-0", className)}
+      eyeColor="currentColor"
+      spin={false}
+      pulse={false}
+    />
+  );
 }
-
-export default CycloneGlyph;

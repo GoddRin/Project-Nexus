@@ -496,6 +496,7 @@ export default function PhilippinesWeatherClient({
                 spin={true}
                 pulse={true}
                 isSevere={signalNumber >= 3 || (siteAlertStorm?.category?.toLowerCase().includes("super") ?? false)}
+                showReticle={true}
                 className={signalNumber >= 3 ? "text-red-400" : signalNumber >= 1 ? "text-amber-400" : "text-flow-teal"}
               />
             </div>
@@ -548,7 +549,14 @@ export default function PhilippinesWeatherClient({
         <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
           <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
-              <CycloneIcon className="h-5 w-5 sm:h-6 sm:w-6 text-sky-400" />
+              <CycloneGlyph
+                size={24}
+                eyeColor="#38BDF8"
+                spin={false}
+                pulse={false}
+                showReticle={true}
+                className="text-sky-400"
+              />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
