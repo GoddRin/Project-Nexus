@@ -26,6 +26,7 @@ import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryW
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
 import { CycloneIcon, CycloneGlyph } from "@/components/weather/icons/CycloneGlyph";
+import { PagasaWindSignalBadge } from "@/components/weather/icons/PagasaWindSignalBadge";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -482,24 +483,11 @@ export default function PhilippinesWeatherClient({
               : "bg-flow-teal/10 border border-flow-teal/30 shadow-[0_4px_24px_rgba(31,182,166,0.1)]"
         )}>
           <div className="flex items-center gap-4">
-            <div className={cn(
-              "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border shadow-inner transition-all",
-              signalNumber >= 3
-                ? "bg-gradient-to-br from-red-950/80 to-black border-red-500/50 shadow-red-500/20"
-                : signalNumber >= 1
-                ? "bg-gradient-to-br from-amber-950/80 to-black border-amber-500/50 shadow-amber-500/20"
-                : "bg-gradient-to-br from-teal-950/80 to-black border-flow-teal/50 shadow-teal-500/20"
-            )}>
-              <CycloneGlyph
-                size={28}
-                eyeColor={signalNumber >= 3 ? "#EF4444" : signalNumber >= 1 ? "#F59E0B" : "#14B8A6"}
-                spin={true}
-                pulse={true}
-                isSevere={signalNumber >= 3 || (siteAlertStorm?.category?.toLowerCase().includes("super") ?? false)}
-                showReticle={true}
-                className={signalNumber >= 3 ? "text-red-400" : signalNumber >= 1 ? "text-amber-400" : "text-flow-teal"}
-              />
-            </div>
+            <PagasaWindSignalBadge
+              signalNumber={signalNumber || (isSignalHoisted ? 1 : 0)}
+              size={46}
+              isSevere={signalNumber >= 3 || (siteAlertStorm?.category?.toLowerCase().includes("super") ?? false)}
+            />
             <div>
               <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
                 {isSignalHoisted ? `PAGASA TROPICAL CYCLONE WIND SIGNAL (TCWS #${signalNumber})` : "ACTIVE SITE ALERT (PAR)"}

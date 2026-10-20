@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
-import { CycloneGlyph } from "@/components/weather/icons/CycloneGlyph";
+import { PlantSafetyDispatchBadge } from "@/components/weather/icons/PlantSafetyDispatchBadge";
 import { cn } from "@/lib/utils";
 import { PagasaSignalData } from "@/lib/weather/pagasa";
 import { RiverStation, DamStatus } from "@/lib/weather/riverbasin";
@@ -254,43 +254,11 @@ export default function TyphoonAnnouncementWidget({
         className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div
-            className={cn(
-              "w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 border",
-              announcement.threatLevel === "RED"
-                ? "bg-red-500/20 border-red-500/40 text-red-500 dark:text-red-400"
-                : announcement.threatLevel === "ORANGE"
-                ? "bg-amber-500/20 border-amber-500/40 text-amber-500 dark:text-amber-400"
-                : announcement.threatLevel === "FAIR_DISTANT"
-                ? "bg-sky-500/20 border-sky-500/40 text-sky-600 dark:text-sky-300"
-                : "bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
-            )}
-          >
-            <CycloneGlyph
-              size={18}
-              eyeColor={
-                announcement.threatLevel === "RED"
-                  ? "#EF4444"
-                  : announcement.threatLevel === "ORANGE"
-                  ? "#F59E0B"
-                  : announcement.threatLevel === "FAIR_DISTANT"
-                  ? "#0EA5E9"
-                  : "#10B981"
-              }
-              spin={announcement.threatLevel === "RED" || announcement.threatLevel === "ORANGE"}
-              pulse={announcement.threatLevel === "RED" || announcement.threatLevel === "ORANGE"}
-              isSevere={announcement.threatLevel === "RED"}
-              className={
-                announcement.threatLevel === "RED"
-                  ? "text-red-400"
-                  : announcement.threatLevel === "ORANGE"
-                  ? "text-amber-400"
-                  : announcement.threatLevel === "FAIR_DISTANT"
-                  ? "text-sky-400"
-                  : "text-emerald-400"
-              }
-            />
-          </div>
+          <PlantSafetyDispatchBadge
+            threatLevel={announcement.threatLevel}
+            size={34}
+            isSpeaking={isSpeaking}
+          />
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
