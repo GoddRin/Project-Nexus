@@ -13,17 +13,51 @@ import { HeroHeadline } from "./HeroHeadline";
 import { HeroSlideshow } from "./HeroSlideshow";
 import { LiveClock } from "./LiveClock";
 
+/** Capitalize the first letter of each word in a string: "harrold" -> "Harrold" */
+function capitalizeWord(word: string): string {
+  if (!word) return "";
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+function capitalizeWords(str: string): string {
+  if (!str) return "";
+  return str
+    .split(/\s+/)
+    .map(capitalizeWord)
+    .join(" ");
+}
+
 /** First name for the greeting: the Clerk profile, else the first word of the stored name, else "Team" */
 async function firstName(fallbackName?: string | null): Promise<string> {
   try {
     const user = await currentUser();
+    // 1. Clerk first name or username with capitalized first letter
     const name = user?.firstName?.trim() || user?.username?.trim();
-    if (name) return name;
+    if (name) return capitalizeWords(name);
+
+    // 2. If no first name is set in Clerk, check primary email (e.g. "harrold@gmail.com" -> "Harrold")
+    const email = user?.emailAddresses?.[0]?.emailAddress?.trim();
+    if (email) {
+      const local = email.split("@")[0].split(/[._]/)[0];
+      if (local) return capitalizeWord(local);
+    }
   } catch {
     // signed out, or Clerk unreachable
   }
-  const fromDb = fallbackName?.trim().split(/\s+/)[0];
-  return fromDb && !/@/.test(fromDb) ? fromDb : "Team";
+
+  // 3. Fallback from DB user record
+  if (fallbackName?.trim()) {
+    const clean = fallbackName.trim();
+    if (clean.includes("@")) {
+      const local = clean.split("@")[0].split(/[._]/)[0];
+      if (local) return capitalizeWord(local);
+    } else {
+      const first = clean.split(/\s+/)[0];
+      if (first) return capitalizeWord(first);
+    }
+  }
+
+  return "Team";
 }
 
 /**
