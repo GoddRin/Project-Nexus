@@ -588,7 +588,7 @@ export default function PhilippinesWeatherClient({
         siteWindSpeed={windSpeed}
         sitePressure={pressure}
         isInsidePar={isStormInsidePar}
-        defaultHidden={!isStormInsidePar && !isSignalHoisted}
+        defaultHidden={true}
       />
 
       {/* 1.3 PHILIPPINE TV WEATHER DESK (DOST-PAGASA, GMA, ABS-CBN, TV5) */}
