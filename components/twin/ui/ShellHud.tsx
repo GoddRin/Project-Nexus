@@ -126,8 +126,8 @@ export function ShellHud({ backend }: { backend: RendererBackend | null }) {
           ))}
         </select>
 
-        <Link href="/digital-twin" className="px-1 text-xs text-text-secondary underline-offset-2 hover:text-text-primary hover:underline">
-          Current twin
+        <Link href="/digital-twin?v=1" title="Switch to Legacy Architectural Model (v1)" className="px-1 text-xs text-text-secondary underline-offset-2 hover:text-text-primary hover:underline">
+          Legacy v1
         </Link>
       </div>
 
