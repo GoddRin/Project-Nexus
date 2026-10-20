@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
-import { PlantSafetyDispatchBadge } from "@/components/weather/icons/PlantSafetyDispatchBadge";
+import { HydroPowerLogo } from "@/components/shared/HydroPowerLogo";
 import { cn } from "@/lib/utils";
 import { PagasaSignalData } from "@/lib/weather/pagasa";
 import { RiverStation, DamStatus } from "@/lib/weather/riverbasin";
@@ -254,11 +254,9 @@ export default function TyphoonAnnouncementWidget({
         className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <PlantSafetyDispatchBadge
-            threatLevel={announcement.threatLevel}
-            size={34}
-            isSpeaking={isSpeaking}
-          />
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0c2a1c] to-[#04120a] border border-emerald-500/40 p-1.5 shadow-md overflow-hidden">
+            <HydroPowerLogo className="h-full w-full" size={28} />
+          </div>
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
