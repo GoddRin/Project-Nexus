@@ -34,6 +34,7 @@ import {
   Settings,
   Map,
 } from "lucide-react";
+import { CycloneIcon } from "@/components/weather/icons/CycloneGlyph";
 import { cn } from "@/lib/utils";
 import { HydroPowerLogo } from "./HydroPowerLogo";
 import { SafetyStreak } from "./SafetyStreak";
@@ -61,7 +62,7 @@ const ACCORDION_GROUPS = [
       { label: "Tickets", href: "/dashboard/tickets", icon: Ticket },
       { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
       { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
-      { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: Globe },
+      { label: "Philippines Weather", href: "/dashboard/weather/philippines", icon: CycloneIcon },
       { label: "SCIC National Map", href: "/dashboard/projects-map", icon: Globe },
       { label: "Regional Map", href: "/dashboard/regional-map", icon: Map },
       { label: "Incidents", href: "/dashboard/incidents", icon: ShieldAlert },

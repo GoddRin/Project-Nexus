@@ -7,7 +7,7 @@ import {
   Wind, 
   Droplet, 
   CloudRain, 
-  Compass, 
+  Gauge, 
   Activity, 
   AlertOctagon, 
   Map, 
@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryWidget";
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
+import { CycloneIcon } from "@/components/weather/icons/CycloneGlyph";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -102,7 +103,7 @@ const LAYER_BUTTONS: LayerButton[] = [
   { value: "wind", label: "Wind Flow", icon: Wind },
   { value: "rain", label: "Rain Forecast", icon: CloudRain },
   { value: "rainAccu", label: "Rain Accu.", icon: Droplet },
-  { value: "pressure", label: "Baro. Pressure", icon: Compass },
+  { value: "pressure", label: "Baro. Pressure", icon: Gauge },
   { value: "waves", label: "Sea Waves", icon: Waves },
   { value: "cloudsRain", label: "Clouds/Rain", icon: Cloud },
   { value: "temp", label: "Air Temp.", icon: Thermometer },
@@ -539,7 +540,7 @@ export default function PhilippinesWeatherClient({
         <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
           <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
-              <Compass className="h-5 w-5 sm:h-6 sm:w-6 text-sky-400" />
+              <CycloneIcon className="h-5 w-5 sm:h-6 sm:w-6 text-sky-400" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -555,7 +556,7 @@ export default function PhilippinesWeatherClient({
               </p>
               {pagasaSignals.tcName && (
                 <p className="mt-1.5 text-xs text-sky-300/90 font-medium">
-                  🌧️ <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
+                  <CloudRain className="inline-block h-3.5 w-3.5 -mt-0.5 mr-1 align-middle" /> <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
                 </p>
               )}
             </div>
@@ -663,7 +664,7 @@ export default function PhilippinesWeatherClient({
         <div className="p-5 rounded-2xl bg-bg-panel border border-border-hairline shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
           <div className="flex justify-between items-start">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Site Pressure (MSLP)</span>
-            <Compass className={cn("h-4 w-4 text-flow-teal", isConditionsRefreshing && "animate-pulse")} />
+            <Gauge className={cn("h-4 w-4 text-flow-teal", isConditionsRefreshing && "animate-pulse")} />
           </div>
           <div className="mt-2">
             <span className="font-display text-2xl font-bold tracking-tight text-text-primary font-mono">
@@ -793,7 +794,7 @@ export default function PhilippinesWeatherClient({
         <div className="xl:col-span-1 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-display font-semibold tracking-wide text-text-primary text-sm flex items-center gap-2">
-              <Compass className="h-4 w-4 text-flow-teal" /> Live Typhoon & Tropical Cyclone Tracker
+              <CycloneIcon className="h-4 w-4 text-flow-teal" /> Live Typhoon & Tropical Cyclone Tracker
             </h3>
           </div>
 
@@ -872,7 +873,7 @@ export default function PhilippinesWeatherClient({
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Compass className="h-4 w-4 text-flow-teal" />
+              <CycloneIcon className="h-4 w-4 text-flow-teal" />
               <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider">Typhoon Exposure</h4>
             </div>
             <p className="text-xs text-text-muted leading-relaxed">

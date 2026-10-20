@@ -553,7 +553,17 @@ function scoreAndFilterVideos(
 
       // Check for strict meteorological keywords
       for (const kw of STRICT_WEATHER_KEYWORDS) {
-        if (lower.includes(kw)) {
+        let isMatched = false;
+        if (kw === "baha") {
+          // Prevent false positive matching on "bahagya" / "bahagyang" (slightly)
+          isMatched = /\b(baha|binaha|pagbaha|nagbaha|bumaha|binabaha)\b/i.test(lower);
+        } else if (kw === "lpa") {
+          isMatched = /\blpa\b/i.test(lower);
+        } else {
+          isMatched = lower.includes(kw);
+        }
+
+        if (isMatched) {
           score += 20;
           matched.push(kw.toUpperCase());
         }
@@ -611,6 +621,11 @@ function scoreAndFilterVideos(
         if (aStorm && !bStorm) return -1;
         if (!aStorm && bStorm) return 1;
       }
+      // For PAGASA, when neither or both match the storm, sort by publication date (newest first)
+      if (a.channelId === "pagasa" && b.channelId === "pagasa") {
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      }
+
       // Otherwise sort by combined relevance and recency
       if (b.relevanceScore !== a.relevanceScore) {
         return b.relevanceScore - a.relevanceScore;
@@ -806,13 +821,21 @@ export async function getTyphoonNewsFeed(forceRefresh = false): Promise<TyphoonN
     ...channelVideos.tv5,
   ];
 
-  // Priority 1: Genuine Live Stream
-  const liveStream = allChannelVideos.find((v) => v.isLive);
-  if (liveStream) {
-    featuredVideo = liveStream;
+  // Priority 1: Genuine Live Stream from DOST-PAGASA (state authority takes first live precedence)
+  const pagasaLive = pagasaVideos.find((v) => v.isLive);
+  if (pagasaLive) {
+    featuredVideo = pagasaLive;
   }
 
-  // Priority 2: Active storm match from DOST-PAGASA
+  // Priority 2: Genuine Commercial Live Stream (only if active cyclone inside PAR)
+  if (!featuredVideo && hasStormInPar) {
+    const commercialLive = allChannelVideos.find((v) => v.channelId !== "pagasa" && v.isLive);
+    if (commercialLive) {
+      featuredVideo = commercialLive;
+    }
+  }
+
+  // Priority 3: Active storm match from DOST-PAGASA
   if (!featuredVideo && activeStormName) {
     const stormUpper = activeStormName.toUpperCase();
     const pagasaStormMatch = pagasaVideos.find((v) => {
@@ -830,7 +853,15 @@ export async function getTyphoonNewsFeed(forceRefresh = false): Promise<TyphoonN
     }
   }
 
-  // Priority 3: Active storm match from GMA / ABS-CBN / TV5
+  // Priority 4: DOST-PAGASA's latest official Public Weather Forecast / Briefing
+  // DOST-PAGASA is the state meteorological authority. Its latest morning/afternoon forecast
+  // is the authoritative primary anchor of the desk rather than commercial talk radio.
+  if (!featuredVideo && pagasaVideos.length > 0) {
+    featuredVideo = pagasaVideos[0];
+    isPAGASAFallbackForecast = true;
+  }
+
+  // Priority 5: Active storm match from commercial networks (only if DOST-PAGASA has no videos)
   if (!featuredVideo && activeStormName) {
     const stormUpper = activeStormName.toUpperCase();
     const commercialMatch = allChannelVideos.find((v) => {
@@ -849,10 +880,9 @@ export async function getTyphoonNewsFeed(forceRefresh = false): Promise<TyphoonN
     }
   }
 
-  // Priority 4: Fall back to DOST-PAGASA's latest public forecast or briefing
-  if (!featuredVideo && pagasaVideos.length > 0) {
-    featuredVideo = pagasaVideos[0];
-    isPAGASAFallbackForecast = true;
+  // Priority 6: Fall back to latest bulletin across any channel
+  if (!featuredVideo && allChannelVideos.length > 0) {
+    featuredVideo = allChannelVideos[0];
   }
 
   // 4. Create Unified Latest Bulletins (Top 12 across all channels sorted by freshness and relevance)
