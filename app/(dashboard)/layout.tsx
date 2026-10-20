@@ -9,6 +9,23 @@ import { getOrCreateUser } from "@/lib/auth/getOrCreateUser";
 
 export const dynamic = "force-dynamic";
 
+function formatDisplayName(name?: string | null): string {
+  if (!name) return "Visitor";
+  const trimmed = name.trim();
+  if (!trimmed) return "Visitor";
+  if (trimmed.includes("@")) {
+    const local = trimmed.split("@")[0].split(/[._]/).filter(Boolean);
+    if (local.length > 0) {
+      return local.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    }
+    return trimmed;
+  }
+  return trimmed
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -23,7 +40,7 @@ export default async function DashboardLayout({
     if (project) {
       const { dbUser, member } = await getOrCreateUser(project.id);
       if (member?.role) role = member.role;
-      if (dbUser?.name) userName = dbUser.name;
+      if (dbUser?.name) userName = formatDisplayName(dbUser.name);
       if (dbUser?.email) userEmail = dbUser.email;
     }
   } catch (err) {

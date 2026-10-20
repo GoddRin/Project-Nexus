@@ -1,0 +1,144 @@
+{
+ "label": "prod-chrome",
+ "base": "http://localhost:3100",
+ "browser": "chrome",
+ "forcedWebGL": false,
+ "when": "2026-10-13T11:56:57.751Z",
+ "start": {
+  "fps": 30.583293591632195,
+  "ms": 32.69759017300893,
+  "p95": 90.4000015258789,
+  "calls": 7,
+  "tris": 17370,
+  "programs": 11,
+  "textures": 19,
+  "geometries": 15,
+  "heapMB": 132.99172401428223,
+  "zonesLoaded": 0,
+  "agents": 0,
+  "gpuMB": 77.91445732116699,
+  "lights": 1,
+  "pixelRatio": 1,
+  "resolution": 1,
+  "streaming": {
+   "zonesLoaded": 0,
+   "zonesLoading": 0,
+   "instances": 0,
+   "lod": [
+    0,
+    0,
+    0
+   ],
+   "hidden": 0,
+   "draws": 0,
+   "tasksQueued": 0,
+   "longestTaskMs": 11.799999999813735,
+   "longestTaskKind": "pipeline"
+  },
+  "assets": {
+   "cached": 0,
+   "bytes": 0
+  },
+  "canvas": [
+   1184,
+   844
+  ],
+  "overviewCalls": 7,
+  "overviewTris": 17370
+ },
+ "streamIn": {
+  "median": 16.700000000000728,
+  "worst": 583.7000000000044,
+  "p95": 17.099999999998545,
+  "frames": 669,
+  "task": 24.299999999813735,
+  "kind": "instances",
+  "build": 14.799999999813735,
+  "builds": 25,
+  "program": 1,
+  "pipelines": 68,
+  "programs": 56
+ },
+ "probe": {
+  "tier": "medium",
+  "score": 1.771908374015509,
+  "remembered": false
+ },
+ "results": [
+  {
+   "name": "empty world: starting values",
+   "pass": true,
+   "detail": "overview 7 draw calls, 17370 triangles; from the far pose: GPU 77.9 MB, 19 textures, 15 geometries, 11 pipelines"
+  },
+  {
+   "name": "test zone streams in",
+   "pass": false,
+   "detail": "backend webgpu; page usable in 1380 ms, zone in 15558 ms later; 3134 placements of 16 assets (14749 KB)"
+  },
+  {
+   "name": "2,500 props in 15 draw calls or fewer",
+   "pass": false,
+   "detail": "74 draw calls for the zone (81 in all, 7 without it); 2486 props in view as LOD0/1/2 = 1/0/2485, 648 outside the view; 2166916 triangles"
+  },
+  {
+   "name": "near the props: all three LODs in use",
+   "pass": true,
+   "detail": "LOD0/1/2 = 10/399/1827, 898 outside the view or beyond the draw distance; 85 draw calls for the zone, 2528419 triangles, 33.4 fps"
+  },
+  {
+   "name": "still camera: no prop changes level",
+   "pass": true,
+   "detail": "0 changes of the LOD tally in 90 frames"
+  },
+  {
+   "name": "flying away unloads the zone; GPU memory within 5% of the start",
+   "pass": true,
+   "detail": "GPU 84.9 MB with the zone, 77.9 MB after, 77.9 MB at the start (0.0% apart); textures 19 against 19, geometries 15 against 15; 0 assets still cached"
+  },
+  {
+   "name": "streaming in: nothing holds the page for more than 8 ms",
+   "pass": false,
+   "detail": "longest streaming task 24.3 ms (instances); longest shader-build step in three.js 14.8 ms (25 builds); longest wait on the browser's shader compile 1.0 ms; 68 pipelines and 56 vertex programs in all. Zone back in 15032 ms over 669 frames; worst frame 583.7 ms, p95 17.1 ms, against 16.7 ms with nothing loading"
+  },
+  {
+   "name": "five loads and unloads: no growth",
+   "pass": true,
+   "detail": "GPU after each unload: 77.9, 77.9, 77.9, 77.9, 77.9 MB; textures 19, 19, 19, 19, 19; geometries 15, 15, 15, 15, 15; JS heap 127, 180, 221, 270, 293 MB"
+  },
+  {
+   "name": "shell stand-in: shown while the zone is out, hidden while it is in",
+   "pass": true,
+   "detail": "out {\"visible\":true,\"meshes\":1}, in {\"visible\":false,\"meshes\":1}, out again {\"visible\":true,\"meshes\":1}, removed true; 0 assets cached at the end (a prop stood in as the shell: no real shell asset exists yet)"
+  },
+  {
+   "name": "tiers set the pixel ratio",
+   "pass": true,
+   "detail": "on a 2x screen: low 1, medium 1.25, high 1.5, ultra 2; canvas 1184, 1480, 1776, 2368 px wide for 1184 CSS px"
+  },
+  {
+   "name": "dynamic resolution: down to 60% under slow frames, back to 100% when they are quick",
+   "pass": true,
+   "detail": "slow frames: scale 0.9 > 0.8 > 0.7 > 0.6, pixel ratio 0.75, canvas 888 px for 1184 CSS px; quick frames: scale 0.7 > 0.8 > 0.9 > 1, pixel ratio 1.25, canvas 1480 px"
+  },
+  {
+   "name": "dynamic resolution survives a window resize",
+   "pass": true,
+   "detail": "scale 0.9: pixel ratio 1.13 before, 1.13 after resizing from 1184 to 1044 CSS px"
+  },
+  {
+   "name": "start-up probe chooses a tier and remembers it",
+   "pass": true,
+   "detail": "first visit: score 1.77, tier medium, usable in 5085 ms; second visit: tier medium from memory, usable in 1651 ms; ?q= left out of the address (null)"
+  },
+  {
+   "name": "KTX2 textures on this renderer",
+   "pass": true,
+   "detail": "15 of 15 textures of the zone are compressed on the GPU, as BC7, 512 px with 10 mip levels"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": "none in any page of this run"
+  }
+ ]
+}

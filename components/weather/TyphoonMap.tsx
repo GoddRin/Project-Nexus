@@ -248,12 +248,11 @@ function createPastPointIcon() {
 }
 
 /**
- * Inline-SVG cyclone for the map pin. White arms on the category-coloured disc, and the eye is
- * knocked out to the disc colour, so it renders identically on every OS (no emoji).
+ * Inline SVG cyclone marker for the Leaflet map pin.
  */
-function cyclonePinSvg(eyeColor: string, size = 16) {
-  const arms = CYCLONE_ARM_PATHS.map((d) => `<path d="${d}" fill="#fff"/>`).join("");
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">${arms}<circle cx="12" cy="12" r="2.6" fill="${eyeColor}"/></svg>`;
+function cyclonePinSvg(eyeColor: string, size = 18) {
+  const arms = CYCLONE_ARM_PATHS.map((d) => `<path d="${d}" fill="#ffffff"/>`).join("");
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">${arms}<circle cx="12" cy="12" r="2.4" fill="${eyeColor}"/></svg>`;
 }
 
 interface TyphoonMapProps {
@@ -344,7 +343,7 @@ export default function TyphoonMap({
           html: `
             <div class="relative flex items-center justify-center">
               <div class="absolute w-12 h-12 rounded-full animate-ping" style="background-color: ${stormColor}; opacity: 0.18;"></div>
-              <div class="absolute w-9 h-9 rounded-full animate-pulse" style="background-color: ${stormColor}; opacity: 0.35;"></div>
+              <div class="absolute w-7 h-7 rounded-full animate-pulse" style="background-color: ${stormColor}; opacity: 0.35;"></div>
               <div class="w-7 h-7 rounded-full border-2 border-white shadow-xl flex items-center justify-center" style="background-color: ${stormColor};">
                 ${cyclonePinSvg(stormColor, 20)}
               </div>
@@ -441,7 +440,7 @@ export default function TyphoonMap({
             <Popup>
               <div className="p-2.5 text-slate-900 font-sans text-xs max-w-[260px]">
                 <div className="flex items-center gap-1.5 font-bold text-emerald-600 text-sm">
-                  <ShieldCheck className="h-4 w-4 shrink-0" />
+                  <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-500" />
                   <h4>Philippine Area of Responsibility (PAR)</h4>
                 </div>
                 <p className="text-slate-600 text-xs mt-1 leading-relaxed">
@@ -449,7 +448,7 @@ export default function TyphoonMap({
                 </p>
                 <div className="mt-2 text-[10px] bg-slate-100 p-2 rounded-lg border border-slate-200 text-slate-700 space-y-1">
                   <p className="font-bold text-slate-900 flex items-center gap-1">
-                    <Info className="h-3 w-3 shrink-0 text-sky-600" /> Meteorological Domain Scope:
+                    <Info className="h-3 w-3 shrink-0 text-sky-500" /> Meteorological Domain Scope:
                   </p>
                   <p className="text-slate-600 leading-normal">
                     The PAR is an operational weather forecasting zone, not a national territorial border. It intentionally covers Taiwan, Palau, and waters off northern Borneo to provide early alerts for developing cyclones and Habagat enhancements.
@@ -678,7 +677,7 @@ export default function TyphoonMap({
                   <div className="p-1 font-sans text-xs text-slate-100">
                     <div className="flex items-center justify-between gap-2 mb-1.5 border-b border-slate-700/80 pb-1">
                       <div className="flex items-center gap-1.5">
-                        <CycloneGlyph size={16} className="text-white" eyeColor="#4E9DC2" />
+                        <CycloneGlyph size={16} className="text-white" eyeColor="#38BDF8" />
                         <h4 className="font-bold text-sm text-white">
                           {storm.category === "Low Pressure Area" ? "Low Pressure Area" : `${storm.category} ${storm.name}`}
                         </h4>

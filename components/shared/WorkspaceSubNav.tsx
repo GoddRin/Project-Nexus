@@ -132,6 +132,12 @@ export function WorkspaceSubNav({
               />
               <span className="hidden md:inline">{item.label}</span>
               <span className="md:hidden">{item.shortLabel || item.label}</span>
+              {item.badge && (
+                <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30">
+                  <span className="h-1 w-1 rounded-full bg-red-500 mr-1 animate-pulse" />
+                  {item.badge}
+                </span>
+              )}
 
               <span
                 className={cn(

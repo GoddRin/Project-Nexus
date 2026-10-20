@@ -1,0 +1,142 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "dawn",
+  "time": "0548",
+  "weather": "clear",
+  "file": "verge-pair-dawn-verge-g12.jpg",
+  "backend": "webgpu",
+  "fps": 31.4,
+  "p95": 39.3,
+  "calls": 128,
+  "tris": 958422,
+  "programs": 113,
+  "lights": 4,
+  "gpuMB": 91.9,
+  "heapMB": 172,
+  "lod": [
+   31,
+   132,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "verge-pair-noon-verge-g12.jpg",
+  "backend": "webgpu",
+  "fps": 38.8,
+  "p95": 38.8,
+  "calls": 148,
+  "tris": 1159573,
+  "programs": 113,
+  "lights": 4,
+  "gpuMB": 87.5,
+  "heapMB": 204,
+  "lod": [
+   31,
+   132,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "golden",
+  "time": "1705",
+  "weather": "clear",
+  "file": "verge-pair-golden-verge-g12.jpg",
+  "backend": "webgpu",
+  "fps": 25.5,
+  "p95": 46.5,
+  "calls": 128,
+  "tris": 958422,
+  "programs": 114,
+  "lights": 4,
+  "gpuMB": 87.5,
+  "heapMB": 182,
+  "lod": [
+   31,
+   132,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "verge-pair-rain-verge-g12.jpg",
+  "backend": "webgpu",
+  "fps": 32.8,
+  "p95": 41.3,
+  "calls": 99,
+  "tris": 749921,
+  "programs": 113,
+  "lights": 4,
+  "gpuMB": 87.5,
+  "heapMB": 190,
+  "lod": [
+   31,
+   132,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "night",
+  "time": "2100",
+  "weather": "clear",
+  "file": "verge-pair-night-verge-g12.jpg",
+  "backend": "webgpu",
+  "fps": 30.9,
+  "p95": 40,
+  "calls": 128,
+  "tris": 958422,
+  "programs": 113,
+  "lights": 4,
+  "gpuMB": 91.9,
+  "heapMB": 204,
+  "lod": [
+   31,
+   132,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

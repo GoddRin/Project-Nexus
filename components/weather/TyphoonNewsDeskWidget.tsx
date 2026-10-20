@@ -44,13 +44,12 @@ const CHANNELS: { id: NewsChannelId; label: string; network: string; color: stri
   { id: "all", label: "All Bulletins", network: "Unified Chronological Feed", color: "from-indigo-600 to-purple-600" },
 ];
 
-/** Hairline ring colour of the desk emblem tile, keyed by storm threat level. */
 const EMBLEM_RING: Record<StormThreatLevel, string> = {
-  RED: "rgba(244, 82, 77, 0.55)",
-  ORANGE: "rgba(245, 165, 36, 0.5)",
-  YELLOW: "rgba(234, 196, 53, 0.45)",
-  FAIR_DISTANT: "rgba(78, 157, 194, 0.45)",
-  NORMAL: "rgba(35, 178, 109, 0.4)",
+  RED: "rgba(239, 68, 68, 0.65)",
+  ORANGE: "rgba(245, 158, 11, 0.55)",
+  YELLOW: "rgba(234, 179, 8, 0.45)",
+  FAIR_DISTANT: "rgba(14, 165, 233, 0.4)",
+  NORMAL: "rgba(16, 185, 129, 0.35)",
 };
 
 export default function TyphoonNewsDeskWidget({
@@ -245,11 +244,23 @@ export default function TyphoonNewsDeskWidget({
         className="px-4 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between gap-3 cursor-pointer select-none border-b border-slate-200/80 dark:border-white/10 hover:bg-slate-50/80 dark:hover:bg-white/[0.03] transition-colors relative group"
       >
         <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
-          {/* Cyclone emblem tile: eye + hairline ring carry the live threat colour */}
+          {/* Cyclone command tile: eye + hairline rim dynamically react to live threat level */}
           <div
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#12283f] to-[#050c16]"
+            className={cn(
+              "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] transition-all duration-500",
+              feed?.threatLevel === "RED"
+                ? "bg-gradient-to-br from-[#2b080c] to-[#0a0204]"
+                : feed?.threatLevel === "ORANGE"
+                ? "bg-gradient-to-br from-[#2b1805] to-[#0d0701]"
+                : "bg-gradient-to-br from-[#12283f] to-[#050c16]"
+            )}
             style={{
-              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 0 1px ${EMBLEM_RING[feed?.threatLevel ?? "NORMAL"]}, 0 8px 18px -8px rgba(0,0,0,0.7)`,
+              boxShadow:
+                feed?.threatLevel === "RED"
+                  ? "inset 0 1px 0 rgba(255,255,255,0.25), inset 0 0 0 1.5px rgba(239,68,68,0.7), 0 0 20px -2px rgba(239,68,68,0.45), 0 8px 18px -8px rgba(0,0,0,0.7)"
+                  : feed?.threatLevel === "ORANGE"
+                  ? "inset 0 1px 0 rgba(255,255,255,0.2), inset 0 0 0 1.5px rgba(245,158,11,0.7), 0 0 16px -2px rgba(245,158,11,0.35), 0 8px 18px -8px rgba(0,0,0,0.7)"
+                  : `inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 0 1px ${EMBLEM_RING[feed?.threatLevel ?? "NORMAL"]}, 0 8px 18px -8px rgba(0,0,0,0.7)`,
             }}
           >
             <BroadcastSatelliteIcon
@@ -264,6 +275,13 @@ export default function TyphoonNewsDeskWidget({
             <h2 className="text-sm sm:text-base font-bold font-display uppercase tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               <span>Philippine Weather Broadcast Desk</span>
             </h2>
+
+            {feed?.activeStormName && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-mono font-bold bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 animate-pulse shrink-0">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                <span>TC {feed.activeStormName} IN PAR</span>
+              </span>
+            )}
 
             <span
               className={cn(

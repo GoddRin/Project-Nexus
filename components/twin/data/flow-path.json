@@ -1,0 +1,141 @@
+{
+ "note": "v1 FLOW_PATH_POINTS (PlantScene.tsx line 231): the animated line from the surge tank through the penstock and both units to the switchyard, then along the road poles to the camp. v2's 'follow the water' path (P13) starts at the weir instead.",
+ "points": [
+  {
+   "p": [
+    -6,
+    20,
+    -30
+   ],
+   "label": "Dam Intake Headworks (Top Hillside)"
+  },
+  {
+   "p": [
+    -6,
+    17.5,
+    -26
+   ],
+   "label": "Upper Penstock Entry"
+  },
+  {
+   "p": [
+    -5,
+    11,
+    -16
+   ],
+   "label": "Penstock Mid Conduit"
+  },
+  {
+   "p": [
+    -4,
+    4.5,
+    -6
+   ],
+   "label": "Lower Penstock Bifurcation (Powerhouse Rear Wall)"
+  },
+  {
+   "p": [
+    -4,
+    6.2,
+    0
+   ],
+   "label": "Big Turbine #1 (TU-01)"
+  },
+  {
+   "p": [
+    4,
+    6.2,
+    0
+   ],
+   "label": "Small Turbine #2 (TU-02)"
+  },
+  {
+   "p": [
+    9.6,
+    8.4,
+    0
+   ],
+   "label": "Powerhouse East Wall IPB Busduct Exit Bushing"
+  },
+  {
+   "p": [
+    22,
+    4.8,
+    -3
+   ],
+   "label": "TR-GSU-01 Transformer Low-Voltage Bushing"
+  },
+  {
+   "p": [
+    26,
+    2.5,
+    6
+   ],
+   "label": "Site Industrial Diesel Generator (Genset Hub)"
+  },
+  {
+   "p": [
+    28,
+    7.95,
+    6
+   ],
+   "label": "Utility Pole P0 (Switchyard Verge)"
+  },
+  {
+   "p": [
+    37.5,
+    7.95,
+    0
+   ],
+   "label": "Utility Pole P1 (Lower Foothill Verge)"
+  },
+  {
+   "p": [
+    44.5,
+    7.963,
+    -14.5
+   ],
+   "label": "Utility Pole P2 (Lower S-Curve Verge)"
+  },
+  {
+   "p": [
+    52,
+    10.856,
+    -29
+   ],
+   "label": "Utility Pole P3 (Mid-Mountain Verge)"
+  },
+  {
+   "p": [
+    61,
+    20.286,
+    -43
+   ],
+   "label": "Utility Pole P4 (Upper Mountain Verge)"
+  },
+  {
+   "p": [
+    70.5,
+    21.897,
+    -56
+   ],
+   "label": "Utility Pole P5 (Plateau Approach Verge)"
+  },
+  {
+   "p": [
+    80.5,
+    20.965,
+    -70.5
+   ],
+   "label": "Utility Pole P6 (Gate Terminal Pole)"
+  },
+  {
+   "p": [
+    84,
+    15.35,
+    -83
+   ],
+   "label": "Temfacil Internal Utility Substation & Standby Genset"
+  }
+ ]
+}

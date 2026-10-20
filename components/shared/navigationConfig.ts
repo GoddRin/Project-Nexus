@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import { CycloneIcon } from "@/components/weather/icons/CycloneGlyph";
 import {
   LayoutDashboard,
   House,
@@ -112,7 +113,7 @@ export const VISITOR_PILLARS: NavItem[] = [
   {
     label: "PH Storm Monitor",
     href: "/dashboard/weather/philippines",
-    icon: CloudLightning,
+    icon: CycloneIcon,
     description: "Philippines Typhoon Monitor & Site Weather / Hydro",
     matchPrefixes: ["/dashboard/weather"],
   },
@@ -146,7 +147,7 @@ export const WORKSPACE_SUB_NAVS: WorkspaceSubNavGroup[] = [
     id: "weather-hydro-hub",
     title: "PH Storm & Site Hydro Monitor",
     items: [
-      { label: "PH Storm Monitor", shortLabel: "PH Monitor", href: "/dashboard/weather/philippines", icon: Globe },
+      { label: "PH Storm Monitor", shortLabel: "PH Monitor", href: "/dashboard/weather/philippines", icon: CycloneIcon },
       { label: "Site Weather & Hydro", shortLabel: "Site Weather", href: "/dashboard/weather", icon: CloudLightning },
     ],
   },
@@ -210,7 +211,7 @@ export const ADMIN_ACCORDION_GROUPS: AccordionNavGroup[] = [
       { label: "Tickets", href: "/dashboard/tickets", icon: Ticket },
       { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
       { label: "Weather", href: "/dashboard/weather", icon: CloudLightning },
-      { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: Globe },
+      { label: "Philippines Monitor", href: "/dashboard/weather/philippines", icon: CycloneIcon },
       { label: "Regional Map", href: "/dashboard/regional-map", icon: Map },
       { label: "Incidents", href: "/dashboard/incidents", icon: ShieldAlert },
     ],

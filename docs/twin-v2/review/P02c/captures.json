@@ -1,0 +1,198 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "dawn",
+  "time": "0548",
+  "weather": "clear",
+  "file": "gate-approach-dawn-g12.jpg",
+  "backend": "webgpu",
+  "fps": 24.5,
+  "p95": 43.1,
+  "calls": 138,
+  "tris": 921902,
+  "programs": 120,
+  "lights": 4,
+  "gpuMB": 92.4,
+  "heapMB": 183,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "morning",
+  "time": "0810",
+  "weather": "clear",
+  "file": "gate-approach-morning-g12.jpg",
+  "backend": "webgpu",
+  "fps": 26.8,
+  "p95": 49.2,
+  "calls": 110,
+  "tris": 734244,
+  "programs": 120,
+  "lights": 4,
+  "gpuMB": 88.1,
+  "heapMB": 194,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-approach-noon-g12.jpg",
+  "backend": "webgpu",
+  "fps": 27,
+  "p95": 41.8,
+  "calls": 166,
+  "tris": 1109560,
+  "programs": 120,
+  "lights": 4,
+  "gpuMB": 88.1,
+  "heapMB": 204,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "golden",
+  "time": "1705",
+  "weather": "clear",
+  "file": "gate-approach-golden-g12.jpg",
+  "backend": "webgpu",
+  "fps": 6.3,
+  "p95": 1016.1,
+  "calls": 138,
+  "tris": 921902,
+  "programs": 120,
+  "lights": 4,
+  "gpuMB": 88.1,
+  "heapMB": 184,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "dusk",
+  "time": "1758",
+  "weather": "clear",
+  "file": "gate-approach-dusk-g12.jpg",
+  "backend": "webgpu",
+  "fps": 19.6,
+  "p95": 53.5,
+  "calls": 166,
+  "tris": 1109560,
+  "programs": 118,
+  "lights": 4,
+  "gpuMB": 92.4,
+  "heapMB": 166,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "night",
+  "time": "2100",
+  "weather": "clear",
+  "file": "gate-approach-night-g12.jpg",
+  "backend": "webgpu",
+  "fps": 24.2,
+  "p95": 47.5,
+  "calls": 166,
+  "tris": 1109560,
+  "programs": 121,
+  "lights": 4,
+  "gpuMB": 92.4,
+  "heapMB": 212,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-approach",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-approach-rain-g12.jpg",
+  "backend": "webgpu",
+  "fps": 1.9,
+  "p95": 1017,
+  "calls": 139,
+  "tris": 1052374,
+  "programs": 113,
+  "lights": 4,
+  "gpuMB": 87.7,
+  "heapMB": 160,
+  "lod": [
+   19,
+   180,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

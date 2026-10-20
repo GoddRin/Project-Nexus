@@ -1,0 +1,425 @@
+{
+ "note": "Not loaded by the app. Every value here came from v1's code and is unconfirmed. A field moves into people.json `verified` only when the owner confirms it is real and cleared.",
+ "people": {
+  "PM_ROMEO_SESE": {
+   "licence": "PRC Civil Eng. #0048291 • APEC Engineer",
+   "yearsOfExp": 26,
+   "province": "Pampanga, Philippines",
+   "v1": {
+    "currentTask": "Overall Project Management & Directing Site Operations across Tumauini HEPP",
+    "locationName": "Project Manager's Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs overall project execution, contractor operations, government compliance, and multi-disciplinary engineering across all sectors of the Tumauini HEPP facility.",
+    "avatarUrl": "/images/personnel/pm_danilo_roxas.jpg"
+   }
+  },
+  "DEPUTY_NATHANIEL_PRINCIPE": {
+   "licence": "PRC Civil Engineer #0051280 • PMP Certified",
+   "yearsOfExp": 22,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Assisting Project Manager in daily contractor coordination, milestone tracking & field execution",
+    "locationName": "Deputy Project Manager's Office (Main TEMFACIL Executive Wing)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Oversees daily contractor coordination, field milestone progress, executive office reporting, and assists the Project Manager in site-wide operational control.",
+    "avatarUrl": "/images/personnel/deputy_nathaniel_principe.jpg"
+   }
+  },
+  "ENGR_NOEL_LAVAPIE": {
+   "licence": "PRC Professional Civil Engineer #0038914",
+   "yearsOfExp": 24,
+   "province": "Batangas, Philippines",
+   "v1": {
+    "currentTask": "Checking project emails (Submittals & RFIs), monitoring engineering team (CADD/BIM & Planning), and reviewing penstock longitudinal drawings",
+    "locationName": "Main Technical & Project Engineering Office (Lead Engineer Standing Station)",
+    "shift": "Day Shift (07:00 - 16:00) • Active Oversight",
+    "roleDescription": "Directs technical engineering operations: performs continuous oversight of project planning (Engr. May Ann), cost estimation (Engr. Cristine), and 3D CADD/BIM modeling (Sir Elbert & Sir Amor). Actively processes client email endorsements, submittal packages, variation orders, and structural methodology statements.",
+    "avatarUrl": "/images/personnel/engr_noel_lavapie_real.jpg"
+   }
+  },
+  "ENGR_ELGINE_MANGCUPANG": {
+   "licence": "PRC Registered Civil / Materials QA/QC Engineer #0091834",
+   "yearsOfExp": 12,
+   "province": "Mindoro, Philippines",
+   "v1": {
+    "currentTask": "Directing non-destructive testing (NDT), concrete compressive batch validation & electro-mechanical QA/QC inspection",
+    "locationName": "Site QA/QC Materials Testing Laboratory & Technical Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Heads the QA/QC engineering department, directing material compliance, structural inspection protocols, laboratory testing, and quality assurance certification.",
+    "avatarUrl": "/images/personnel/engr_maria_reyes.jpg"
+   }
+  },
+  "QC_JAIRUZ_BATAC": {
+   "licence": "PRC Registered Civil Engineer #0087431",
+   "yearsOfExp": 8,
+   "province": "Bulacan, Philippines",
+   "v1": {
+    "currentTask": "Conducting tunnel convergence rock bolt pull-out tests, shotcrete thickness verification & geotechnical QA/QC",
+    "locationName": "Headrace Tunnel Portal & Underground Quality Lab",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Inspects geotechnical stability, shotcrete application, rock bolt pullout resistance, and concrete lining quality in the headrace tunnel and surge tank works.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "QC_JIMMY_AQUINO": {
+   "licence": "PRC Registered Civil Engineer #0079204",
+   "yearsOfExp": 11,
+   "province": "Samar, Philippines",
+   "v1": {
+    "currentTask": "Performing pre-pour reinforcement inspections, slump testing & rebound hammer non-destructive testing",
+    "locationName": "Dam Spillway & Powerhouse Civil Structures Inspection Zone",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Conducts civil structural inspections, slump testing, Schmidt rebound hammer NDT tests, and verifies concrete cure specifications on the tailrace, powerhouse, and spillway.",
+    "avatarUrl": "/images/personnel/qc_jimmy_aquino.jpg"
+   }
+  },
+  "QC_JHON_JAYME": {
+   "licence": "PRC Civil Engineer Licensure Candidate • QA/QC Inspector",
+   "yearsOfExp": 4,
+   "province": "Caloocan, Philippines",
+   "v1": {
+    "currentTask": "Assisting QA/QC material sampling, concrete cylinder curing bath tests & field inspection logging",
+    "locationName": "Site QA/QC Field Testing Facility & Batch Plant",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Performs on-site batch plant sampling, concrete cylinder compressive strength tests, rebar tensile verifications, and aggregates sieve analysis at the testing lab.",
+    "avatarUrl": "/images/personnel/planning_may_parallag.jpg"
+   }
+  },
+  "PLANNING_MAY_PARALLAG": {
+   "licence": "PRC Civil Engineer #0098421 • Primavera P6 Specialist",
+   "yearsOfExp": 6,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Updating baseline Gantt schedules, critical path delay analysis & weekly S-curve generation",
+    "locationName": "Project Planning & Scheduling Technical Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Develops and maintains the Primavera/MS Project Master Schedule, tracking critical path milestones, look-ahead programs, and physical work accomplishment.",
+    "avatarUrl": "/images/personnel/planning_may_parallag.jpg"
+   }
+  },
+  "QS_JOHN_RICK_HERNAEZ": {
+   "licence": "PICQS Registered Quantity Surveyor",
+   "yearsOfExp": 10,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Leading BOQ taking-off, interim progress payment valuations & variation order claims",
+    "locationName": "Engineering Planning & Quantity Surveying Office (West Workstation)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Leads the quantity surveying and cost control unit: responsible for detailed BOQ taking-off, material rebar/concrete reconciliation, contractor payment certifications, and variation order pricing.",
+    "avatarUrl": "/images/personnel/qs_john_rick_hernaez.jpg"
+   }
+  },
+  "QS_CRISTINE_ALMAZAN": {
+   "licence": "Junior Cost Engineer / Quantity Surveyor",
+   "yearsOfExp": 4,
+   "province": "Tarlac, Philippines",
+   "v1": {
+    "currentTask": "Preparing quantity take-offs (QTO), subcontractor progress billings & cost evaluation sheets",
+    "locationName": "Engineering Planning & Quantity Surveying Office (Center Table Station)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Prepares detailed quantity take-offs (QTO), subcontractor progress billings, variation order evaluations, and cost estimation under Quantity Surveyor John Rick Hernaez.",
+    "avatarUrl": "/images/personnel/qs_cristine_almazan.jpg"
+   }
+  },
+  "SURVEYOR_JOHNNY_FARONGEY": {
+   "licence": "PRC Registered Geodetic Engineer #0062910",
+   "yearsOfExp": 15,
+   "province": "Baguio, Philippines",
+   "v1": {
+    "currentTask": "Executing precision GPS benchmark control, penstock axis layout & dam crest deformation monitoring",
+    "locationName": "Field Geodetic Survey Base & Topographical Command Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Leads geodetic control networks, topographic mapping, tunnel alignment laser sighting, penstock anchor layout, and high-precision deformation monitoring.",
+    "avatarUrl": "/images/personnel/surveyor_johnny_farongey.jpg"
+   }
+  },
+  "GEO_AMOR_FLORESCA": {
+   "licence": "PRC Registered Geologist #0004289",
+   "yearsOfExp": 11,
+   "province": "Baguio, Philippines",
+   "v1": {
+    "currentTask": "Conducting site geomapping, rock mass rating (RMR), joint discontinuity survey & core sample analysis with Schmidt rebound hammer and Brunton compass",
+    "locationName": "Mountain Slope Rock Cut (Geotechnical & RMR Station)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Serves as the site Geomapper and Engineering Geologist for the Tumauini HEPP project. Conducts geomapping, geodetic and topographical alignments, geological rock mass ratings (RMR/Q-system), joint patterns, fault zones, groundwater ingress, and slope stability across mountain cuts and tunnel headings.",
+    "avatarUrl": "/images/personnel/geo_amor_floresca.jpg"
+   }
+  },
+  "PCO_JONJON_BUCSIT": {
+   "licence": "DENR-EMB Accredited Pollution Control Officer (PCO) • Environmental Management Specialist",
+   "yearsOfExp": 14,
+   "province": "La Union, Philippines",
+   "v1": {
+    "currentTask": "Directing site environmental compliance, Pinacanauan river water quality & turbidity monitoring, hazardous waste management, and DENR Self-Monitoring Reports (SMR/CMR)",
+    "locationName": "TEMFACIL ESH Command & Environmental Operations Center (Pollution Control Desk)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Serves as the Pollution Control Officer (PCO) for Tumauini HEPP. Directs site-wide environmental compliance under DENR-EMB regulations, including Pinacanauan River water quality and turbidity sampling, sedimentation basin maintenance, hazardous waste disposal, environmental impact mitigation, and regular SMR/CMR statutory reporting.",
+    "avatarUrl": "/images/personnel/planning_may_parallag.jpg"
+   }
+  },
+  "DOC_JAYSON_AGGABAO": {
+   "licence": "ISO 9001:2015 Quality Management Document Control Specialist",
+   "yearsOfExp": 10,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Archiving approved submittals, transmittals, RFI logs & managing project drawing register",
+    "locationName": "Main Technical & Project Engineering Office (Document Control)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Controls official engineering transmittals, manages approved-for-construction (AFC) drawings, vendor submittals, QA/QC documentation, and technical archives.",
+    "avatarUrl": "/images/personnel/doc_jayson_aggabao.jpg"
+   }
+  },
+  "CAD_ELBERT_FIGURACION": {
+   "licence": "Autodesk Certified Professional (ACP) • CADD & Civil 3D Specialist",
+   "yearsOfExp": 12,
+   "province": "Laguna, Philippines",
+   "v1": {
+    "currentTask": "Drafting structural as-built revisions, penstock alignment detailing & updating civil CAD drawing submittals",
+    "locationName": "Main Technical & Project Engineering Office (CADD Workstation)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Generates 2D/3D structural shop drawings, rebar detailing cross-sections, structural steel BIM models (Tekla/Revit), and finite element layouts in STAAD.Pro and AutoCAD.",
+    "avatarUrl": "/images/personnel/cad_elbert_figuracion.jpg"
+   }
+  },
+  "CIVIL_JAIME_CANO": {
+   "licence": "PRC Civil Engineering Practitioner / Master Construction Supervisor",
+   "yearsOfExp": 17,
+   "province": "Cagayan Valley, Philippines",
+   "v1": {
+    "currentTask": "Supervising heavy concrete pouring, tunnel excavation & civil structures alignment",
+    "locationName": "Upper Cascade Dam & Powerhouse Civil Works Area",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Supervises civil structural execution, formwork installations, concrete pouring sequences, and heavy equipment allocation at the powerhouse and intake works.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "CIVIL_HENRY_ESTRADA": {
+   "licence": "PRC Civil Engineering Specialist / Master Concrete Pouring Supervisor",
+   "yearsOfExp": 18,
+   "province": "Pangasinan, Philippines",
+   "v1": {
+    "currentTask": "Managing dam spillway batching, formwork structural integrity & civil 4S safety compliance",
+    "locationName": "Dam Spillway Concrete Staging & Tailrace Civil Works",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs civil construction crews, concrete placement at the spillway outfall bank, and enforces 4S housekeeping and safe work staging standards.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "TUNNEL_RICHARD_PINASEN": {
+   "licence": "TESDA Certified Underground Drilling & Tunneling Specialist NC-III",
+   "yearsOfExp": 15,
+   "province": "Benguet (Cordillera), Philippines",
+   "v1": {
+    "currentTask": "Directing headrace tunnel drill-and-blast advance, shotcrete rock support & steel rib installation",
+    "locationName": "Headrace Tunnel Intake & Underground Penstock Section",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Leads underground drill-and-blast crews, tunnel mucking cycles, heading ventilation, and steel rib installation along the headrace tunnel alignment.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "TUNNEL_RUDY_MARCOS": {
+   "licence": "TESDA Master Tunneling & Underground Blasting Specialist NC-III",
+   "yearsOfExp": 16,
+   "province": "Benguet, Philippines",
+   "v1": {
+    "currentTask": "Directing daily mucking cycles, ventilation line extensions & tunnel lining steel set erection",
+    "locationName": "Headrace Tunnel Underground Drive & Adit Portal",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Supervises underground excavation advances, perimeter charging, scaling operations, and muck disposal staging at the tunnel adit portal.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "FOREMAN_ANTHONY_ROSALES": {
+   "licence": "TESDA Structural Formwork & Heavy Concreting NC-II",
+   "yearsOfExp": 14,
+   "province": "Batangas, Philippines",
+   "v1": {
+    "currentTask": "Coordinating powerhouse substructure concrete form setting and anchor bolt placement",
+    "locationName": "Powerhouse Substructure & Penstock Anchor Block #3",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs rebar fabrication, formwork alignment, and high-strength concrete pours for penstock anchor blocks, thrust pedestals, and civil foundations.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "WORKER_BENJAMIN_FOMEGAS": {
+   "licence": "TESDA Underground Mining & Hydraulic Jumbo Drill Operator NC-II",
+   "yearsOfExp": 13,
+   "province": "Mountain Province (Cordillera), Philippines",
+   "v1": {
+    "currentTask": "Operating twin-boom hydraulic jumbo drill rig for blast holes, rock bolt setting & wire mesh installation",
+    "locationName": "Headrace Tunnel Heading & Underground Excavation Portal",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Operates hydraulic jumbo drilling rigs, installs rock bolts, resin anchors, and applies fiber-reinforced shotcrete for underground rock support.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "ESH_ALFREDO_ARIZ": {
+   "licence": "DOLE-OSHC Certified Safety Officer 4 (SO4) #38102 • ECC Environmental Manager",
+   "yearsOfExp": 18,
+   "province": "Apayao, Philippines",
+   "v1": {
+    "currentTask": "Directing site-wide safety compliance, emergency response protocols & environmental mitigation",
+    "locationName": "ESH Command & Safety Operations Center (TEMFACIL Compound)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs site-wide safety policies, conducts hazard identification and risk assessments (HIRA), leads toolbox meetings, and ensures DOLE-OSHC compliance.",
+    "avatarUrl": "/images/personnel/esh_alfredo_ariz.jpg"
+   }
+  },
+  "NURSE_RUSSELLE_ALCANTARA": {
+   "licence": "PRC Registered Nurse #0074192 • DOLE BOSH Medical Practitioner",
+   "yearsOfExp": 10,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Conducting daily worker health screenings, emergency first-aid care & administering site clinic",
+    "locationName": "TEMFACIL Site Medical Clinic & Emergency First Aid Station",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Administers emergency medical response, occupational health surveillance, first aid station operations, vitals screening, and medical triage for all site personnel.",
+    "avatarUrl": "/images/personnel/nurse_russelle_alcantara.jpg"
+   }
+  },
+  "SEC_RONALD_MALTO": {
+   "licence": "PNP-SOSIA Licensed Security Practitioner #SO-2019-11204",
+   "yearsOfExp": 12,
+   "province": "Pangasinan, Philippines",
+   "v1": {
+    "currentTask": "Patrolling project perimeter, monitoring compound surveillance cameras & access logs",
+    "locationName": "Main TEMFACIL Security Gate & Perimeter Guardpost",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Controls site access security, manages visitor badges, conducts vehicle undercarriage inspections, and coordinates perimeter safety patrols.",
+    "avatarUrl": "/images/personnel/esh_alfredo_ariz.jpg"
+   }
+  },
+  "HR_ROVIGAIL_ABELLAR": {
+   "licence": "CHRP Certified Human Resources Professional",
+   "yearsOfExp": 8,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Leading the HR department, managing site timekeeping, employee relations, recruitment & onboarding",
+    "locationName": "Main TEMFACIL Human Resources Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Leads the Human Resources (HR) Department. Manages workforce timekeeping, payroll administration, employee relations, recruitment, onboarding, camp lodging logistics, and DOLE labor standards compliance.",
+    "avatarUrl": "/images/personnel/hr_rovigail_abellar.jpg"
+   }
+  },
+  "HR_JOSHUA_ADMIN": {
+   "licence": "Certified Public Administration Specialist",
+   "yearsOfExp": 6,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Leading Administration Department operations, logistical coordination, gate passes & office documentation",
+    "locationName": "Main TEMFACIL Administration Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Serves as the Site Admin Officer leading the Administration Department. Oversees general site administration, office management, project documentation records, gate pass authorizations, and administrative logistics.",
+    "avatarUrl": "/images/personnel/hr_joshua_admin.jpg"
+   }
+  },
+  "HR_RANDY_GAMBOA": {
+   "licence": "Administrative & Records Operations Specialist",
+   "yearsOfExp": 5,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Assisting site administrative operations, office records, supplies & documentation",
+    "locationName": "Main TEMFACIL Administration Office",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Serves as the Admin Assistant in the Administration Department. Supports general administrative duties, office records, supply requisitions, gate pass issuance, and documentation processing.",
+    "avatarUrl": "/images/personnel/hr_randy_gamboa_real.jpg"
+   }
+  },
+  "IT_MARC_SALVA": {
+   "licence": "CompTIA Network+ / Cisco CCNA / Systems Infrastructure Specialist",
+   "yearsOfExp": 7,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Managing site Starlink telemetry links, local server racks, SCADA network relays & IT workstations",
+    "locationName": "IT Operations & Telemetry Server Room (Main TEMFACIL)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Maintains site telemetry servers, microwave radio links, digital twin networks, biometric access systems, SCADA communications, and workstations.",
+    "avatarUrl": "/images/personnel/it_marc_salva.jpg"
+   }
+  },
+  "EQUIP_HOWELL_SAMSON": {
+   "licence": "TESDA Heavy Equipment Maintenance Assessor NC-III",
+   "yearsOfExp": 16,
+   "province": "Pampanga, Philippines",
+   "v1": {
+    "currentTask": "Directing preventive maintenance schedules, fuel logistics & equipment deployment across project",
+    "locationName": "Central Motorpool, Heavy Equipment Staging Yard & Fuel Depot",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Supervises heavy equipment fleet maintenance, diesel fuel distribution, preventative servicing schedules, and operator dispatch for excavators and haulers.",
+    "avatarUrl": "/images/personnel/equip_howell_samson.jpg"
+   }
+  },
+  "WAREHOUSE_VINCENT_ANDALLO": {
+   "licence": "Certified Supply Chain & Materials Inventory Specialist",
+   "yearsOfExp": 14,
+   "province": "Isabela, Philippines",
+   "v1": {
+    "currentTask": "Overseeing bulk cement shipments, rebar deliveries, spare parts inventory & warehouse issuance",
+    "locationName": "Central Warehouse, Rebar Staging Yard & Material Storage Compound",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Oversees central warehouse inventory, manages rebar and cement stock receipts, issues spare parts, and tracks material logistics with barcode systems.",
+    "avatarUrl": "/images/personnel/warehouse_vincent_andallo.jpg"
+   }
+  },
+  "MECH_ANDREW_SILVA": {
+   "licence": "Registered Mechanical Engineer (RME) #0074129",
+   "yearsOfExp": 12,
+   "province": "Cavite, Philippines",
+   "v1": {
+    "currentTask": "Supervising powerhouse turbine TU-01 scroll case installation, overhead crane load tests & penstock piping",
+    "locationName": "Main Technical & Project Engineering Office (Rear Mechanical Station)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs site mechanical operations and electromechanical equipment installation under Supt. Eugenio Hanopol. Supervises powerhouse turbine erection, overhead crane testing, penstock valve assemblies, and cooling water piping systems.",
+    "avatarUrl": "/images/personnel/mech_andrew_silva.jpg"
+   }
+  },
+  "SUPT_EUGENIO_HANOPOL": {
+   "licence": "PRC Professional Mechanical Engineer #0029410",
+   "yearsOfExp": 25,
+   "province": "Pampanga, Philippines",
+   "v1": {
+    "currentTask": "Reviewing mechanical P&ID diagrams, turbine layout submittals & coordinating powerhouse electro-mechanical installations",
+    "locationName": "Main Technical & Project Engineering Office (Mechanical Superintendent Desk)",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Supervises Francis turbine assembly, governor installations, inlet valve alignment, cooling water piping, and mechanical commissioning at the powerhouse.",
+    "avatarUrl": "/images/personnel/mech_eugenio_hanopol.jpg"
+   }
+  },
+  "SUPT_EDUARDO_DEFRANCIA": {
+   "licence": "PRC Registered Electrical Engineer #0044812 • Master Electrician",
+   "yearsOfExp": 23,
+   "province": "Pangasinan, Philippines",
+   "v1": {
+    "currentTask": "Directing 69kV switchyard construction, step-up transformer bay wiring & high-voltage relay testing",
+    "locationName": "69kV Switchyard & Powerhouse Electrical Control Room",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs 69kV switchyard installation, main GSU transformer testing, busduct erection, protection relays, and electrical interconnect systems.",
+    "avatarUrl": "/images/personnel/deputy_nathaniel_principe.jpg"
+   }
+  },
+  "ELEC_JOSUE_ABELLERA": {
+   "licence": "PRC Registered Electrical Practitioner #0065120",
+   "yearsOfExp": 16,
+   "province": "La Union, Philippines",
+   "v1": {
+    "currentTask": "Supervising cable ladder installation, generator feeder conduits & powerhouse auxiliary power distribution",
+    "locationName": "Powerhouse Electrical Invert & Cable Vaults",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Supervises cable tray routing, high-voltage power cable pulling, termination testing, switchgear wiring, and grounding grid installations.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  },
+  "FOREMAN_WARLITO_DEFRANCIA": {
+   "licence": "TESDA Building Wiring & Electrical Installation NC-II",
+   "yearsOfExp": 14,
+   "province": "Pangasinan, Philippines",
+   "v1": {
+    "currentTask": "Leading electrical roughing-ins, switchgear busbar connections & grounding grid installations",
+    "locationName": "Powerhouse Electrical Gallery & Control Room",
+    "shift": "Day Shift (07:00 - 16:00)",
+    "roleDescription": "Directs electrical crews in control panel termination, instrument wiring, conduit fitting, substation lighting, and auxiliary power distribution.",
+    "avatarUrl": "/images/personnel/civil_jaime_cano.jpg"
+   }
+  }
+ }
+}

@@ -25,7 +25,8 @@ import { cn } from "@/lib/utils";
 import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryWidget";
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
-import { CycloneIcon } from "@/components/weather/icons/CycloneGlyph";
+import { CycloneIcon, CycloneGlyph } from "@/components/weather/icons/CycloneGlyph";
+import { TacticalAlertOctagon } from "@/components/weather/icons/TacticalAlertOctagon";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -482,15 +483,11 @@ export default function PhilippinesWeatherClient({
               : "bg-flow-teal/10 border border-flow-teal/30 shadow-[0_4px_24px_rgba(31,182,166,0.1)]"
         )}>
           <div className="flex items-center gap-4">
-            <div className={cn(
-              "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border animate-pulse",
-              signalNumber >= 3 ? "bg-signal-red/20 border-signal-red/40" : signalNumber >= 1 ? "bg-signal-amber/20 border-signal-amber/40" : "bg-flow-teal/20 border-flow-teal/40"
-            )}>
-              <AlertOctagon className={cn(
-                "h-6 w-6",
-                signalNumber >= 3 ? "text-signal-red" : signalNumber >= 1 ? "text-signal-amber" : "text-flow-teal"
-              )} />
-            </div>
+            <TacticalAlertOctagon
+              signalNumber={signalNumber || (isSignalHoisted ? 1 : 0)}
+              size={48}
+              isSevere={signalNumber >= 3 || (siteAlertStorm?.category?.toLowerCase().includes("super") ?? false)}
+            />
             <div>
               <h2 className="font-display font-bold text-base text-text-primary flex items-center gap-2">
                 {isSignalHoisted ? `PAGASA TROPICAL CYCLONE WIND SIGNAL (TCWS #${signalNumber})` : "ACTIVE SITE ALERT (PAR)"}
@@ -540,7 +537,14 @@ export default function PhilippinesWeatherClient({
         <div className="w-full rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-sky-500/10 border border-sky-500/30 shadow-[0_4px_24px_rgba(14,165,233,0.1)] animate-fade-in">
           <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border bg-sky-500/20 border-sky-500/40">
-              <CycloneIcon className="h-5 w-5 sm:h-6 sm:w-6 text-sky-400" />
+              <CycloneGlyph
+                size={24}
+                eyeColor="#38BDF8"
+                spin={false}
+                pulse={false}
+                showReticle={true}
+                className="text-sky-400"
+              />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -556,7 +560,7 @@ export default function PhilippinesWeatherClient({
               </p>
               {pagasaSignals.tcName && (
                 <p className="mt-1.5 text-xs text-sky-300/90 font-medium">
-                  <CloudRain className="inline-block h-3.5 w-3.5 -mt-0.5 mr-1 align-middle" /> <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
+                  <CloudRain className="inline-block h-3.5 w-3.5 -mt-0.5 mr-1 align-middle text-sky-400" /> <span className="font-bold">Habagat (Southwest Monsoon) Advisory:</span> {pagasaSignals.tcCategory || "Typhoon"} {pagasaSignals.tcName} exited the PAR and continues to enhance monsoon rainfall over western sections of Luzon.
                 </p>
               )}
             </div>
@@ -584,7 +588,7 @@ export default function PhilippinesWeatherClient({
         siteWindSpeed={windSpeed}
         sitePressure={pressure}
         isInsidePar={isStormInsidePar}
-        defaultHidden={!isStormInsidePar && !isSignalHoisted}
+        defaultHidden={true}
       />
 
       {/* 1.3 PHILIPPINE TV WEATHER DESK (DOST-PAGASA, GMA, ABS-CBN, TV5) */}

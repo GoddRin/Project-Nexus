@@ -1,0 +1,30 @@
+[
+ {
+  "place": "gate-approach",
+  "name": "morning",
+  "time": "0926",
+  "weather": "clear",
+  "file": "line-morning-g20.jpg",
+  "backend": "webgpu",
+  "fps": 43.1,
+  "p95": 61.1,
+  "calls": 94,
+  "tris": 246262,
+  "programs": 41,
+  "lights": 1,
+  "gpuMB": 28.2,
+  "heapMB": 195,
+  "lod": [
+   28,
+   162,
+   9
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

@@ -3,6 +3,23 @@ import { prisma } from "@/lib/db/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { Role } from "@prisma/client";
 
+/** Capitalizes each word of a name: "harrold salva" -> "Harrold Salva" */
+function formatName(raw: string): string {
+  if (!raw) return raw;
+  const trimmed = raw.trim();
+  if (trimmed.includes("@")) {
+    const local = trimmed.split("@")[0].split(/[._]/).filter(Boolean);
+    if (local.length > 0) {
+      return local.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    }
+    return trimmed;
+  }
+  return trimmed
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 /**
  * The signed-in person's database user and their membership of a project, created on first
  * sight (as an EMPLOYEE). The layout, the page and its widgets all ask for this while one page
@@ -22,7 +39,8 @@ async function loadUser(projectId: string) {
 
   if (!found) {
     const email = clerkUser.emailAddresses[0]?.emailAddress || "unknown@projectnexus.dev";
-    const name = clerkUser.firstName ? `${clerkUser.firstName} ${clerkUser.lastName || ""}`.trim() : email;
+    const rawName = clerkUser.firstName ? `${clerkUser.firstName} ${clerkUser.lastName || ""}`.trim() : email;
+    const name = formatName(rawName);
     const created = await prisma.user.create({
       data: {
         clerkId,
@@ -42,6 +60,16 @@ async function loadUser(projectId: string) {
   }
 
   const { memberships, ...dbUser } = found;
+
+  // Auto-upgrade lowercase names to properly capitalized title case
+  if (dbUser.name) {
+    const formatted = formatName(dbUser.name);
+    if (formatted && formatted !== dbUser.name) {
+      dbUser.name = formatted;
+      prisma.user.update({ where: { id: dbUser.id }, data: { name: formatted } }).catch(() => {});
+    }
+  }
+
   let member = memberships[0] ?? null;
   if (!member) {
     member = await prisma.projectMember.create({

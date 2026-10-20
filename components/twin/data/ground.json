@@ -1,0 +1,103 @@
+{
+ "note": "Written by scripts/twin/build-ground-textures.mjs. Never edit by hand.",
+ "layers": [
+  {
+   "id": "road",
+   "sizeM": 1.5,
+   "cr": "/textures/twin/ground/road-cr.ktx2?v=22d356da02",
+   "nh": "/textures/twin/ground/road-nh.ktx2?v=36c233a2fa",
+   "credit": "polyhaven.red_dirt_mud_01",
+   "key": "f2a64ea822"
+  },
+  {
+   "id": "mud",
+   "sizeM": 2.25,
+   "cr": "/textures/twin/ground/mud-cr.ktx2?v=b3c76477c5",
+   "nh": "/textures/twin/ground/mud-nh.ktx2?v=242b83ea2b",
+   "credit": "polyhaven.muddy_tracks",
+   "key": "da41d01bd4"
+  },
+  {
+   "id": "grass",
+   "sizeM": 2,
+   "cr": "/textures/twin/ground/grass-cr.ktx2?v=618e15a1d4",
+   "nh": "/textures/twin/ground/grass-nh.ktx2?v=9477c479ed",
+   "credit": "polyhaven.leafy_grass",
+   "key": "79ac7b2eff"
+  },
+  {
+   "id": "litter",
+   "sizeM": 2.3,
+   "cr": "/textures/twin/ground/litter-cr.ktx2?v=49ac5797d3",
+   "nh": "/textures/twin/ground/litter-nh.ktx2?v=ca4bfa3de0",
+   "credit": "polyhaven.forest_leaves_03",
+   "key": "689737317d"
+  }
+ ],
+ "patches": {
+  "camp-gate": {
+   "mask": "/textures/twin/ground/camp-gate-mask.ktx2?v=4ac479d168",
+   "min": [
+    62,
+    -97.5
+   ],
+   "size": 60,
+   "key": "8df3da1885"
+  }
+ },
+ "array": {
+  "cr": "/textures/twin/ground/ground-cr.ktx2?v=6d4c61a1f0",
+  "n": "/textures/twin/ground/ground-n.ktx2?v=46514c8576",
+  "layers": [
+   {
+    "id": "litter",
+    "sizeM": 2.3,
+    "rough": 0.9,
+    "credit": "polyhaven.forest_leaves_03"
+   },
+   {
+    "id": "grass",
+    "sizeM": 2,
+    "rough": 0.85,
+    "credit": "polyhaven.leafy_grass"
+   },
+   {
+    "id": "laterite",
+    "sizeM": 1.5,
+    "rough": 0.82,
+    "credit": "polyhaven.red_dirt_mud_01"
+   },
+   {
+    "id": "mud",
+    "sizeM": 2.25,
+    "rough": 0.6,
+    "credit": "polyhaven.muddy_tracks"
+   },
+   {
+    "id": "gravel",
+    "sizeM": 2,
+    "rough": 0.88,
+    "credit": "polyhaven.gravel_floor_02"
+   },
+   {
+    "id": "cobbles",
+    "sizeM": 2.16,
+    "rough": 0.7,
+    "credit": "polyhaven.ganges_river_pebbles"
+   },
+   {
+    "id": "bedrock",
+    "sizeM": 3.2,
+    "rough": 0.78,
+    "credit": "polyhaven.rock_face"
+   },
+   {
+    "id": "shotcrete",
+    "sizeM": 2.4,
+    "rough": 0.86,
+    "credit": "polyhaven.rough_concrete"
+   }
+  ],
+  "key": "a8da023fe0"
+ }
+}

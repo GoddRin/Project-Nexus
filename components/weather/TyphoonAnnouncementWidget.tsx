@@ -12,12 +12,11 @@ import {
   Download,
   ChevronDown,
   ChevronUp,
-  Compass,
-  Radio,
   Info,
   X,
 } from "lucide-react";
 import BroadcastSatelliteIcon from "@/components/weather/icons/BroadcastSatelliteIcon";
+import { HydroPowerLogo } from "@/components/shared/HydroPowerLogo";
 import { cn } from "@/lib/utils";
 import { PagasaSignalData } from "@/lib/weather/pagasa";
 import { RiverStation, DamStatus } from "@/lib/weather/riverbasin";
@@ -255,23 +254,8 @@ export default function TyphoonAnnouncementWidget({
         className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div
-            className={cn(
-              "w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 border",
-              announcement.threatLevel === "RED"
-                ? "bg-red-500/20 border-red-500/40 text-red-500 dark:text-red-400"
-                : announcement.threatLevel === "ORANGE"
-                ? "bg-amber-500/20 border-amber-500/40 text-amber-500 dark:text-amber-400"
-                : announcement.threatLevel === "FAIR_DISTANT"
-                ? "bg-sky-500/20 border-sky-500/40 text-sky-600 dark:text-sky-300"
-                : "bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
-            )}
-          >
-            {announcement.threatLevel === "RED" || announcement.threatLevel === "ORANGE" ? (
-              <ShieldAlert className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            ) : (
-              <Radio className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            )}
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0c2a1c] to-[#04120a] border border-emerald-500/40 p-1.5 shadow-md overflow-hidden">
+            <HydroPowerLogo className="h-full w-full" size={28} />
           </div>
 
           <div className="min-w-0">

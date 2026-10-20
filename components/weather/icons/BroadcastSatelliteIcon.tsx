@@ -9,36 +9,37 @@ interface BroadcastSatelliteIconProps {
   size?: number;
   threatLevel?: StormThreatLevel;
   animated?: boolean;
+  showReticle?: boolean;
 }
 
-/** Eye colour + halo per threat level. */
-const THREAT_EYE: Record<StormThreatLevel, { eye: string; glow: string }> = {
-  RED: { eye: "#F4524D", glow: "rgba(244, 82, 77, 0.75)" },
-  ORANGE: { eye: "#F5A524", glow: "rgba(245, 165, 36, 0.7)" },
-  YELLOW: { eye: "#EAC435", glow: "rgba(234, 196, 53, 0.65)" },
-  FAIR_DISTANT: { eye: "#4E9DC2", glow: "rgba(78, 157, 194, 0.6)" },
-  NORMAL: { eye: "#23B26D", glow: "rgba(35, 178, 109, 0.6)" },
+const THREAT_PALETTE: Record<StormThreatLevel, { eye: string; glow: string }> = {
+  RED: { eye: "#EF4444", glow: "rgba(239, 68, 68, 0.9)" },
+  ORANGE: { eye: "#F59E0B", glow: "rgba(245, 158, 11, 0.8)" },
+  YELLOW: { eye: "#EAB308", glow: "rgba(234, 179, 8, 0.7)" },
+  FAIR_DISTANT: { eye: "#0EA5E9", glow: "rgba(14, 165, 233, 0.65)" },
+  NORMAL: { eye: "#10B981", glow: "rgba(16, 185, 129, 0.6)" },
 };
 
 /**
- * Weather Broadcast Desk emblem.
+ * Philippine Weather Broadcast Desk Emblem.
  *
- * A tropical-cyclone glyph whose eye carries the live threat colour. Motion is deliberate:
- * the arms only rotate when a cyclone is inside PAR (ORANGE / RED), and the eye only pulses
- * at elevated levels, so a calm desk stays calm. Everything honours prefers-reduced-motion.
- *
- * Kept under its original name so the Atlas header, news modal and announcement widget
- * pick up the new mark without further changes.
+ * Powered by the dynamic CycloneGlyph. Motion and eyewall indicators react directly
+ * to active Philippine tropical cyclone status:
+ * - RED / ORANGE: Active cyclone within PAR -> active vortex spin, eyewall beacon, severe radar ring
+ * - YELLOW: Distant / Monsoon watch -> gentle eye glow
+ * - NORMAL / FAIR: Static, clean precision vector
  */
 export default function BroadcastSatelliteIcon({
   className,
   size = 24,
   threatLevel = "NORMAL",
   animated = true,
+  showReticle,
 }: BroadcastSatelliteIconProps) {
-  const tone = THREAT_EYE[threatLevel] ?? THREAT_EYE.NORMAL;
-  const active = threatLevel === "RED" || threatLevel === "ORANGE";
-  const elevated = active || threatLevel === "YELLOW";
+  const tone = THREAT_PALETTE[threatLevel] ?? THREAT_PALETTE.NORMAL;
+  const isParActive = threatLevel === "RED" || threatLevel === "ORANGE";
+  const isElevated = isParActive || threatLevel === "YELLOW";
+  const isSevere = threatLevel === "RED";
 
   return (
     <CycloneGlyph
@@ -46,8 +47,10 @@ export default function BroadcastSatelliteIcon({
       className={className}
       eyeColor={tone.eye}
       glow={animated ? tone.glow : undefined}
-      spin={animated && active}
-      pulse={animated && elevated}
+      spin={animated && isParActive}
+      pulse={animated && isElevated}
+      isSevere={isSevere}
+      showReticle={showReticle ?? size >= 20}
     />
   );
 }

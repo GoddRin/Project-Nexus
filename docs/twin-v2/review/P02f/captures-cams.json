@@ -1,0 +1,282 @@
+[
+ {
+  "place": "gate-booth",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-booth-noon-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 27.6,
+  "p95": 68.8,
+  "calls": 226,
+  "tris": 891227,
+  "programs": 67,
+  "lights": 1,
+  "gpuMB": 65.1,
+  "heapMB": 217,
+  "lod": [
+   81,
+   168,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-booth",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-booth-rain-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 28.1,
+  "p95": 66,
+  "calls": 188,
+  "tris": 750094,
+  "programs": 66,
+  "lights": 1,
+  "gpuMB": 65,
+  "heapMB": 224,
+  "lod": [
+   81,
+   168,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-over",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-over-noon-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 34.1,
+  "p95": 66.5,
+  "calls": 182,
+  "tris": 570326,
+  "programs": 66,
+  "lights": 1,
+  "gpuMB": 65,
+  "heapMB": 222,
+  "lod": [
+   41,
+   261,
+   11
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-over",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-over-rain-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 31.9,
+  "p95": 72.6,
+  "calls": 147,
+  "tris": 486499,
+  "programs": 67,
+  "lights": 1,
+  "gpuMB": 89.1,
+  "heapMB": 207,
+  "lod": [
+   41,
+   261,
+   11
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-inside",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-inside-noon-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 35.3,
+  "p95": 62.5,
+  "calls": 190,
+  "tris": 706466,
+  "programs": 67,
+  "lights": 1,
+  "gpuMB": 65.1,
+  "heapMB": 226,
+  "lod": [
+   59,
+   167,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-inside",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-inside-rain-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 36.3,
+  "p95": 66.7,
+  "calls": 228,
+  "tris": 840815,
+  "programs": 67,
+  "lights": 1,
+  "gpuMB": 65.1,
+  "heapMB": 227,
+  "lod": [
+   59,
+   167,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-verge",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-verge-noon-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 40.7,
+  "p95": 61.8,
+  "calls": 182,
+  "tris": 744460,
+  "programs": 68,
+  "lights": 1,
+  "gpuMB": 65.1,
+  "heapMB": 230,
+  "lod": [
+   107,
+   49,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-verge",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-verge-rain-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 40.4,
+  "p95": 57.4,
+  "calls": 182,
+  "tris": 744460,
+  "programs": 67,
+  "lights": 1,
+  "gpuMB": 65.1,
+  "heapMB": 223,
+  "lod": [
+   107,
+   49,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-window",
+  "name": "noon",
+  "time": "1215",
+  "weather": "clear",
+  "file": "gate-window-noon-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 26.7,
+  "p95": 70.6,
+  "calls": 186,
+  "tris": 794456,
+  "programs": 67,
+  "lights": 1,
+  "gpuMB": 65,
+  "heapMB": 224,
+  "lod": [
+   111,
+   118,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ },
+ {
+  "place": "gate-window",
+  "name": "rain",
+  "time": "1400",
+  "weather": "rain",
+  "file": "gate-window-rain-cams-g12.jpg",
+  "backend": "webgpu",
+  "fps": 26.7,
+  "p95": 65.1,
+  "calls": 223,
+  "tris": 940935,
+  "programs": 66,
+  "lights": 1,
+  "gpuMB": 65,
+  "heapMB": 233,
+  "lod": [
+   111,
+   118,
+   0
+  ],
+  "zones": [
+   {
+    "id": "powerhouse.camp-gate",
+    "state": "in"
+   }
+  ],
+  "errors": []
+ }
+]

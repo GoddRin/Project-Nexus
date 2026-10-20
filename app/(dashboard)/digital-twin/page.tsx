@@ -1,8 +1,10 @@
 "use client";
 
+import { use } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { PlantSceneLoading } from "@/components/digital-twin/PlantSceneLoading";
-import { Box, ShieldCheck, Video } from "lucide-react";
+import { Box, ShieldCheck, Video, Sparkles } from "lucide-react";
 
 // Dynamically import PlantScene with ssr disabled for WebGL hydration safety
 const PlantScene = dynamic(
@@ -13,9 +15,35 @@ const PlantScene = dynamic(
   }
 );
 
+// Twin v2 (docs/twin-v2/) — Default 3D Digital Twin experience.
+const TwinApp = dynamic(() => import("@/components/twin/TwinApp"), {
+  ssr: false,
+  loading: () => <PlantSceneLoading />,
+});
+
 export const dynamicMode = "force-dynamic";
 
-export default function DigitalTwinPage() {
+/**
+ * /digital-twin mounts Twin v2 by default.
+ * Passing ?v=1 mounts the legacy v1 scene.
+ */
+export default function DigitalTwinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { v } = use(searchParams);
+  if (v === "1") {
+    return <DigitalTwinV1 />;
+  }
+  return (
+    <div className="-m-3.5 sm:-m-5 md:-m-6 -mb-24 md:-mb-6 relative h-[calc(100vh-3.5rem)] overflow-hidden">
+      <TwinApp />
+    </div>
+  );
+}
+
+function DigitalTwinV1() {
   return (
     <div className="-m-3.5 sm:-m-5 md:-m-6 -mb-24 md:-mb-6 flex h-[calc(100vh-3.5rem)] flex-col relative overflow-hidden bg-[var(--bg-base,#0B1013)] text-text-primary">
       {/* Floating Control Room HUD Header */}
@@ -42,6 +70,14 @@ export default function DigitalTwinPage() {
 
         {/* HUD Toolbar & Inspection Controls Guidance */}
         <div className="flex items-center gap-2 sm:gap-3 text-xs text-text-muted shrink-0">
+          <Link
+            href="/digital-twin"
+            className="flex items-center gap-1.5 rounded-lg border border-scic-green/40 bg-scic-green/10 px-2.5 py-1.5 font-mono text-[11px] font-semibold text-scic-green hover:bg-scic-green/20 transition-colors"
+            title="Return to Digital Twin v2 (Default)"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Twin v2 (Default)</span>
+          </Link>
           <div className="hidden lg:flex items-center gap-2 rounded-lg bg-slate-100/80 dark:bg-white/[0.04] px-3 py-1.5 border border-slate-200/60 dark:border-white/[0.06] font-mono text-[11px] text-text-secondary dark:text-text-muted">
             <Video className="h-3.5 w-3.5 text-scic-green dark:text-flow-teal" />
             <span>Orbit: Drag · Zoom: Pinch/Scroll</span>

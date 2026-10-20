@@ -1,0 +1,31 @@
+{
+ "id": "char.engineer.a",
+ "slot": "normal",
+ "rows": [
+  {
+   "trial": "uastc-rdo1-2k (as built)",
+   "kb": 1905,
+   "quality": "mean 0.98 deg, p99 6.88 deg"
+  },
+  {
+   "trial": "uastc-rdo4-2k",
+   "kb": 1644,
+   "quality": "mean 1.71 deg, p99 14.94 deg"
+  },
+  {
+   "trial": "uastc-rdo1-1k",
+   "kb": 534,
+   "quality": "mean 3.14 deg, p99 25.86 deg"
+  },
+  {
+   "trial": "etc1s-q255-2k",
+   "kb": 733,
+   "quality": "mean 1.69 deg, p99 12.31 deg"
+  },
+  {
+   "trial": "etc1s-q255-1k",
+   "kb": 237,
+   "quality": "mean 3.20 deg, p99 26.01 deg"
+  }
+ ]
+}
