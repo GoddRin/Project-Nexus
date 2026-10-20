@@ -26,7 +26,7 @@ import RiverBasinTelemetryWidget from "@/components/weather/RiverBasinTelemetryW
 import TyphoonAnnouncementWidget from "@/components/weather/TyphoonAnnouncementWidget";
 import TyphoonNewsDeskWidget from "@/components/weather/TyphoonNewsDeskWidget";
 import { CycloneIcon, CycloneGlyph } from "@/components/weather/icons/CycloneGlyph";
-import { TcwsSignalPlate } from "@/components/weather/icons/TcwsSignalPlate";
+import { TacticalAlertOctagon } from "@/components/weather/icons/TacticalAlertOctagon";
 
 import { isWithinPAR } from "@/lib/weather/gdacs";
 import { isRelevantToPhilippines } from "@/lib/weather/storms";
@@ -483,7 +483,7 @@ export default function PhilippinesWeatherClient({
               : "bg-flow-teal/10 border border-flow-teal/30 shadow-[0_4px_24px_rgba(31,182,166,0.1)]"
         )}>
           <div className="flex items-center gap-4">
-            <TcwsSignalPlate
+            <TacticalAlertOctagon
               signalNumber={signalNumber || (isSignalHoisted ? 1 : 0)}
               size={48}
               isSevere={signalNumber >= 3 || (siteAlertStorm?.category?.toLowerCase().includes("super") ?? false)}
