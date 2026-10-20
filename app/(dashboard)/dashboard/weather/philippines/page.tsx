@@ -84,7 +84,7 @@ export default async function PhilippinesWeatherPage() {
   const windyApiKey = process.env.NEXT_PUBLIC_WINDY_API_KEY || "";
 
   return (
-    <div className="relative max-w-7xl mx-auto space-y-6">
+    <div className="relative w-full max-w-[1680px] mx-auto space-y-6">
       <PageHeader
         title="Philippines Weather & Typhoon Monitor"
         subtitle="Regional satellite overlays, real-time PAGASA & JTWC tracking, and site alert matrix."

@@ -591,12 +591,9 @@ export default function PhilippinesWeatherClient({
         defaultHidden={true}
       />
 
-      {/* 1.3 PHILIPPINE TV WEATHER DESK (DOST-PAGASA, GMA, ABS-CBN, TV5) */}
-      <div id="tv-news-desk">
-        <TyphoonNewsDeskWidget />
-      </div>
-
-      {/* Developer helper toggle to preview mock/real data */}
+      {/* 2. OPERATIONAL TELEMETRY & VITAL KPIS */}
+      <div className="space-y-3">
+        {/* Developer helper toggle to preview mock/real data */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-bg-panel/40 border border-border-hairline p-3 sm:p-3.5 rounded-2xl gap-3">
         <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-2 bg-black/[0.03] dark:bg-white/[0.02] sm:bg-transparent px-2.5 py-1.5 sm:p-0 rounded-lg border border-border-hairline sm:border-0">
@@ -641,11 +638,7 @@ export default function PhilippinesWeatherClient({
           </button>
         </div>
       </div>
-
-      {/* 1.5 RIVER BASIN HYDRO TELEMETRY */}
-      <RiverBasinTelemetryWidget />
-
-      {/* 2. KPI CARDS ROW (4 cards) */}
+        {/* 2. KPI CARDS ROW (4 cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Wind speed at Tumauini — live, client-refreshed */}
         <div className="p-5 rounded-2xl bg-bg-panel border border-border-hairline shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
@@ -739,6 +732,7 @@ export default function PhilippinesWeatherClient({
           </div>
         </div>
       </div>
+      </div>
 
       {/* 3. MAIN MAP AREA (two-panel layout side by side) */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -775,7 +769,7 @@ export default function PhilippinesWeatherClient({
           </div>
 
           {/* Iframe element (cropped to hide watermarks) */}
-          <div className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-lg bg-card dark:bg-[#0B1418]">
+          <div className="relative w-full h-[580px] rounded-2xl overflow-hidden border border-border-hairline shadow-lg bg-card dark:bg-[#0B1418]">
             <iframe
               key={currentLayer} // Force iframe reload when overlay parameter updates
               src={getWindyEmbedUrl()}
@@ -805,11 +799,20 @@ export default function PhilippinesWeatherClient({
           <TyphoonMap
             storms={storms}
             lastUpdated={lastUpdated}
+            className="h-[580px]"
           />
         </div>
       </div>
 
-      {/* 4. STORM DETAILS PANEL */}
+      {/* 4. CAGAYAN RIVER BASIN HYDRO TELEMETRY */}
+      <RiverBasinTelemetryWidget />
+
+      {/* 5. PHILIPPINE TV WEATHER DESK (DOST-PAGASA, GMA, ABS-CBN, TV5) */}
+      <div id="tv-news-desk">
+        <TyphoonNewsDeskWidget />
+      </div>
+
+      {/* 6. STORM DETAILS & TACTICAL ANALYSIS BRIEFING */}
       <div id="storm-details" className="glass-card p-6 scroll-mt-6">
         <h3 className="text-base font-bold font-display text-text-primary flex items-center gap-2 mb-6">
           <AlertOctagon className="h-4 w-4 text-flow-teal" /> Tropical Cyclone Analysis Briefing
@@ -868,7 +871,7 @@ export default function PhilippinesWeatherClient({
         )}
       </div>
 
-      {/* 5. HISTORICAL TYPHOON CONTEXT */}
+      {/* 7. OPERATIONS REGIONAL CLIMATOLOGY CONTEXT */}
       <div className="glass-card p-6">
         <h3 className="text-base font-bold font-display text-text-primary flex items-center gap-2 mb-6">
           <Info className="h-4 w-4 text-flow-teal" /> Operations Regional Climatology Context

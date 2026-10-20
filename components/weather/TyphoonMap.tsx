@@ -258,6 +258,7 @@ function cyclonePinSvg(eyeColor: string, size = 18) {
 interface TyphoonMapProps {
   storms: Storm[];
   lastUpdated?: string | Date;
+  className?: string;
 }
 
 // Map controller — ensures default view frames the entire PAR domain
@@ -288,6 +289,7 @@ function MapInitializer({ storms }: { storms: Storm[] }) {
 export default function TyphoonMap({
   storms,
   lastUpdated,
+  className,
 }: TyphoonMapProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [showParBoundary, setShowParBoundary] = useState(true);
@@ -397,7 +399,7 @@ export default function TyphoonMap({
   const lastUpdate = getLastUpdateLabel();
 
   return (
-    <div ref={mapContainerRef} className="relative w-full h-[550px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner isolate z-0">
+    <div ref={mapContainerRef} className={cn("relative w-full h-[580px] rounded-2xl overflow-hidden border border-border-hairline shadow-inner isolate z-0", className)}>
       <MapContainer
         center={[14.8, 124.8]}
         zoom={4.6}
