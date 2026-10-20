@@ -126,8 +126,8 @@ export function AtlasDirectorySidebar({
   const listContainerRef = useRef<HTMLDivElement | null>(null);
   const directoryHeaderRef = useRef<HTMLDivElement | null>(null);
 
-  // Spotlight collapse & scroll management
-  const [isSpotlightCollapsed, setIsSpotlightCollapsed] = useState(false);
+  // Spotlight collapse & scroll management (default folded so search, filters, and project cards lead cleanly)
+  const [isSpotlightCollapsed, setIsSpotlightCollapsed] = useState(true);
   // A selected project owns the attention: fold the featured card away so the list is visible
   useEffect(() => {
     if (selectedProjectId) setIsSpotlightCollapsed(true);
@@ -252,12 +252,12 @@ export function AtlasDirectorySidebar({
   return (
     <aside
       className={cn(
-        "w-full lg:w-[390px] xl:w-[420px] h-full bg-white dark:bg-atlas-panel border border-slate-200 dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-sm shrink-0 transition-colors",
+        "w-full lg:w-[304px] xl:w-[316px] 2xl:w-[336px] h-full bg-white dark:bg-atlas-panel border border-slate-200 dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-sm shrink-0 transition-colors",
         className
       )}
     >
       {/* 0. Top Mode Switcher & Minimize Sidebar Control */}
-      <div className="flex items-center gap-1.5 px-3 pt-2.5 pb-1.5 shrink-0">
+      <div className="flex items-center gap-1.5 px-2.5 pt-2.5 pb-1.5 shrink-0">
         <div className="flex-1 flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-atlas-sunken border border-slate-200 dark:border-white/10">
           <button
             type="button"
@@ -320,7 +320,7 @@ export function AtlasDirectorySidebar({
         >
           {/* 1. Featured Project Spotlight (Phase 11: Grand Architectural Showcase) */}
           {featuredProjects.length > 0 && (
-            <div className="p-3 pb-2 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-atlas-sunken/30 shrink-0">
+            <div className="p-2.5 pb-2 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-atlas-sunken/30 shrink-0">
               <AtlasProjectSpotlight
                 featuredProjects={featuredProjects}
                 onExploreProject={(p) => onSelectProject(p.id)}
@@ -336,7 +336,7 @@ export function AtlasDirectorySidebar({
           {/* 2. Directory Section Header: Dynamic Result Count & View Mode Toggle (Positioned below spotlight) */}
           <div
             ref={directoryHeaderRef}
-            className="sticky top-0 z-20 flex items-center justify-between px-3.5 py-2.5 border-b border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-atlas-sunken/95 backdrop-blur-md transition-colors shrink-0 shadow-xs"
+            className="sticky top-0 z-20 flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-atlas-sunken/95 backdrop-blur-md transition-colors shrink-0 shadow-xs"
           >
             <div className="flex flex-col min-w-0 pr-2">
               <div className="flex items-center gap-1.5">
@@ -356,6 +356,17 @@ export function AtlasDirectorySidebar({
             </div>
 
             <div className="flex items-center gap-1.5 shrink-0">
+              {showBackToTop && (
+                <button
+                  type="button"
+                  onClick={handleScrollToTop}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-scic-blue/15 hover:bg-scic-blue/25 border border-scic-blue/30 text-scic-blue dark:text-sky-400 text-[10px] font-mono font-bold transition-colors cursor-pointer"
+                  title="Scroll back to top"
+                >
+                  <ChevronUp className="h-3 w-3" />
+                  <span>Top</span>
+                </button>
+              )}
               {/* View Mode Toggle */}
               <div
                 className="flex items-center p-0.5 rounded-md bg-slate-100 dark:bg-atlas-panel border border-slate-200 dark:border-white/10 transition-colors"
@@ -395,7 +406,7 @@ export function AtlasDirectorySidebar({
           </div>
 
       {/* 2. Structured Filter & Search Controls Panel */}
-      <div className="p-3 border-b border-slate-200 dark:border-white/10 space-y-2 bg-white dark:bg-atlas-panel transition-colors">
+      <div className="p-2.5 border-b border-slate-200 dark:border-white/10 space-y-2 bg-white dark:bg-atlas-panel transition-colors">
         {/* Instantaneous Search Input with Clear Action */}
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -418,7 +429,7 @@ export function AtlasDirectorySidebar({
         </div>
 
         {/* Status Filter Tabs (Canonical Phase 2 Statuses) */}
-        <div className="flex items-center gap-1 overflow-x-auto scic-scrollbar pb-0.5">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
           {(
             [
               { id: "ALL", label: "All" },
@@ -446,7 +457,7 @@ export function AtlasDirectorySidebar({
         </div>
 
         {/* Canonical Category Filter Chips */}
-        <div className="flex items-center gap-1 overflow-x-auto scic-scrollbar pt-0.5">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
           <button
             onClick={() => onCategoryChange("ALL")}
             aria-pressed={selectedCategory === "ALL"}
@@ -591,7 +602,7 @@ export function AtlasDirectorySidebar({
       </div>
 
       {/* 3. Directory Content: Cards List or Ledger Table View */}
-      <div className="p-3 space-y-2 flex-1">
+      <div className="p-2.5 space-y-2 flex-1">
         {projects.length === 0 ? (
           isLoading ? (
             <div className="space-y-2" aria-busy="true" aria-label="Loading projects">
@@ -748,21 +759,6 @@ export function AtlasDirectorySidebar({
           </>
         )}
       </div>
-
-      {/* Floating Quick Action: Jump Back to Top / Spotlight */}
-      {showBackToTop && (
-        <div className="sticky bottom-3 z-30 flex justify-center pointer-events-none mt-2 pb-1">
-          <button
-            type="button"
-            onClick={handleScrollToTop}
-            className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-scic-blue hover:bg-sky-700 text-white text-[11px] font-mono font-bold shadow-lg shadow-scic-blue/40 transition-all cursor-pointer active:scale-95 animate-in fade-in slide-in-from-bottom-2"
-            title="Scroll back to Spotlight"
-          >
-            <ChevronUp className="h-3.5 w-3.5" />
-            <span>Top / Spotlight</span>
-          </button>
-        </div>
-      )}
         </div>
       )}
     </aside>

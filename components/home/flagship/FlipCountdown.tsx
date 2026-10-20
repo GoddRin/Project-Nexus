@@ -10,10 +10,13 @@ const UNITS = [
   { key: "seconds", label: "Sec", ms: 1000, digits: 2 },
 ] as const;
 
-/** One split-flap digit: it flips each time its value changes (the keyed span re-runs the animation) */
+/**
+ * One split-flap digit: it flips each time its value changes (the keyed span re-runs the animation).
+ * On a phone the digit scales with the screen, so nine of them and three colons always fit the card.
+ */
 function Flap({ char }: { char: string }) {
   return (
-    <span className="home-flip h-10 w-7 font-mono text-xl font-semibold tabular-nums sm:h-14 sm:w-10 sm:text-[2rem]">
+    <span className="home-flip h-[clamp(2rem,10vw,2.5rem)] w-[clamp(1.125rem,6.5vw,1.75rem)] font-mono text-[clamp(0.95rem,5vw,1.25rem)] font-semibold tabular-nums sm:h-14 sm:w-10 sm:text-[2rem]">
       <span key={char}>{char}</span>
     </span>
   );
@@ -54,11 +57,11 @@ export function FlipCountdown({ target, className }: { target: string; className
   });
   const spoken = left === null ? "" : `${parts[0].text} days, ${parts[1].text} hours, ${parts[2].text} minutes`;
   return (
-    <div className={cn("flex items-start gap-1 sm:gap-3", className)} role="timer" aria-label={spoken ? `Time to the target date: ${spoken}` : "Time to the target date"}>
+    <div className={cn("flex max-w-full items-start gap-[clamp(0.125rem,1vw,0.25rem)] sm:gap-3", className)} role="timer" aria-label={spoken ? `Time to the target date: ${spoken}` : "Time to the target date"}>
       {parts.map((p, i) => (
         <React.Fragment key={p.key}>
           {i > 0 && (
-            <span aria-hidden className="pt-1.5 font-mono text-lg font-semibold text-text-muted sm:pt-3 sm:text-2xl">
+            <span aria-hidden className="pt-[clamp(0.2rem,1.4vw,0.375rem)] font-mono text-[clamp(0.9rem,4.4vw,1.125rem)] font-semibold leading-7 text-text-muted sm:pt-3 sm:text-2xl sm:leading-8">
               :
             </span>
           )}
@@ -68,7 +71,7 @@ export function FlipCountdown({ target, className }: { target: string; className
                 <Flap key={n} char={char} />
               ))}
             </div>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">{p.label}</span>
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted sm:tracking-[0.18em]">{p.label}</span>
           </div>
         </React.Fragment>
       ))}

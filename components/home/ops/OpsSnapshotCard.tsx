@@ -78,9 +78,12 @@ function ActivityRow({ item, now, isNew }: { item: OpsActivity; now: Date | null
  * safety streak counts calendar days from the company's stated last lost-time accident, or from
  * a later entry in the Incidents module; with neither on record it is not shown.
  */
+import { useMobileNav } from "@/components/shared/MobileNavContext";
+
 export function OpsSnapshotCard({ initial }: { initial: OpsSnapshot }) {
   const ref = useRef<HTMLElement>(null);
   const seen = useInView(ref, { once: true, amount: 0.3 });
+  const { isVisitorMode } = useMobileNav();
   const feed = useLiveFeed<OpsSnapshot>("/api/home/ops", CLIENT_REFRESH.ops, initial, {
     isStaleData: (d) => d.status.ok === false,
     updatedAtOf: (d) => d.status.updatedAt,
@@ -99,7 +102,120 @@ export function OpsSnapshotCard({ initial }: { initial: OpsSnapshot }) {
   const [known] = useState(() => new Set(initial.activity.map((a) => a.id)));
   // whole calendar days in the Philippines since that day
   const incidentDays =
-    ops.lastIncidentAt && now ? Math.max(0, Math.round((Date.parse(`${manilaDay(now)}T00:00:00Z`) - Date.parse(`${manilaDay(new Date(ops.lastIncidentAt))}T00:00:00Z`)) / 86_400_000)) : null;
+    ops.lastIncidentAt && now
+      ? Math.max(
+          0,
+          Math.round(
+            (Date.parse(`${manilaDay(now)}T00:00:00Z`) -
+              Date.parse(`${manilaDay(new Date(ops.lastIncidentAt))}T00:00:00Z`)) /
+              86_400_000
+          )
+        )
+      : null;
+
+  if (isVisitorMode) {
+    return (
+      <section
+        ref={ref}
+        aria-labelledby="home-ops-title"
+        className="glass-scic-card spotlight flex h-full min-h-[340px] min-w-0 flex-col justify-between p-4 md:p-5"
+      >
+        <div>
+          <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+            <div className="min-w-0">
+              <p className="home-eyebrow whitespace-nowrap">Tumauini HEPP</p>
+              <h2
+                id="home-ops-title"
+                className="mt-1 whitespace-nowrap font-display text-xl font-extrabold leading-none tracking-[-0.02em] text-text-primary"
+              >
+                Site Status & Safety
+              </h2>
+            </div>
+            <LivePulse
+              updatedAt={feed.updatedAt}
+              isRefreshing={feed.isRefreshing}
+              isStale={feed.isStale}
+              className="shrink-0"
+            />
+          </div>
+
+          <div className="mt-4 space-y-2.5">
+            {ops.lastIncidentAt && (
+              <Link
+                href={COMMAND_CENTER_HREF}
+                className="group flex items-center gap-3 rounded-xl border border-scic-green/30 bg-scic-green/[0.07] p-3.5 transition-colors hover:border-scic-green/55"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-scic-green/15 text-scic-green dark:text-scic-green-bright">
+                  <ShieldCheck className="h-5 w-5" aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-baseline gap-1.5 font-mono tabular-nums text-text-primary">
+                    <span className="text-2xl font-bold leading-none">
+                      {incidentDays === null ? "–" : seen ? <CountUp value={incidentDays} /> : 0}
+                    </span>
+                    <span className="text-xs text-text-secondary">
+                      day{incidentDays === 1 ? "" : "s"} LTI-Free
+                    </span>
+                  </span>
+                  <span className="mt-1 block text-xs leading-tight text-text-secondary">
+                    {ops.lastIncidentKind === "lta"
+                      ? "Without a lost-time accident"
+                      : "Since the last reported incident"}
+                  </span>
+                  <span className="mt-0.5 block font-mono text-[10px] text-text-muted">
+                    Since {shortDay(ops.lastIncidentAt)}
+                  </span>
+                </span>
+              </Link>
+            )}
+
+            <div className="grid grid-cols-2 gap-2.5">
+              <Link
+                href="/digital-twin"
+                className="group rounded-xl border border-border-hairline bg-bg-panel-subtle p-3 transition-colors hover:border-scic-green/40"
+              >
+                <span className="block font-mono text-[10px] font-bold uppercase tracking-wider text-scic-cyan">
+                  3D Simulation
+                </span>
+                <span className="mt-1 block font-display text-sm font-bold text-text-primary group-hover:text-scic-green dark:group-hover:text-scic-green-bright">
+                  Digital Twin
+                </span>
+                <span className="mt-0.5 block text-[11px] text-text-muted">
+                  11.3 MW Run-of-River
+                </span>
+              </Link>
+
+              <Link
+                href="/dashboard/projects-map"
+                className="group rounded-xl border border-border-hairline bg-bg-panel-subtle p-3 transition-colors hover:border-scic-green/40"
+              >
+                <span className="block font-mono text-[10px] font-bold uppercase tracking-wider text-scic-green dark:text-scic-green-bright">
+                  GIS Portfolio
+                </span>
+                <span className="mt-1 block font-display text-sm font-bold text-text-primary group-hover:text-scic-green dark:group-hover:text-scic-green-bright">
+                  Project Atlas
+                </span>
+                <span className="mt-0.5 block text-[11px] text-text-muted">
+                  National & Regional
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <Link
+          href={COMMAND_CENTER_HREF}
+          className="group mt-4 inline-flex items-center gap-1 pt-3 border-t border-border-subtle text-sm font-medium text-scic-green hover:text-scic-green-energy focus-visible:outline-none focus-visible:underline dark:text-scic-green-bright"
+        >
+          Open Command & Overview
+          <ArrowRight
+            className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+            aria-hidden
+          />
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <section ref={ref} aria-labelledby="home-ops-title" className="glass-scic-card spotlight h-full min-h-[340px] min-w-0 p-4 md:p-5">

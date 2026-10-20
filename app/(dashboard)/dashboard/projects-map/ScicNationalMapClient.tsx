@@ -756,10 +756,21 @@ function ScicNationalMapContent() {
   const avatarSlotRef = useRef<HTMLDivElement>(null);
 
   // ── Layout: one panel per side, the map resizes around a docked chat, focus mode ──
+  const rootRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
-  const [rowInsets, setRowInsets] = useState({ top: 56, right: 12, bottom: 12, left: 12 });
-  const [chatDock, setChatDock] = useState<{ rightDockWidth: number; dock: string; expanded: boolean }>({
+  const sidebarWrapperRef = useRef<HTMLDivElement>(null);
+  const [viewportFitHeight, setViewportFitHeight] = useState<number | null>(null);
+  const [rowInsets, setRowInsets] = useState({ top: 56, right: 12, bottom: 16, left: 12, mapLeft: 12 });
+  const [chatDock, setChatDock] = useState<{
+    rightDockWidth: number;
+    leftDockWidth?: number;
+    bottomDockHeight?: number;
+    dock: string;
+    expanded: boolean;
+  }>({
     rightDockWidth: 0,
+    leftDockWidth: 0,
+    bottomDockHeight: 0,
     dock: "RIGHT",
     expanded: false,
   });
@@ -768,30 +779,59 @@ function ScicNationalMapContent() {
 
   useEffect(() => {
     const el = rowRef.current;
-    if (!el) return;
+    const rootEl = rootRef.current;
+    if (!el || !rootEl) return;
+
+    const scrollParent = rootEl.closest("main");
+
     const measure = () => {
+      const isMobile = window.innerWidth < 768;
+      const mobileNavEl = isMobile ? document.querySelector('nav[aria-label="Mobile Navigation"]') : null;
+      const mobileNavH = mobileNavEl ? Math.round(mobileNavEl.getBoundingClientRect().height) : isMobile ? 60 : 0;
+      const bottomReserve = isMobile ? mobileNavH + 12 : 8;
+
+      const rootRect = rootEl.getBoundingClientRect();
+      const targetH = Math.max(420, Math.floor(window.innerHeight - rootRect.top - bottomReserve));
+      setViewportFitHeight((prev) => (prev !== null && Math.abs(prev - targetH) <= 1 ? prev : targetH));
+
       const r = el.getBoundingClientRect();
+      const sr = sidebarWrapperRef.current?.getBoundingClientRect();
+      const computedMapLeft = sr && sr.width > 0 ? Math.round(sr.right + 6) : Math.round(r.left);
+      const minBottom = isMobile ? mobileNavH + 10 : 8;
+
       const next = {
-        top: Math.round(r.top),
-        right: Math.round(window.innerWidth - r.right),
-        bottom: Math.round(window.innerHeight - r.bottom),
-        left: Math.round(r.left),
+        top: Math.max(56, Math.round(r.top)),
+        right: Math.max(8, Math.round(window.innerWidth - r.right)),
+        bottom: Math.max(minBottom, Math.round(window.innerHeight - r.bottom)),
+        left: Math.max(8, Math.round(r.left)),
+        mapLeft: Math.max(8, computedMapLeft),
       };
       setRowInsets((prev) =>
-        prev.top === next.top && prev.right === next.right && prev.bottom === next.bottom && prev.left === next.left
+        prev.top === next.top &&
+        prev.right === next.right &&
+        prev.bottom === next.bottom &&
+        prev.left === next.left &&
+        prev.mapLeft === next.mapLeft
           ? prev
           : next
       );
     };
+
     measure();
+    const raf = requestAnimationFrame(measure);
     const ro = new ResizeObserver(measure);
     ro.observe(el);
+    ro.observe(rootEl);
+    if (sidebarWrapperRef.current) ro.observe(sidebarWrapperRef.current);
     window.addEventListener("resize", measure);
+    scrollParent?.addEventListener("scroll", measure, { passive: true });
     return () => {
+      cancelAnimationFrame(raf);
       ro.disconnect();
       window.removeEventListener("resize", measure);
+      scrollParent?.removeEventListener("scroll", measure);
     };
-  }, [isFocusMode]);
+  }, [isFocusMode, isSidebarCollapsed]);
 
   // ── Presentation effects ──
   // Rain radar + typhoon tracks appear when the weather desk is opened and stay until dismissed
@@ -838,9 +878,13 @@ function ScicNationalMapContent() {
   }, [chatIsOpen]);
 
   const handleChatDockInfo = useCallback(
-    (info: { rightDockWidth: number; dock: string; expanded: boolean }) =>
+    (info: { rightDockWidth: number; leftDockWidth?: number; bottomDockHeight?: number; dock: string; expanded: boolean }) =>
       setChatDock((prev) =>
-        prev.rightDockWidth === info.rightDockWidth && prev.dock === info.dock && prev.expanded === info.expanded
+        prev.rightDockWidth === info.rightDockWidth &&
+        (prev.leftDockWidth ?? 0) === (info.leftDockWidth ?? 0) &&
+        (prev.bottomDockHeight ?? 0) === (info.bottomDockHeight ?? 0) &&
+        prev.dock === info.dock &&
+        prev.expanded === info.expanded
           ? prev
           : info
       ),
@@ -1248,13 +1292,33 @@ function ScicNationalMapContent() {
     !!selectedProject && !isFocusMode && !atlasAI.activeTour && (!bothRight || rightTab === "project");
   // During a guided tour the narration card owns the bottom of the map; the chat returns when it ends
   const hideChat = isFocusMode || !!atlasAI.activeTour || (bothRight && rightTab === "project");
-  const tabStripH = bothRight ? 40 : 0;
-  // Matches the project panel's responsive width (md 380 / lg 410 / xl 430)
+  const tabStripH = bothRight ? 36 : 0;
+  // Matches the project panel's responsive width (md 328 / lg 340 / xl 352 / 2xl 380)
   const projectPanelWidth =
-    typeof window === "undefined" ? 430 : window.innerWidth >= 1280 ? 430 : window.innerWidth >= 1024 ? 410 : window.innerWidth >= 768 ? 380 : 0;
+    typeof window === "undefined"
+      ? 352
+      : window.innerWidth >= 1536
+      ? 380
+      : window.innerWidth >= 1280
+      ? 352
+      : window.innerWidth >= 1024
+      ? 340
+      : window.innerWidth >= 768
+      ? 328
+      : 0;
+  const activeRightSlotWidth =
+    showProjectPanel && projectPanelWidth > 0
+      ? projectPanelWidth
+      : !hideChat && (chatDock.rightDockWidth > 0 || chatOnRight)
+      ? chatDock.rightDockWidth || projectPanelWidth
+      : 0;
 
   return (
-    <div className="atlas-theme flex flex-col gap-3 w-full h-[calc(100vh-5.5rem)] min-h-[640px] text-slate-900 dark:text-slate-100 transition-colors">
+    <div
+      ref={rootRef}
+      style={viewportFitHeight ? { height: `${viewportFitHeight}px` } : undefined}
+      className="atlas-theme flex flex-col gap-1.5 w-full h-[calc(100dvh-11.5rem)] md:h-[calc(100dvh-9.75rem)] min-h-[420px] text-slate-900 dark:text-slate-100 transition-colors"
+    >
       {/* 1. Top Executive Corporate Header */}
       {!isFocusMode && (
       <AtlasHeader
@@ -1269,13 +1333,15 @@ function ScicNationalMapContent() {
         currentStyle={mapStyle}
         onStyleChange={setMapStyle}
         onOpenNews={() => setIsNewsModalOpen(true)}
+        isAiOpen={atlasAI.isOpen}
+        onToggleAi={() => atlasAI.setIsOpen(!atlasAI.isOpen)}
       />
       )}
 
       {/* 2. Composition: Desktop Sidebar + Central Map + Mobile Drawers */}
-      <div ref={rowRef} className="flex-1 flex gap-3 min-h-0 relative overflow-hidden">
+      <div ref={rowRef} className="flex-1 flex gap-1.5 min-h-0 relative overflow-hidden">
         {/* Desktop Directory Sidebar (Left) */}
-        <div className={cn("hidden h-full", !isFocusMode && "lg:flex")}>
+        <div ref={sidebarWrapperRef} className={cn("hidden h-full", !isFocusMode && "lg:flex")}>
           <AtlasDirectorySidebar
             projects={sortedProjects}
             totalCount={activeProjects.length}
@@ -1320,8 +1386,15 @@ function ScicNationalMapContent() {
               : "flex-1 h-full relative rounded-xl border border-slate-200 dark:border-white/10"
           )}
           style={
-            !isFullscreen && chatDock.rightDockWidth > 0 && !hideChat
-              ? { marginRight: chatDock.rightDockWidth + 12 }
+            !isFullscreen
+              ? {
+                  marginRight: activeRightSlotWidth > 0 ? activeRightSlotWidth + 6 : undefined,
+                  marginLeft: !hideChat && (chatDock.leftDockWidth ?? 0) > 0 ? (chatDock.leftDockWidth ?? 0) + 6 : undefined,
+                  height:
+                    !hideChat && (chatDock.bottomDockHeight ?? 0) > 0
+                      ? `calc(100% - ${(chatDock.bottomDockHeight ?? 0) + 6}px)`
+                      : undefined,
+                }
               : undefined
           }
         >
@@ -1338,13 +1411,13 @@ function ScicNationalMapContent() {
             </button>
           )}
           {/* Mobile Pinned Search & Discovery Trigger Bar (< lg) */}
-          <div className="lg:hidden absolute top-3 left-3 right-16 z-30 flex items-center gap-2">
+          <div className="lg:hidden absolute top-2.5 left-3 right-28 z-30 flex items-center gap-2">
             <button
               onClick={() => {
                 setSidebarMode("DIRECTORY");
                 setIsMobileDirectoryOpen(true);
               }}
-              className="flex-1 flex items-center justify-between px-3.5 py-2 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs text-slate-700 dark:text-slate-300 shadow-md cursor-pointer"
+              className="flex-1 flex items-center justify-between px-3 py-1.5 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs text-slate-700 dark:text-slate-300 shadow-md cursor-pointer"
             >
               <div className="flex items-center gap-2 truncate">
                 <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -1367,7 +1440,7 @@ function ScicNationalMapContent() {
                 setSidebarMode("DISCOVERY");
                 setIsMobileDirectoryOpen(true);
               }}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs font-mono font-semibold text-scic-blue dark:text-sky-400 shadow-md cursor-pointer shrink-0"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-md border border-slate-200 dark:border-white/15 text-xs font-mono font-semibold text-scic-blue dark:text-sky-400 shadow-md cursor-pointer shrink-0"
               title="Explore by Region"
             >
               <Compass className="h-3.5 w-3.5" />
@@ -1375,54 +1448,48 @@ function ScicNationalMapContent() {
             </button>
           </div>
 
-          {/* Geographic Breadcrumb (Top-Left on Desktop, below search pill on Mobile) */}
-          <div className={cn("absolute top-14 lg:top-3 left-3 z-20 pointer-events-auto max-w-[calc(100%-140px)]", isPresenting && "hidden")}>
-            <AtlasGeographicBreadcrumb
-              region={
-                selectedProject?.region ||
-                (discoveryScope.level === "region" || discoveryScope.level === "province"
-                  ? discoveryScope.regionDisplayName
-                  : geographicScope.region)
-              }
-              province={
-                selectedProject?.province ||
-                (discoveryScope.level === "province"
-                  ? discoveryScope.province
-                  : geographicScope.province)
-              }
-              selectedProjectName={selectedProject?.name || null}
-              onResetNational={handleResetNationalScope}
-              onSelectRegion={handleDrillRegion}
-              onSelectProvince={handleDrillProvince}
-              onClearProject={() => selectProject(null)}
-            />
-          </div>
+          {/* Unified Top Map HUD Stack: Breadcrumb (Top) + AI Command Bar (Below, only when AI panel is closed).
+              Kept strictly left of right-[142px] so it never collides with the top-right [LAYERS] control. */}
+          {!isPresenting && (
+            <div className="absolute top-13 lg:top-2.5 left-2.5 right-[142px] z-30 pointer-events-none flex flex-col items-start gap-2">
+              <div className="pointer-events-auto max-w-full overflow-hidden">
+                <AtlasGeographicBreadcrumb
+                  region={
+                    selectedProject?.region ||
+                    (discoveryScope.level === "region" || discoveryScope.level === "province"
+                      ? discoveryScope.regionDisplayName
+                      : geographicScope.region)
+                  }
+                  province={
+                    selectedProject?.province ||
+                    (discoveryScope.level === "province"
+                      ? discoveryScope.province
+                      : geographicScope.province)
+                  }
+                  selectedProjectName={selectedProject?.name || null}
+                  onResetNational={handleResetNationalScope}
+                  onSelectRegion={handleDrillRegion}
+                  onSelectProvince={handleDrillProvince}
+                  onClearProject={() => selectProject(null)}
+                />
+              </div>
 
-          {/* ✦ SCIC Atlas Command Bar: Top-Center on Map Canvas.
-              With the project panel open it drops below the breadcrumb row and centres in the map
-              area that is still visible, so it is never cut off by the panel or the breadcrumb. */}
-          <div
-            className={cn(
-              "absolute left-0 right-0 z-30 px-3 pointer-events-none flex justify-center transition-[top,right] duration-300",
-              isPresenting && "hidden",
-              showProjectPanel
-                ? "top-26 lg:top-14 md:right-[380px] lg:right-[410px] xl:right-[430px]"
-                : "top-14 lg:top-3"
-            )}
-          >
-            <div className={cn("w-full max-w-sm sm:max-w-md lg:max-w-xl flex justify-center", !showProjectPanel && "max-lg:pr-14")}>
-            <AtlasCommandBar
-              onSend={atlasAI.sendMessage}
-              onOpenDrawer={() => atlasAI.setIsOpen(true)}
-              suggestions={atlasAI.suggestions}
-              isGenerating={atlasAI.isGenerating}
-              selectedProjectName={selectedProject?.name}
-              activeRegion={geographicScope.region}
-              projectCount={activeProjects.length}
-              onFocusChange={setIsChatInputFocused}
-            />
+              {!(atlasAI.isOpen && !hideChat) && (
+                <div className="pointer-events-auto w-full max-w-md self-center flex justify-center">
+                  <AtlasCommandBar
+                    onSend={atlasAI.sendMessage}
+                    onOpenDrawer={() => atlasAI.setIsOpen(true)}
+                    suggestions={atlasAI.suggestions}
+                    isGenerating={atlasAI.isGenerating}
+                    selectedProjectName={selectedProject?.name}
+                    activeRegion={geographicScope.region}
+                    projectCount={activeProjects.length}
+                    onFocusChange={setIsChatInputFocused}
+                  />
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {/* ✦ SCIC ATLAS NAVIGATOR 3D CHARACTER (PHASE 21: Persistent Singleton R3F Canvas) */}
           <AtlasNavigatorAvatar
@@ -1633,10 +1700,10 @@ function ScicNationalMapContent() {
             role="tablist"
             aria-label="Right panel"
             className={cn(
-              "hidden md:flex absolute top-0 right-0 z-[52] items-center gap-1 p-1 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-lg",
-              rightTab === "project" && "md:w-[380px] lg:w-[410px] xl:w-[430px]"
+              "hidden md:flex absolute top-0 right-0 h-9 z-[52] items-center gap-1 p-1 rounded-xl bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-md",
+              rightTab === "project" && "md:w-[328px] lg:w-[340px] xl:w-[352px] 2xl:w-[380px]"
             )}
-            style={rightTab === "chat" ? { width: chatDock.rightDockWidth || 430 } : undefined}
+            style={rightTab === "chat" ? { width: chatDock.rightDockWidth || projectPanelWidth } : undefined}
           >
             {([
               { id: "project" as const, label: selectedProject?.code || "Project", Icon: FileText },
@@ -1662,7 +1729,7 @@ function ScicNationalMapContent() {
         )}
 
         <ProjectInspectionDrawer
-          className={bothRight ? "md:!top-[46px] md:!right-0 md:!max-h-[calc(100%-46px)]" : undefined}
+          className={bothRight ? "md:!top-[42px] md:!right-0 md:!max-h-[calc(100%-42px)]" : undefined}
           project={showProjectPanel ? selectedProject : null}
           onClose={() => selectProject(null)}
           onFocusCoordinates={(lat, lng) => {
@@ -1703,7 +1770,10 @@ function ScicNationalMapContent() {
             ...rowInsets,
             top: rowInsets.top + tabStripH + (tabStripH ? 6 : 0),
             // the minimised chat pill and bottom dock stay clear of the open project panel
-            right: rowInsets.right + (showProjectPanel && !bothRight ? projectPanelWidth + 8 : 0),
+            right: rowInsets.right + (showProjectPanel && !bothRight ? projectPanelWidth + 6 : 0),
+            localTop: tabStripH ? tabStripH + 6 : 0,
+            localRight: showProjectPanel && !bothRight ? projectPanelWidth + 6 : 0,
+            localMapLeft: Math.max(0, rowInsets.mapLeft - rowInsets.left),
           }}
           forceMinimized={!!atlasAI.activeTour}
           compactPill={showProjectPanel}
@@ -1796,7 +1866,7 @@ export default function ScicNationalMapClient() {
   return (
     <Suspense
       fallback={
-        <div className="w-full h-[calc(100vh-5.5rem)] flex items-center justify-center bg-slate-900 text-slate-400">
+        <div className="w-full h-[calc(100dvh-11.5rem)] md:h-[calc(100dvh-9.75rem)] min-h-[420px] flex items-center justify-center bg-slate-900 text-slate-400">
           <Loader2 className="w-8 h-8 animate-spin text-scic-blue" />
         </div>
       }

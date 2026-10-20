@@ -168,14 +168,14 @@ export function AtlasToolDock(props: AtlasToolDockProps) {
     return () => window.removeEventListener("keydown", onKey, true);
   }, [panel, onPanelChange]);
 
-  // (the navigator stands at the right foot of the map: panels keep clear of him)
-  const sideOffset = besidePanel ? "md:right-[380px] lg:right-[410px] xl:right-[430px]" : "right-[190px]";
+  // (the navigator stands at the right foot of the visible map: panels keep clear of him and the legend)
+  const sideOffset = "md:right-[154px] right-3";
 
   return (
     <>
       {/* Panels: centred over the visible map, just above the dock */}
       {panel && (
-        <div className={cn("pointer-events-none absolute bottom-[68px] left-0 z-30 hidden md:flex justify-center px-3 transition-[right] duration-300", sideOffset)} data-atlas-tool-panel={panel}>
+        <div className={cn("pointer-events-none absolute bottom-[60px] left-3 md:left-[116px] z-30 flex justify-center px-2 transition-[right] duration-300", sideOffset)} data-atlas-tool-panel={panel}>
 
         {/* ── Timeline ── */}
         {panel === "timeline" && (
@@ -395,36 +395,35 @@ export function AtlasToolDock(props: AtlasToolDockProps) {
 
       {/* The dock sits between the legend (left) and the navigator (right) and sizes itself to
           the room it has (a container query): icons only on a narrow map, labels on a wide one,
-          and it steps aside when the strip is too thin to hold it. */}
+          while always remaining visible and scrollable if the map column is tight. */}
       <div
         className={cn(
-          "@container pointer-events-none absolute bottom-3 left-[158px] z-30 hidden md:flex justify-center transition-[right] duration-300",
-          besidePanel ? "md:right-[570px] lg:right-[600px] xl:right-[620px]" : "right-[196px]",
+          "@container pointer-events-none absolute bottom-3 md:bottom-3.5 left-3 md:left-[116px] right-3 md:right-[154px] z-30 flex justify-center transition-[right] duration-300",
           className
         )}
         data-atlas-tool-dock
       >
-        <div className="pointer-events-auto hidden @[200px]:flex items-center gap-0.5 p-1 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-atlas-panel/90 backdrop-blur-xl shadow-[0_12px_40px_-12px_rgba(0,0,0,0.45)]">
+        <div className="pointer-events-auto flex max-w-full overflow-x-auto no-scrollbar items-center gap-0.5 p-1 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-atlas-panel/95 backdrop-blur-xl shadow-[0_12px_40px_-12px_rgba(0,0,0,0.45)]">
           <DockButton active={panel === "timeline" || year !== null} onClick={() => toggle("timeline")} title="Timeline: travel through the years (T)">
-            <Clock3 className="h-4 w-4" />
-            <span className="hidden @[620px]:inline">{year !== null ? year : "Timeline"}</span>
+            <Clock3 className="h-4 w-4 shrink-0" />
+            <span className="hidden @[480px]:inline">{year !== null ? year : "Timeline"}</span>
           </DockButton>
           <DockButton active={panel === "compare"} onClick={() => toggle("compare")} title="Compare projects (C)" badge={compareIds.length || undefined}>
-            <Columns3 className="h-4 w-4" />
-            <span className="hidden @[620px]:inline">Compare</span>
+            <Columns3 className="h-4 w-4 shrink-0" />
+            <span className="hidden @[480px]:inline">Compare</span>
           </DockButton>
           <DockButton active={starredOnly} onClick={onToggleStarredOnly} title={starredOnly ? "Showing starred projects only: click to show all" : "Show only your starred projects"} badge={starredIds.length || undefined}>
-            <Star className={cn("h-4 w-4", starredOnly && "fill-current")} />
-            <span className="hidden @[620px]:inline">Starred</span>
+            <Star className={cn("h-4 w-4 shrink-0", starredOnly && "fill-current")} />
+            <span className="hidden @[480px]:inline">Starred</span>
           </DockButton>
           <DockButton active={panel === "clients" || !!client} onClick={() => toggle("clients")} title="Filter by client">
-            <Users className="h-4 w-4" />
-            <span className="hidden @[620px]:inline max-w-[110px] truncate">{client ? client.split(/[,(/]/)[0].trim() : "Clients"}</span>
+            <Users className="h-4 w-4 shrink-0" />
+            <span className="hidden @[480px]:inline max-w-[110px] truncate">{client ? client.split(/[,(/]/)[0].trim() : "Clients"}</span>
           </DockButton>
-          <span className="mx-0.5 h-5 w-px bg-slate-200 dark:bg-white/10" />
+          <span className="mx-0.5 h-5 w-px shrink-0 bg-slate-200 dark:bg-white/10" />
           <DockButton active={panel === "more" || panel === "views" || panel === "help"} onClick={() => onPanelChange(panel === "more" || panel === "views" || panel === "help" ? null : "more")} title="More: saved views, share link, export, presentation, shortcuts">
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="hidden @[620px]:inline">More</span>
+            <MoreHorizontal className="h-4 w-4 shrink-0" />
+            <span className="hidden @[480px]:inline">More</span>
           </DockButton>
         </div>
       </div>

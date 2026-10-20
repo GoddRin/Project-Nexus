@@ -151,7 +151,7 @@ export default async function VisitorsPage({ searchParams }: VisitorsPageProps) 
  No historical visitors matching your search.
  </div>
  ) : (
- <div className="glass-card overflow-hidden">
+ <div className="glass-card overflow-x-auto">
  <table className="w-full text-sm text-left">
  <thead className="text-xs uppercase bg-white/[0.02] border-b border-white/[0.05] text-text-muted">
  <tr>

@@ -19,19 +19,19 @@ export async function HomeFooterStrip() {
         <div className="flex min-w-0 items-center gap-3">
           <BrandLogo variant="mark" height={36} />
           <div className="min-w-0">
-            <p className="truncate font-display text-sm font-bold text-text-primary">{COMPANY_NAME}</p>
+            <p className="font-display text-sm font-bold leading-snug text-text-primary sm:truncate">{COMPANY_NAME}</p>
             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-muted">
               Since {FOUNDED_YEAR} · {BRAND_LINE}
             </p>
           </div>
         </div>
         {fx && (
-          <p className="home-chip inline-flex items-baseline gap-2 rounded-full px-4 py-1.5">
+          <p className="home-chip flex w-full flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-2xl px-4 py-2.5 sm:inline-flex sm:w-auto sm:flex-nowrap sm:rounded-full sm:py-1.5">
             <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">PHP / USD</span>
             <span className="font-mono text-sm font-semibold tabular-nums text-text-primary">₱{fx.phpPerUsd.toFixed(2)}</span>
             <span className="font-mono text-[10px] text-text-muted">per US$1 · {day(fx.asOf)}</span>
             {/* the rate service's terms ask for this credit */}
-            <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] text-text-muted hover:text-text-secondary hover:underline">
+            <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer" className="ml-auto font-mono text-[10px] text-text-muted hover:text-text-secondary hover:underline">
               ExchangeRate-API
             </a>
           </p>

@@ -20,6 +20,8 @@
    Industrial Engineering & Hydropower (Tumauini HEPP)
    ============================================================ */
 :root {
+  color-scheme: light;
+
   /* Backgrounds */
   --bg-base: #F5F8F6;
   --bg-panel: #FFFFFF;
@@ -271,6 +273,8 @@ code, pre, kbd, samp,
 }
 
 .dark {
+  color-scheme: dark;
+
   /* SCIC Industrial Design Tokens - High-Tech Command Dark Mode */
   --bg-base: #070C0B;          /* Deepest Abyssal Navy-Black */
   --bg-panel: #0D1614;         /* Titanium Glass Panel */
@@ -349,6 +353,11 @@ code, pre, kbd, samp,
   }
   html {
     @apply font-sans;
+  }
+  select option,
+  select optgroup {
+    background-color: var(--bg-panel);
+    color: var(--text-primary);
   }
 }
 
@@ -1740,3 +1749,17 @@ html[data-theme-wipe]::view-transition-new(root) {
   --home-solid: #007B3E;
   --home-solid-hover: #006334;
 }
+
+/* ── Minimalist Scrollbar Suppression (Sidebar & Sub-Nav Rails) ───────────────────────────── */
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+

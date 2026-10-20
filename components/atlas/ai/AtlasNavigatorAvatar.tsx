@@ -410,8 +410,8 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
   // The bubble steps aside once its line has been read: it reappears on the next tap / event.
   // (A permanently open bubble was one more panel competing with the map.)
   useEffect(() => {
-    if (!speechBubbleVisible || !line || voiced || isSpeaking || isPreparingSpeech) return;
-    if (typedLen < line.text.length) return;
+    if (!speechBubbleVisible || voiced || isSpeaking || isPreparingSpeech) return;
+    if (line && typedLen < line.text.length) return;
     const id = setTimeout(() => setSpeechBubbleVisible(false), BUBBLE_LINGER_MS);
     return () => clearTimeout(id);
   }, [speechBubbleVisible, line, voiced, isSpeaking, isPreparingSpeech, typedLen]);
@@ -715,10 +715,10 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
 
   // ── Layout engine ───────────────────────────────────────────────────────────
   const [layoutStyle, setLayoutStyle] = useState<LayoutStyle>({
-    bottom: 20,
-    right: 16,
-    width: 190,
-    height: 250,
+    bottom: 16,
+    right: 12,
+    width: 136,
+    height: 180,
     visualMode: "companion",
   });
   const layoutRef = useRef(layoutStyle);
@@ -731,81 +731,81 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
     const barLift = isDesktop ? 0 : Math.round(document.querySelector('nav[aria-label="Mobile Navigation"]')?.getBoundingClientRect().height ?? 0);
     let next: LayoutStyle;
 
+    const mapEl = document.querySelector(".maplibregl-map");
+    const mapRect = mapEl?.getBoundingClientRect();
+    const mapFootBottom =
+      mapRect && isDesktop
+        ? Math.max(14, Math.round(window.innerHeight - mapRect.bottom + 6))
+        : (isDesktop ? 20 : 14) + barLift;
+
     if (isSpotlight && !isOpen) {
-      const w = isDesktop ? 260 : 200;
-      const h = isDesktop ? 330 : 260;
+      const w = isDesktop ? 210 : 170;
+      const h = isDesktop ? 270 : 220;
       const left = autoStage && isDesktop
         ? Math.max(16, Math.round(winW - w - Math.max(24, winW * 0.1)))
         : Math.round((winW - w) / 2);
-      next = { bottom: (isDesktop ? 36 : 24) + barLift, left, width: w, height: h, visualMode: "heroic_center" };
-    } else if (isTourActive || isOpen) {
-      // Never sit on top of the directory / sidebar: stay inside the map canvas.
-      let w = isDesktop ? 190 : 160;
-      let h = isDesktop ? 250 : 210;
-      let hidden = false;
-      let bubbleMax: number | undefined;
-      const mapEl = document.querySelector(".maplibregl-map");
-      const mapRect = mapEl?.getBoundingClientRect();
+      next = { bottom: (isDesktop ? 32 : 20) + barLift, left, width: w, height: h, visualMode: "heroic_center" };
+    } else {
+      // Always stay strictly inside the visible map canvas, compact and out of the way of HUD controls
+      let w = isDesktop ? 136 : 114;
+      let h = isDesktop ? 180 : 152;
+      const activeChatSheet = document.getElementById("scic-atlas-ai-workspace");
+      let hidden = !isDesktop && (!!activeChatSheet || isDrawerOpen);
+      let bubbleMax: number | undefined = 224;
       const mapLeft = mapRect ? Math.round(mapRect.left) : 16;
       // Left spot starts past the GIS legend button so the legend stays reachable
-      let left = mapLeft + 12 + (isDesktop ? 128 : 0);
-      let bottom = (isDesktop ? 24 : 16) + barLift;
-      let bubbleSide: "left" | "right" = "left";
+      let left = mapLeft + 10 + (isDesktop ? 104 : 0);
+      let bottom = mapFootBottom;
+      let bubbleSide: "left" | "right" = "right";
+
       if (mapRect && isDesktop) {
-        // Prefer the usual bottom-right corner of the visible map: the map's right edge, or the
-        // project panel's left edge when that panel is open (he must never stand on the panel)
         const drawer = isDrawerOpen
           ? document.querySelector('aside[aria-label^="Project Intelligence"]')?.getBoundingClientRect()
           : undefined;
         const freeRight = drawer && drawer.width > 0 ? Math.min(mapRect.right, drawer.left - 8) : mapRect.right;
-        const rightSpot = Math.round(freeRight - w - 16);
-        const chat = document.getElementById("scic-atlas-ai-workspace")?.getBoundingClientRect();
+        const rightSpot = Math.round(freeRight - w - 10);
+        const chat = activeChatSheet?.getBoundingClientRect();
         const chatCovers = !!chat && chat.width > 0 && chat.left < rightSpot + w && chat.right > rightSpot && chat.bottom > window.innerHeight - bottom - h;
         if (!chatCovers && rightSpot > left) {
           left = rightSpot;
           bubbleSide = "right";
+        } else {
+          bubbleSide = "left";
         }
-        // A narrow map (directory and chat both open on a laptop): he must not spill over onto
-        // the panels. Stand at the map's left edge, smaller; if even that does not fit, step off.
         if (left + w > freeRight - 8) {
-          const room = Math.round(freeRight - mapLeft - 20);
-          if (room >= 130) {
+          const room = Math.round(freeRight - mapLeft - 16);
+          if (room >= 116) {
             w = Math.min(w, room);
-            h = Math.round((w * 250) / 190);
-            left = mapLeft + 12;
+            h = Math.round((w * 180) / 136);
+            left = mapLeft + 8;
             bubbleSide = "left";
-            bubbleMax = Math.max(180, room);
+            bubbleMax = Math.max(170, Math.min(220, room));
           } else {
             hidden = true;
           }
         }
+      } else if (!isDesktop) {
+        next = { bottom: mapFootBottom, right: 10, width: w, height: h, visualMode: "companion", bubbleSide: "right", hidden, bubbleMax };
+        if (!sameLayout(layoutRef.current, next)) {
+          layoutRef.current = next;
+          setLayoutStyle(next);
+        }
+        return;
       }
-      // Minimised chat pill along the bottom: when the free map is too narrow for both, stand on top of it
+
+      // Minimised chat pill along the bottom: when in the same corner, stand cleanly above it
       const pill = document.getElementById("scic-atlas-ai-workspace-minimized")?.getBoundingClientRect();
-      if (pill && pill.width > 0 && pill.left < left + w - 16 && pill.right > left + 16) {
-        bottom = Math.max(bottom, Math.round(window.innerHeight - pill.top + 6));
+      if (pill && pill.width > 0 && pill.left < left + w - 8 && pill.right > left + 8) {
+        bottom = Math.max(bottom, Math.round(window.innerHeight - pill.top + 8));
       }
       const tourEl = isTourActive ? document.querySelector('[aria-label="AI Guided Portfolio Tour Controller"]') : null;
       if (tourEl) {
-        // Narrating a tour: stand on the narration card's top-left corner, like a presenter at a screen
         const tr = (tourEl.firstElementChild ?? tourEl).getBoundingClientRect();
-        left = Math.max(mapLeft + 12, Math.round(tr.left));
+        left = Math.max(mapLeft + 10, Math.round(tr.left));
         bottom = Math.max(bottom, Math.round(window.innerHeight - tr.top + 4));
-        // ...but never climb over the breadcrumb / command bar at the top of the map
-        if (mapRect) bottom = Math.min(bottom, Math.max(24, Math.round(window.innerHeight - mapRect.top - 64 - h)));
+        if (mapRect) bottom = Math.min(bottom, Math.max(24, Math.round(window.innerHeight - mapRect.top - 56 - h)));
       }
       next = { bottom, left, width: w, height: h, visualMode: "companion", bubbleSide, hidden, bubbleMax };
-    } else {
-      let rightOffset = 16;
-      if (isDrawerOpen && isDesktop) {
-        const drawerEl = document.querySelector('aside[aria-label^="Project Intelligence"]');
-        if (drawerEl) {
-          rightOffset = Math.max(440, Math.round(winW - drawerEl.getBoundingClientRect().left + 24));
-        } else {
-          rightOffset = (winW >= 1280 ? 430 : winW >= 1024 ? 410 : 380) + 12 + 24;
-        }
-      }
-      next = { bottom: 20 + barLift, right: rightOffset, width: isDesktop ? 190 : 160, height: isDesktop ? 250 : 210, visualMode: "companion", bubbleSide: "right" };
     }
 
     // Only touch React state when something actually changed (the old loop re-rendered every frame)
@@ -1115,7 +1115,9 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
           ? ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE + 1
           : isHeroic
           ? ATLAS_Z_INDEX.AI_WORKSPACE_ACTIVE + 2
-          : ATLAS_Z_INDEX.INSPECTION_DRAWER + 5,
+          : isOpen
+          ? ATLAS_Z_INDEX.AI_WORKSPACE - 2
+          : ATLAS_Z_INDEX.INSPECTION_DRAWER - 2,
         // (his position changes at once; the move between spots is the transform below, driven
         //  by the walk controller: a short slide for a small step, a walk for a longer way)
         transition:
@@ -1132,7 +1134,7 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
       onPointerLeave={onPointerLeave}
     >
       {/* ─── FLOATING GLASSMORPHIC SPEECH BUBBLE ─── */}
-      {!isBust && speechBubbleVisible && !isTourActive && (
+      {!isBust && speechBubbleVisible && !isTourActive && (!isOpen || isSpeaking || isPreparingSpeech) && (
         <div
           role="region"
           aria-label="SCIC Atlas Navigator Speech Box"
@@ -1140,14 +1142,14 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
           className={cn(
             "absolute z-30 transition-opacity duration-300 pointer-events-auto",
             isHeroic
-              ? "bottom-[calc(100%+14px)] left-1/2 -translate-x-1/2 w-[310px]"
+              ? "bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-[280px]"
               : onLeftSide
-              ? "bottom-[calc(100%+8px)] left-0"
-              : "bottom-[calc(100%+8px)] right-0"
+              ? "bottom-[calc(100%+6px)] left-0"
+              : "bottom-[calc(100%+6px)] right-0"
           )}
-          style={isHeroic ? undefined : { width: Math.min(260, layoutStyle.bubbleMax ?? 260) }}
+          style={isHeroic ? undefined : { width: Math.min(224, layoutStyle.bubbleMax ?? 224) }}
         >
-          <div className="relative rounded-2xl bg-white/95 dark:bg-atlas-sunken/95 backdrop-blur-xl border border-emerald-600/25 dark:border-emerald-400/30 shadow-xl p-3 text-slate-900 dark:text-white overflow-hidden">
+          <div className="relative rounded-2xl bg-white/95 dark:bg-atlas-sunken/95 backdrop-blur-xl border border-emerald-600/25 dark:border-emerald-400/30 shadow-xl p-2.5 text-slate-900 dark:text-white overflow-hidden">
             <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-80" />
 
             <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-slate-200 dark:border-white/10 mb-1.5">
@@ -1375,7 +1377,7 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
         </div>
 
         {!isBust && (
-          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[calc(100%-8px)] px-1.5 py-0.5 rounded-lg bg-white/90 dark:bg-atlas-sunken/90 backdrop-blur-md border border-emerald-600/20 dark:border-emerald-400/25 flex items-center justify-between gap-1 shadow-lg pointer-events-none">
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[calc(100%-10px)] px-1.5 py-0.5 rounded-md bg-white/90 dark:bg-atlas-sunken/90 backdrop-blur-md border border-emerald-600/20 dark:border-emerald-400/25 flex items-center justify-between gap-1 shadow-md pointer-events-none">
             <div className="flex items-center gap-1 min-w-0">
               <span
                 className={cn(
@@ -1393,21 +1395,20 @@ export const AtlasNavigatorAvatar: React.FC<AtlasNavigatorAvatarProps> = ({
                     : "bg-emerald-400"
                 )}
               />
-              <span className="text-[9px] font-mono font-bold text-slate-900 dark:text-white truncate">
+              <span className="text-[8.5px] font-mono font-bold text-slate-900 dark:text-white truncate">
                 {isSpeaking ? "Speaking" : state === "IDLE" ? "Navigator" : state}
               </span>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
-              {isHeroic && (
-                <span className="text-[8px] font-mono text-emerald-600 dark:text-emerald-400 font-bold px-1 rounded bg-emerald-500/15 border border-emerald-600/25 dark:border-emerald-400/30">
-                  Focus
-                </span>
-              )}
-              <span className="text-[8px] font-mono text-emerald-700 dark:text-emerald-300 font-bold px-1 rounded bg-emerald-500/10 border border-emerald-600/20 dark:border-emerald-400/20">
-                ✦ {activeVoice}
+            {isHeroic ? (
+              <span className="text-[7.5px] font-mono text-emerald-600 dark:text-emerald-400 font-bold px-1 rounded bg-emerald-500/15 border border-emerald-600/25 dark:border-emerald-400/30 shrink-0">
+                Focus
               </span>
-            </div>
+            ) : (
+              <span className="text-[7.5px] font-mono text-emerald-700 dark:text-emerald-300 font-bold px-1 rounded bg-emerald-500/10 shrink-0 truncate max-w-[46px]">
+                {activeVoice}
+              </span>
+            )}
           </div>
         )}
       </button>
