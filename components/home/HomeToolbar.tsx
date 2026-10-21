@@ -38,7 +38,6 @@ export function HomeToolbar() {
   const router = useRouter();
   const bar = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<SectionId>(SECTIONS[0].id);
-  const [present, setPresent] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
   const [phase, setPhase] = useState<"idle" | "refreshing" | "done">("idle");
   const [feedsDone, setFeedsDone] = useState(0);
@@ -49,11 +48,6 @@ export function HomeToolbar() {
 
   // Which section is in view (the page scrolls inside <main> in DashboardLayout)
   useEffect(() => {
-    const els = SECTIONS.map((s) => document.getElementById(s.id)).filter((el): el is HTMLElement => !!el);
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- only sections that exist on this render get a chip
-    setPresent(els.map((el) => el.id));
-    if (!els.length) return;
-
     const main = bar.current?.closest("main") || document.querySelector("main");
     let rafId = 0;
 
@@ -109,7 +103,7 @@ export function HomeToolbar() {
 
     // Check initial hash on mount (e.g. #legacy or #portfolio)
     const initialHash = window.location.hash.replace("#", "") as SectionId;
-    if (initialHash && els.some((el) => el.id === initialHash)) {
+    if (initialHash && SECTIONS.some((s) => s.id === initialHash)) {
       setActive(initialHash);
       isNavigating.current = true;
       const targetEl = document.getElementById(initialHash);
@@ -205,7 +199,7 @@ export function HomeToolbar() {
   const done = phase === "done" && !busy;
   const text = done ? "Up to date" : busy ? "Refreshing" : "Refresh all";
 
-  const chips = SECTIONS.filter((s) => present.includes(s.id));
+  const chips = SECTIONS;
   // (a sticky bar rests inside the scrolling panel's padding, so it is pulled up by that padding to sit flush under the top bar)
   return (
     <div ref={bar} className="sticky -top-3.5 z-20 -mx-1 px-1 py-1 sm:-top-5 md:-top-6 select-none">
