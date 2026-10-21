@@ -163,42 +163,45 @@ export function TopBar({
             : isVisitorMode && "mx-auto max-w-[1680px]"
         )}
       >
-        {/* Left: Mobile Drawer Trigger + Brand Identity (Always visible in Visitor Masthead, mobile-only in Admin Sidebar mode) */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-        <button
-          type="button"
-          onClick={toggleMobileNav}
-          className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-border-hairline bg-black/[0.02] dark:bg-white/[0.03] text-text-muted hover:text-text-primary active:scale-95 transition-all shrink-0"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="h-4 w-4" />
-        </button>
+        {/* Left: Mobile Drawer Trigger + Executive Brand Identity Badge */}
+        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 shrink-0">
+          <button
+            type="button"
+            onClick={toggleMobileNav}
+            className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-border-hairline bg-black/[0.02] dark:bg-white/[0.03] text-text-muted hover:text-text-primary active:scale-95 transition-all shrink-0"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
 
-        {/* Brand Lockup: Visible on all screens in Visitor Masthead mode; mobile-only when Admin left sidebar is open */}
-        <Link
-          href="/home"
-          className={cn(
-            "flex items-center gap-2.5 group min-w-0",
-            !isVisitorMode && "md:hidden"
-          )}
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white dark:bg-bg-panel border border-border-hairline p-1 shadow-2xs overflow-hidden shrink-0 transition-transform duration-150 group-hover:scale-[1.03]">
-            <HydroPowerLogo className="h-full w-full" size={32} priority />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-display font-bold text-xs sm:text-[13px] tracking-tight text-text-primary leading-none truncate">
-                Tumauini HEPP
-              </span>
-              <span className="hidden lg:inline-block rounded bg-black/[0.04] dark:bg-white/[0.06] px-1.5 py-0.5 font-mono text-[9px] font-semibold text-text-muted leading-none">
-                11.3 MW
+          {/* Brand Lockup: Clean Unbordered Brand Identity */}
+          <Link
+            href="/home"
+            className={cn(
+              "flex items-center gap-2.5 group shrink-0 transition-all duration-150",
+              !isVisitorMode && "md:hidden"
+            )}
+            title="Tumauini HEPP · Sta. Clara International Corporation"
+          >
+            <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-white dark:bg-bg-panel border border-border-hairline p-1 shadow-2xs overflow-hidden shrink-0 transition-transform duration-150 group-hover:scale-[1.03]">
+              <HydroPowerLogo className="h-full w-full" size={32} priority />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-display font-bold text-xs sm:text-[13px] tracking-tight text-text-primary leading-none truncate">
+                  Tumauini HEPP
+                </span>
+                <span className="hidden sm:inline-block rounded bg-black/[0.04] dark:bg-white/[0.06] px-1.5 py-0.5 font-mono text-[9px] font-semibold text-text-muted leading-none">
+                  11.3 MW
+                </span>
+              </div>
+              <span className="font-mono text-[9px] font-bold text-scic-green dark:text-emerald-400 uppercase tracking-[0.14em] leading-none mt-1 truncate">
+                Sta. Clara Intl
               </span>
             </div>
-            <span className="font-mono text-[9px] font-bold text-scic-green dark:text-emerald-400 uppercase tracking-[0.14em] leading-none mt-1 truncate">
-              Sta. Clara Intl
-            </span>
-          </div>
-        </Link>
+          </Link>
+
+
 
         {/* In Admin Mode (where left sidebar already has Brand), show wide Search + River Ticker on the left */}
         {!isVisitorMode && (
@@ -232,11 +235,11 @@ export function TopBar({
         )}
       </div>
 
-      {/* Center: Editorial Horizontal Navigation (Desktop Visitor Masthead Mode) */}
+      {/* Center: Symmetrical Navigation Dock (Desktop Visitor Masthead Mode) */}
       {isVisitorMode && (
         <nav
           aria-label="Primary Navigation"
-          className="hidden md:flex h-full items-stretch gap-0.5 lg:gap-1.5"
+          className="hidden md:flex h-full items-stretch gap-0.5 lg:gap-1.5 shrink-0"
         >
           {VISITOR_PILLARS.map((item) => {
             const active = isNavItemActive(item, pathname);
@@ -252,7 +255,7 @@ export function TopBar({
                     : item.label
                 }
                 className={cn(
-                  "relative flex h-full items-center gap-1.5 px-2.5 lg:px-3.5 font-display text-xs lg:text-[13px] tracking-tight transition-colors duration-150",
+                  "relative flex h-full items-center gap-1.5 px-2.5 lg:px-3.5 font-display text-xs lg:text-[13px] tracking-tight transition-colors duration-150 whitespace-nowrap shrink-0",
                   active
                     ? "text-text-primary font-semibold"
                     : "text-text-muted hover:text-text-primary font-medium"
@@ -283,13 +286,13 @@ export function TopBar({
       )}
 
       {/* Right: Precision Instrument Cluster */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* Compact Search Trigger in Visitor Masthead Mode */}
         {isVisitorMode && (
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="flex h-8 items-center gap-2 rounded-lg border border-border-hairline bg-black/[0.02] dark:bg-white/[0.03] px-2.5 text-xs text-text-muted transition-colors hover:border-text-muted/40 hover:text-text-primary"
+            className="flex h-8 items-center gap-2 rounded-lg border border-border-hairline bg-black/[0.02] dark:bg-white/[0.03] px-2.5 text-xs text-text-muted transition-colors hover:border-text-muted/40 hover:text-text-primary whitespace-nowrap shrink-0"
             title="Search Tumauini HEPP (Ctrl+K)"
             aria-label="Search"
           >
@@ -310,7 +313,7 @@ export function TopBar({
           title="AI Assistant — Nexus AI Guide & Knowledge Hub"
           aria-label="AI Assistant"
           className={cn(
-            "flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-medium transition-colors duration-150",
+            "flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-medium transition-colors duration-150 whitespace-nowrap shrink-0",
             isAiHubActive
               ? "border-scic-green/40 bg-scic-green/12 text-scic-green dark:text-emerald-400 font-semibold"
               : "border-border-hairline bg-black/[0.02] dark:bg-white/[0.03] text-text-muted hover:border-scic-green/40 hover:text-text-primary"
@@ -324,7 +327,7 @@ export function TopBar({
                 : "text-scic-green/80 dark:text-emerald-400/80"
             )}
           />
-          <span className="hidden xl:inline">AI Assistant</span>
+          <span className="hidden xl:inline whitespace-nowrap">AI Assistant</span>
         </Link>
 
         {/* Site Safety Micro-Pill in Visitor Masthead Mode */}
@@ -332,31 +335,7 @@ export function TopBar({
           <SafetyStreak variant="masthead" className="hidden sm:block" />
         )}
 
-        {/* 1-Click Admin <-> Visitor Mode Switch (Always accessible in Masthead for ADMINISTRATOR accounts) */}
-        {isAdminUser && (
-          <button
-            type="button"
-            onClick={toggleViewAsVisitor}
-            className={cn(
-              "hidden sm:flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-semibold transition-all duration-150",
-              viewAsVisitor
-                ? "bg-amber-500/12 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/20"
-                : "bg-scic-green/10 text-scic-green dark:text-emerald-400 border-scic-green/25 hover:bg-scic-green/15"
-            )}
-            title={
-              viewAsVisitor
-                ? "Currently in Visitor Masthead View (No Left Sidebar). Click to switch to Full Admin Sidebar."
-                : "Currently in Full Admin Sidebar View. Click to preview Visitor Masthead View."
-            }
-          >
-            {viewAsVisitor ? (
-              <Eye className="h-3.5 w-3.5 shrink-0" />
-            ) : (
-              <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
-            )}
-            <span>{viewAsVisitor ? "Visitor View" : "Admin"}</span>
-          </button>
-        )}
+
 
         <SoundToggle className="hidden sm:flex" />
         <ThemeToggle />

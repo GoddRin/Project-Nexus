@@ -23,6 +23,8 @@ const SECTIONS = [
   { id: "legacy", label: "50 years" },
 ] as const;
 
+type SectionId = (typeof SECTIONS)[number]["id"];
+
 /**
  * The bar that rides at the top of Nexus Home: one chip per section (the one in view is marked,
  * and a chip takes you to its section), and "Refresh all", which asks every live section for
@@ -35,35 +37,110 @@ const SECTIONS = [
 export function HomeToolbar() {
   const router = useRouter();
   const bar = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState<string>(SECTIONS[0].id);
+  const [active, setActive] = useState<SectionId>(SECTIONS[0].id);
   const [present, setPresent] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
   const [phase, setPhase] = useState<"idle" | "refreshing" | "done">("idle");
   const [feedsDone, setFeedsDone] = useState(0);
   const lastRun = useRef(0);
   const restTimer = useRef(0);
+  const isNavigating = useRef(false);
+  const navTimer = useRef(0);
 
-  // which section is in view (the page scrolls inside the app's own panel, which is the default root's ancestor)
+  // Which section is in view (the page scrolls inside <main> in DashboardLayout)
   useEffect(() => {
     const els = SECTIONS.map((s) => document.getElementById(s.id)).filter((el): el is HTMLElement => !!el);
     // eslint-disable-next-line react-hooks/set-state-in-effect -- only sections that exist on this render get a chip
     setPresent(els.map((el) => el.id));
-    if (!els.length || typeof IntersectionObserver === "undefined") return;
-    const visible = new Map<string, number>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
-          else visible.delete(e.target.id);
+    if (!els.length) return;
+
+    const main = bar.current?.closest("main") || document.querySelector("main");
+    let rafId = 0;
+
+    const determineActive = () => {
+      if (isNavigating.current) return;
+      const container = main || document.documentElement;
+      const vh = window.innerHeight;
+
+      // 1. Bottom of page boundary:
+      // When scrolled near or to the bottom, the last section ("legacy" / 50 years) is active
+      const distFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+      if (distFromBottom <= 100) {
+        setActive(SECTIONS[SECTIONS.length - 1].id);
+        return;
+      }
+
+      // 2. Top of page boundary:
+      if (container.scrollTop <= 60) {
+        setActive(SECTIONS[0].id);
+        return;
+      }
+
+      // 3. Focal anchor line (~200px from top, below sticky toolbar and masthead)
+      const anchorY = 200;
+      for (let i = SECTIONS.length - 1; i >= 0; i--) {
+        const s = SECTIONS[i];
+        const el = document.getElementById(s.id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.top <= anchorY && r.bottom > anchorY) {
+          setActive(s.id);
+          return;
         }
-        // the first section (in page order) that crosses the band under the bar
-        const first = SECTIONS.find((s) => visible.has(s.id));
-        if (first) setActive(first.id);
-      },
-      { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.01] }
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+      }
+
+      // 4. Dominant visible area fallback
+      let maxVisible = 0;
+      let dominant: SectionId = SECTIONS[0].id;
+      for (const s of SECTIONS) {
+        const el = document.getElementById(s.id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        const top = Math.max(120, r.top);
+        const bottom = Math.min(vh, r.bottom);
+        const vis = Math.max(0, bottom - top);
+        if (vis > maxVisible) {
+          maxVisible = vis;
+          dominant = s.id;
+        }
+      }
+      setActive(dominant);
+    };
+
+    // Check initial hash on mount (e.g. #legacy or #portfolio)
+    const initialHash = window.location.hash.replace("#", "") as SectionId;
+    if (initialHash && els.some((el) => el.id === initialHash)) {
+      setActive(initialHash);
+      isNavigating.current = true;
+      const targetEl = document.getElementById(initialHash);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      navTimer.current = window.setTimeout(() => {
+        isNavigating.current = false;
+        determineActive();
+      }, 900);
+    } else {
+      determineActive();
+    }
+
+    const onScroll = () => {
+      if (isNavigating.current) return;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(determineActive);
+    };
+
+    main?.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(navTimer.current);
+      main?.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   // keep the marked chip in view inside the bar on a narrow screen
@@ -74,13 +151,18 @@ export function HomeToolbar() {
     row.scrollTo({ left: chip.offsetLeft - row.clientWidth / 2 + chip.offsetWidth / 2, behavior: "smooth" });
   }, [active]);
 
-  const go = (id: string) => {
+  const go = (id: SectionId) => {
     const el = document.getElementById(id);
     if (!el) return;
+    isNavigating.current = true;
+    window.clearTimeout(navTimer.current);
+    setActive(id);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     history.replaceState(history.state, "", `#${id}`);
-    setActive(id);
+    navTimer.current = window.setTimeout(() => {
+      isNavigating.current = false;
+    }, 850);
   };
 
   const finish = () => {
